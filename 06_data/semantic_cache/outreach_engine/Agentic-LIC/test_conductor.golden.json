@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Unit tests for the async Conductor helper.\"\"\"\nimport asyncio\n\nimport pytest\n\nfrom src.lic_agentic.orchestration.conductor import Conductor\n\n\nasync def _task(value):\n    await asyncio.sleep(0)\n    return value\n\n\ndef test_conductor_generates_stable_artifact_ids():\n    conductor = Conductor(seed=3)\n    first = conductor.make_artifact_id(\"value\", company_id=\"ACME\")\n    conductor.reset()\n    second = conductor.make_artifact_id(\"value\", company_id=\"ACME\")\n    assert first == second\n\n\ndef test_conductor_latency_delay_positive():\n    conductor = Conductor()\n\n    async def _job():\n        return 0, \"done\"\n\n    results = asyncio.run(conductor._execute_async([lambda: _job()]))\n    assert results == [(0, \"done\")]\n    assert conductor._latency_delay(500) > 0\n\n\ndef test_wrap_tool_call_runs_callable():\n    conductor = Conductor()\n\n    def call():\n        return \"value\", 50\n\n    wrapped = conductor.wrap_tool_call(0, call)\n    results = asyncio.run(conductor._execute_async([wrapped]))\n    assert res",
+  "full_hash": "f694ef0357de8cd2ae157dc53c829c0b100605d5be0f4c3cd3ca6a4d61f674c9",
+  "generated_at": 1764728331.0769234,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_conductor.py"
+}

@@ -1,0 +1,199 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema action execution and operation.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ActionType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of schema actions.')),
+        Assign(
+          targets=[
+            Name(id='CREATE', ctx=Store())],
+          value=Constant(value='create')),
+        Assign(
+          targets=[
+            Name(id='UPDATE', ctx=Store())],
+          value=Constant(value='update')),
+        Assign(
+          targets=[
+            Name(id='DELETE', ctx=Store())],
+          value=Constant(value='delete')),
+        Assign(
+          targets=[
+            Name(id='VALIDATE', ctx=Store())],
+          value=Constant(value='validate')),
+        Assign(
+          targets=[
+            Name(id='TRANSFORM', ctx=Store())],
+          value=Constant(value='transform'))]),
+    ClassDef(
+      name='ExecutionMode',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Action execution modes.')),
+        Assign(
+          targets=[
+            Name(id='SYNCHRONOUS', ctx=Store())],
+          value=Constant(value='synchronous')),
+        Assign(
+          targets=[
+            Name(id='ASYNCHRONOUS', ctx=Store())],
+          value=Constant(value='asynchronous')),
+        Assign(
+          targets=[
+            Name(id='BATCH', ctx=Store())],
+          value=Constant(value='batch')),
+        Assign(
+          targets=[
+            Name(id='STREAMING', ctx=Store())],
+          value=Constant(value='streaming'))]),
+    ClassDef(
+      name='ActionParameters',
+      body=[
+        Expr(
+          value=Constant(value='Schema for action execution parameters.')),
+        AnnAssign(
+          target=Name(id='action_type', ctx=Store()),
+          annotation=Name(id='ActionType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_mode', ctx=Store()),
+          annotation=Name(id='ExecutionMode', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parameters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timeout_seconds', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=300),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ActionContext',
+      body=[
+        Expr(
+          value=Constant(value='Schema for action execution context.')),
+        AnnAssign(
+          target=Name(id='context_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='user_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='session_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='environment', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='production'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ActionExecutionResult',
+      body=[
+        AnnAssign(
+          target=Name(id='execution_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='action_type', ctx=Store()),
+          annotation=Name(id='ActionType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='status', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='result_data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='error_details', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        Expr(
+          value=Constant(value='Schema for action execution results.'))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

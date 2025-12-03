@@ -1,0 +1,1 @@
+{"import":2,"pytest":1,"from":1,"workflow.runner":1,"run_workflow":1,"@pytest.mark.parametrize(\"case\",":1,"[\"fast\",\"e2e\",\"rag-heavy\",\"qa-heavy\"])":1,"def":1,"test_latency_smoke(benchmark,":1,"case):":1,"out":2,"=":1,"benchmark(lambda:":1,"run_workflow({\"resume\":":1,"case,":1,"\"jd\":\"perf\"}))":1,"assert":1,"is":1,"not":1,"none":1}

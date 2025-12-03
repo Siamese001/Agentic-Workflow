@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\orchestrator.py",
+    "rel_path": "orchestrator.py",
+    "root_name": "resume_engine/Microservices Model",
+    "file_hash": "650a4f4aa5209aa099de6b583f4248fb0e74cb1f984b99db4f8a2dae69a197fa",
+    "file_size": 31431,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728232.212044
+}

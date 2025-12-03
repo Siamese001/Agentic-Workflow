@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L5_safety_policy\\guardrails\\test_guardrails.py",
+    "rel_path": "test_guardrails.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "007716f0815427d43c87cfe30befbe8ad1f6d1871e72316b06bf306c8baa9d0f",
+    "file_size": 450,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.188256
+}

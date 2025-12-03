@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 129,
+  "generated_at": 1764728330.5064595,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k7_validator_agent.py"
+}

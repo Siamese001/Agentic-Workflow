@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\manage-config-costs\\general\\update-memory\\update_config_usage.py",
+    "rel_path": "update_config_usage.py",
+    "root_name": "config",
+    "file_hash": "8f6f6de3c8177adb195df97d8ab19e7c373db36551a6f9e4ceb1c1580c67e23b",
+    "file_size": 11284,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.4093766
+}

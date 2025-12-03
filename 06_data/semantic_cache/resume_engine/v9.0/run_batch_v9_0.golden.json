@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: run_batch_v9_0.py\n# Overwrites: run_batch_v9_0.py\n# Version: 9.0 (Agentic Loops)\n#\n# v9.0 (Agentic Loops) CHANGES:\n# - Imports from v9_0 modules.\n\nimport os\nimport csv\nimport json\nimport logging\nimport shutil\nimport concurrent.futures\nimport uuid\nfrom datetime import datetime\nfrom typing import Dict, Any\n\n# Imports from its *own* versioned files (v9.0)\nfrom main_v9_0 import setup_logging, load_job_input\nfrom core_v9_0 import CONFIG, CircuitBreakerOpenError\n\n# v9.0: Import the graph builder and checkpointer\nfrom agent_swarm_v9_0 import get_graph_app\nfrom langgraph.checkpoint.redis import RedisSaver\n\n# v9.0: Import the meta-learner\ntry:\n    from run_learning_v9_0 import run_meta_learning\n    META_LEARNER_AVAILABLE = True\nexcept ImportError:\n    META_LEARNER_AVAILABLE = False\n\n\nlogger = logging.getLogger(\"batch_runner_v9_0\")\ntry:\n    setup_logging(debug_mode=False)\nexcept Exception as e:\n    print(f\"Warning: setup_logging failed: {e}\")\n    logging.basicConfig(level=logging.INFO)\n\n",
+  "full_hash": "ac592c7587136d67457f4d5376bef8d70263c19af8af9f572a1871caec6e239d",
+  "generated_at": 1764728328.1712523,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\run_batch_v9_0.py"
+}

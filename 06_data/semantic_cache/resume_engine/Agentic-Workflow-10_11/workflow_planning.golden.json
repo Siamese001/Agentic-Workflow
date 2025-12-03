@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL1 planning layer for resume workflow orchestration and optimization.\n\nAnalyzes job requirements to create comprehensive improvement plans\nfor optimal resume content and job alignment.\n\"\"\"\n\n# FILE: l1/workflow_planning.py\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core.models.models import (\n    ComplexityLevel,\n    DraftingMode,\n    ReasoningMode,\n    JobInput,\n    ResumeInput,\n    WorkflowConfig,\n    ExecutionProfile,\n    RoutingHint,\n    StrategyStep,\n    StrategyPlan,\n    RAGQueryHint,\n    RAGPlan,\n    DraftSectionPlan,\n    DraftingPlan,\n    QACheck,\n    QAPlan,\n    SafetyCheck,\n    SafetyPlan,\n    WorkflowPlanBundle,\n    PromptMeta,\n    ProfileInferenceResult,\n    SeniorityClassifierResult,\n    SkillClusterResult,\n    DomainClassifierResult,\n)\nfrom config.config_profiles_v10_10 import ExecutionProfileSpec, get_profile\nfrom config.meta_profile import MetaProfileSnapshot\n\n\n\"\"\"\nExtracts and normalizes text for resume processing.\n\nEnsur",
+  "full_hash": "aeb28faf53b82c4555a77ba6bf380c887609d68121a8cd948f4a1f60dfb26c14",
+  "generated_at": 1764728224.9011903,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\workflow_planning.py"
+}

@@ -1,0 +1,172 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema weight adjustment and optimization.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='WeightAdjustmentMethod',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Weight adjustment methods.')),
+        Assign(
+          targets=[
+            Name(id='GRADIENT_BASED', ctx=Store())],
+          value=Constant(value='gradient_based')),
+        Assign(
+          targets=[
+            Name(id='GENETIC_OPTIMIZATION', ctx=Store())],
+          value=Constant(value='genetic_optimization')),
+        Assign(
+          targets=[
+            Name(id='BAYESIAN_OPTIMIZATION', ctx=Store())],
+          value=Constant(value='bayesian_optimization')),
+        Assign(
+          targets=[
+            Name(id='REINFORCEMENT_LEARNING', ctx=Store())],
+          value=Constant(value='reinforcement_learning'))]),
+    ClassDef(
+      name='AdjustmentFrequency',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Weight adjustment frequency.')),
+        Assign(
+          targets=[
+            Name(id='STATIC', ctx=Store())],
+          value=Constant(value='static')),
+        Assign(
+          targets=[
+            Name(id='DYNAMIC_PER_BATCH', ctx=Store())],
+          value=Constant(value='dynamic_per_batch')),
+        Assign(
+          targets=[
+            Name(id='ADAPTIVE_PERFORMANCE', ctx=Store())],
+          value=Constant(value='adaptive_performance')),
+        Assign(
+          targets=[
+            Name(id='USER_FEEDBACK_DRIVEN', ctx=Store())],
+          value=Constant(value='user_feedback_driven'))]),
+    ClassDef(
+      name='WeightAdjustmentConfig',
+      body=[
+        AnnAssign(
+          target=Name(id='method', ctx=Store()),
+          annotation=Name(id='WeightAdjustmentMethod', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='frequency', ctx=Store()),
+          annotation=Name(id='AdjustmentFrequency', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='convergence_criteria', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='learning_rate', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.01),
+          simple=1),
+        AnnAssign(
+          target=Name(id='regularization_strength', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.1),
+          simple=1),
+        Expr(
+          value=Constant(value='Schema for weight adjustment configuration.'))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='WeightAdjustment',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual weight adjustment.')),
+        AnnAssign(
+          target=Name(id='adjustment_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='original_weights', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='adjusted_weights', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='adjustment_reason', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='performance_impact', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='WeightAdjustmentHistory',
+      body=[
+        Expr(
+          value=Constant(value='Schema for weight adjustment history tracking.')),
+        AnnAssign(
+          target=Name(id='history_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='adjustments', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='WeightAdjustment', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='configuration', ctx=Store()),
+          annotation=Name(id='WeightAdjustmentConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='performance_trend', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

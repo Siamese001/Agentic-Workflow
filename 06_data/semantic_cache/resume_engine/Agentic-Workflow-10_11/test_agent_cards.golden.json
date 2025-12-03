@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nimport pytest\n\nfrom l2.agents import (\n    StrategyLLMAgent,\n    DraftingGuild,\n    SemanticQAAgent,\n    ConstitutionalSafetyAgent,\n    HYDEQueryAgent,\n    QACouncilAgent,\n)\nfrom core.models.models import AgentCard, AgentRole  # normalized import\nfrom core.routing import RoutingPolicy\nfrom tools.runtime_utils import SandboxConfig\n\n\ndef _make_agent(agent_cls, card: AgentCard | None = None):\n    routing = RoutingPolicy()\n    sandbox = SandboxConfig()\n    if card is not None:\n        return agent_cls(routing_policy=routing, sandbox=sandbox, agent_card=card, meta_profile=None)\n    return agent_cls(routing_policy=routing, sandbox=sandbox, meta_profile=None)\n\n\ndef test_all_major_agents_have_agent_card_with_expected_roles():\n    agents = [\n        (StrategyLLMAgent, AgentRole.PLANNER),\n        (DraftingGuild, AgentRole.EXECUTION),\n        (SemanticQAAgent, AgentRole.QA),\n        (ConstitutionalSafetyAgent, AgentRole.SAFETY),\n        (HYDEQueryAgent, AgentRo",
+  "full_hash": "0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8",
+  "generated_at": 1764728227.7066977,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_agent_cards.py"
+}

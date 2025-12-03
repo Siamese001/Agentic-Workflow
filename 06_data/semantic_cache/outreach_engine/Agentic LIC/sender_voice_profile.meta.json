@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\sender_voice_profile.json",
+    "rel_path": "sender_voice_profile.json",
+    "root_name": "outreach_engine/Agentic LIC",
+    "file_hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
+    "file_size": 1924,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.4790943
+}

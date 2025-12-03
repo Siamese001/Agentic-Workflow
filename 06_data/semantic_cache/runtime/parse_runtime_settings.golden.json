@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - parse_runtime_settings\nImplements L1 Cognitive Planning Layer for parse runtime settings operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ParseRuntimeSettingsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ParseRuntimeSettingsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ParseRuntimeSettingsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: boo",
+  "full_hash": "8bd7668b8358f1971b0de00aacaf06b35d66b5addf2ff882a2d651914873ff55",
+  "generated_at": 1764728347.4337199,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\plan-phase\\get-runtime-info\\general\\understand-request\\parse_runtime_settings.py"
+}

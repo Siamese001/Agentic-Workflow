@@ -1,0 +1,6 @@
+{
+  "golden_content": "import ast\nimport pathlib\n\nTARGET_FILES = [\n    \"rag_execution_stack.py\",\n    \"bullet_execution_stack.py\",\n    \"drafting_execution_stack.py\",\n    \"rag_orchestration.py\",\n    \"draft_orchestration.py\",\n]\n\nKEYS = [\"safety_report\", \"policy_decision\", \"constitutional_review\"]\n\ndef test_uniform_keys_present():\n    for fname in TARGET_FILES:\n        code = pathlib.Path(fname).read_text()\n        for key in KEYS:\n            assert key in code, f\"{key} missing in {fname}\"\n",
+  "full_hash": "f9b57c9aae1142ff5fa8df8b2676e81cf4f91e714ddd070a62c14c4f674d9b7f",
+  "generated_at": 1764728231.5998633,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state\\test_safety_patch_uniformity.py"
+}

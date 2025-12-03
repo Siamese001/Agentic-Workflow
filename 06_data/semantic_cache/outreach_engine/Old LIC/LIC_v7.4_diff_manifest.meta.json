@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_v7.4_diff_manifest.json",
+    "rel_path": "LIC_v7.4_diff_manifest.json",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "6d87f9f2e65d584f9cdf422c6eb0437196496edfb359a1c6c1a7181e9bc83cf2",
+    "file_size": 2022,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728339.6807678
+}

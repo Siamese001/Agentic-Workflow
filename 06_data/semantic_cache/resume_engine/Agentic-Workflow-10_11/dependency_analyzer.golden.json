@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nAnalyzes code dependencies to maintain clean resume generation architecture.\n\nEnsures the resume generation system remains modular and maintainable,\nwhich improves code quality and enables easier enhancements to resume output.\n\"\"\"\n\nimport ast\nimport os\nfrom pathlib import Path\nfrom typing import Dict, List, Set, Tuple, Optional\nfrom collections import defaultdict, deque\nimport json\n\n\nclass ImportVisitor(ast.NodeVisitor):\n    \"\"\"Extracts import statements from Python files using AST traversal.\n\n    Helps maintain clean module dependencies which ensures resume generation\n    code remains organized and easier to enhance over time.\n    \"\"\"\n    \n    def __init__(self, filepath: Path, root_dir: Path):\n        self.filepath = filepath\n        self.root_dir = root_dir\n        self.imports = set()\n        self.relative_imports = set()\n        \n    def visit_Import(self, node):\n        \"\"\"Processes direct import statements for dependency tracking.\n\n        Ensures resu",
+  "full_hash": "7d9dc1c5dd64134b5be061e40cdfb98ffe6c697b700a2186957004800ce54590",
+  "generated_at": 1764728227.8289583,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\dependency_analyzer.py"
+}

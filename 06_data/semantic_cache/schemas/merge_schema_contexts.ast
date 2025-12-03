@@ -1,0 +1,183 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema context merging and integration.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='MergeStrategy',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Context merging strategies.')),
+        Assign(
+          targets=[
+            Name(id='UNION', ctx=Store())],
+          value=Constant(value='union')),
+        Assign(
+          targets=[
+            Name(id='INTERSECTION', ctx=Store())],
+          value=Constant(value='intersection')),
+        Assign(
+          targets=[
+            Name(id='PRIORITY_BASED', ctx=Store())],
+          value=Constant(value='priority_based')),
+        Assign(
+          targets=[
+            Name(id='CUSTOM_LOGIC', ctx=Store())],
+          value=Constant(value='custom_logic'))]),
+    ClassDef(
+      name='ConflictResolution',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Conflict resolution methods.')),
+        Assign(
+          targets=[
+            Name(id='FIRST_WINS', ctx=Store())],
+          value=Constant(value='first_wins')),
+        Assign(
+          targets=[
+            Name(id='LAST_WINS', ctx=Store())],
+          value=Constant(value='last_wins')),
+        Assign(
+          targets=[
+            Name(id='MERGE_ALL', ctx=Store())],
+          value=Constant(value='merge_all')),
+        Assign(
+          targets=[
+            Name(id='ESCALATE', ctx=Store())],
+          value=Constant(value='escalate'))]),
+    ClassDef(
+      name='ContextMergeConfig',
+      body=[
+        Expr(
+          value=Constant(value='Schema for context merge configuration.')),
+        AnnAssign(
+          target=Name(id='merge_strategy', ctx=Store()),
+          annotation=Name(id='MergeStrategy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='conflict_resolution', ctx=Store()),
+          annotation=Name(id='ConflictResolution', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='priority_order', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='preserve_sources', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MergeConflict',
+      body=[
+        Expr(
+          value=Constant(value='Schema for merge conflict details.')),
+        AnnAssign(
+          target=Name(id='conflict_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='field_path', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source_values', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resolution_method', ctx=Store()),
+          annotation=Name(id='ConflictResolution', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resolved_value', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MergedContext',
+      body=[
+        Expr(
+          value=Constant(value='Schema for merged context result.')),
+        AnnAssign(
+          target=Name(id='context_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source_contexts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='merged_data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='conflicts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='MergeConflict', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='merge_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

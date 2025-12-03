@@ -1,0 +1,31 @@
+Module(
+  body=[
+    Expr(
+      value=BinOp(
+        left=Name(id='google', ctx=Load()),
+        op=Sub(),
+        right=Name(id='generativeai', ctx=Load()))),
+    Expr(
+      value=Name(id='anthropic', ctx=Load())),
+    Expr(
+      value=Name(id='openai', ctx=Load())),
+    Expr(
+      value=BinOp(
+        left=Name(id='scikit', ctx=Load()),
+        op=Sub(),
+        right=Name(id='learn', ctx=Load()))),
+    Expr(
+      value=Name(id='numpy', ctx=Load())),
+    Expr(
+      value=Name(id='pandas', ctx=Load())),
+    Expr(
+      value=Name(id='langgraph', ctx=Load())),
+    Expr(
+      value=BinOp(
+        left=Name(id='langchain', ctx=Load()),
+        op=Sub(),
+        right=Name(id='redis', ctx=Load()))),
+    Expr(
+      value=Name(id='langsmith', ctx=Load())),
+    Expr(
+      value=Name(id='redis', ctx=Load()))])

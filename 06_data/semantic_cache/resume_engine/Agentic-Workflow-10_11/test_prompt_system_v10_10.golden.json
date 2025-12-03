@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTest Prompt System v10.10\n\nTests prompt registry, ACL governance, and prompt validation\nfunctionality for the v10.10 prompt system.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock, patch\n\n# Import actual prompt system components\ntry:\n    from l1.prompt_system_v10_10 import (\n        PromptActorRole,\n        PromptACL,\n        PromptDiff,\n        register_prompt,\n        get_prompt,\n        get_prompt_acl,\n        validate_prompt_definition,\n    )\n    from core.models.models import PromptDefinition, PromptVersion\nexcept ImportError:\n    pytest.skip(\"Prompt system v10.10 not available\", allow_module_level=True)\n\n# Mark as prompt tests\npytestmark = [pytest.mark.prompts, pytest.mark.l1, pytest.mark.planning]\n\n\nclass TestPromptSystemV10_10:\n    \"\"\"Test prompt system v10.10 functionality.\"\"\"\n    \n    def test_prompt_actor_roles(self):\n        \"\"\"Test prompt actor role enumeration.\"\"\"\n        assert PromptActorRole.ENGINE == \"engine\"\n        assert PromptActorRole.ADMIN == \"admin\"\n     ",
+  "full_hash": "6fcd38b437a8e5f607acdf90641a0485ef06e5032a36838bbd8bd689d987d45f",
+  "generated_at": 1764728226.886154,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_prompt_system_v10_10.py"
+}

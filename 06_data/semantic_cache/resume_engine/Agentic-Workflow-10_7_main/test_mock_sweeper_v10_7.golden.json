@@ -1,0 +1,6 @@
+{
+  "golden_content": "import subprocess, pytest\n\n@pytest.mark.parametrize(\"needle\", [\"TODO\",\"MOCK\",\"FIXME\"])\ndef test_no_dev_markers_in_repo(needle):\n    r = subprocess.run([\"grep\",\"-R\",needle,\"agentic_workflow/\"], capture_output=True, text=True)\n    assert needle not in r.stdout\n\n@pytest.mark.parametrize(\"pattern\", [\"return input\", \"pass # placeholder\"])\ndef test_no_identity_or_placeholder_functions(pattern):\n    r = subprocess.run([\"grep\",\"-R\",pattern,\"agentic_workflow/\"], capture_output=True, text=True)\n    assert pattern not in r.stdout\n",
+  "full_hash": "7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc",
+  "generated_at": 1764728230.672234,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\mock_detection\\test_mock_sweeper_v10_7.py"
+}

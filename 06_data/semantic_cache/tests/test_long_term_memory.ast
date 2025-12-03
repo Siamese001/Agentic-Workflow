@@ -1,0 +1,1711 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nLong Term Memory Implementation\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ClassDef(
+      name='MemorySnapshot',
+      body=[
+        Expr(
+          value=Constant(value='A snapshot of memory state')),
+        AnnAssign(
+          target=Name(id='snapshot_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='__post_init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='timestamp',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='timestamp',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())))])])],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='LongTermMemory',
+      body=[
+        Expr(
+          value=Constant(value='Long term memory implementation with persistence and snapshots')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='storage_path',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='storage_path',
+                  ctx=Store())],
+              value=Name(id='storage_path', ctx=Load())),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='memory',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='snapshots',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='MemorySnapshot', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='created_at',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='last_updated',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='metadata',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='version'),
+                  Constant(value='compression'),
+                  Constant(value='encryption')],
+                values=[
+                  Constant(value='1.0'),
+                  Constant(value=False),
+                  Constant(value=False)]),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='stats',
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='total_sets'),
+                  Constant(value='total_gets'),
+                  Constant(value='total_deletes'),
+                  Constant(value='snapshots_created'),
+                  Constant(value='snapshots_restored')],
+                values=[
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='set',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='category',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='default')]),
+          body=[
+            Expr(
+              value=Constant(value='Store a value in long term memory')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='memory_entry', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='value'),
+                      Constant(value='category'),
+                      Constant(value='created_at'),
+                      Constant(value='updated_at'),
+                      Constant(value='access_count')],
+                    values=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='category', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load())),
+                          attr='isoformat',
+                          ctx=Load())),
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load())),
+                          attr='isoformat',
+                          ctx=Load())),
+                      Constant(value=0)])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='memory',
+                        ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='memory_entry', ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='last_updated',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()))),
+                AugAssign(
+                  target=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='stats',
+                      ctx=Load()),
+                    slice=Constant(value='total_sets'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1)),
+                If(
+                  test=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='storage_path',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_save_to_disk',
+                          ctx=Load())))]),
+                Return(
+                  value=Constant(value=True))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Constant(value=False))])])],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='get',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='default',
+                annotation=Name(id='Any', ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Retrieve a value from long term memory')),
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='stats',
+                      ctx=Load()),
+                    slice=Constant(value='total_gets'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1)),
+                Return(
+                  value=Name(id='default', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='memory_entry', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='memory',
+                  ctx=Load()),
+                slice=Name(id='key', ctx=Load()),
+                ctx=Load())),
+            AugAssign(
+              target=Subscript(
+                value=Name(id='memory_entry', ctx=Load()),
+                slice=Constant(value='access_count'),
+                ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='memory_entry', ctx=Load()),
+                  slice=Constant(value='updated_at'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())),
+                  attr='isoformat',
+                  ctx=Load()))),
+            AugAssign(
+              target=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='stats',
+                  ctx=Load()),
+                slice=Constant(value='total_gets'),
+                ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            Return(
+              value=Subscript(
+                value=Name(id='memory_entry', ctx=Load()),
+                slice=Constant(value='value'),
+                ctx=Load()))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='delete',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Delete a value from long term memory')),
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load())]),
+              body=[
+                Delete(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='memory',
+                        ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Del())]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='last_updated',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()))),
+                AugAssign(
+                  target=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='stats',
+                      ctx=Load()),
+                    slice=Constant(value='total_deletes'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1)),
+                If(
+                  test=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='storage_path',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_save_to_disk',
+                          ctx=Load())))]),
+                Return(
+                  value=Constant(value=True))]),
+            Return(
+              value=Constant(value=False))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='exists',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Check if a key exists in memory')),
+            Return(
+              value=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load())]))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='update',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Update an existing value in memory')),
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='memory_entry', ctx=Store())],
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='memory',
+                      ctx=Load()),
+                    slice=Name(id='key', ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='memory_entry', ctx=Load()),
+                      slice=Constant(value='value'),
+                      ctx=Store())],
+                  value=Name(id='value', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='memory_entry', ctx=Load()),
+                      slice=Constant(value='updated_at'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='last_updated',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()))),
+                If(
+                  test=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='storage_path',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_save_to_disk',
+                          ctx=Load())))]),
+                Return(
+                  value=Constant(value=True))]),
+            Return(
+              value=Constant(value=False))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='get_by_category',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='category',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get all memory items by category')),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='entry', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='entry', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='category')]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='category', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='entry', ctx=Load()),
+                        slice=Constant(value='value'),
+                        ctx=Load()))])]),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_categories',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get all categories in memory')),
+            Assign(
+              targets=[
+                Name(id='categories', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            For(
+              target=Name(id='entry', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='categories', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='entry', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='category'),
+                          Constant(value='default')])]))]),
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='categories', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='search',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='search_keys',
+                annotation=Name(id='bool', ctx=Load())),
+              arg(
+                arg='search_values',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=True),
+              Constant(value=True)]),
+          body=[
+            Expr(
+              value=Constant(value='Search memory for items matching query')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='query_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='query', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='entry', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='match', ctx=Store())],
+                  value=Constant(value=False)),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='search_keys', ctx=Load()),
+                      Compare(
+                        left=Name(id='query_lower', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='key', ctx=Load()),
+                              attr='lower',
+                              ctx=Load()))])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='match', ctx=Store())],
+                      value=Constant(value=True))]),
+                If(
+                  test=Name(id='search_values', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='value_str', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Subscript(
+                                value=Name(id='entry', ctx=Load()),
+                                slice=Constant(value='value'),
+                                ctx=Load())]),
+                          attr='lower',
+                          ctx=Load()))),
+                    If(
+                      test=Compare(
+                        left=Name(id='query_lower', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='value_str', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='match', ctx=Store())],
+                          value=Constant(value=True))])]),
+                If(
+                  test=Name(id='match', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='key', ctx=Load())]))])]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='create_snapshot',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='description',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Expr(
+              value=Constant(value='Create a snapshot of current memory state')),
+            Assign(
+              targets=[
+                Name(id='snapshot_id', ctx=Store())],
+              value=Subscript(
+                value=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='hashlib', ctx=Load()),
+                        attr='md5',
+                        ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=JoinedStr(
+                              values=[
+                                FormattedValue(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Name(id='datetime', ctx=Load()),
+                                          attr='now',
+                                          ctx=Load())),
+                                      attr='isoformat',
+                                      ctx=Load())),
+                                  conversion=-1),
+                                FormattedValue(
+                                  value=Call(
+                                    func=Name(id='len', ctx=Load()),
+                                    args=[
+                                      Attribute(
+                                        value=Name(id='self', ctx=Load()),
+                                        attr='memory',
+                                        ctx=Load())]),
+                                  conversion=-1)]),
+                            attr='encode',
+                            ctx=Load()))]),
+                    attr='hexdigest',
+                    ctx=Load())),
+                slice=Slice(
+                  upper=Constant(value=8)),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='snapshot', ctx=Store())],
+              value=Call(
+                func=Name(id='MemorySnapshot', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='snapshot_id',
+                    value=Name(id='snapshot_id', ctx=Load())),
+                  keyword(
+                    arg='data',
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='memory',
+                          ctx=Load()),
+                        attr='copy',
+                        ctx=Load()))),
+                  keyword(
+                    arg='timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='description',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='description', ctx=Load()),
+                        JoinedStr(
+                          values=[
+                            Constant(value='Snapshot '),
+                            FormattedValue(
+                              value=Name(id='snapshot_id', ctx=Load()),
+                              conversion=-1)])]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='snapshots',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='snapshot', ctx=Load())])),
+            AugAssign(
+              target=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='stats',
+                  ctx=Load()),
+                slice=Constant(value='snapshots_created'),
+                ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            Return(
+              value=Name(id='snapshot_id', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='restore_snapshot',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='snapshot_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Restore memory from a snapshot')),
+            For(
+              target=Name(id='snapshot', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='snapshots',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='snapshot', ctx=Load()),
+                      attr='snapshot_id',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='snapshot_id', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='memory',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='snapshot', ctx=Load()),
+                            attr='data',
+                            ctx=Load()),
+                          attr='copy',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='last_updated',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load()))),
+                    AugAssign(
+                      target=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='stats',
+                          ctx=Load()),
+                        slice=Constant(value='snapshots_restored'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    If(
+                      test=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='storage_path',
+                        ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_save_to_disk',
+                              ctx=Load())))]),
+                    Return(
+                      value=Constant(value=True))])]),
+            Return(
+              value=Constant(value=False))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='delete_snapshot',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='snapshot_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Delete a snapshot')),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='snapshot', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='snapshots',
+                    ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='snapshot', ctx=Load()),
+                      attr='snapshot_id',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='snapshot_id', ctx=Load())]),
+                  body=[
+                    Delete(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='snapshots',
+                            ctx=Load()),
+                          slice=Name(id='i', ctx=Load()),
+                          ctx=Del())]),
+                    Return(
+                      value=Constant(value=True))])]),
+            Return(
+              value=Constant(value=False))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='get_snapshots',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get all snapshots')),
+            Return(
+              value=ListComp(
+                elt=Dict(
+                  keys=[
+                    Constant(value='snapshot_id'),
+                    Constant(value='description'),
+                    Constant(value='timestamp'),
+                    Constant(value='data_size')],
+                  values=[
+                    Attribute(
+                      value=Name(id='s', ctx=Load()),
+                      attr='snapshot_id',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='s', ctx=Load()),
+                      attr='description',
+                      ctx=Load()),
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='timestamp',
+                          ctx=Load()),
+                        attr='isoformat',
+                        ctx=Load())),
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='data',
+                          ctx=Load())])]),
+                generators=[
+                  comprehension(
+                    target=Name(id='s', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='snapshots',
+                      ctx=Load()),
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='clear',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Clear all memory')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load()),
+                  attr='clear',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='last_updated',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()))),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='storage_path',
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_save_to_disk',
+                      ctx=Load())))])]),
+        FunctionDef(
+          name='_save_to_disk',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Save memory to disk (mock implementation)')),
+            Pass()]),
+        FunctionDef(
+          name='_load_from_disk',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Load memory from disk (mock implementation)')),
+            Pass()]),
+        FunctionDef(
+          name='get_stats',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get memory statistics')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='total_items'),
+                  Constant(value='categories'),
+                  Constant(value='snapshots'),
+                  Constant(value='created_at'),
+                  Constant(value='last_updated'),
+                  Constant(value='stats'),
+                  Constant(value='metadata')],
+                values=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='memory',
+                        ctx=Load())]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='get_categories',
+                          ctx=Load()))]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='snapshots',
+                        ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='created_at',
+                        ctx=Load()),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='last_updated',
+                        ctx=Load()),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='stats',
+                        ctx=Load()),
+                      attr='copy',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      attr='copy',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_memory_info',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get detailed memory information')),
+            Assign(
+              targets=[
+                Name(id='items', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='entry', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='items', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='key'),
+                          Constant(value='category'),
+                          Constant(value='created_at'),
+                          Constant(value='updated_at'),
+                          Constant(value='access_count')],
+                        values=[
+                          Name(id='key', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='entry', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='category')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='entry', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='created_at')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='entry', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='updated_at')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='entry', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='access_count'),
+                              Constant(value=0)])])]))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='items'),
+                  Constant(value='snapshots'),
+                  Constant(value='stats')],
+                values=[
+                  Name(id='items', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='get_snapshots',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='get_stats',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='export_data',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Export all memory data')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='memory'),
+                  Constant(value='snapshots'),
+                  Constant(value='metadata')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='memory',
+                        ctx=Load()),
+                      attr='copy',
+                      ctx=Load())),
+                  ListComp(
+                    elt=Dict(
+                      keys=[
+                        Constant(value='snapshot_id'),
+                        Constant(value='data'),
+                        Constant(value='timestamp'),
+                        Constant(value='description')],
+                      values=[
+                        Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='snapshot_id',
+                          ctx=Load()),
+                        Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='data',
+                          ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Attribute(
+                              value=Name(id='s', ctx=Load()),
+                              attr='timestamp',
+                              ctx=Load()),
+                            attr='isoformat',
+                            ctx=Load())),
+                        Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='description',
+                          ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='snapshots',
+                          ctx=Load()),
+                        is_async=0)]),
+                  Dict(
+                    keys=[
+                      Constant(value='created_at'),
+                      Constant(value='last_updated'),
+                      Constant(value='stats'),
+                      Constant(value='config')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='created_at',
+                            ctx=Load()),
+                          attr='isoformat',
+                          ctx=Load())),
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='last_updated',
+                            ctx=Load()),
+                          attr='isoformat',
+                          ctx=Load())),
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='stats',
+                            ctx=Load()),
+                          attr='copy',
+                          ctx=Load())),
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='metadata',
+                            ctx=Load()),
+                          attr='copy',
+                          ctx=Load()))])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='import_data',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='data',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Import memory data')),
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Constant(value='memory'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='data', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='memory',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='data', ctx=Load()),
+                            slice=Constant(value='memory'),
+                            ctx=Load()),
+                          attr='copy',
+                          ctx=Load())))]),
+                If(
+                  test=Compare(
+                    left=Constant(value='snapshots'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='data', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='snapshots',
+                          ctx=Store())],
+                      value=List(ctx=Load())),
+                    For(
+                      target=Name(id='snapshot_data', ctx=Store()),
+                      iter=Subscript(
+                        value=Name(id='data', ctx=Load()),
+                        slice=Constant(value='snapshots'),
+                        ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='snapshot', ctx=Store())],
+                          value=Call(
+                            func=Name(id='MemorySnapshot', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='snapshot_id',
+                                value=Subscript(
+                                  value=Name(id='snapshot_data', ctx=Load()),
+                                  slice=Constant(value='snapshot_id'),
+                                  ctx=Load())),
+                              keyword(
+                                arg='data',
+                                value=Subscript(
+                                  value=Name(id='snapshot_data', ctx=Load()),
+                                  slice=Constant(value='data'),
+                                  ctx=Load())),
+                              keyword(
+                                arg='timestamp',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='datetime', ctx=Load()),
+                                    attr='fromisoformat',
+                                    ctx=Load()),
+                                  args=[
+                                    Subscript(
+                                      value=Name(id='snapshot_data', ctx=Load()),
+                                      slice=Constant(value='timestamp'),
+                                      ctx=Load())])),
+                              keyword(
+                                arg='description',
+                                value=Subscript(
+                                  value=Name(id='snapshot_data', ctx=Load()),
+                                  slice=Constant(value='description'),
+                                  ctx=Load()))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='snapshots',
+                                ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='snapshot', ctx=Load())]))])]),
+                If(
+                  test=Compare(
+                    left=Constant(value='metadata'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='data', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='metadata', ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='data', ctx=Load()),
+                        slice=Constant(value='metadata'),
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='created_at',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='fromisoformat',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='metadata', ctx=Load()),
+                            slice=Constant(value='created_at'),
+                            ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='last_updated',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='fromisoformat',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='metadata', ctx=Load()),
+                            slice=Constant(value='last_updated'),
+                            ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='stats',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='metadata', ctx=Load()),
+                            slice=Constant(value='stats'),
+                            ctx=Load()),
+                          attr='copy',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='metadata',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='metadata', ctx=Load()),
+                            slice=Constant(value='config'),
+                            ctx=Load()),
+                          attr='copy',
+                          ctx=Load())))]),
+                Return(
+                  value=Constant(value=True))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Constant(value=False))])])],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='__len__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='memory',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='__contains__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='exists',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())]))]),
+        FunctionDef(
+          name='__str__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='LongTermMemory(items='),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='memory',
+                          ctx=Load())]),
+                    conversion=-1),
+                  Constant(value=', snapshots='),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='snapshots',
+                          ctx=Load())]),
+                    conversion=-1),
+                  Constant(value=')')]))]),
+        FunctionDef(
+          name='__repr__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='__str__',
+                  ctx=Load())))])])])

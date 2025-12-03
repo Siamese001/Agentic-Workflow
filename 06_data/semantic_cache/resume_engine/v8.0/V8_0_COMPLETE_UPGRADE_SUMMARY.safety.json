@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 259,
+  "generated_at": 1764728328.0111845,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v8.0\\Testing\\V8_0_COMPLETE_UPGRADE_SUMMARY.md"
+}

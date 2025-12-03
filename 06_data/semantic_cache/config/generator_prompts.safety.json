@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 21,
+  "generated_at": 1764728348.5836594,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\generator_prompts.yaml"
+}

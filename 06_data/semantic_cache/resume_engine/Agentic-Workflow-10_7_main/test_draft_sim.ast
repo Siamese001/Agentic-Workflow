@@ -1,0 +1,160 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Tests for draft simulator.')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='simulations.engines.draft_sim',
+      names=[
+        alias(name='DraftSimulator')],
+      level=0),
+    ImportFrom(
+      module='simulations.models',
+      names=[
+        alias(name='DraftSimRequest')],
+      level=0),
+    AsyncFunctionDef(
+      name='test_draft_simulator_returns_result',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='simulator', ctx=Store())],
+          value=Call(
+            func=Name(id='DraftSimulator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='request', ctx=Store())],
+          value=Call(
+            func=Name(id='DraftSimRequest', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='simulation_id',
+                value=Constant(value='sim-draft')),
+              keyword(arg='payload', value=Dict()),
+              keyword(
+                arg='draft_sections',
+                value=Dict(
+                  keys=[
+                    Constant(value='intro'),
+                    Constant(value='body')],
+                  values=[
+                    Constant(value='text'),
+                    Constant(value='details')]))])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='simulator', ctx=Load()),
+                attr='run',
+                ctx=Load()),
+              args=[
+                Name(id='request', ctx=Load())]))),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='success',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0.0),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Subscript(
+                value=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='metrics',
+                  ctx=Load()),
+                slice=Constant(value='entropy'),
+                ctx=Load()),
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0.0),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Subscript(
+                value=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='metrics',
+                  ctx=Load()),
+                slice=Constant(value='cohesion'),
+                ctx=Load()),
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0.0),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Subscript(
+                value=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='metrics',
+                  ctx=Load()),
+                slice=Constant(value='rhythm_score'),
+                ctx=Load()),
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='section_preview'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='result', ctx=Load()),
+                attr='details',
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_draft_request_validation',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='request', ctx=Store())],
+          value=Call(
+            func=Name(id='DraftSimRequest', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='simulation_id',
+                value=Constant(value='sim-draft-validate')),
+              keyword(arg='payload', value=Dict()),
+              keyword(
+                arg='draft_sections',
+                value=Dict(
+                  keys=[
+                    Constant(value='summary')],
+                  values=[
+                    Constant(value='value')]))])),
+        Assert(
+          test=Compare(
+            left=Constant(value='summary'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='request', ctx=Load()),
+                attr='draft_sections',
+                ctx=Load())]))])])

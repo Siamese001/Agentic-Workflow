@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nimport json\nfrom pathlib import Path\nfrom typing import Any, Dict, List\n\nfrom eval.golden_state.models import GoldenStateTestCase, GoldenCase\n\n\n_BASE_DIR = Path(__file__).resolve().parent\n_BASELINES_DIR = _BASE_DIR / \"baselines\"\n\n\ndef _load_json(name: str) -> Any:\n    path = _BASELINES_DIR / name\n    if not path.exists():\n        return None\n    with path.open(\"r\", encoding=\"utf-8\") as f:\n        return json.load(f)\n\n\ndef load_golden_inputs() -> List[GoldenStateTestCase]:\n    \"\"\"Return a small, deterministic set of golden test cases.\n\n    For now this is hard-coded but can be extended to read from files.\n    \"\"\"\n\n    return [\n        GoldenStateTestCase(\n            id=\"gs_basic_1\",\n            input_text=\"Write a concise professional summary for a senior AI engineer.\",\n            expected_behavior=\"Summary should be professional, concise, and non-redundant.\",\n            metadata={\"category\": \"summary\", \"severity\": \"medium\"},\n        ),\n        Gol",
+  "full_hash": "aeeeab172d9ee347c0973d0b9e452eeadbbbff20d54b0d58045ee260e8d597cb",
+  "generated_at": 1764728223.9664052,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\datasets.py"
+}

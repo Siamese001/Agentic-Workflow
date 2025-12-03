@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL4 temporal knowledge graph for resume job alignment workflows.\n\nStores time-stamped career facts for accurate resume timeline enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional\nfrom datetime import datetime, UTC\nimport hashlib\nimport logging\n\ntry:\n    from graph_store_neo4j import Neo4jGraphStore as _Neo4jGraphStore\n    _NEO4J_AVAILABLE = True\nexcept ImportError:\n    _Neo4jGraphStore = object  # type: ignore\n    _NEO4J_AVAILABLE = False\n\nlogger = logging.getLogger(__name__)\n\n\n@dataclass\nclass TemporalFact:\n    \"\"\"\n    Represents time-stamped career fact for resume job alignment.\n\n    Improves resume accuracy by storing precise career events with dates.\n    \"\"\"\n    \n    id: str\n    subject: str  # e.g., \"user_123\", \"job_456\"\n    predicate: str  # e.g., \"has_skill\", \"worked_at\", \"applied_to\"\n    object: str  # e.g., \"Python\", \"Google\", \"job_789\"\n    timestamp: datetime\n    confidence: float = 1.",
+  "full_hash": "bf6e484899fc639907039bee2fb44caae708f5835e24fc4cc7c49fb6cd926d0e",
+  "generated_at": 1764728225.3041756,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\temporal_kg.py"
+}

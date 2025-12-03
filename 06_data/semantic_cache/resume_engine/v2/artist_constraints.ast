@@ -1,0 +1,130 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='provenance_split_targets'),
+          Constant(value='bullet_word_count_ranges'),
+          Constant(value='narrative_config')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='K2_UNIFY_BULLETS'),
+              Constant(value='K3_IBM_BULLETS'),
+              Constant(value='K9_COMPETENCIES')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='Verbatim'),
+                  Constant(value='Customized'),
+                  Constant(value='Synthetic')],
+                values=[
+                  Constant(value=2),
+                  Constant(value=3),
+                  Constant(value=2)]),
+              Dict(
+                keys=[
+                  Constant(value='Verbatim'),
+                  Constant(value='Customized'),
+                  Constant(value='Synthetic')],
+                values=[
+                  Constant(value=2),
+                  Constant(value=2),
+                  Constant(value=2)]),
+              Dict(
+                keys=[
+                  Constant(value='Verbatim'),
+                  Constant(value='Customized'),
+                  Constant(value='Synthetic')],
+                values=[
+                  Constant(value=2),
+                  Constant(value=2),
+                  Constant(value=2)])]),
+          Dict(
+            keys=[
+              Constant(value='K2_UNIFY_BULLETS'),
+              Constant(value='K3_IBM_BULLETS'),
+              Constant(value='K9_COMPETENCIES')],
+            values=[
+              List(
+                elts=[
+                  Constant(value=25),
+                  Constant(value=40)],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value=25),
+                  Constant(value=40)],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value=25),
+                  Constant(value=40)],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='K4_TRADERSENSE_NARRATIVE'),
+              Constant(value='K5_EY_NARRATIVE'),
+              Constant(value='K6_EARLY_CAREER_NARRATIVE')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='min_wc_key'),
+                  Constant(value='max_wc_key'),
+                  Constant(value='rag_signals'),
+                  Constant(value='focus'),
+                  Constant(value='k0_themes')],
+                values=[
+                  Constant(value='TRADERSENSE_NARRATIVE_WORD_COUNT_MIN'),
+                  Constant(value='TRADERSENSE_NARRATIVE_WORD_COUNT_MAX'),
+                  List(
+                    elts=[
+                      Constant(value='high-frequency trading'),
+                      Constant(value='low-latency'),
+                      Constant(value='risk controls'),
+                      Constant(value='backtesting'),
+                      Constant(value='FIX protocol'),
+                      Constant(value='cloud infrastructure')],
+                    ctx=Load()),
+                  Constant(value='Emphasize the early adoption of cloud, low-latency systems, HFT, risk management, and quantitative analysis, linking them to broader technical leadership and system design capabilities relevant today.'),
+                  List(ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='min_wc_key'),
+                  Constant(value='max_wc_key'),
+                  Constant(value='rag_signals'),
+                  Constant(value='focus'),
+                  Constant(value='k0_themes')],
+                values=[
+                  Constant(value='EY_NARRATIVE_WORD_COUNT_MIN'),
+                  Constant(value='EY_NARRATIVE_WORD_COUNT_MAX'),
+                  List(ctx=Load()),
+                  Constant(value='Focus on transferable executive themes and how this consulting experience built foundational capabilities relevant to current target role requirements.'),
+                  List(
+                    elts=[
+                      Constant(value='Leadership'),
+                      Constant(value='Strategic Vision'),
+                      Constant(value='Executive Communication'),
+                      Constant(value='Risk Management'),
+                      Constant(value='Client Advisory')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='min_wc_key'),
+                  Constant(value='max_wc_key'),
+                  Constant(value='rag_signals'),
+                  Constant(value='focus'),
+                  Constant(value='k0_themes')],
+                values=[
+                  Constant(value='EARLY_CAREER_NARRATIVE_WORD_COUNT_MIN'),
+                  Constant(value='EARLY_CAREER_NARRATIVE_WORD_COUNT_MAX'),
+                  List(
+                    elts=[
+                      Constant(value='quantitative analysis'),
+                      Constant(value='modeling'),
+                      Constant(value='data-driven'),
+                      Constant(value='problem-solving'),
+                      Constant(value='analytical foundation')],
+                    ctx=Load()),
+                  Constant(value='Emphasize how early quantitative and actuarial work built analytical foundations that enabled transition to technology career.'),
+                  List(ctx=Load())])])]))])

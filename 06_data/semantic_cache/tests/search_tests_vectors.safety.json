@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728354.092642,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\mem-layer\\retrieve-phase\\get-tests-info\\embedding\\compare-meaning\\search_tests_vectors.py"
+}

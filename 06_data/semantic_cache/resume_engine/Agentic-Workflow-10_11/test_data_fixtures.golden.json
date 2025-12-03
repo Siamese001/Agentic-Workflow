@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nShared Test Data Fixtures\n\nProvides common test data, mock objects, and fixtures used across all test layers.\nEnsures consistency and reduces duplication in test implementations.\n\"\"\"\n\nimport pytest\nfrom typing import Dict, Any, List, Optional, Tuple\nfrom dataclasses import dataclass, field\nfrom datetime import datetime, timedelta\nimport json\nimport uuid\n\n# Mark all tests in this module as shared fixtures\npytestmark = [pytest.mark.shared, pytest.mark.fixture]\n\n\n@dataclass(frozen=True)\nclass ResumeTestData:\n    \"\"\"Standard resume test data fixture.\"\"\"\n    candidate_name: str\n    contact_info: Dict[str, str]\n    experience: List[Dict[str, Any]]\n    education: List[Dict[str, Any]]\n    skills: List[str]\n    certifications: List[str]\n    projects: List[Dict[str, Any]]\n\n\n@dataclass(frozen=True)\nclass JobDescriptionTestData:\n    \"\"\"Standard job description test data fixture.\"\"\"\n    job_id: str\n    title: str\n    company: str\n    location: str\n    requirements: List[str]\n    responsibilitie",
+  "full_hash": "ff70d346330024b11abc84112e28b1a90324e8adfb112e8aa58e8b058c6c38b4",
+  "generated_at": 1764728227.5766976,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\fixtures\\test_data_fixtures.py"
+}

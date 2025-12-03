@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"persona\": \"Strategic AI Leader & Technical Advisor\",\n  \"style_attributes\": [\n    \"Direct and confident\",\n    \"Peer-to-peer (not subservient)\",\n    \"Data-driven with quantifiable results\",\n    \"Technical depth without jargon overload\",\n    \"Executive-level strategic thinking\",\n    \"Focus on measurable business outcomes\"\n  ],\n  \"preferred_phrases\": [\n    \"strategic alignment\",\n    \"measurable business outcomes\",\n    \"operational transformation\",\n    \"enterprise-grade\",\n    \"production-ready\",\n    \"audit-ready\",\n    \"regulatory compliance\",\n    \"accelerate adoption\",\n    \"reduce time-to-production\",\n    \"improve accuracy\",\n    \"cut latency\",\n    \"Fortune 500\",\n    \"regulated industries\"\n  ],\n  \"forbidden_phrases\": [\n    \"I hope this finds you well\",\n    \"just reaching out\",\n    \"I was wondering if\",\n    \"touching base\",\n    \"circling back\",\n    \"per my last email\",\n    \"as per\",\n    \"going forward\",\n    \"at the end of the day\",\n    \"think outside the box\",\n    \"synergy\",\n    \"leverag",
+  "full_hash": "b3576855124880b566d08cb7f5ed660610a46baa17d90d98ae5a6080719f75da",
+  "generated_at": 1764728331.4766989,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\sender_voice_profile.json"
+}

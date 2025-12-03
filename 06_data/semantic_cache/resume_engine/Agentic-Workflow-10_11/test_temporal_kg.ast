@@ -1,0 +1,72 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L4 Temporal Knowledge Graph Tests.')),
+    ClassDef(
+      name='TestTemporalKG',
+      body=[
+        Expr(
+          value=Constant(value='Tests for L4 temporal knowledge graph.')),
+        FunctionDef(
+          name='test_triplet_creation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test triplet creation in KG.')),
+            Assign(
+              targets=[
+                Name(id='triplet', ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Constant(value='entity1'),
+                  Constant(value='relates_to'),
+                  Constant(value='entity2')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='triplet', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='triplet', ctx=Load()),
+                  slice=Constant(value=1),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='relates_to')]))]),
+        FunctionDef(
+          name='test_temporal_validity',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test temporal validity of KG entries.')),
+            Import(
+              names=[
+                alias(name='time')]),
+            Assign(
+              targets=[
+                Name(id='timestamp', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Name(id='timestamp', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))])])])

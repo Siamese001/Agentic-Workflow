@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v4.5.0 - MASTER RESUME JSON SOURCED\n=============================================================\n\nMAJOR CHANGES FROM v4.4.4:\n- Now properly sources ALL content from Master_Resume_V2.14.json\n- Baseline resume ONLY used for word count targets (1,032 words)\n- Correct dates, titles, locations from JSON source\n- Proper company names and formatting\n- All bullets drawn from JSON bullet_pool\n- Certifications and competencies from JSON\n\nVersion: 4.5.0\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional\nfrom enum import Enum\nimport random\n\n__version__ = \"4.5.0\"\n\n# ============================================================================\n# TEMPERATURE MODE ENUM\n# ============================================================================\n\nclass TemperatureMode(Enum):\n    \"\"\"Temperature modes for constraint relaxation and signal adjustment.\"\"\"\n    CONSERVATIVE = \"conservative\"  # Baseline \u00b115%, no extra signal\n    BALANCED ",
+  "full_hash": "2fd0e0ccb7bb71d1ffb6c6cd4fd76e3376204378a3a51a5018571823f536239b",
+  "generated_at": 1764728297.0886505,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_5_0_JSON_sourced.py"
+}

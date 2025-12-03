@@ -1,0 +1,2300 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL4 temporal knowledge graph for resume job alignment workflows.\n\nStores time-stamped career facts for accurate resume timeline enhancement.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Try(
+      body=[
+        ImportFrom(
+          module='graph_store_neo4j',
+          names=[
+            alias(name='Neo4jGraphStore', asname='_Neo4jGraphStore')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='_NEO4J_AVAILABLE', ctx=Store())],
+          value=Constant(value=True))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='_Neo4jGraphStore', ctx=Store())],
+              value=Name(id='object', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='_NEO4J_AVAILABLE', ctx=Store())],
+              value=Constant(value=False))])]),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='TemporalFact',
+      body=[
+        Expr(
+          value=Constant(value='\n    Represents time-stamped career fact for resume job alignment.\n\n    Improves resume accuracy by storing precise career events with dates.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='subject', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='predicate', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='object', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='system'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='to_text',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Converts career fact data to readable text for résumé bullet point presentation.\n\n        Improves résumé readability by presenting structured career data as natural language achievements.\n        ')),
+            Return(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='subject',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='predicate',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='object',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' (at '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='timestamp',
+                          ctx=Load()),
+                        attr='isoformat',
+                        ctx=Load())),
+                    conversion=-1),
+                  Constant(value=')')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Converts career fact data to storage format for resume processing.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='subject'),
+                  Constant(value='predicate'),
+                  Constant(value='object'),
+                  Constant(value='timestamp'),
+                  Constant(value='confidence'),
+                  Constant(value='source'),
+                  Constant(value='metadata')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='subject',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='predicate',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='object',
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='timestamp',
+                        ctx=Load()),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='confidence',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='source',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='TemporalQuery',
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines searches for career facts within time periods for resume alignment.\n\n    Enables precise retrieval of job experiences and skills for resume enhancement.\n    ')),
+        AnnAssign(
+          target=Name(id='subject', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='predicate', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='object', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='start_time', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='datetime', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='end_time', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='datetime', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='min_confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='limit', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=100),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='TemporalKG',
+      body=[
+        Expr(
+          value=Constant(value='\n    Manages time-stamped career data for resume job alignment workflows.\n\n    Improves resume chronology by maintaining precise career progression data.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='pinecone_adapter',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Sets up career timeline storage for resume job alignment processing.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='adapter',
+                  ctx=Store())],
+              value=Name(id='pinecone_adapter', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='namespace_prefix',
+                  ctx=Store())],
+              value=Constant(value='temporal_kg')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='neo4j',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            If(
+              test=Name(id='_NEO4J_AVAILABLE', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='neo4j',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='_Neo4jGraphStore', ctx=Load())))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Failed to initialize Neo4j graph store: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])])),
+                        Assign(
+                          targets=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='neo4j',
+                              ctx=Store())],
+                          value=Constant(value=None))])])])]),
+        FunctionDef(
+          name='add_fact',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='fact',
+                annotation=Name(id='TemporalFact', ctx=Load())),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Stores career event with timestamp for resume timeline enhancement.')),
+            Assign(
+              targets=[
+                Name(id='namespace', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_namespace',
+                  ctx=Load()),
+                args=[
+                  Name(id='user_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='fact_dict', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='fact', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='adapter',
+                    ctx=Load()),
+                  attr='upsert_text_records',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='texts',
+                    value=List(
+                      elts=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='fact', ctx=Load()),
+                            attr='to_text',
+                            ctx=Load()))],
+                      ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load())),
+                  keyword(
+                    arg='ids',
+                    value=List(
+                      elts=[
+                        Attribute(
+                          value=Name(id='fact', ctx=Load()),
+                          attr='id',
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='metadata_list',
+                    value=List(
+                      elts=[
+                        Name(id='fact_dict', ctx=Load())],
+                      ctx=Load()))])),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='neo4j',
+                  ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='parts', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='fact', ctx=Load()),
+                              attr='to_text',
+                              ctx=Load())),
+                          attr='split',
+                          ctx=Load()))),
+                    If(
+                      test=Compare(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='parts', ctx=Load())]),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Constant(value=3)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='subject', ctx=Store())],
+                          value=Subscript(
+                            value=Name(id='parts', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='predicate', ctx=Store())],
+                          value=Subscript(
+                            value=Name(id='parts', ctx=Load()),
+                            slice=Constant(value=1),
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='obj', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Constant(value=' '),
+                              attr='join',
+                              ctx=Load()),
+                            args=[
+                              Subscript(
+                                value=Name(id='parts', ctx=Load()),
+                                slice=Slice(
+                                  lower=Constant(value=2)),
+                                ctx=Load())])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='neo4j',
+                                ctx=Load()),
+                              attr='upsert_entity',
+                              ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='entity_id',
+                                value=JoinedStr(
+                                  values=[
+                                    FormattedValue(
+                                      value=Name(id='subject', ctx=Load()),
+                                      conversion=-1),
+                                    Constant(value='_'),
+                                    FormattedValue(
+                                      value=BoolOp(
+                                        op=Or(),
+                                        values=[
+                                          Name(id='user_id', ctx=Load()),
+                                          Constant(value='global')]),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='etype',
+                                value=IfExp(
+                                  test=Name(id='user_id', ctx=Load()),
+                                  body=Constant(value='PERSON'),
+                                  orelse=Constant(value='ENTITY'))),
+                              keyword(
+                                arg='name',
+                                value=Name(id='subject', ctx=Load())),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='source'),
+                                    Constant(value='user_id')],
+                                  values=[
+                                    Constant(value='temporal_kg'),
+                                    BoolOp(
+                                      op=Or(),
+                                      values=[
+                                        Name(id='user_id', ctx=Load()),
+                                        Constant(value='global')])]))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='neo4j',
+                                ctx=Load()),
+                              attr='upsert_entity',
+                              ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='entity_id',
+                                value=JoinedStr(
+                                  values=[
+                                    FormattedValue(
+                                      value=Name(id='obj', ctx=Load()),
+                                      conversion=-1),
+                                    Constant(value='_'),
+                                    FormattedValue(
+                                      value=BoolOp(
+                                        op=Or(),
+                                        values=[
+                                          Name(id='user_id', ctx=Load()),
+                                          Constant(value='global')]),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='etype',
+                                value=IfExp(
+                                  test=Compare(
+                                    left=Call(
+                                      func=Attribute(
+                                        value=Name(id='predicate', ctx=Load()),
+                                        attr='upper',
+                                        ctx=Load())),
+                                    ops=[
+                                      In()],
+                                    comparators=[
+                                      List(
+                                        elts=[
+                                          Constant(value='SKILL'),
+                                          Constant(value='COMPANY'),
+                                          Constant(value='ROLE')],
+                                        ctx=Load())]),
+                                  body=Call(
+                                    func=Attribute(
+                                      value=Name(id='predicate', ctx=Load()),
+                                      attr='upper',
+                                      ctx=Load())),
+                                  orelse=Constant(value='ENTITY'))),
+                              keyword(
+                                arg='name',
+                                value=Name(id='obj', ctx=Load())),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='source'),
+                                    Constant(value='user_id')],
+                                  values=[
+                                    Constant(value='temporal_kg'),
+                                    BoolOp(
+                                      op=Or(),
+                                      values=[
+                                        Name(id='user_id', ctx=Load()),
+                                        Constant(value='global')])]))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='neo4j',
+                                ctx=Load()),
+                              attr='upsert_relation',
+                              ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='rel_id',
+                                value=Attribute(
+                                  value=Name(id='fact', ctx=Load()),
+                                  attr='id',
+                                  ctx=Load())),
+                              keyword(
+                                arg='subject_id',
+                                value=JoinedStr(
+                                  values=[
+                                    FormattedValue(
+                                      value=Name(id='subject', ctx=Load()),
+                                      conversion=-1),
+                                    Constant(value='_'),
+                                    FormattedValue(
+                                      value=BoolOp(
+                                        op=Or(),
+                                        values=[
+                                          Name(id='user_id', ctx=Load()),
+                                          Constant(value='global')]),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='predicate',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='predicate', ctx=Load()),
+                                    attr='upper',
+                                    ctx=Load()))),
+                              keyword(
+                                arg='object_id',
+                                value=JoinedStr(
+                                  values=[
+                                    FormattedValue(
+                                      value=Name(id='obj', ctx=Load()),
+                                      conversion=-1),
+                                    Constant(value='_'),
+                                    FormattedValue(
+                                      value=BoolOp(
+                                        op=Or(),
+                                        values=[
+                                          Name(id='user_id', ctx=Load()),
+                                          Constant(value='global')]),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='valid_at',
+                                value=IfExp(
+                                  test=Call(
+                                    func=Name(id='hasattr', ctx=Load()),
+                                    args=[
+                                      Name(id='fact', ctx=Load()),
+                                      Constant(value='timestamp')]),
+                                  body=Call(
+                                    func=Attribute(
+                                      value=Attribute(
+                                        value=Name(id='fact', ctx=Load()),
+                                        attr='timestamp',
+                                        ctx=Load()),
+                                      attr='isoformat',
+                                      ctx=Load())),
+                                  orelse=Constant(value=None))),
+                              keyword(
+                                arg='invalid_at',
+                                value=Constant(value=None)),
+                              keyword(
+                                arg='attrs',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='confidence'),
+                                    Constant(value='source'),
+                                    None],
+                                  values=[
+                                    Attribute(
+                                      value=Name(id='fact', ctx=Load()),
+                                      attr='confidence',
+                                      ctx=Load()),
+                                    Attribute(
+                                      value=Name(id='fact', ctx=Load()),
+                                      attr='source',
+                                      ctx=Load()),
+                                    Attribute(
+                                      value=Name(id='fact', ctx=Load()),
+                                      attr='metadata',
+                                      ctx=Load())]))]))])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Failed to mirror fact to Neo4j: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])],
+                            keywords=[
+                              keyword(
+                                arg='exc_info',
+                                value=Constant(value=True))]))])])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='add_facts',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='facts',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='TemporalFact', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Stores multiple career events efficiently for resume processing.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='facts', ctx=Load())),
+              body=[
+                Return()]),
+            Assign(
+              targets=[
+                Name(id='namespace', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_namespace',
+                  ctx=Load()),
+                args=[
+                  Name(id='user_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='texts', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='f', ctx=Load()),
+                    attr='to_text',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='f', ctx=Store()),
+                    iter=Name(id='facts', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='ids', ctx=Store())],
+              value=ListComp(
+                elt=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='id',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='f', ctx=Store()),
+                    iter=Name(id='facts', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='metadata_list', ctx=Store())],
+              value=ListComp(
+                elt=Dict(
+                  keys=[
+                    Constant(value='subject'),
+                    Constant(value='predicate'),
+                    Constant(value='object'),
+                    Constant(value='timestamp'),
+                    Constant(value='confidence'),
+                    Constant(value='source'),
+                    Constant(value='text'),
+                    None],
+                  values=[
+                    Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='subject',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='predicate',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='object',
+                      ctx=Load()),
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='f', ctx=Load()),
+                          attr='timestamp',
+                          ctx=Load()),
+                        attr='isoformat',
+                        ctx=Load())),
+                    Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='confidence',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='source',
+                      ctx=Load()),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='to_text',
+                        ctx=Load())),
+                    Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='f', ctx=Store()),
+                    iter=Name(id='facts', ctx=Load()),
+                    is_async=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='adapter',
+                    ctx=Load()),
+                  attr='upsert_text_records',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='texts',
+                    value=Name(id='texts', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load())),
+                  keyword(
+                    arg='ids',
+                    value=Name(id='ids', ctx=Load())),
+                  keyword(
+                    arg='metadata_list',
+                    value=Name(id='metadata_list', ctx=Load()))])),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='neo4j',
+                  ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                For(
+                  target=Name(id='fact', ctx=Store()),
+                  iter=Name(id='facts', ctx=Load()),
+                  body=[
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='parts', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='fact', ctx=Load()),
+                                  attr='to_text',
+                                  ctx=Load())),
+                              attr='split',
+                              ctx=Load()))),
+                        If(
+                          test=Compare(
+                            left=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='parts', ctx=Load())]),
+                            ops=[
+                              GtE()],
+                            comparators=[
+                              Constant(value=3)]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='subject', ctx=Store())],
+                              value=Subscript(
+                                value=Name(id='parts', ctx=Load()),
+                                slice=Constant(value=0),
+                                ctx=Load())),
+                            Assign(
+                              targets=[
+                                Name(id='predicate', ctx=Store())],
+                              value=Subscript(
+                                value=Name(id='parts', ctx=Load()),
+                                slice=Constant(value=1),
+                                ctx=Load())),
+                            Assign(
+                              targets=[
+                                Name(id='obj', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Constant(value=' '),
+                                  attr='join',
+                                  ctx=Load()),
+                                args=[
+                                  Subscript(
+                                    value=Name(id='parts', ctx=Load()),
+                                    slice=Slice(
+                                      lower=Constant(value=2)),
+                                    ctx=Load())])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='neo4j',
+                                    ctx=Load()),
+                                  attr='upsert_entity',
+                                  ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='entity_id',
+                                    value=JoinedStr(
+                                      values=[
+                                        FormattedValue(
+                                          value=Name(id='subject', ctx=Load()),
+                                          conversion=-1),
+                                        Constant(value='_'),
+                                        FormattedValue(
+                                          value=BoolOp(
+                                            op=Or(),
+                                            values=[
+                                              Name(id='user_id', ctx=Load()),
+                                              Constant(value='global')]),
+                                          conversion=-1)])),
+                                  keyword(
+                                    arg='etype',
+                                    value=IfExp(
+                                      test=Name(id='user_id', ctx=Load()),
+                                      body=Constant(value='PERSON'),
+                                      orelse=Constant(value='ENTITY'))),
+                                  keyword(
+                                    arg='name',
+                                    value=Name(id='subject', ctx=Load())),
+                                  keyword(
+                                    arg='metadata',
+                                    value=Dict(
+                                      keys=[
+                                        Constant(value='source'),
+                                        Constant(value='user_id')],
+                                      values=[
+                                        Constant(value='temporal_kg'),
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Name(id='user_id', ctx=Load()),
+                                            Constant(value='global')])]))])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='neo4j',
+                                    ctx=Load()),
+                                  attr='upsert_entity',
+                                  ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='entity_id',
+                                    value=JoinedStr(
+                                      values=[
+                                        FormattedValue(
+                                          value=Name(id='obj', ctx=Load()),
+                                          conversion=-1),
+                                        Constant(value='_'),
+                                        FormattedValue(
+                                          value=BoolOp(
+                                            op=Or(),
+                                            values=[
+                                              Name(id='user_id', ctx=Load()),
+                                              Constant(value='global')]),
+                                          conversion=-1)])),
+                                  keyword(
+                                    arg='etype',
+                                    value=IfExp(
+                                      test=Compare(
+                                        left=Call(
+                                          func=Attribute(
+                                            value=Name(id='predicate', ctx=Load()),
+                                            attr='upper',
+                                            ctx=Load())),
+                                        ops=[
+                                          In()],
+                                        comparators=[
+                                          List(
+                                            elts=[
+                                              Constant(value='SKILL'),
+                                              Constant(value='COMPANY'),
+                                              Constant(value='ROLE')],
+                                            ctx=Load())]),
+                                      body=Call(
+                                        func=Attribute(
+                                          value=Name(id='predicate', ctx=Load()),
+                                          attr='upper',
+                                          ctx=Load())),
+                                      orelse=Constant(value='ENTITY'))),
+                                  keyword(
+                                    arg='name',
+                                    value=Name(id='obj', ctx=Load())),
+                                  keyword(
+                                    arg='metadata',
+                                    value=Dict(
+                                      keys=[
+                                        Constant(value='source'),
+                                        Constant(value='user_id')],
+                                      values=[
+                                        Constant(value='temporal_kg'),
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Name(id='user_id', ctx=Load()),
+                                            Constant(value='global')])]))])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='neo4j',
+                                    ctx=Load()),
+                                  attr='upsert_relation',
+                                  ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='rel_id',
+                                    value=Attribute(
+                                      value=Name(id='fact', ctx=Load()),
+                                      attr='id',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='subject_id',
+                                    value=JoinedStr(
+                                      values=[
+                                        FormattedValue(
+                                          value=Name(id='subject', ctx=Load()),
+                                          conversion=-1),
+                                        Constant(value='_'),
+                                        FormattedValue(
+                                          value=BoolOp(
+                                            op=Or(),
+                                            values=[
+                                              Name(id='user_id', ctx=Load()),
+                                              Constant(value='global')]),
+                                          conversion=-1)])),
+                                  keyword(
+                                    arg='predicate',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='predicate', ctx=Load()),
+                                        attr='upper',
+                                        ctx=Load()))),
+                                  keyword(
+                                    arg='object_id',
+                                    value=JoinedStr(
+                                      values=[
+                                        FormattedValue(
+                                          value=Name(id='obj', ctx=Load()),
+                                          conversion=-1),
+                                        Constant(value='_'),
+                                        FormattedValue(
+                                          value=BoolOp(
+                                            op=Or(),
+                                            values=[
+                                              Name(id='user_id', ctx=Load()),
+                                              Constant(value='global')]),
+                                          conversion=-1)])),
+                                  keyword(
+                                    arg='valid_at',
+                                    value=IfExp(
+                                      test=Call(
+                                        func=Name(id='hasattr', ctx=Load()),
+                                        args=[
+                                          Name(id='fact', ctx=Load()),
+                                          Constant(value='timestamp')]),
+                                      body=Call(
+                                        func=Attribute(
+                                          value=Attribute(
+                                            value=Name(id='fact', ctx=Load()),
+                                            attr='timestamp',
+                                            ctx=Load()),
+                                          attr='isoformat',
+                                          ctx=Load())),
+                                      orelse=Constant(value=None))),
+                                  keyword(
+                                    arg='invalid_at',
+                                    value=Constant(value=None)),
+                                  keyword(
+                                    arg='attrs',
+                                    value=Dict(
+                                      keys=[
+                                        Constant(value='confidence'),
+                                        Constant(value='source'),
+                                        None],
+                                      values=[
+                                        Attribute(
+                                          value=Name(id='fact', ctx=Load()),
+                                          attr='confidence',
+                                          ctx=Load()),
+                                        Attribute(
+                                          value=Name(id='fact', ctx=Load()),
+                                          attr='source',
+                                          ctx=Load()),
+                                        Attribute(
+                                          value=Name(id='fact', ctx=Load()),
+                                          attr='metadata',
+                                          ctx=Load())]))]))])],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          name='e',
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='error',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Failed to mirror fact to Neo4j: '),
+                                      FormattedValue(
+                                        value=Name(id='e', ctx=Load()),
+                                        conversion=-1)])],
+                                keywords=[
+                                  keyword(
+                                    arg='exc_info',
+                                    value=Constant(value=True))]))])])])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='query_facts',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='TemporalQuery', ctx=Load())),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Retrieves career events within time periods for resume analysis.')),
+            Assign(
+              targets=[
+                Name(id='namespace', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_namespace',
+                  ctx=Load()),
+                args=[
+                  Name(id='user_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='query_parts', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Attribute(
+                value=Name(id='query', ctx=Load()),
+                attr='subject',
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='query_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='subject',
+                        ctx=Load())]))]),
+            If(
+              test=Attribute(
+                value=Name(id='query', ctx=Load()),
+                attr='predicate',
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='query_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='predicate',
+                        ctx=Load())]))]),
+            If(
+              test=Attribute(
+                value=Name(id='query', ctx=Load()),
+                attr='object',
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='query_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='object',
+                        ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='query_text', ctx=Store())],
+              value=IfExp(
+                test=Name(id='query_parts', ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Constant(value=' '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Name(id='query_parts', ctx=Load())]),
+                orelse=Constant(value='temporal facts'))),
+            AnnAssign(
+              target=Name(id='filter_dict', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            If(
+              test=Attribute(
+                value=Name(id='query', ctx=Load()),
+                attr='subject',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='filter_dict', ctx=Load()),
+                      slice=Constant(value='subject'),
+                      ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='$eq')],
+                    values=[
+                      Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='subject',
+                        ctx=Load())]))]),
+            If(
+              test=Attribute(
+                value=Name(id='query', ctx=Load()),
+                attr='predicate',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='filter_dict', ctx=Load()),
+                      slice=Constant(value='predicate'),
+                      ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='$eq')],
+                    values=[
+                      Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='predicate',
+                        ctx=Load())]))]),
+            If(
+              test=Attribute(
+                value=Name(id='query', ctx=Load()),
+                attr='object',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='filter_dict', ctx=Load()),
+                      slice=Constant(value='object'),
+                      ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='$eq')],
+                    values=[
+                      Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='object',
+                        ctx=Load())]))]),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='query', ctx=Load()),
+                  attr='min_confidence',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='filter_dict', ctx=Load()),
+                      slice=Constant(value='confidence'),
+                      ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='$gte')],
+                    values=[
+                      Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='min_confidence',
+                        ctx=Load())]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Attribute(
+                    value=Name(id='query', ctx=Load()),
+                    attr='start_time',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='query', ctx=Load()),
+                    attr='end_time',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='filter_dict', ctx=Load()),
+                      slice=Constant(value='timestamp'),
+                      ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='$gte'),
+                      Constant(value='$lte')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='query', ctx=Load()),
+                            attr='start_time',
+                            ctx=Load()),
+                          attr='isoformat',
+                          ctx=Load())),
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='query', ctx=Load()),
+                            attr='end_time',
+                            ctx=Load()),
+                          attr='isoformat',
+                          ctx=Load()))]))],
+              orelse=[
+                If(
+                  test=Attribute(
+                    value=Name(id='query', ctx=Load()),
+                    attr='start_time',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='filter_dict', ctx=Load()),
+                          slice=Constant(value='timestamp'),
+                          ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='$gte')],
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='query', ctx=Load()),
+                                attr='start_time',
+                                ctx=Load()),
+                              attr='isoformat',
+                              ctx=Load()))]))],
+                  orelse=[
+                    If(
+                      test=Attribute(
+                        value=Name(id='query', ctx=Load()),
+                        attr='end_time',
+                        ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='filter_dict', ctx=Load()),
+                              slice=Constant(value='timestamp'),
+                              ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='$lte')],
+                            values=[
+                              Call(
+                                func=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='query', ctx=Load()),
+                                    attr='end_time',
+                                    ctx=Load()),
+                                  attr='isoformat',
+                                  ctx=Load()))]))])])]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='results', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='adapter',
+                        ctx=Load()),
+                      attr='query_by_text',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='query_text',
+                        value=Name(id='query_text', ctx=Load())),
+                      keyword(
+                        arg='namespace',
+                        value=Name(id='namespace', ctx=Load())),
+                      keyword(
+                        arg='top_k',
+                        value=Attribute(
+                          value=Name(id='query', ctx=Load()),
+                          attr='limit',
+                          ctx=Load())),
+                      keyword(
+                        arg='filter_dict',
+                        value=IfExp(
+                          test=Name(id='filter_dict', ctx=Load()),
+                          body=Name(id='filter_dict', ctx=Load()),
+                          orelse=Constant(value=None)))])),
+                Assign(
+                  targets=[
+                    Name(id='facts', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='r', ctx=Store()),
+                  iter=Name(id='results', ctx=Load()),
+                  body=[
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='fact', ctx=Store())],
+                          value=Call(
+                            func=Name(id='TemporalFact', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='id',
+                                value=Attribute(
+                                  value=Name(id='r', ctx=Load()),
+                                  attr='id',
+                                  ctx=Load())),
+                              keyword(
+                                arg='subject',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='metadata',
+                                      ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='subject'),
+                                    Constant(value='')])),
+                              keyword(
+                                arg='predicate',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='metadata',
+                                      ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='predicate'),
+                                    Constant(value='')])),
+                              keyword(
+                                arg='object',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='metadata',
+                                      ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='object'),
+                                    Constant(value='')])),
+                              keyword(
+                                arg='timestamp',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='datetime', ctx=Load()),
+                                    attr='fromisoformat',
+                                    ctx=Load()),
+                                  args=[
+                                    Call(
+                                      func=Attribute(
+                                        value=Attribute(
+                                          value=Name(id='r', ctx=Load()),
+                                          attr='metadata',
+                                          ctx=Load()),
+                                        attr='get',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value='timestamp'),
+                                        Call(
+                                          func=Attribute(
+                                            value=Call(
+                                              func=Attribute(
+                                                value=Name(id='datetime', ctx=Load()),
+                                                attr='now',
+                                                ctx=Load()),
+                                              args=[
+                                                Name(id='UTC', ctx=Load())]),
+                                            attr='isoformat',
+                                            ctx=Load()))])])),
+                              keyword(
+                                arg='confidence',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='metadata',
+                                      ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='confidence'),
+                                    Constant(value=1.0)])),
+                              keyword(
+                                arg='source',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='metadata',
+                                      ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='source'),
+                                    Constant(value='system')])),
+                              keyword(
+                                arg='metadata',
+                                value=DictComp(
+                                  key=Name(id='k', ctx=Load()),
+                                  value=Name(id='v', ctx=Load()),
+                                  generators=[
+                                    comprehension(
+                                      target=Tuple(
+                                        elts=[
+                                          Name(id='k', ctx=Store()),
+                                          Name(id='v', ctx=Store())],
+                                        ctx=Store()),
+                                      iter=Call(
+                                        func=Attribute(
+                                          value=Attribute(
+                                            value=Name(id='r', ctx=Load()),
+                                            attr='metadata',
+                                            ctx=Load()),
+                                          attr='items',
+                                          ctx=Load())),
+                                      ifs=[
+                                        Compare(
+                                          left=Name(id='k', ctx=Load()),
+                                          ops=[
+                                            NotIn()],
+                                          comparators=[
+                                            List(
+                                              elts=[
+                                                Constant(value='subject'),
+                                                Constant(value='predicate'),
+                                                Constant(value='object'),
+                                                Constant(value='timestamp'),
+                                                Constant(value='confidence'),
+                                                Constant(value='source'),
+                                                Constant(value='text')],
+                                              ctx=Load())])],
+                                      is_async=0)]))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='facts', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='fact', ctx=Load())]))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          body=[
+                            Continue()])])]),
+                Return(
+                  value=Name(id='facts', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Return(
+                      value=List(ctx=Load()))])])],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='TemporalFact', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_recent_facts',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='subject',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='days',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=30),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Retrieves recent career activities for resume job alignment.')),
+            ImportFrom(
+              module='datetime',
+              names=[
+                alias(name='timedelta')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='end_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()),
+                args=[
+                  Name(id='UTC', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=BinOp(
+                left=Name(id='end_time', ctx=Load()),
+                op=Sub(),
+                right=Call(
+                  func=Name(id='timedelta', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='days',
+                      value=Name(id='days', ctx=Load()))]))),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Call(
+                func=Name(id='TemporalQuery', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='subject',
+                    value=Name(id='subject', ctx=Load())),
+                  keyword(
+                    arg='start_time',
+                    value=Name(id='start_time', ctx=Load())),
+                  keyword(
+                    arg='end_time',
+                    value=Name(id='end_time', ctx=Load()))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='query_facts',
+                  ctx=Load()),
+                args=[
+                  Name(id='query', ctx=Load()),
+                  Name(id='user_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='TemporalFact', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_fact_history',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='subject',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='predicate',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Retrieves chronological career progression for resume timeline.')),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Call(
+                func=Name(id='TemporalQuery', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='subject',
+                    value=Name(id='subject', ctx=Load())),
+                  keyword(
+                    arg='predicate',
+                    value=Name(id='predicate', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='facts', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='query_facts',
+                  ctx=Load()),
+                args=[
+                  Name(id='query', ctx=Load()),
+                  Name(id='user_id', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='facts', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='f')]),
+                      body=Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='timestamp',
+                        ctx=Load())))])),
+            Return(
+              value=Name(id='facts', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='TemporalFact', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='delete_facts',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='fact_ids',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Removes outdated career facts to maintain resume accuracy.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='fact_ids', ctx=Load())),
+              body=[
+                Return()]),
+            Assign(
+              targets=[
+                Name(id='namespace', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_namespace',
+                  ctx=Load()),
+                args=[
+                  Name(id='user_id', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='adapter',
+                    ctx=Load()),
+                  attr='delete_records',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='ids',
+                    value=Name(id='fact_ids', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load()))])),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='neo4j',
+                  ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                For(
+                  target=Name(id='fact_id', ctx=Store()),
+                  iter=Name(id='fact_ids', ctx=Load()),
+                  body=[
+                    Try(
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='neo4j',
+                                ctx=Load()),
+                              attr='update_relation_invalidity',
+                              ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='rel_id',
+                                value=Name(id='fact_id', ctx=Load())),
+                              keyword(
+                                arg='invalid_at',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='datetime', ctx=Load()),
+                                        attr='now',
+                                        ctx=Load()),
+                                      args=[
+                                        Name(id='UTC', ctx=Load())]),
+                                    attr='isoformat',
+                                    ctx=Load()))),
+                              keyword(
+                                arg='invalidated_by',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='user_'),
+                                    FormattedValue(
+                                      value=BoolOp(
+                                        op=Or(),
+                                        values=[
+                                          Name(id='user_id', ctx=Load()),
+                                          Constant(value='system')]),
+                                      conversion=-1)]))]))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          name='e',
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='error',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Failed to invalidate fact in Neo4j: '),
+                                      FormattedValue(
+                                        value=Name(id='e', ctx=Load()),
+                                        conversion=-1)])],
+                                keywords=[
+                                  keyword(
+                                    arg='exc_info',
+                                    value=Constant(value=True))]))])])])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_build_namespace',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Builds namespace for resume workflow temporal KG storage.')),
+            If(
+              test=Name(id='user_id', ctx=Load()),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='namespace_prefix',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='_'),
+                      FormattedValue(
+                        value=Name(id='user_id', ctx=Load()),
+                        conversion=-1)]))]),
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='namespace_prefix',
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load()))]),
+    FunctionDef(
+      name='create_skill_fact',
+      args=arguments(
+        args=[
+          arg(
+            arg='user_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='skill',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='proficiency',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='timestamp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='datetime', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value='intermediate'),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Creates time-stamped skill acquisition record for resume enhancement.')),
+        If(
+          test=Compare(
+            left=Name(id='timestamp', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='timestamp', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()),
+                args=[
+                  Name(id='UTC', ctx=Load())]))]),
+        Assign(
+          targets=[
+            Name(id='fact_id', ctx=Store())],
+          value=Subscript(
+            value=Call(
+              func=Attribute(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='hashlib', ctx=Load()),
+                    attr='sha256',
+                    ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=JoinedStr(
+                          values=[
+                            FormattedValue(
+                              value=Name(id='user_id', ctx=Load()),
+                              conversion=-1),
+                            Constant(value='_has_skill_'),
+                            FormattedValue(
+                              value=Name(id='skill', ctx=Load()),
+                              conversion=-1),
+                            Constant(value='_'),
+                            FormattedValue(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='timestamp', ctx=Load()),
+                                  attr='isoformat',
+                                  ctx=Load())),
+                              conversion=-1)]),
+                        attr='encode',
+                        ctx=Load()))]),
+                attr='hexdigest',
+                ctx=Load())),
+            slice=Slice(
+              upper=Constant(value=16)),
+            ctx=Load())),
+        Return(
+          value=Call(
+            func=Name(id='TemporalFact', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Name(id='fact_id', ctx=Load())),
+              keyword(
+                arg='subject',
+                value=Name(id='user_id', ctx=Load())),
+              keyword(
+                arg='predicate',
+                value=Constant(value='has_skill')),
+              keyword(
+                arg='object',
+                value=Name(id='skill', ctx=Load())),
+              keyword(
+                arg='timestamp',
+                value=Name(id='timestamp', ctx=Load())),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='proficiency')],
+                  values=[
+                    Name(id='proficiency', ctx=Load())]))]))],
+      returns=Name(id='TemporalFact', ctx=Load())),
+    FunctionDef(
+      name='create_experience_fact',
+      args=arguments(
+        args=[
+          arg(
+            arg='user_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='company',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='role',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='timestamp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='datetime', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Creates time-stamped work experience record for resume enhancement.')),
+        If(
+          test=Compare(
+            left=Name(id='timestamp', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='timestamp', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()),
+                args=[
+                  Name(id='UTC', ctx=Load())]))]),
+        Assign(
+          targets=[
+            Name(id='fact_id', ctx=Store())],
+          value=Subscript(
+            value=Call(
+              func=Attribute(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='hashlib', ctx=Load()),
+                    attr='sha256',
+                    ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=JoinedStr(
+                          values=[
+                            FormattedValue(
+                              value=Name(id='user_id', ctx=Load()),
+                              conversion=-1),
+                            Constant(value='_worked_at_'),
+                            FormattedValue(
+                              value=Name(id='company', ctx=Load()),
+                              conversion=-1),
+                            Constant(value='_'),
+                            FormattedValue(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='timestamp', ctx=Load()),
+                                  attr='isoformat',
+                                  ctx=Load())),
+                              conversion=-1)]),
+                        attr='encode',
+                        ctx=Load()))]),
+                attr='hexdigest',
+                ctx=Load())),
+            slice=Slice(
+              upper=Constant(value=16)),
+            ctx=Load())),
+        Return(
+          value=Call(
+            func=Name(id='TemporalFact', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Name(id='fact_id', ctx=Load())),
+              keyword(
+                arg='subject',
+                value=Name(id='user_id', ctx=Load())),
+              keyword(
+                arg='predicate',
+                value=Constant(value='worked_at')),
+              keyword(
+                arg='object',
+                value=Name(id='company', ctx=Load())),
+              keyword(
+                arg='timestamp',
+                value=Name(id='timestamp', ctx=Load())),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='role')],
+                  values=[
+                    Name(id='role', ctx=Load())]))]))],
+      returns=Name(id='TemporalFact', ctx=Load())),
+    FunctionDef(
+      name='create_application_fact',
+      args=arguments(
+        args=[
+          arg(
+            arg='user_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='job_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='status',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='timestamp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='datetime', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value='applied'),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Creates time-stamped job application record for resume enhancement.')),
+        If(
+          test=Compare(
+            left=Name(id='timestamp', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='timestamp', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()),
+                args=[
+                  Name(id='UTC', ctx=Load())]))]),
+        Assign(
+          targets=[
+            Name(id='fact_id', ctx=Store())],
+          value=Subscript(
+            value=Call(
+              func=Attribute(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='hashlib', ctx=Load()),
+                    attr='sha256',
+                    ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=JoinedStr(
+                          values=[
+                            FormattedValue(
+                              value=Name(id='user_id', ctx=Load()),
+                              conversion=-1),
+                            Constant(value='_applied_to_'),
+                            FormattedValue(
+                              value=Name(id='job_id', ctx=Load()),
+                              conversion=-1),
+                            Constant(value='_'),
+                            FormattedValue(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='timestamp', ctx=Load()),
+                                  attr='isoformat',
+                                  ctx=Load())),
+                              conversion=-1)]),
+                        attr='encode',
+                        ctx=Load()))]),
+                attr='hexdigest',
+                ctx=Load())),
+            slice=Slice(
+              upper=Constant(value=16)),
+            ctx=Load())),
+        Return(
+          value=Call(
+            func=Name(id='TemporalFact', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Name(id='fact_id', ctx=Load())),
+              keyword(
+                arg='subject',
+                value=Name(id='user_id', ctx=Load())),
+              keyword(
+                arg='predicate',
+                value=Constant(value='applied_to')),
+              keyword(
+                arg='object',
+                value=Name(id='job_id', ctx=Load())),
+              keyword(
+                arg='timestamp',
+                value=Name(id='timestamp', ctx=Load())),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='status')],
+                  values=[
+                    Name(id='status', ctx=Load())]))]))],
+      returns=Name(id='TemporalFact', ctx=Load()))])

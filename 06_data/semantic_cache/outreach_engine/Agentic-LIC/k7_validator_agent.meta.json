@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k7_validator_agent.py",
+    "rel_path": "k7_validator_agent.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
+    "file_size": 4727,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.5078444
+}

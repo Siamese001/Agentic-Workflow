@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\nfrom time import perf_counter\n\n\n# --------------------------------------------------------------------\n# Helper to assert \"resume-like\" dict structure\n# --------------------------------------------------------------------\ndef _assert_resume_structure(resume: dict):\n    assert isinstance(resume, dict), \"Resume output must be a dict\"\n\n    # Minimal required blocks for v10.7\n    assert \"strategy\" in resume, \"Missing strategy block\"\n    assert \"qa\" in resume, \"Missing QA block\"\n\n    # At least one of these required narrative outputs:\n    assert any(\n        k in resume for k in (\"summary\", \"bullets\", \"body\")\n    ), \"Resume must contain summary/bullets/body\"\n\n\n# --------------------------------------------------------------------\n# 1. API Envelope Invariants\n# --------------------------------------------------------------------\n@pytest.mark.contract\ndef test_api_envelope_structure():\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resu",
+  "full_hash": "96657a2e909df6f769e89576147578f9bbcbbf9dceefe3ebc0f804183c82243d",
+  "generated_at": 1764728230.4468439,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\contracts\\test_contract_invariants_v10_7.py"
+}

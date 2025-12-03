@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Observability Cost Budget Tests.\"\"\"\n\nclass TestObservabilityCostBudget:\n    \"\"\"Tests for cost budget tracking.\"\"\"\n    \n    def test_budget_tracking(self):\n        \"\"\"Test budget tracking logic.\"\"\"\n        budget = {\"max_usd\": 1.0, \"spent_usd\": 0.25}\n        remaining = budget[\"max_usd\"] - budget[\"spent_usd\"]\n        assert remaining == 0.75\n        assert remaining > 0\n",
+  "full_hash": "d7754e0a4c6c49f1d9b61c4431b5675484c10c8ac259d45f9eed919293c12c36",
+  "generated_at": 1764728227.3750067,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\cost_budget\\test_obs_cost_budget.py"
+}

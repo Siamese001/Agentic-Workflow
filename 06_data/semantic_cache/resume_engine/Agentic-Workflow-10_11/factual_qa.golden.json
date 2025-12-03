@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL2 Factual QA for resume temporal fact verification.\n\nAnswers factual questions about temporal career facts using Neo4j\nto ensure resume accuracy and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import List, Optional\n\ntry:\n    from graph_store_neo4j import Neo4jGraphStore\n    _graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()\n    _NEO4J_AVAILABLE = True\nexcept ImportError:\n    _graph = None\n    _NEO4J_AVAILABLE = False\n\n\ndef factual_qa(\n    entity: str,\n    start_date_range: str,\n    end_date_range: str,\n    predicate: str\n) -> str:\n    \"\"\"\n    Queries temporal facts for resume verification.\n\n    Ensures resume timeline accuracy for improved job alignment.\n    \"\"\"\n    if not _NEO4J_AVAILABLE:\n        return (\n            f\"Unable to query data for '{entity}' with predicate '{predicate}' \"\n            f\"in the specified date range ({start_date_range} to {end_date_range}). \"\n            \"Neo4j driver not installed. Install with: pip install neo4j>=5.22.0\"\n  ",
+  "full_hash": "c3eb4eb68b1bd2d94ef469c9fc09446a56b07d544b5cb58e04c3fb7ffd8f4d54",
+  "generated_at": 1764728224.9531662,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\factual_qa.py"
+}

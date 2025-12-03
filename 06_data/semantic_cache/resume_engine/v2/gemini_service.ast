@@ -1,0 +1,2442 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='time')]),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Try(
+      body=[
+        Import(
+          names=[
+            alias(name='google.generativeai', asname='genai')]),
+        Assign(
+          targets=[
+            Name(id='GEMINI_AVAILABLE', ctx=Store())],
+          value=Constant(value=True))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Import(
+              names=[
+                alias(name='warnings')]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='warnings', ctx=Load()),
+                  attr='warn',
+                  ctx=Load()),
+                args=[
+                  Constant(value='google-generativeai package not installed. Install with: pip install google-generativeai')])),
+            Assign(
+              targets=[
+                Name(id='GEMINI_AVAILABLE', ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Name(id='genai', ctx=Store())],
+              value=Constant(value=None))])]),
+    ImportFrom(
+      module='models_RES',
+      names=[
+        alias(name='HopExecutionError'),
+        alias(name='ReasoningConfig')],
+      level=0),
+    ImportFrom(
+      module='utils_RES_v2',
+      names=[
+        alias(name='text_utils'),
+        alias(name='reasoning_config_to_api_params'),
+        alias(name='enhance_system_prompt_with_reasoning')],
+      level=0),
+    ImportFrom(
+      module='config_RES_v2',
+      names=[
+        alias(name='DEFAULT_GENERATION_TEMPERATURE'),
+        alias(name='DEFAULT_SYNTHESIS_TEMPERATURE'),
+        alias(name='DEFAULT_MAX_RETRIES'),
+        alias(name='DEFAULT_RETRY_DELAY')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    Assign(
+      targets=[
+        Name(id='DEFAULT_MAX_TOKENS', ctx=Store())],
+      value=Constant(value=8192)),
+    Assign(
+      targets=[
+        Name(id='SAFETY_THRESHOLD', ctx=Store())],
+      value=Constant(value='BLOCK_NONE')),
+    Assign(
+      targets=[
+        Name(id='API_TIMEOUT', ctx=Store())],
+      value=Constant(value=30)),
+    ClassDef(
+      name='APICallStatus',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Status codes for API calls')),
+        Assign(
+          targets=[
+            Name(id='SUCCESS', ctx=Store())],
+          value=Constant(value='success')),
+        Assign(
+          targets=[
+            Name(id='RATE_LIMITED', ctx=Store())],
+          value=Constant(value='rate_limited')),
+        Assign(
+          targets=[
+            Name(id='SAFETY_BLOCKED', ctx=Store())],
+          value=Constant(value='safety_blocked')),
+        Assign(
+          targets=[
+            Name(id='ERROR', ctx=Store())],
+          value=Constant(value='error')),
+        Assign(
+          targets=[
+            Name(id='TIMEOUT', ctx=Store())],
+          value=Constant(value='timeout'))]),
+    ClassDef(
+      name='APICallMetrics',
+      body=[
+        Expr(
+          value=Constant(value='Metrics for API call tracking')),
+        AnnAssign(
+          target=Name(id='call_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='success_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='error_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_tokens_used', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_latency_ms', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_blocks', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rate_limits', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='GeminiService',
+      body=[
+        Expr(
+          value=Constant(value='\n    Production-ready Gemini API service with comprehensive error handling.\n    \n    Features:\n    - Automatic retry with exponential backoff\n    - Rate limiting protection\n    - Safety rating handling\n    - Response validation and integrity checking\n    - Comprehensive metrics tracking\n    - Fallback mechanisms for failures\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='default_model',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='max_retries',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='int', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='retry_delay',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value='gemini-2.0-flash-exp'),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Initialize the Gemini service with production configurations.\n        \n        Args:\n            default_model: Default model to use if not specified in call\n            max_retries: Maximum number of retry attempts\n            retry_delay: Base delay between retries (exponential backoff)\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='default_model',
+                  ctx=Store())],
+              value=Name(id='default_model', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='max_retries',
+                  ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='max_retries', ctx=Load()),
+                  ops=[
+                    IsNot()],
+                  comparators=[
+                    Constant(value=None)]),
+                body=Name(id='max_retries', ctx=Load()),
+                orelse=Name(id='DEFAULT_MAX_RETRIES', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='retry_delay',
+                  ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='retry_delay', ctx=Load()),
+                  ops=[
+                    IsNot()],
+                  comparators=[
+                    Constant(value=None)]),
+                body=Name(id='retry_delay', ctx=Load()),
+                orelse=Name(id='DEFAULT_RETRY_DELAY', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metrics',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='APICallMetrics', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_environment',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='✓ GeminiService initialized with model: '),
+                      FormattedValue(
+                        value=Name(id='default_model', ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Max retries: '),
+                      FormattedValue(
+                        value=Name(id='max_retries', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', Base retry delay: '),
+                      FormattedValue(
+                        value=Name(id='retry_delay', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='s')])]))]),
+        FunctionDef(
+          name='_validate_environment',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validate that the environment is properly configured.\n        \n        Raises:\n            RuntimeError: If environment is not properly configured\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='GEMINI_AVAILABLE', ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='RuntimeError', ctx=Load()),
+                    args=[
+                      Constant(value='google-generativeai package not available. Install with: pip install google-generativeai')]))]),
+            Assign(
+              targets=[
+                Name(id='api_key', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='environ',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='GEMINI_API_KEY')])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='api_key', ctx=Load())),
+              body=[
+                Try(
+                  body=[
+                    If(
+                      test=Call(
+                        func=Name(id='hasattr', ctx=Load()),
+                        args=[
+                          Name(id='genai', ctx=Load()),
+                          Constant(value='_config')]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='api_key', ctx=Store())],
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='genai', ctx=Load()),
+                              attr='_config',
+                              ctx=Load()),
+                            attr='api_key',
+                            ctx=Load()))])],
+                  handlers=[
+                    ExceptHandler(
+                      body=[
+                        Pass()])]),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='api_key', ctx=Load())),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='RuntimeError', ctx=Load()),
+                        args=[
+                          Constant(value="GEMINI_API_KEY environment variable not set. Set it with: export GEMINI_API_KEY='your-api-key'")]))])]),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='genai', ctx=Load()),
+                        Constant(value='_config')])),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Attribute(
+                        value=Name(id='genai', ctx=Load()),
+                        attr='_config',
+                        ctx=Load()),
+                      attr='api_key',
+                      ctx=Load()))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='genai', ctx=Load()),
+                      attr='configure',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='api_key',
+                        value=Name(id='api_key', ctx=Load()))]))])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='call_api',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='section_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='model',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='system_prompt',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='reasoning_config',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='ReasoningConfig', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='int', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='return_full_response',
+                annotation=Name(id='bool', ctx=Load())),
+              arg(
+                arg='validate_response',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=False),
+              Constant(value=True)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Execute a production-ready Gemini API call with comprehensive error handling.\n        \n        Args:\n            prompt: The user prompt (required, cannot be empty)\n            section_id: Identifier for logging and tracking\n            model: Model name override\n            system_prompt: Optional system prompt\n            reasoning_config: Reasoning configuration\n            temperature: Temperature override (0.0-1.0)\n            max_tokens: Max output tokens\n            return_full_response: Return full API response object\n            validate_response: Validate response for mock/placeholder data\n            \n        Returns:\n            Tuple of (generated_text, api_calls_made, full_response)\n            \n        Raises:\n            HopExecutionError: If API call fails after all retries\n            ValueError: If input validation fails\n        ')),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='prompt', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='prompt', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())))]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='section_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': Prompt cannot be empty')])]))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='section_id', ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      Constant(value='section_id is required for tracking')]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_no_mock_data',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load()),
+                  Name(id='section_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='model_name', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='model', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='default_model',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='temp', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='temperature', ctx=Load()),
+                  ops=[
+                    IsNot()],
+                  comparators=[
+                    Constant(value=None)]),
+                body=Name(id='temperature', ctx=Load()),
+                orelse=Name(id='DEFAULT_GENERATION_TEMPERATURE', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='max_tok', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='max_tokens', ctx=Load()),
+                  Name(id='DEFAULT_MAX_TOKENS', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Compare(
+                  left=Constant(value=0.0),
+                  ops=[
+                    LtE(),
+                    LtE()],
+                  comparators=[
+                    Name(id='temp', ctx=Load()),
+                    Constant(value=1.0)])),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='section_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': Temperature '),
+                          FormattedValue(
+                            value=Name(id='temp', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' out of range, using default')])])),
+                Assign(
+                  targets=[
+                    Name(id='temp', ctx=Store())],
+                  value=Name(id='DEFAULT_GENERATION_TEMPERATURE', ctx=Load()))]),
+            If(
+              test=Name(id='reasoning_config', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='api_params', ctx=Store())],
+                  value=Call(
+                    func=Name(id='reasoning_config_to_api_params', ctx=Load()),
+                    args=[
+                      Name(id='reasoning_config', ctx=Load()),
+                      Name(id='section_id', ctx=Load())])),
+                If(
+                  test=Name(id='system_prompt', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='system_prompt', ctx=Store())],
+                      value=Call(
+                        func=Name(id='enhance_system_prompt_with_reasoning', ctx=Load()),
+                        args=[
+                          Name(id='system_prompt', ctx=Load()),
+                          Name(id='reasoning_config', ctx=Load())]))])],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='api_params', ctx=Store())],
+                  value=Dict())]),
+            For(
+              target=Name(id='attempt', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='max_retries',
+                    ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Tuple(
+                          elts=[
+                            Name(id='response', ctx=Store()),
+                            Name(id='status', ctx=Store())],
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_execute_api_call',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='prompt',
+                            value=Name(id='prompt', ctx=Load())),
+                          keyword(
+                            arg='model_name',
+                            value=Name(id='model_name', ctx=Load())),
+                          keyword(
+                            arg='system_prompt',
+                            value=Name(id='system_prompt', ctx=Load())),
+                          keyword(
+                            arg='temperature',
+                            value=Name(id='temp', ctx=Load())),
+                          keyword(
+                            arg='max_tokens',
+                            value=Name(id='max_tok', ctx=Load())),
+                          keyword(
+                            arg='section_id',
+                            value=Name(id='section_id', ctx=Load())),
+                          keyword(
+                            arg='api_params',
+                            value=Name(id='api_params', ctx=Load()))])),
+                    If(
+                      test=Compare(
+                        left=Name(id='status', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='APICallStatus', ctx=Load()),
+                            attr='SUCCESS',
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='text', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_extract_text',
+                              ctx=Load()),
+                            args=[
+                              Name(id='response', ctx=Load())])),
+                        If(
+                          test=Name(id='validate_response', ctx=Load()),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_validate_response_integrity',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='text', ctx=Load()),
+                                  Name(id='section_id', ctx=Load())]))]),
+                        AugAssign(
+                          target=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='metrics',
+                              ctx=Load()),
+                            attr='call_count',
+                            ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1)),
+                        AugAssign(
+                          target=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='metrics',
+                              ctx=Load()),
+                            attr='success_count',
+                            ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1)),
+                        Assign(
+                          targets=[
+                            Name(id='full_resp', ctx=Store())],
+                          value=IfExp(
+                            test=Name(id='return_full_response', ctx=Load()),
+                            body=Name(id='response', ctx=Load()),
+                            orelse=Constant(value=None))),
+                        Return(
+                          value=Tuple(
+                            elts=[
+                              Name(id='text', ctx=Load()),
+                              Constant(value=1),
+                              Name(id='full_resp', ctx=Load())],
+                            ctx=Load()))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='status', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='APICallStatus', ctx=Load()),
+                                attr='RATE_LIMITED',
+                                ctx=Load())]),
+                          body=[
+                            AugAssign(
+                              target=Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='metrics',
+                                  ctx=Load()),
+                                attr='rate_limits',
+                                ctx=Store()),
+                              op=Add(),
+                              value=Constant(value=1)),
+                            Assign(
+                              targets=[
+                                Name(id='wait_time', ctx=Store())],
+                              value=BinOp(
+                                left=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='retry_delay',
+                                  ctx=Load()),
+                                op=Mult(),
+                                right=BinOp(
+                                  left=Constant(value=2),
+                                  op=Pow(),
+                                  right=Name(id='attempt', ctx=Load())))),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='warning',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      FormattedValue(
+                                        value=Name(id='section_id', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': Rate limited, waiting '),
+                                      FormattedValue(
+                                        value=Name(id='wait_time', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value='s')])])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='time', ctx=Load()),
+                                  attr='sleep',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='wait_time', ctx=Load())])),
+                            Continue()],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Name(id='status', ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='APICallStatus', ctx=Load()),
+                                    attr='SAFETY_BLOCKED',
+                                    ctx=Load())]),
+                              body=[
+                                AugAssign(
+                                  target=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='metrics',
+                                      ctx=Load()),
+                                    attr='safety_blocks',
+                                    ctx=Store()),
+                                  op=Add(),
+                                  value=Constant(value=1)),
+                                Raise(
+                                  exc=Call(
+                                    func=Name(id='HopExecutionError', ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          FormattedValue(
+                                            value=Name(id='section_id', ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=': Response blocked by safety filters. Please review prompt content.')])]))],
+                              orelse=[
+                                If(
+                                  test=Compare(
+                                    left=Name(id='attempt', ctx=Load()),
+                                    ops=[
+                                      Lt()],
+                                    comparators=[
+                                      BinOp(
+                                        left=Attribute(
+                                          value=Name(id='self', ctx=Load()),
+                                          attr='max_retries',
+                                          ctx=Load()),
+                                        op=Sub(),
+                                        right=Constant(value=1))]),
+                                  body=[
+                                    Assign(
+                                      targets=[
+                                        Name(id='wait_time', ctx=Store())],
+                                      value=BinOp(
+                                        left=Attribute(
+                                          value=Name(id='self', ctx=Load()),
+                                          attr='retry_delay',
+                                          ctx=Load()),
+                                        op=Mult(),
+                                        right=BinOp(
+                                          left=Constant(value=2),
+                                          op=Pow(),
+                                          right=Name(id='attempt', ctx=Load())))),
+                                    Expr(
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Name(id='logger', ctx=Load()),
+                                          attr='warning',
+                                          ctx=Load()),
+                                        args=[
+                                          JoinedStr(
+                                            values=[
+                                              FormattedValue(
+                                                value=Name(id='section_id', ctx=Load()),
+                                                conversion=-1),
+                                              Constant(value=': Attempt '),
+                                              FormattedValue(
+                                                value=BinOp(
+                                                  left=Name(id='attempt', ctx=Load()),
+                                                  op=Add(),
+                                                  right=Constant(value=1)),
+                                                conversion=-1),
+                                              Constant(value=' failed, retrying in '),
+                                              FormattedValue(
+                                                value=Name(id='wait_time', ctx=Load()),
+                                                conversion=-1),
+                                              Constant(value='s')])])),
+                                    Expr(
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Name(id='time', ctx=Load()),
+                                          attr='sleep',
+                                          ctx=Load()),
+                                        args=[
+                                          Name(id='wait_time', ctx=Load())])),
+                                    Continue()])])])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        AugAssign(
+                          target=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='metrics',
+                              ctx=Load()),
+                            attr='error_count',
+                            ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1)),
+                        If(
+                          test=Compare(
+                            left=Name(id='attempt', ctx=Load()),
+                            ops=[
+                              Lt()],
+                            comparators=[
+                              BinOp(
+                                left=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='max_retries',
+                                  ctx=Load()),
+                                op=Sub(),
+                                right=Constant(value=1))]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='wait_time', ctx=Store())],
+                              value=BinOp(
+                                left=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='retry_delay',
+                                  ctx=Load()),
+                                op=Mult(),
+                                right=BinOp(
+                                  left=Constant(value=2),
+                                  op=Pow(),
+                                  right=Name(id='attempt', ctx=Load())))),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='warning',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      FormattedValue(
+                                        value=Name(id='section_id', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': Exception on attempt '),
+                                      FormattedValue(
+                                        value=BinOp(
+                                          left=Name(id='attempt', ctx=Load()),
+                                          op=Add(),
+                                          right=Constant(value=1)),
+                                        conversion=-1),
+                                      Constant(value=': '),
+                                      FormattedValue(
+                                        value=Name(id='e', ctx=Load()),
+                                        conversion=-1)])])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='warning',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Retrying in '),
+                                      FormattedValue(
+                                        value=Name(id='wait_time', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value='s...')])])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='time', ctx=Load()),
+                                  attr='sleep',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='wait_time', ctx=Load())])),
+                            Continue()],
+                          orelse=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='error',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      FormattedValue(
+                                        value=Name(id='section_id', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': All retry attempts exhausted')])])),
+                            Raise(
+                              exc=Call(
+                                func=Name(id='HopExecutionError', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      FormattedValue(
+                                        value=Name(id='section_id', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': API call failed after '),
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='self', ctx=Load()),
+                                          attr='max_retries',
+                                          ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=' attempts: '),
+                                      FormattedValue(
+                                        value=Call(
+                                          func=Name(id='str', ctx=Load()),
+                                          args=[
+                                            Name(id='e', ctx=Load())]),
+                                        conversion=-1)])]))])])])]),
+            Raise(
+              exc=Call(
+                func=Name(id='HopExecutionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='section_id', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=': API call failed after all retries')])]))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='int', ctx=Load()),
+                Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='call_with_self_consistency',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='section_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='num_runs',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='model',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='system_prompt',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='reasoning_config',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='ReasoningConfig', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='int', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='synthesis_prompt',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=3),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Execute multiple API calls for self-consistency with synthesis.\n        \n        Args:\n            prompt: The user prompt\n            section_id: Identifier for logging\n            num_runs: Number of self-consistency runs\n            model: Model name override\n            system_prompt: Optional system prompt\n            reasoning_config: Reasoning configuration\n            temperature: Temperature for generation\n            max_tokens: Max output tokens\n            synthesis_prompt: Custom prompt for synthesis\n            \n        Returns:\n            Tuple of (synthesized_result, total_api_calls, individual_responses)\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='num_runs', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=1)]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='section_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': num_runs must be at least 1')])]))]),
+            If(
+              test=Compare(
+                left=Name(id='num_runs', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='result', ctx=Store()),
+                        Name(id='calls', ctx=Store()),
+                        Name(id='_', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='call_api',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='prompt',
+                        value=Name(id='prompt', ctx=Load())),
+                      keyword(
+                        arg='section_id',
+                        value=JoinedStr(
+                          values=[
+                            FormattedValue(
+                              value=Name(id='section_id', ctx=Load()),
+                              conversion=-1),
+                            Constant(value='_run_1')])),
+                      keyword(
+                        arg='model',
+                        value=Name(id='model', ctx=Load())),
+                      keyword(
+                        arg='system_prompt',
+                        value=Name(id='system_prompt', ctx=Load())),
+                      keyword(
+                        arg='reasoning_config',
+                        value=Name(id='reasoning_config', ctx=Load())),
+                      keyword(
+                        arg='temperature',
+                        value=Name(id='temperature', ctx=Load())),
+                      keyword(
+                        arg='max_tokens',
+                        value=Name(id='max_tokens', ctx=Load()))])),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='result', ctx=Load()),
+                      Name(id='calls', ctx=Load()),
+                      List(
+                        elts=[
+                          Name(id='result', ctx=Load())],
+                        ctx=Load())],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='responses', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='total_calls', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Name(id='i', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='num_runs', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Tuple(
+                          elts=[
+                            Name(id='response', ctx=Store()),
+                            Name(id='calls', ctx=Store()),
+                            Name(id='_', ctx=Store())],
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='call_api',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='prompt',
+                            value=Name(id='prompt', ctx=Load())),
+                          keyword(
+                            arg='section_id',
+                            value=JoinedStr(
+                              values=[
+                                FormattedValue(
+                                  value=Name(id='section_id', ctx=Load()),
+                                  conversion=-1),
+                                Constant(value='_run_'),
+                                FormattedValue(
+                                  value=BinOp(
+                                    left=Name(id='i', ctx=Load()),
+                                    op=Add(),
+                                    right=Constant(value=1)),
+                                  conversion=-1)])),
+                          keyword(
+                            arg='model',
+                            value=Name(id='model', ctx=Load())),
+                          keyword(
+                            arg='system_prompt',
+                            value=Name(id='system_prompt', ctx=Load())),
+                          keyword(
+                            arg='reasoning_config',
+                            value=Name(id='reasoning_config', ctx=Load())),
+                          keyword(
+                            arg='temperature',
+                            value=BoolOp(
+                              op=Or(),
+                              values=[
+                                Name(id='temperature', ctx=Load()),
+                                Constant(value=1.0)])),
+                          keyword(
+                            arg='max_tokens',
+                            value=Name(id='max_tokens', ctx=Load()))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='responses', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='response', ctx=Load())])),
+                    AugAssign(
+                      target=Name(id='total_calls', ctx=Store()),
+                      op=Add(),
+                      value=Name(id='calls', ctx=Load()))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  FormattedValue(
+                                    value=Name(id='section_id', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': Self-consistency run '),
+                                  FormattedValue(
+                                    value=BinOp(
+                                      left=Name(id='i', ctx=Load()),
+                                      op=Add(),
+                                      right=Constant(value=1)),
+                                    conversion=-1),
+                                  Constant(value=' failed: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])])),
+                        Continue()])])]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='responses', ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='HopExecutionError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='section_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': All self-consistency runs failed')])]))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='responses', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Subscript(
+                        value=Name(id='responses', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load()),
+                      Name(id='total_calls', ctx=Load()),
+                      Name(id='responses', ctx=Load())],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='synthesized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_synthesize_responses',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='responses',
+                    value=Name(id='responses', ctx=Load())),
+                  keyword(
+                    arg='section_id',
+                    value=JoinedStr(
+                      values=[
+                        FormattedValue(
+                          value=Name(id='section_id', ctx=Load()),
+                          conversion=-1),
+                        Constant(value='_synthesis')])),
+                  keyword(
+                    arg='synthesis_prompt',
+                    value=Name(id='synthesis_prompt', ctx=Load())),
+                  keyword(
+                    arg='model',
+                    value=Name(id='model', ctx=Load()))])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='synthesized', ctx=Load()),
+                  BinOp(
+                    left=Name(id='total_calls', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1)),
+                  Name(id='responses', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='int', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_execute_api_call',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='model_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='system_prompt',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='section_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='api_params',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Execute a single API call with proper configuration.\n        \n        Returns:\n            Tuple of (response_object, status)\n        ')),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='model', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='genai', ctx=Load()),
+                      attr='GenerativeModel',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='model_name',
+                        value=Name(id='model_name', ctx=Load())),
+                      keyword(
+                        arg='generation_config',
+                        value=Dict(
+                          keys=[
+                            Constant(value='temperature'),
+                            Constant(value='max_output_tokens'),
+                            Constant(value='top_p'),
+                            Constant(value='top_k')],
+                          values=[
+                            Name(id='temperature', ctx=Load()),
+                            Name(id='max_tokens', ctx=Load()),
+                            Call(
+                              func=Attribute(
+                                value=Name(id='api_params', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='top_p'),
+                                Constant(value=1.0)]),
+                            Call(
+                              func=Attribute(
+                                value=Name(id='api_params', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='top_k'),
+                                Constant(value=40)])])),
+                      keyword(
+                        arg='safety_settings',
+                        value=Dict(
+                          keys=[
+                            Constant(value='HARM_CATEGORY_HARASSMENT'),
+                            Constant(value='HARM_CATEGORY_HATE_SPEECH'),
+                            Constant(value='HARM_CATEGORY_SEXUALLY_EXPLICIT'),
+                            Constant(value='HARM_CATEGORY_DANGEROUS_CONTENT')],
+                          values=[
+                            Name(id='SAFETY_THRESHOLD', ctx=Load()),
+                            Name(id='SAFETY_THRESHOLD', ctx=Load()),
+                            Name(id='SAFETY_THRESHOLD', ctx=Load()),
+                            Name(id='SAFETY_THRESHOLD', ctx=Load())]))])),
+                If(
+                  test=Name(id='system_prompt', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='full_prompt', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='system_prompt', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='\n\n'),
+                          FormattedValue(
+                            value=Name(id='prompt', ctx=Load()),
+                            conversion=-1)]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='full_prompt', ctx=Store())],
+                      value=Name(id='prompt', ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='response', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='model', ctx=Load()),
+                      attr='generate_content',
+                      ctx=Load()),
+                    args=[
+                      Name(id='full_prompt', ctx=Load())])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='response', ctx=Load()),
+                      attr='parts',
+                      ctx=Load())),
+                  body=[
+                    Return(
+                      value=Tuple(
+                        elts=[
+                          Constant(value=None),
+                          Attribute(
+                            value=Name(id='APICallStatus', ctx=Load()),
+                            attr='SAFETY_BLOCKED',
+                            ctx=Load())],
+                        ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='latency', ctx=Store())],
+                  value=BinOp(
+                    left=BinOp(
+                      left=Call(
+                        func=Attribute(
+                          value=Name(id='time', ctx=Load()),
+                          attr='time',
+                          ctx=Load())),
+                      op=Sub(),
+                      right=Name(id='start_time', ctx=Load())),
+                    op=Mult(),
+                    right=Constant(value=1000))),
+                AugAssign(
+                  target=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='total_latency_ms',
+                    ctx=Store()),
+                  op=Add(),
+                  value=Name(id='latency', ctx=Load())),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='response', ctx=Load()),
+                      Attribute(
+                        value=Name(id='APICallStatus', ctx=Load()),
+                        attr='SUCCESS',
+                        ctx=Load())],
+                    ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='error_str', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())]),
+                          attr='lower',
+                          ctx=Load()))),
+                    If(
+                      test=BoolOp(
+                        op=Or(),
+                        values=[
+                          Compare(
+                            left=Constant(value='quota'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='error_str', ctx=Load())]),
+                          Compare(
+                            left=Constant(value='rate'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='error_str', ctx=Load())])]),
+                      body=[
+                        Return(
+                          value=Tuple(
+                            elts=[
+                              Constant(value=None),
+                              Attribute(
+                                value=Name(id='APICallStatus', ctx=Load()),
+                                attr='RATE_LIMITED',
+                                ctx=Load())],
+                            ctx=Load()))],
+                      orelse=[
+                        If(
+                          test=BoolOp(
+                            op=Or(),
+                            values=[
+                              Compare(
+                                left=Constant(value='safety'),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='error_str', ctx=Load())]),
+                              Compare(
+                                left=Constant(value='blocked'),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='error_str', ctx=Load())])]),
+                          body=[
+                            Return(
+                              value=Tuple(
+                                elts=[
+                                  Constant(value=None),
+                                  Attribute(
+                                    value=Name(id='APICallStatus', ctx=Load()),
+                                    attr='SAFETY_BLOCKED',
+                                    ctx=Load())],
+                                ctx=Load()))],
+                          orelse=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='error',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      FormattedValue(
+                                        value=Name(id='section_id', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': API error: '),
+                                      FormattedValue(
+                                        value=Name(id='e', ctx=Load()),
+                                        conversion=-1)])])),
+                            Return(
+                              value=Tuple(
+                                elts=[
+                                  Constant(value=None),
+                                  Attribute(
+                                    value=Name(id='APICallStatus', ctx=Load()),
+                                    attr='ERROR',
+                                    ctx=Load())],
+                                ctx=Load()))])])])])],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='Any', ctx=Load()),
+                Name(id='APICallStatus', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_extract_text',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='response',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Extract clean text from API response.\n        \n        Args:\n            response: API response object\n            \n        Returns:\n            Cleaned text string\n        ')),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='response', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='response', ctx=Load()),
+                      attr='parts',
+                      ctx=Load()))]),
+              body=[
+                Return(
+                  value=Constant(value=''))]),
+            Assign(
+              targets=[
+                Name(id='text_parts', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='part', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='response', ctx=Load()),
+                attr='parts',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='part', ctx=Load()),
+                      Constant(value='text')]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='text_parts', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='part', ctx=Load()),
+                            attr='text',
+                            ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='text_parts', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text_utils', ctx=Load()),
+                  attr='strip_markdown_fences',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='strip',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_synthesize_responses',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='responses',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='section_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='synthesis_prompt',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='model',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Synthesize multiple responses into a single coherent response.\n        \n        Args:\n            responses: List of response texts\n            section_id: Identifier for logging\n            synthesis_prompt: Custom synthesis prompt\n            model: Model to use for synthesis\n            \n        Returns:\n            Synthesized response text\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='synthesis_prompt', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='synthesis_prompt', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='You are a response synthesizer.\nYou have received '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='responses', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' different responses to the same prompt.\nYour task is to create a single, high-quality response that incorporates the best elements from all responses.\n\nRESPONSES TO SYNTHESIZE:\n'),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Name(id='chr', ctx=Load()),
+                              args=[
+                                Constant(value=10)]),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            ListComp(
+                              elt=JoinedStr(
+                                values=[
+                                  Constant(value='Response '),
+                                  FormattedValue(
+                                    value=BinOp(
+                                      left=Name(id='i', ctx=Load()),
+                                      op=Add(),
+                                      right=Constant(value=1)),
+                                    conversion=-1),
+                                  Constant(value=':\n'),
+                                  FormattedValue(
+                                    value=Name(id='r', ctx=Load()),
+                                    conversion=-1)]),
+                              generators=[
+                                comprehension(
+                                  target=Tuple(
+                                    elts=[
+                                      Name(id='i', ctx=Store()),
+                                      Name(id='r', ctx=Store())],
+                                    ctx=Store()),
+                                  iter=Call(
+                                    func=Name(id='enumerate', ctx=Load()),
+                                    args=[
+                                      Name(id='responses', ctx=Load())]),
+                                  is_async=0)])]),
+                        conversion=-1),
+                      Constant(value='\n\nCreate a synthesized response that:\n1. Captures the key points from all responses\n2. Resolves any contradictions by choosing the most consistent information\n3. Maintains coherence and flow\n4. Does not mention that this is a synthesis\n\nSYNTHESIZED RESPONSE:')]))]),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='synthesized', ctx=Store()),
+                    Name(id='_', ctx=Store()),
+                    Name(id='_', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='call_api',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='prompt',
+                    value=Name(id='synthesis_prompt', ctx=Load())),
+                  keyword(
+                    arg='section_id',
+                    value=Name(id='section_id', ctx=Load())),
+                  keyword(
+                    arg='model',
+                    value=Name(id='model', ctx=Load())),
+                  keyword(
+                    arg='temperature',
+                    value=Name(id='DEFAULT_SYNTHESIS_TEMPERATURE', ctx=Load())),
+                  keyword(
+                    arg='validate_response',
+                    value=Constant(value=True))])),
+            Return(
+              value=Name(id='synthesized', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_validate_no_mock_data',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validate that text contains no mock/placeholder data.\n        \n        Args:\n            text: Text to validate\n            context: Context for error messages\n            \n        Raises:\n            ValueError: If mock data is detected\n        ')),
+            Assign(
+              targets=[
+                Name(id='mock_indicators', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='[placeholder]'),
+                  Constant(value='[PLACEHOLDER]'),
+                  Constant(value='[your name]'),
+                  Constant(value='[YOUR NAME]'),
+                  Constant(value='[company name]'),
+                  Constant(value='[COMPANY NAME]'),
+                  Constant(value='[TODO]'),
+                  Constant(value='[FIXME]'),
+                  Constant(value='dummy_'),
+                  Constant(value='DUMMY_'),
+                  Constant(value='test_data'),
+                  Constant(value='TEST_DATA'),
+                  Constant(value='mock_response'),
+                  Constant(value='MOCK_RESPONSE')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='text_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            For(
+              target=Name(id='indicator', ctx=Store()),
+              iter=Name(id='mock_indicators', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='indicator', ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='text_lower', ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Name(id='context', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=": Mock/placeholder data detected: '"),
+                              FormattedValue(
+                                value=Name(id='indicator', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="'. Production system cannot process test data.")])]))])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_validate_response_integrity',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value="\n        Validate response doesn't contain problematic content.\n        \n        Args:\n            text: Response text to validate\n            context: Context for error messages\n            \n        Raises:\n            ValueError: If response fails validation\n        ")),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='text', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='text', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())))]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='context', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': Empty response received')])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_no_mock_data',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='error_patterns', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='error:'),
+                  Constant(value='ERROR:'),
+                  Constant(value='failed to'),
+                  Constant(value='Failed to'),
+                  Constant(value='could not generate'),
+                  Constant(value='Could not generate'),
+                  Constant(value='I cannot'),
+                  Constant(value="I can't")],
+                ctx=Load())),
+            For(
+              target=Name(id='pattern', ctx=Store()),
+              iter=Name(id='error_patterns', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='pattern', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='text', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='warning',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Name(id='context', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=": Response contains potential error: '"),
+                              FormattedValue(
+                                value=Name(id='pattern', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="'")])]))])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='get_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Get current metrics for the service.\n        \n        Returns:\n            Dictionary of metrics\n        ')),
+            Assign(
+              targets=[
+                Name(id='success_rate', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='call_count',
+                    ctx=Load()),
+                  ops=[
+                    Gt()],
+                  comparators=[
+                    Constant(value=0)]),
+                body=BinOp(
+                  left=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='success_count',
+                    ctx=Load()),
+                  op=Div(),
+                  right=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='call_count',
+                    ctx=Load())),
+                orelse=Constant(value=0))),
+            Assign(
+              targets=[
+                Name(id='avg_latency', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='success_count',
+                    ctx=Load()),
+                  ops=[
+                    Gt()],
+                  comparators=[
+                    Constant(value=0)]),
+                body=BinOp(
+                  left=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='total_latency_ms',
+                    ctx=Load()),
+                  op=Div(),
+                  right=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='success_count',
+                    ctx=Load())),
+                orelse=Constant(value=0))),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='total_calls'),
+                  Constant(value='successful_calls'),
+                  Constant(value='failed_calls'),
+                  Constant(value='success_rate'),
+                  Constant(value='average_latency_ms'),
+                  Constant(value='safety_blocks'),
+                  Constant(value='rate_limits'),
+                  Constant(value='total_tokens_used')],
+                values=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='call_count',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='success_count',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='error_count',
+                    ctx=Load()),
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=BinOp(
+                          left=Name(id='success_rate', ctx=Load()),
+                          op=Mult(),
+                          right=Constant(value=100)),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.1f')])),
+                      Constant(value='%')]),
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='avg_latency', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.1f')]))]),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='safety_blocks',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='rate_limits',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    attr='total_tokens_used',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='reset_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Reset all metrics to zero.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metrics',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='APICallMetrics', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='GeminiService metrics reset')]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='call_api_with_json_response',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='section_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='int', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='retry_count',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=3)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Calls the Gemini API and ensures the response is valid JSON.\n        This is the missing method required by rag_RES_v2.py.\n        ')),
+            Assign(
+              targets=[
+                Name(id='total_calls', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Name(id='attempt', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='retry_count', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='temp', ctx=Store())],
+                      value=IfExp(
+                        test=Compare(
+                          left=Name(id='temperature', ctx=Load()),
+                          ops=[
+                            IsNot()],
+                          comparators=[
+                            Constant(value=None)]),
+                        body=Name(id='temperature', ctx=Load()),
+                        orelse=Name(id='DEFAULT_GENERATION_TEMPERATURE', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Tuple(
+                          elts=[
+                            Name(id='raw_response', ctx=Store()),
+                            Name(id='calls', ctx=Store()),
+                            Name(id='full_resp', ctx=Store())],
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='call_api',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='prompt',
+                            value=Name(id='prompt', ctx=Load())),
+                          keyword(
+                            arg='section_id',
+                            value=Name(id='section_id', ctx=Load())),
+                          keyword(
+                            arg='temperature',
+                            value=Name(id='temp', ctx=Load())),
+                          keyword(
+                            arg='max_tokens',
+                            value=Name(id='max_tokens', ctx=Load())),
+                          keyword(
+                            arg='validate_response',
+                            value=Constant(value=False))])),
+                    AugAssign(
+                      target=Name(id='total_calls', ctx=Store()),
+                      op=Add(),
+                      value=Name(id='calls', ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='json_match', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='re', ctx=Load()),
+                          attr='search',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='```json\\n(.*?)\\n```'),
+                          Name(id='raw_response', ctx=Load()),
+                          Attribute(
+                            value=Name(id='re', ctx=Load()),
+                            attr='DOTALL',
+                            ctx=Load())])),
+                    If(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Name(id='json_match', ctx=Load())),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='json_match', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='re', ctx=Load()),
+                              attr='search',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='({.*})'),
+                              Name(id='raw_response', ctx=Load()),
+                              Attribute(
+                                value=Name(id='re', ctx=Load()),
+                                attr='DOTALL',
+                                ctx=Load())]))]),
+                    If(
+                      test=Name(id='json_match', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='json_str', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='json_match', ctx=Load()),
+                              attr='group',
+                              ctx=Load()),
+                            args=[
+                              Constant(value=1)])),
+                        Return(
+                          value=Tuple(
+                            elts=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='json', ctx=Load()),
+                                  attr='loads',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='json_str', ctx=Load())]),
+                              Name(id='total_calls', ctx=Load()),
+                              Name(id='full_resp', ctx=Load())],
+                            ctx=Load()))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='No JSON found in response, attempt '),
+                                  FormattedValue(
+                                    value=BinOp(
+                                      left=Name(id='attempt', ctx=Load()),
+                                      op=Add(),
+                                      right=Constant(value=1)),
+                                    conversion=-1)])]))])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Attribute(
+                        value=Name(id='json', ctx=Load()),
+                        attr='JSONDecodeError',
+                        ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='JSON decode failed: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='. Response: '),
+                                  FormattedValue(
+                                    value=Name(id='raw_response', ctx=Load()),
+                                    conversion=-1)])]))]),
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='API call failed: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])]))])])]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValueError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Failed to get valid JSON response after '),
+                      FormattedValue(
+                        value=Name(id='retry_count', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' attempts.')])]))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='dict', ctx=Load()),
+                Name(id='int', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    Assign(
+      targets=[
+        Name(id='_gemini_service_instance', ctx=Store())],
+      value=Constant(value=None)),
+    FunctionDef(
+      name='get_gemini_service',
+      args=arguments(
+        args=[
+          arg(
+            arg='default_model',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='force_new',
+            annotation=Name(id='bool', ctx=Load()))],
+        defaults=[
+          Constant(value='gemini-2.0-flash-exp'),
+          Constant(value=False)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Get or create the global GeminiService instance.\n    \n    Args:\n        default_model: Default model to use\n        force_new: Force creation of new instance\n        \n    Returns:\n        GeminiService instance\n    ')),
+        Global(
+          names=[
+            '_gemini_service_instance']),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='force_new', ctx=Load()),
+              Compare(
+                left=Name(id='_gemini_service_instance', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='_gemini_service_instance', ctx=Store())],
+              value=Call(
+                func=Name(id='GeminiService', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='default_model',
+                    value=Name(id='default_model', ctx=Load()))]))]),
+        Return(
+          value=Name(id='_gemini_service_instance', ctx=Load()))],
+      returns=Name(id='GeminiService', ctx=Load()))])

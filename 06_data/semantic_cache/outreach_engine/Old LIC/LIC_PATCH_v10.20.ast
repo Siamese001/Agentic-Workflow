@@ -1,0 +1,1761 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='patch_metadata'),
+          Constant(value='patch_summary'),
+          Constant(value='patches'),
+          Constant(value='new_qa_rules'),
+          Constant(value='enhanced_qa_rules'),
+          Constant(value='implementation_order'),
+          Constant(value='testing_requirements'),
+          Constant(value='deployment_strategy')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='patch_id'),
+              Constant(value='base_version'),
+              Constant(value='target_version'),
+              Constant(value='patch_date'),
+              Constant(value='total_remediations'),
+              Constant(value='critical_remediations'),
+              Constant(value='warning_remediations'),
+              Constant(value='test_coverage'),
+              Constant(value='breaking_changes'),
+              Constant(value='rollback_compatible')],
+            values=[
+              Constant(value='LIC-PATCH-v10.20'),
+              Constant(value='v10.10'),
+              Constant(value='v10.20'),
+              Constant(value='2025-10-14'),
+              Constant(value=11),
+              Constant(value=7),
+              Constant(value=4),
+              Constant(value='100% (30/30 tests will pass after patch)'),
+              Name(id='false', ctx=Load()),
+              Name(id='true', ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='description'),
+              Constant(value='key_improvements')],
+            values=[
+              Constant(value='Comprehensive quality and edge case hardening patch based on 30-test validation suite. Addresses 11 critical gaps in boot validation, confidence scoring, metric validation, and error handling.'),
+              List(
+                elts=[
+                  Constant(value='Enhanced boot validator with spell-check and circular reference detection'),
+                  Constant(value='Per-claim confidence enforcement for granular quality control'),
+                  Constant(value='Metric context coherence validation'),
+                  Constant(value='Placeholder detection and blocking'),
+                  Constant(value='Job title position enforcement for job-specific messages'),
+                  Constant(value='Multi-failure aggregation for comprehensive error reporting'),
+                  Constant(value='Context window overflow handling'),
+                  Constant(value='Dynamic holiday calculation for CTA date windows'),
+                  Constant(value='CPO classification disambiguation'),
+                  Constant(value='Company name validation dictionary'),
+                  Constant(value='Template spell-check integration')],
+                ctx=Load())]),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-001'),
+                  Constant(value='WARNING'),
+                  Constant(value='GAP-001'),
+                  Constant(value='Template Spell-Check Integration'),
+                  Constant(value='Add spell-check validation to boot validator for all templates'),
+                  List(
+                    elts=[
+                      Constant(value='3.context.system.boot_validator')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='add_to_boot_validator')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='spell_check_engine')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='enabled'),
+                              Constant(value='dictionary'),
+                              Constant(value='custom_terms'),
+                              Constant(value='validation_targets'),
+                              Constant(value='common_typos'),
+                              Constant(value='on_typo_detected')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value='en_US'),
+                              List(
+                                elts=[
+                                  Constant(value='LinkedIn'),
+                                  Constant(value='InMail'),
+                                  Constant(value='GitHub'),
+                                  Constant(value='DevOps'),
+                                  Constant(value='SaaS'),
+                                  Constant(value='API')],
+                                ctx=Load()),
+                              List(
+                                elts=[
+                                  Constant(value='greeting_templates'),
+                                  Constant(value='cta_templates'),
+                                  Constant(value='signature_formats')],
+                                ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='Hii'),
+                                  Constant(value='Helo'),
+                                  Constant(value='recieve'),
+                                  Constant(value='seperate'),
+                                  Constant(value='definately')],
+                                values=[
+                                  Constant(value='Hi'),
+                                  Constant(value='Hello'),
+                                  Constant(value='receive'),
+                                  Constant(value='separate'),
+                                  Constant(value='definitely')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='action'),
+                                  Constant(value='message'),
+                                  Constant(value='recovery')],
+                                values=[
+                                  Constant(value='BLOCK_SYSTEM_START'),
+                                  Constant(value="Boot validation failed: Typo detected in {template_type}: '{typo}' should be '{correction}'"),
+                                  Constant(value='Fix typo in template and restart')])])])]),
+                  Constant(value='TC-002 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-002'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='GAP-002'),
+                  Constant(value='Circular Reference Detection'),
+                  Constant(value='Add circular reference detection to schema loader to prevent infinite loops'),
+                  List(
+                    elts=[
+                      Constant(value='3.context.system.schema_loader')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='add_to_schema_loader')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='circular_reference_detector')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='enabled'),
+                              Constant(value='execution'),
+                              Constant(value='blocking'),
+                              Constant(value='detection_algorithm'),
+                              Constant(value='validation_checks'),
+                              Constant(value='on_circular_ref_detected')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value='DURING_SCHEMA_LOAD'),
+                              Name(id='true', ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='method'),
+                                  Constant(value='max_depth'),
+                                  Constant(value='track_reference_chain')],
+                                values=[
+                                  Constant(value='Depth-First Search with visited tracking'),
+                                  Constant(value=100),
+                                  Name(id='true', ctx=Load())]),
+                              List(
+                                elts=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='check'),
+                                      Constant(value='pattern'),
+                                      Constant(value='severity')],
+                                    values=[
+                                      Constant(value='self_reference'),
+                                      Constant(value='schema.field references itself'),
+                                      Constant(value='CRITICAL')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='check'),
+                                      Constant(value='pattern'),
+                                      Constant(value='severity')],
+                                    values=[
+                                      Constant(value='circular_chain'),
+                                      Constant(value='A → B → C → A'),
+                                      Constant(value='CRITICAL')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='check'),
+                                      Constant(value='pattern'),
+                                      Constant(value='severity')],
+                                    values=[
+                                      Constant(value='indirect_circular'),
+                                      Constant(value='A → B → C → D → B'),
+                                      Constant(value='CRITICAL')])],
+                                ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='action'),
+                                  Constant(value='message'),
+                                  Constant(value='recovery'),
+                                  Constant(value='log_chain')],
+                                values=[
+                                  Constant(value='BLOCK_SYSTEM_START'),
+                                  Constant(value='Boot validation failed: Circular reference detected in {schema_file}: {reference_chain}'),
+                                  Constant(value='Break circular reference and restart'),
+                                  Name(id='true', ctx=Load())])])])]),
+                  Constant(value='TC-003 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-003'),
+                  Constant(value='WARNING'),
+                  Constant(value='GAP-003'),
+                  Constant(value='CPO Classification Disambiguation'),
+                  Constant(value='Add CPO-specific logic with RAG fallback to determine TA vs general HR focus'),
+                  List(
+                    elts=[
+                      Constant(value='4.reasoning.deterministic_classification_v1')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='add_to_classification'),
+                      Constant(value='update_stage_3_mapping')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='cpo_disambiguation')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='trigger'),
+                              Constant(value='method'),
+                              Constant(value='process'),
+                              Constant(value='ta_keywords'),
+                              Constant(value='confidence_thresholds'),
+                              Constant(value='fallback_strategy')],
+                            values=[
+                              Constant(value="title contains 'Chief People Officer' OR 'CPO'"),
+                              Constant(value='RAG-assisted domain inference'),
+                              List(
+                                elts=[
+                                  Constant(value="Step 1: Check if 'Talent Acquisition' or 'TA' appears in About"),
+                                  Constant(value='Step 2: If yes → classify as SENIOR_TA'),
+                                  Constant(value="Step 3: If no → execute RAG query: '{name} {company} responsibilities talent acquisition recruiting'"),
+                                  Constant(value='Step 4: Analyze RAG results for TA-specific terminology density'),
+                                  Constant(value='Step 5: If TA_density > 0.6 → SENIOR_TA, else → C_LEVEL')],
+                                ctx=Load()),
+                              List(
+                                elts=[
+                                  Constant(value='talent acquisition'),
+                                  Constant(value='recruiting'),
+                                  Constant(value='recruitment'),
+                                  Constant(value='hiring'),
+                                  Constant(value='talent pipeline'),
+                                  Constant(value='sourcing'),
+                                  Constant(value='candidate')],
+                                ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='high_confidence'),
+                                  Constant(value='medium_confidence'),
+                                  Constant(value='low_confidence')],
+                                values=[
+                                  Constant(value=0.9),
+                                  Constant(value=0.75),
+                                  Constant(value=0.6)]),
+                              Dict(
+                                keys=[
+                                  Constant(value='if_rag_unavailable'),
+                                  Constant(value='default_if_ambiguous')],
+                                values=[
+                                  Constant(value='Prompt user for manual classification'),
+                                  Constant(value='SENIOR_TA')])])]),
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='priority'),
+                              Constant(value='condition'),
+                              Constant(value='output'),
+                              Constant(value='confidence')],
+                            values=[
+                              Constant(value=1.5),
+                              Constant(value='CPO & TA_focus_confirmed'),
+                              Constant(value='SENIOR_TA'),
+                              Constant(value=0.94)]),
+                          Dict(
+                            keys=[
+                              Constant(value='priority'),
+                              Constant(value='condition'),
+                              Constant(value='output'),
+                              Constant(value='confidence')],
+                            values=[
+                              Constant(value=1.6),
+                              Constant(value='CPO & HR_general_focus'),
+                              Constant(value='C_LEVEL'),
+                              Constant(value=0.92)])],
+                        ctx=Load())]),
+                  Constant(value='TC-005 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-004'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='GAP-004'),
+                  Constant(value='Per-Claim Confidence Enforcement'),
+                  Constant(value='Implement granular per-claim confidence checking before aggregate calculation'),
+                  List(
+                    elts=[
+                      Constant(value='4.reasoning.rag_validation_framework.confidence_scoring'),
+                      Constant(value='6.validation.master_validation_gate')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='enhance_confidence_scoring'),
+                      Constant(value='add_qa_rule')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='per_claim_validation')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='enabled'),
+                              Constant(value='execution_point'),
+                              Constant(value='blocking'),
+                              Constant(value='threshold'),
+                              Constant(value='validation_process'),
+                              Constant(value='claim_extraction'),
+                              Constant(value='confidence_calculation'),
+                              Constant(value='rejection_strategy')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value='BEFORE_AGGREGATE_CALCULATION'),
+                              Name(id='true', ctx=Load()),
+                              Constant(value=0.8),
+                              List(
+                                elts=[
+                                  Constant(value='Step 1: Parse K.3 body into atomic claims'),
+                                  Constant(value='Step 2: Calculate confidence for each claim individually'),
+                                  Constant(value='Step 3: Check each claim against 0.80 threshold'),
+                                  Constant(value='Step 4: REJECT any claim below threshold'),
+                                  Constant(value='Step 5: Remove low-confidence claims from body'),
+                                  Constant(value='Step 6: Recalculate aggregate with remaining claims'),
+                                  Constant(value='Step 7: If aggregate still < 0.95, trigger full regeneration')],
+                                ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='method'),
+                                  Constant(value='splitters'),
+                                  Constant(value='ignore_patterns')],
+                                values=[
+                                  Constant(value='Sentence-level parsing with claim boundary detection'),
+                                  List(
+                                    elts=[
+                                      Constant(value='.'),
+                                      Constant(value=';'),
+                                      Constant(value='and'),
+                                      Constant(value='while'),
+                                      Constant(value='by'),
+                                      Constant(value='which'),
+                                      Constant(value='that')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='greeting'),
+                                      Constant(value='closing'),
+                                      Constant(value='transition_phrases')],
+                                    ctx=Load())]),
+                              Dict(
+                                keys=[
+                                  Constant(value='base_score'),
+                                  Constant(value='deductions')],
+                                values=[
+                                  Constant(value=1.0),
+                                  List(
+                                    elts=[
+                                      Dict(
+                                        keys=[
+                                          Constant(value='condition'),
+                                          Constant(value='penalty')],
+                                        values=[
+                                          Constant(value='No RAG source found'),
+                                          UnaryOp(
+                                            op=USub(),
+                                            operand=Constant(value=0.5))]),
+                                      Dict(
+                                        keys=[
+                                          Constant(value='condition'),
+                                          Constant(value='penalty')],
+                                        values=[
+                                          Constant(value='Metric without source mapping'),
+                                          UnaryOp(
+                                            op=USub(),
+                                            operand=Constant(value=0.4))]),
+                                      Dict(
+                                        keys=[
+                                          Constant(value='condition'),
+                                          Constant(value='penalty')],
+                                        values=[
+                                          Constant(value='Company not in whitelist'),
+                                          UnaryOp(
+                                            op=USub(),
+                                            operand=Constant(value=1.0))]),
+                                      Dict(
+                                        keys=[
+                                          Constant(value='condition'),
+                                          Constant(value='penalty')],
+                                        values=[
+                                          Constant(value='Role drift (similarity <0.92)'),
+                                          UnaryOp(
+                                            op=USub(),
+                                            operand=Constant(value=0.3))]),
+                                      Dict(
+                                        keys=[
+                                          Constant(value='condition'),
+                                          Constant(value='penalty')],
+                                        values=[
+                                          Constant(value='Context coherence <0.80'),
+                                          UnaryOp(
+                                            op=USub(),
+                                            operand=Constant(value=0.25))]),
+                                      Dict(
+                                        keys=[
+                                          Constant(value='condition'),
+                                          Constant(value='penalty')],
+                                        values=[
+                                          Constant(value='Temporal inconsistency'),
+                                          UnaryOp(
+                                            op=USub(),
+                                            operand=Constant(value=0.2))]),
+                                      Dict(
+                                        keys=[
+                                          Constant(value='condition'),
+                                          Constant(value='penalty')],
+                                        values=[
+                                          Constant(value='Vague/generic language'),
+                                          UnaryOp(
+                                            op=USub(),
+                                            operand=Constant(value=0.15))])],
+                                    ctx=Load())]),
+                              Dict(
+                                keys=[
+                                  Constant(value='single_claim_below_threshold'),
+                                  Constant(value='multiple_claims_below_threshold')],
+                                values=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='action'),
+                                      Constant(value='log_message'),
+                                      Constant(value='regeneration_trigger')],
+                                    values=[
+                                      Constant(value='REMOVE_CLAIM'),
+                                      Constant(value="Claim '{claim_text}' removed (confidence {score} < 0.80)"),
+                                      Constant(value='If >2 claims removed or body too short')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='action'),
+                                      Constant(value='log_message'),
+                                      Constant(value='strategy')],
+                                    values=[
+                                      Constant(value='FULL_REGENERATION'),
+                                      Constant(value='Multiple low-confidence claims detected, regenerating K.3'),
+                                      Constant(value='Increase RAG retrievers, apply stricter validation')])])])]),
+                      Dict(
+                        keys=[
+                          Constant(value='LIC-QA-106')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='severity'),
+                              Constant(value='check'),
+                              Constant(value='fix'),
+                              Constant(value='validation_point'),
+                              Constant(value='blocking')],
+                            values=[
+                              Constant(value='CRITICAL'),
+                              Constant(value='Every claim in K.3 has â‰¥0.80 confidence'),
+                              Constant(value='Remove low-confidence claims or regenerate'),
+                              Constant(value='POST_GENERATION'),
+                              Name(id='true', ctx=Load())])])]),
+                  Constant(value='TC-011 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-005'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='GAP-005'),
+                  Constant(value='Metric Context Coherence Validation'),
+                  Constant(value='Enforce that metrics appear with required context keywords from source'),
+                  List(
+                    elts=[
+                      Constant(value='4.reasoning.entity_grounding_framework'),
+                      Constant(value='6.validation.qa_rules')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='enhance_entity_grounding'),
+                      Constant(value='update_qa_rule'),
+                      Constant(value='add_qa_rule')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='metric_context_validation')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='enabled'),
+                              Constant(value='execution_point'),
+                              Constant(value='blocking'),
+                              Constant(value='validation_process'),
+                              Constant(value='context_extraction'),
+                              Constant(value='keyword_matching'),
+                              Constant(value='coherence_scoring'),
+                              Constant(value='on_validation_failure')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value='POST_GENERATION'),
+                              Name(id='true', ctx=Load()),
+                              List(
+                                elts=[
+                                  Constant(value='Step 1: Extract all metrics from K.3 body'),
+                                  Constant(value='Step 2: For each metric, lookup required_context_keywords from metric_source_map'),
+                                  Constant(value='Step 3: Extract Â±20 words surrounding metric in K.3'),
+                                  Constant(value='Step 4: Check if â‰¥2 required keywords present in surrounding context'),
+                                  Constant(value='Step 5: If keyword_match_count < 2, REJECT metric usage'),
+                                  Constant(value='Step 6: Calculate context_coherence_score'),
+                                  Constant(value='Step 7: If context_coherence_score < 0.80, REJECT')],
+                                ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='window_size'),
+                                  Constant(value='window_type'),
+                                  Constant(value='direction'),
+                                  Constant(value='include_sentence')],
+                                values=[
+                                  Constant(value=20),
+                                  Constant(value='words'),
+                                  Constant(value='bidirectional'),
+                                  Name(id='true', ctx=Load())]),
+                              Dict(
+                                keys=[
+                                  Constant(value='exact_match_weight'),
+                                  Constant(value='semantic_match_weight'),
+                                  Constant(value='synonym_match_weight'),
+                                  Constant(value='min_keywords_required'),
+                                  Constant(value='semantic_similarity_threshold')],
+                                values=[
+                                  Constant(value=1.0),
+                                  Constant(value=0.7),
+                                  Constant(value=0.85),
+                                  Constant(value=2),
+                                  Constant(value=0.85)]),
+                              Dict(
+                                keys=[
+                                  Constant(value='formula'),
+                                  Constant(value='minimum_score'),
+                                  Constant(value='penalize_missing_keywords')],
+                                values=[
+                                  Constant(value='(matched_keywords / required_keywords) * average_similarity'),
+                                  Constant(value=0.8),
+                                  Name(id='true', ctx=Load())]),
+                              Dict(
+                                keys=[
+                                  Constant(value='action'),
+                                  Constant(value='message'),
+                                  Constant(value='regeneration'),
+                                  Constant(value='inject_context_requirements')],
+                                values=[
+                                  Constant(value='REJECT_METRIC_USAGE'),
+                                  Constant(value="Metric '{metric}' missing required context. Required: {keywords}, Found: {found_keywords}"),
+                                  Name(id='true', ctx=Load()),
+                                  Name(id='true', ctx=Load())])])]),
+                      Dict(
+                        keys=[
+                          Constant(value='LIC-QA-043')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='severity'),
+                              Constant(value='check'),
+                              Constant(value='fix'),
+                              Constant(value='validation_point'),
+                              Constant(value='blocking'),
+                              Constant(value='enhanced')],
+                            values=[
+                              Constant(value='CRITICAL'),
+                              Constant(value='Metrics appear with correct context keywords (â‰¥0.80 coherence)'),
+                              Constant(value='Regenerate with context requirements injected'),
+                              Constant(value='POST_GENERATION'),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load())])]),
+                      Dict(
+                        keys=[
+                          Constant(value='LIC-QA-107')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='severity'),
+                              Constant(value='check'),
+                              Constant(value='fix'),
+                              Constant(value='validation_point'),
+                              Constant(value='blocking')],
+                            values=[
+                              Constant(value='CRITICAL'),
+                              Constant(value='Every metric has â‰¥2 required context keywords within Â±20 words'),
+                              Constant(value='Add context or remove metric'),
+                              Constant(value='POST_GENERATION'),
+                              Name(id='true', ctx=Load())])])]),
+                  Constant(value='TC-015 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-006'),
+                  Constant(value='WARNING'),
+                  Constant(value='GAP-006'),
+                  Constant(value='Dynamic Holiday Calculation'),
+                  Constant(value='Replace hard-coded 2025 holidays with dynamic calculation for all future years'),
+                  List(
+                    elts=[
+                      Constant(value='4.reasoning.cta_generator.date_window_engine')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='enhance_date_window_engine')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='dynamic_holiday_calculator'),
+                          Constant(value='remove_hard_coded_dates')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='enabled'),
+                              Constant(value='calculation_method'),
+                              Constant(value='us_federal_holidays'),
+                              Constant(value='calculation_logic'),
+                              Constant(value='weekend_observance_rules')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value='Rule-based with observance logic'),
+                              List(
+                                elts=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule'),
+                                      Constant(value='observance')],
+                                    values=[
+                                      Constant(value="New Year's Day"),
+                                      Constant(value='January 1'),
+                                      Constant(value='If weekend, observe on adjacent Monday')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule')],
+                                    values=[
+                                      Constant(value='Martin Luther King Jr. Day'),
+                                      Constant(value='Third Monday of January')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule')],
+                                    values=[
+                                      Constant(value="Presidents' Day"),
+                                      Constant(value='Third Monday of February')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule')],
+                                    values=[
+                                      Constant(value='Memorial Day'),
+                                      Constant(value='Last Monday of May')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule'),
+                                      Constant(value='observance')],
+                                    values=[
+                                      Constant(value='Juneteenth'),
+                                      Constant(value='June 19'),
+                                      Constant(value='If weekend, observe on adjacent Friday or Monday')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule'),
+                                      Constant(value='observance')],
+                                    values=[
+                                      Constant(value='Independence Day'),
+                                      Constant(value='July 4'),
+                                      Constant(value='If weekend, observe on adjacent Friday or Monday')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule')],
+                                    values=[
+                                      Constant(value='Labor Day'),
+                                      Constant(value='First Monday of September')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule')],
+                                    values=[
+                                      Constant(value='Columbus Day'),
+                                      Constant(value='Second Monday of October')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule'),
+                                      Constant(value='observance')],
+                                    values=[
+                                      Constant(value='Veterans Day'),
+                                      Constant(value='November 11'),
+                                      Constant(value='If weekend, observe on adjacent Friday or Monday')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule')],
+                                    values=[
+                                      Constant(value='Thanksgiving'),
+                                      Constant(value='Fourth Thursday of November')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='name'),
+                                      Constant(value='rule'),
+                                      Constant(value='observance')],
+                                    values=[
+                                      Constant(value='Christmas'),
+                                      Constant(value='December 25'),
+                                      Constant(value='If weekend, observe on adjacent Friday or Monday')])],
+                                ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='method'),
+                                  Constant(value='cache_duration'),
+                                  Constant(value='recalculate_trigger')],
+                                values=[
+                                  Constant(value='Generate holidays for current_year + 2'),
+                                  Constant(value='365 days'),
+                                  Constant(value='January 1 each year')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='saturday_holiday'),
+                                  Constant(value='sunday_holiday')],
+                                values=[
+                                  Constant(value='Observe on Friday'),
+                                  Constant(value='Observe on Monday')])]),
+                          Dict(
+                            keys=[
+                              Constant(value='action'),
+                              Constant(value='replace_with')],
+                            values=[
+                              Constant(value='Delete us_federal_holidays_2025 array'),
+                              Constant(value='dynamic_holiday_calculator')])])]),
+                  Constant(value='TC-017 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-007'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='GAP-007'),
+                  Constant(value='Placeholder Detection Patterns'),
+                  Constant(value='Add comprehensive placeholder detection to prevent generic content in final output'),
+                  List(
+                    elts=[
+                      Constant(value='6.validation.qa_rules'),
+                      Constant(value='6.validation.master_validation_gate')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='add_placeholder_detector'),
+                      Constant(value='enhance_qa_rule')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='enabled'),
+                          Constant(value='execution_point'),
+                          Constant(value='blocking'),
+                          Constant(value='detection_patterns'),
+                          Constant(value='scan_targets'),
+                          Constant(value='on_detection'),
+                          Constant(value='exceptions')],
+                        values=[
+                          Name(id='true', ctx=Load()),
+                          Constant(value='POST_GENERATION'),
+                          Name(id='true', ctx=Load()),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='pattern'),
+                                  Constant(value='description'),
+                                  Constant(value='severity')],
+                                values=[
+                                  Constant(value='\\[([A-Z_]+)\\]'),
+                                  Constant(value='Square bracket placeholders [INITIATIVE]'),
+                                  Constant(value='CRITICAL')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='pattern'),
+                                  Constant(value='description'),
+                                  Constant(value='severity')],
+                                values=[
+                                  Constant(value='\\{([A-Z_]+)\\}'),
+                                  Constant(value='Curly brace placeholders {COMPANY}'),
+                                  Constant(value='CRITICAL')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='pattern'),
+                                  Constant(value='description'),
+                                  Constant(value='severity')],
+                                values=[
+                                  Constant(value='__([A-Z_]+)__'),
+                                  Constant(value='Double underscore placeholders __ROLE__'),
+                                  Constant(value='CRITICAL')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='pattern'),
+                                  Constant(value='description'),
+                                  Constant(value='severity')],
+                                values=[
+                                  Constant(value='\\[TBD\\]|\\[TODO\\]|\\[PLACEHOLDER\\]'),
+                                  Constant(value='Common placeholder keywords'),
+                                  Constant(value='CRITICAL')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='pattern'),
+                                  Constant(value='description'),
+                                  Constant(value='severity')],
+                                values=[
+                                  Constant(value='\\{\\{[^}]+\\}\\}'),
+                                  Constant(value='Template variable placeholders {{variable}}'),
+                                  Constant(value='CRITICAL')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='pattern'),
+                                  Constant(value='description'),
+                                  Constant(value='severity')],
+                                values=[
+                                  Constant(value='<[A-Z_]+>'),
+                                  Constant(value='Angle bracket placeholders <METRIC>'),
+                                  Constant(value='WARNING')])],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value='K.2_subject_line'),
+                              Constant(value='K.3_body'),
+                              Constant(value='K.5_cta')],
+                            ctx=Load()),
+                          Dict(
+                            keys=[
+                              Constant(value='action'),
+                              Constant(value='error_code'),
+                              Constant(value='message'),
+                              Constant(value='fix'),
+                              Constant(value='regeneration')],
+                            values=[
+                              Constant(value='REJECT'),
+                              Constant(value='LIC-QA-067'),
+                              Constant(value="Placeholder '{placeholder}' detected in {location}"),
+                              Constant(value='Replace with specific content or regenerate'),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='allowed_in_templates'),
+                              Constant(value='allowed_in_examples'),
+                              Constant(value='allowed_in_documentation')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load())])]),
+                      Dict(
+                        keys=[
+                          Constant(value='LIC-QA-067')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='severity'),
+                              Constant(value='check'),
+                              Constant(value='fix'),
+                              Constant(value='validation_point'),
+                              Constant(value='blocking'),
+                              Constant(value='enhanced'),
+                              Constant(value='detection_method')],
+                            values=[
+                              Constant(value='CRITICAL'),
+                              Constant(value='No placeholders in final output using pattern matching'),
+                              Constant(value='Replace placeholder with specific content'),
+                              Constant(value='POST_GENERATION'),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Constant(value='Regex pattern matching across 6 patterns')])])]),
+                  Constant(value='TC-021 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-008'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='GAP-008'),
+                  Constant(value='Job Title Position Validator'),
+                  Constant(value='Enforce job title appears in first 50 words for job-specific messages'),
+                  List(
+                    elts=[
+                      Constant(value='6.validation.qa_rules'),
+                      Constant(value='6.validation.master_validation_gate')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='add_job_title_position_validator'),
+                      Constant(value='enhance_qa_rule')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='enabled'),
+                          Constant(value='trigger'),
+                          Constant(value='execution_point'),
+                          Constant(value='blocking'),
+                          Constant(value='validation_process'),
+                          Constant(value='word_counting'),
+                          Constant(value='matching'),
+                          Constant(value='validation_outcomes'),
+                          Constant(value='regeneration_strategy')],
+                        values=[
+                          Name(id='true', ctx=Load()),
+                          Constant(value='job_application_confirmed == true'),
+                          Constant(value='POST_GENERATION'),
+                          Name(id='true', ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value='Step 1: Extract job_title from context'),
+                              Constant(value='Step 2: Tokenize K.3 body into words'),
+                              Constant(value='Step 3: Find first occurrence of job_title (exact or high-similarity match)'),
+                              Constant(value='Step 4: Count word position of first occurrence'),
+                              Constant(value='Step 5: If position > 50, REJECT'),
+                              Constant(value='Step 6: If not found at all, REJECT with higher severity')],
+                            ctx=Load()),
+                          Dict(
+                            keys=[
+                              Constant(value='tokenizer'),
+                              Constant(value='exclude'),
+                              Constant(value='count_type'),
+                              Constant(value='threshold')],
+                            values=[
+                              Constant(value='whitespace + punctuation'),
+                              List(
+                                elts=[
+                                  Constant(value='articles'),
+                                  Constant(value='conjunctions'),
+                                  Constant(value='prepositions')],
+                                ctx=Load()),
+                              Constant(value='content_words_only'),
+                              Constant(value=50)]),
+                          Dict(
+                            keys=[
+                              Constant(value='exact_match_priority'),
+                              Constant(value='fuzzy_match_threshold'),
+                              Constant(value='case_insensitive'),
+                              Constant(value='allow_partial_match')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value=0.92),
+                              Name(id='true', ctx=Load()),
+                              Name(id='false', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='found_within_50_words'),
+                              Constant(value='found_after_50_words'),
+                              Constant(value='not_found')],
+                            values=[
+                              Dict(
+                                keys=[
+                                  Constant(value='action'),
+                                  Constant(value='log')],
+                                values=[
+                                  Constant(value='ACCEPT'),
+                                  Constant(value='Job title found at position {position}')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='action'),
+                                  Constant(value='error_code'),
+                                  Constant(value='message'),
+                                  Constant(value='fix')],
+                                values=[
+                                  Constant(value='REJECT'),
+                                  Constant(value='LIC-QA-075'),
+                                  Constant(value="Job title '{job_title}' found at position {position}, must be within first 50 words"),
+                                  Constant(value='Regenerate K.3 with job title in opening')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='action'),
+                                  Constant(value='error_code'),
+                                  Constant(value='message'),
+                                  Constant(value='fix'),
+                                  Constant(value='severity')],
+                                values=[
+                                  Constant(value='REJECT'),
+                                  Constant(value='LIC-QA-075'),
+                                  Constant(value="Job title '{job_title}' not found in K.3 body"),
+                                  Constant(value='Regenerate K.3 with job title explicitly included'),
+                                  Constant(value='CRITICAL')])]),
+                          Dict(
+                            keys=[
+                              Constant(value='inject_constraint'),
+                              Constant(value='template_suggestion'),
+                              Constant(value='max_retries')],
+                            values=[
+                              Constant(value='Job title MUST appear in first sentence or second sentence'),
+                              Constant(value="I'm reaching out about the {job_title} role..."),
+                              Constant(value=2)])]),
+                      Dict(
+                        keys=[
+                          Constant(value='LIC-QA-075')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='severity'),
+                              Constant(value='check'),
+                              Constant(value='fix'),
+                              Constant(value='validation_point'),
+                              Constant(value='blocking'),
+                              Constant(value='enhanced'),
+                              Constant(value='implementation')],
+                            values=[
+                              Constant(value='CRITICAL'),
+                              Constant(value='If job_confirmed=true, job_title appears in first 50 words of K.3'),
+                              Constant(value='Regenerate K.3 with job title upfront'),
+                              Constant(value='POST_GENERATION'),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Constant(value='Word position counter with fuzzy matching')])])]),
+                  Constant(value='TC-022 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-009'),
+                  Constant(value='WARNING'),
+                  Constant(value='GAP-009'),
+                  Constant(value='Company Name Validation Dictionary'),
+                  Constant(value='Add company name spelling validation with common misspelling detection'),
+                  List(
+                    elts=[
+                      Constant(value='6.validation.qa_rules'),
+                      Constant(value='3.context.sender_profile_management')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='add_company_name_validator'),
+                      Constant(value='enhance_qa_rule')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='enabled'),
+                          Constant(value='execution_point'),
+                          Constant(value='blocking'),
+                          Constant(value='severity'),
+                          Constant(value='validation_dictionary'),
+                          Constant(value='validation_process'),
+                          Constant(value='fuzzy_matching'),
+                          Constant(value='correction_strategy')],
+                        values=[
+                          Name(id='true', ctx=Load()),
+                          Constant(value='POST_GENERATION'),
+                          Name(id='false', ctx=Load()),
+                          Constant(value='WARNING'),
+                          Dict(
+                            keys=[
+                              Constant(value='source'),
+                              Constant(value='common_companies'),
+                              Constant(value='dynamic_loading')],
+                            values=[
+                              Constant(value='project_knowledge_search + manual whitelist'),
+                              Dict(
+                                keys=[
+                                  Constant(value='ServiceNow'),
+                                  Constant(value='LinkedIn'),
+                                  Constant(value='GitHub'),
+                                  Constant(value='PostgreSQL'),
+                                  Constant(value='MySQL'),
+                                  Constant(value='MongoDB'),
+                                  Constant(value='DevOps'),
+                                  Constant(value='AWS'),
+                                  Constant(value='GCP')],
+                                values=[
+                                  List(
+                                    elts=[
+                                      Constant(value='Service Now'),
+                                      Constant(value='Servicenow'),
+                                      Constant(value='service now')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='Linked In'),
+                                      Constant(value='linkedIn'),
+                                      Constant(value='linked-in')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='Git Hub'),
+                                      Constant(value='Github')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='Postgre SQL'),
+                                      Constant(value='Postgres SQL')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='My SQL'),
+                                      Constant(value='MySql')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='Mongo DB'),
+                                      Constant(value='Mongo-DB')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='Dev Ops'),
+                                      Constant(value='Dev-Ops')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='A.W.S.'),
+                                      Constant(value='Amazon Web Services')],
+                                    ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='G.C.P.'),
+                                      Constant(value='Google Cloud Platform')],
+                                    ctx=Load())]),
+                              Dict(
+                                keys=[
+                                  Constant(value='query'),
+                                  Constant(value='merge_with_static'),
+                                  Constant(value='cache_duration')],
+                                values=[
+                                  Constant(value="project_knowledge_search with query: 'company names list target companies'"),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value='7 days')])]),
+                          List(
+                            elts=[
+                              Constant(value='Step 1: Extract all company names from K.3 body'),
+                              Constant(value='Step 2: Check each against validation dictionary'),
+                              Constant(value='Step 3: For each company, check if it matches misspelling pattern'),
+                              Constant(value='Step 4: Calculate similarity score for near-matches'),
+                              Constant(value='Step 5: If misspelling detected (similarity > 0.85), suggest correction'),
+                              Constant(value='Step 6: If exact misspelling match, auto-correct or warn')],
+                            ctx=Load()),
+                          Dict(
+                            keys=[
+                              Constant(value='algorithm'),
+                              Constant(value='threshold'),
+                              Constant(value='suggest_corrections')],
+                            values=[
+                              Constant(value='Levenshtein distance + phonetic matching'),
+                              Constant(value=0.85),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='auto_correct'),
+                              Constant(value='warn_user'),
+                              Constant(value='provide_suggestions'),
+                              Constant(value='message_template')],
+                            values=[
+                              Name(id='false', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Constant(value="Possible company name misspelling: '{incorrect}' → suggested: '{correct}'")])]),
+                      Dict(
+                        keys=[
+                          Constant(value='LIC-QA-049')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='severity'),
+                              Constant(value='check'),
+                              Constant(value='fix'),
+                              Constant(value='validation_point'),
+                              Constant(value='blocking'),
+                              Constant(value='enhanced'),
+                              Constant(value='implementation')],
+                            values=[
+                              Constant(value='WARNING'),
+                              Constant(value='Company names spelled correctly using validation dictionary'),
+                              Constant(value='Correct company name spelling'),
+                              Constant(value='POST_GENERATION'),
+                              Name(id='false', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Constant(value='Fuzzy matching with Levenshtein distance')])])]),
+                  Constant(value='TC-023 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-010'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='GAP-010'),
+                  Constant(value='Multi-Failure Aggregation'),
+                  Constant(value='Enable comprehensive error reporting showing all failures, not just first'),
+                  List(
+                    elts=[
+                      Constant(value='6.validation.master_validation_gate'),
+                      Constant(value='3.context.system.error_recovery_policy')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='enhance_master_validation_gate'),
+                      Constant(value='update_error_recovery')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='multi_failure_reporting')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='enabled'),
+                              Constant(value='execution_mode'),
+                              Constant(value='early_exit'),
+                              Constant(value='aggregation_strategy'),
+                              Constant(value='execution_process'),
+                              Constant(value='failure_collection'),
+                              Constant(value='reporting_format'),
+                              Constant(value='remediation_prioritization')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value='COLLECT_ALL_FAILURES'),
+                              Name(id='false', ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='collect_all_failures'),
+                                  Constant(value='categorize_by_severity'),
+                                  Constant(value='categorize_by_phase'),
+                                  Constant(value='provide_remediation_order')],
+                                values=[
+                                  Name(id='true', ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Name(id='true', ctx=Load())]),
+                              List(
+                                elts=[
+                                  Constant(value='Step 1: Run all validation phases regardless of individual failures'),
+                                  Constant(value='Step 2: Collect all failed checks with details'),
+                                  Constant(value='Step 3: Categorize failures by severity (CRITICAL, WARNING, INFO)'),
+                                  Constant(value='Step 4: Categorize failures by phase (entity, confidence, qa, archetype)'),
+                                  Constant(value='Step 5: Generate prioritized remediation steps'),
+                                  Constant(value='Step 6: Display comprehensive failure report to user')],
+                                ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='data_structure')],
+                                values=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='failed_checks'),
+                                      Constant(value='summary')],
+                                    values=[
+                                      List(
+                                        elts=[
+                                          Dict(
+                                            keys=[
+                                              Constant(value='phase'),
+                                              Constant(value='check_id'),
+                                              Constant(value='severity'),
+                                              Constant(value='rule_id'),
+                                              Constant(value='description'),
+                                              Constant(value='location'),
+                                              Constant(value='expected'),
+                                              Constant(value='actual'),
+                                              Constant(value='fix_description'),
+                                              Constant(value='auto_fixable')],
+                                            values=[
+                                              Constant(value='string'),
+                                              Constant(value='string'),
+                                              Constant(value='CRITICAL | WARNING | INFO'),
+                                              Constant(value='string'),
+                                              Constant(value='string'),
+                                              Constant(value='string'),
+                                              Constant(value='string'),
+                                              Constant(value='string'),
+                                              Constant(value='string'),
+                                              Constant(value='boolean')])],
+                                        ctx=Load()),
+                                      Dict(
+                                        keys=[
+                                          Constant(value='total_failures'),
+                                          Constant(value='critical_count'),
+                                          Constant(value='warning_count'),
+                                          Constant(value='info_count')],
+                                        values=[
+                                          Constant(value='number'),
+                                          Constant(value='number'),
+                                          Constant(value='number'),
+                                          Constant(value='number')])])]),
+                              Dict(
+                                keys=[
+                                  Constant(value='display_order'),
+                                  Constant(value='grouping'),
+                                  Constant(value='include_remediation_order'),
+                                  Constant(value='include_estimated_fix_time')],
+                                values=[
+                                  List(
+                                    elts=[
+                                      Constant(value='CRITICAL failures first'),
+                                      Constant(value='WARNING failures second'),
+                                      Constant(value='INFO failures last')],
+                                    ctx=Load()),
+                                  Constant(value='By phase, then by severity within phase'),
+                                  Name(id='true', ctx=Load()),
+                                  Name(id='false', ctx=Load())]),
+                              Dict(
+                                keys=[
+                                  Constant(value='critical_first'),
+                                  Constant(value='dependency_aware'),
+                                  Constant(value='suggest_batch_fixes'),
+                                  Constant(value='order_example')],
+                                values=[
+                                  Name(id='true', ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  List(
+                                    elts=[
+                                      Constant(value='1. Fix CRITICAL entity hallucinations'),
+                                      Constant(value='2. Fix CRITICAL confidence issues'),
+                                      Constant(value='3. Fix WARNING format issues'),
+                                      Constant(value='4. Fix INFO style issues')],
+                                    ctx=Load())])])]),
+                      Dict(
+                        keys=[
+                          Constant(value='on_multiple_validation_failures')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='action'),
+                              Constant(value='allow_partial_fixes'),
+                              Constant(value='require_all_critical_fixes'),
+                              Constant(value='user_message'),
+                              Constant(value='format')],
+                            values=[
+                              Constant(value='DISPLAY_COMPREHENSIVE_REPORT'),
+                              Name(id='false', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Constant(value='Multiple validation failures detected. See full report below.'),
+                              Constant(value='JSON with severity grouping')])])]),
+                  Constant(value='TC-027 will pass after implementation')]),
+              Dict(
+                keys=[
+                  Constant(value='patch_id'),
+                  Constant(value='severity'),
+                  Constant(value='gap_id'),
+                  Constant(value='name'),
+                  Constant(value='description'),
+                  Constant(value='affected_sections'),
+                  Constant(value='implementation'),
+                  Constant(value='test_validation')],
+                values=[
+                  Constant(value='PATCH-v10.20-011'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='GAP-011'),
+                  Constant(value='Context Window Overflow Handler'),
+                  Constant(value='Add intelligent context window management with overflow detection and truncation'),
+                  List(
+                    elts=[
+                      Constant(value='3.context.system.context_window_management')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='enhance_context_window_management'),
+                      Constant(value='add_validation')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='overflow_detection'),
+                          Constant(value='overflow_handling'),
+                          Constant(value='overflow_prevention'),
+                          Constant(value='logging')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='enabled'),
+                              Constant(value='monitoring'),
+                              Constant(value='token_counter'),
+                              Constant(value='thresholds')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value='CONTINUOUS'),
+                              Dict(
+                                keys=[
+                                  Constant(value='method'),
+                                  Constant(value='update_frequency'),
+                                  Constant(value='buffer')],
+                                values=[
+                                  Constant(value='Accurate tokenization using model-specific tokenizer'),
+                                  Constant(value='After each section added'),
+                                  Constant(value=200)]),
+                              Dict(
+                                keys=[
+                                  Constant(value='max_tokens'),
+                                  Constant(value='warning_threshold'),
+                                  Constant(value='critical_threshold')],
+                                values=[
+                                  Constant(value=8000),
+                                  Constant(value=7500),
+                                  Constant(value=7800)])]),
+                          Dict(
+                            keys=[
+                              Constant(value='strategy'),
+                              Constant(value='execution_trigger'),
+                              Constant(value='truncation_algorithm'),
+                              Constant(value='section_priorities'),
+                              Constant(value='truncation_methods')],
+                            values=[
+                              Constant(value='Priority-based intelligent truncation'),
+                              Constant(value='total_tokens > max_tokens - buffer'),
+                              Dict(
+                                keys=[
+                                  Constant(value='phase_1_assessment'),
+                                  Constant(value='phase_2_prioritization'),
+                                  Constant(value='phase_3_truncation'),
+                                  Constant(value='phase_4_validation')],
+                                values=[
+                                  Constant(value='Calculate tokens per section'),
+                                  Constant(value='Rank sections by priority'),
+                                  Constant(value='Truncate lowest priority first'),
+                                  Constant(value='Ensure total <= max_tokens')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='sender_profile'),
+                                  Constant(value='rag_results'),
+                                  Constant(value='recipient_context'),
+                                  Constant(value='reasoning_space')],
+                                values=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='priority'),
+                                      Constant(value='preserve'),
+                                      Constant(value='truncation'),
+                                      Constant(value='reason')],
+                                    values=[
+                                      Constant(value=1),
+                                      Constant(value='ALWAYS'),
+                                      Constant(value='NEVER'),
+                                      Constant(value='Core credentials required')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='priority'),
+                                      Constant(value='preserve'),
+                                      Constant(value='truncation'),
+                                      Constant(value='strategy')],
+                                    values=[
+                                      Constant(value=2),
+                                      Constant(value='PREFERABLY'),
+                                      Constant(value='SUMMARIZE_OR_REDUCE'),
+                                      Constant(value='Keep most recent and highest CE scores')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='priority'),
+                                      Constant(value='preserve'),
+                                      Constant(value='truncation'),
+                                      Constant(value='strategy')],
+                                    values=[
+                                      Constant(value=3),
+                                      Constant(value='PARTIALLY'),
+                                      Constant(value='VERBOSE_FIELDS'),
+                                      Constant(value='Keep title, company, About; truncate other fields')]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='priority'),
+                                      Constant(value='preserve'),
+                                      Constant(value='truncation'),
+                                      Constant(value='strategy')],
+                                    values=[
+                                      Constant(value=4),
+                                      Constant(value='PARTIALLY'),
+                                      Constant(value='AGGRESSIVE'),
+                                      Constant(value='Compress or remove intermediate reasoning')])]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rag_results'),
+                                  Constant(value='recipient_context'),
+                                  Constant(value='reasoning_space')],
+                                values=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='method'),
+                                      Constant(value='keep_minimum'),
+                                      Constant(value='summarize_if_needed')],
+                                    values=[
+                                      Constant(value='Drop lowest CE score sources iteratively'),
+                                      Constant(value=3),
+                                      Name(id='true', ctx=Load())]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='method'),
+                                      Constant(value='essential_fields'),
+                                      Constant(value='removable_fields')],
+                                    values=[
+                                      Constant(value='Remove verbose fields, keep essentials'),
+                                      List(
+                                        elts=[
+                                          Constant(value='title'),
+                                          Constant(value='company'),
+                                          Constant(value='about')],
+                                        ctx=Load()),
+                                      List(
+                                        elts=[
+                                          Constant(value='full_experience'),
+                                          Constant(value='education_details')],
+                                        ctx=Load())]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='method'),
+                                      Constant(value='keep_final_decisions'),
+                                      Constant(value='remove_intermediate_steps')],
+                                    values=[
+                                      Constant(value='Compress reasoning chains'),
+                                      Name(id='true', ctx=Load()),
+                                      Name(id='true', ctx=Load())])])]),
+                          Dict(
+                            keys=[
+                              Constant(value='proactive_monitoring'),
+                              Constant(value='warning_at_threshold'),
+                              Constant(value='action_at_warning'),
+                              Constant(value='fail_safe')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Constant(value=7500),
+                              Constant(value='Suggest reducing RAG calls or content'),
+                              Constant(value="HALT if truncation can't resolve overflow")]),
+                          Dict(
+                            keys=[
+                              Constant(value='log_overflow_events'),
+                              Constant(value='log_truncation_decisions'),
+                              Constant(value='log_final_token_count'),
+                              Constant(value='alert_on_critical_truncation')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load())])]),
+                      Dict(
+                        keys=[
+                          Constant(value='pre_generation_check'),
+                          Constant(value='post_generation_check')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='verify_space_available'),
+                              Constant(value='estimate_generation_tokens'),
+                              Constant(value='block_if_insufficient')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='verify_within_limits'),
+                              Constant(value='report_usage_stats')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              Name(id='true', ctx=Load())])])]),
+                  Constant(value='TC-030 will pass after implementation')])],
+            ctx=Load()),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='rule_id'),
+                  Constant(value='severity'),
+                  Constant(value='check'),
+                  Constant(value='fix'),
+                  Constant(value='validation_point'),
+                  Constant(value='blocking'),
+                  Constant(value='patch')],
+                values=[
+                  Constant(value='LIC-QA-106'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='Every claim in K.3 has â‰¥0.80 confidence'),
+                  Constant(value='Remove low-confidence claims or regenerate'),
+                  Constant(value='POST_GENERATION'),
+                  Name(id='true', ctx=Load()),
+                  Constant(value='PATCH-v10.20-004')]),
+              Dict(
+                keys=[
+                  Constant(value='rule_id'),
+                  Constant(value='severity'),
+                  Constant(value='check'),
+                  Constant(value='fix'),
+                  Constant(value='validation_point'),
+                  Constant(value='blocking'),
+                  Constant(value='patch')],
+                values=[
+                  Constant(value='LIC-QA-107'),
+                  Constant(value='CRITICAL'),
+                  Constant(value='Every metric has â‰¥2 required context keywords within Â±20 words'),
+                  Constant(value='Add context or remove metric'),
+                  Constant(value='POST_GENERATION'),
+                  Name(id='true', ctx=Load()),
+                  Constant(value='PATCH-v10.20-005')])],
+            ctx=Load()),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='rule_id'),
+                  Constant(value='enhancement'),
+                  Constant(value='patch')],
+                values=[
+                  Constant(value='LIC-QA-043'),
+                  Constant(value='Added coherence scoring with 0.80 minimum'),
+                  Constant(value='PATCH-v10.20-005')]),
+              Dict(
+                keys=[
+                  Constant(value='rule_id'),
+                  Constant(value='enhancement'),
+                  Constant(value='patch')],
+                values=[
+                  Constant(value='LIC-QA-049'),
+                  Constant(value='Added fuzzy matching with Levenshtein distance'),
+                  Constant(value='PATCH-v10.20-009')]),
+              Dict(
+                keys=[
+                  Constant(value='rule_id'),
+                  Constant(value='enhancement'),
+                  Constant(value='patch')],
+                values=[
+                  Constant(value='LIC-QA-067'),
+                  Constant(value='Added 6 regex patterns for placeholder detection'),
+                  Constant(value='PATCH-v10.20-007')]),
+              Dict(
+                keys=[
+                  Constant(value='rule_id'),
+                  Constant(value='enhancement'),
+                  Constant(value='patch')],
+                values=[
+                  Constant(value='LIC-QA-075'),
+                  Constant(value='Added word position counter with fuzzy matching'),
+                  Constant(value='PATCH-v10.20-008')])],
+            ctx=Load()),
+          List(
+            elts=[
+              Constant(value='1. PATCH-v10.20-002: Circular reference detection (foundational)'),
+              Constant(value='2. PATCH-v10.20-011: Context window overflow handler (foundational)'),
+              Constant(value='3. PATCH-v10.20-004: Per-claim confidence enforcement (critical quality)'),
+              Constant(value='4. PATCH-v10.20-005: Metric context validation (critical quality)'),
+              Constant(value='5. PATCH-v10.20-007: Placeholder detection (critical quality)'),
+              Constant(value='6. PATCH-v10.20-008: Job title position validator (critical quality)'),
+              Constant(value='7. PATCH-v10.20-010: Multi-failure aggregation (critical UX)'),
+              Constant(value='8. PATCH-v10.20-001: Template spell-check (warning quality)'),
+              Constant(value='9. PATCH-v10.20-003: CPO disambiguation (warning quality)'),
+              Constant(value='10. PATCH-v10.20-006: Dynamic holiday calculation (warning quality)'),
+              Constant(value='11. PATCH-v10.20-009: Company name validation (warning quality)')],
+            ctx=Load()),
+          Dict(
+            keys=[
+              Constant(value='unit_tests'),
+              Constant(value='integration_tests'),
+              Constant(value='regression_tests'),
+              Constant(value='performance_tests'),
+              Constant(value='acceptance_criteria')],
+            values=[
+              Constant(value='All 30 test cases from test suite must pass'),
+              Constant(value='End-to-end workflow must complete successfully'),
+              Constant(value='All v10.10 passing tests must still pass'),
+              Constant(value='No degradation > 10% in generation latency'),
+              Constant(value='100% pass rate on test suite')]),
+          Dict(
+            keys=[
+              Constant(value='phased_rollout'),
+              Constant(value='immediate_deployment'),
+              Constant(value='reason'),
+              Constant(value='rollback_plan'),
+              Constant(value='monitoring_period')],
+            values=[
+              Name(id='false', ctx=Load()),
+              Name(id='true', ctx=Load()),
+              Constant(value='All patches are non-breaking and additive'),
+              Constant(value='Revert to v10.10 if any critical issues'),
+              Constant(value='7 days post-deployment')])]))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"RAG simulation models.\"\"\"\n\nfrom typing import List\n\nfrom pydantic import BaseModel\n\nfrom .simulation_base import SimulationInput, SimulationResult\n\n\nclass RAGSimRequest(SimulationInput):\n    \"\"\"Input payload for RAG simulation.\"\"\"\n\n    query: str\n    documents: List[str]\n\n\nclass RAGSimMetrics(BaseModel):\n    \"\"\"Metrics produced by the RAG simulation.\"\"\"\n\n    recall: float\n    precision: float\n    redundancy: float\n\n\nclass RAGSimResult(SimulationResult):\n    \"\"\"Result model for RAG simulations.\"\"\"\n\n    pass\n",
+  "full_hash": "bc63f4e9469e9288cf527774bd023dde95d04f69b0c1f1beff13bad72247fe8c",
+  "generated_at": 1764728229.9627652,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag_simulation.py"
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\validation\\sdk_validation_results.json",
+    "rel_path": "sdk_validation_results.json",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "944a39d8039307af34ca3136a7973f903b5c09409bc10df7e93f84ff3994ebc7",
+    "file_size": 4803,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728228.116756
+}

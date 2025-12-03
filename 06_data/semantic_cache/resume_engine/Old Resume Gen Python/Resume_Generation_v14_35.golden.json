@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v14.35\n\nLogger Attribute Fix: WorkflowOrchestrator Missing self.logger\n\nThis version fixes an AttributeError that occurred during WorkflowOrchestrator\ninitialization. The class was attempting to use self.logger before it was defined,\ncausing an AttributeError in the __init__ method.\n\nKey Changes from v14.34:\n1. Fixed WorkflowOrchestrator.__init__ to initialize self.logger before use\n   - Added logging.basicConfig() configuration\n   - Added self.logger = logging.getLogger(__name__) assignment\n   - Placed logger initialization at the very beginning of __init__\n   - Ensures self.logger exists before any log calls\n\nThe issue manifested as:\n  AttributeError: 'WorkflowOrchestrator' object has no attribute 'logger'\n  at line 6955 in __init__ method\n\nAll other functionality from v14.34 is retained:\n- Fixed focus_instruction for K5_EY_NARRATIVE\n- Explicit API Key Configuration at Module Initialization\n- Enhanced API Call Logging\n- Configuration Context Logging\n- Dat",
+  "full_hash": "56c52a60bcaa0b29d07d5b779fa53b4c8e534c348b5ec3d70999c859f5ae2218",
+  "generated_at": 1764728282.793801,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_35.py"
+}

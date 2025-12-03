@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\plan-layer\\expand-phase\\convert-observability-content\\semantic\\adjust-scores\\apply_observability_weights.py",
+    "rel_path": "apply_observability_weights.py",
+    "root_name": "observability",
+    "file_hash": "d1a3e251062121a038bec2799216f5926e8067db45cbec35f43dea839b9c462d",
+    "file_size": 6838,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.0202045
+}

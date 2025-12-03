@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v4.5.2 - WITH K.11 SKILLS SECTION\n===========================================================\n\nMAJOR CHANGES FROM v4.5.1:\n- Added K.11 Skills section with numbered list (1-12)\n- Skills aligned to JD keywords for 90%+ signal\n- Skills NOT counted in word count (not part of resume body)\n- Proper 6-sentence executive summary narrative\n- All content from Master_Resume_V2.14.json\n\nVersion: 4.5.2\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional\nfrom enum import Enum\nimport random\n\n__version__ = \"4.5.2\"\n\n# ============================================================================\n# TEMPERATURE MODE ENUM\n# ============================================================================\n\nclass TemperatureMode(Enum):\n    \"\"\"Temperature modes for constraint relaxation and signal adjustment.\"\"\"\n    CONSERVATIVE = \"conservative\"  # Baseline \u00b115%, no extra signal\n    BALANCED = \"balanced\"           # Baseline \u00b125%, +0.02 signal if",
+  "full_hash": "56bb68d025efd5526f48fbec23831cb8b91768d8f53ce75f5bb82d151beb2ee6",
+  "generated_at": 1764728297.1640992,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_5_2_with_K11_Skills.py"
+}

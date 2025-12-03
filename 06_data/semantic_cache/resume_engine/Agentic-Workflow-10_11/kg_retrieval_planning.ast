@@ -1,0 +1,1596 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nKnowledge graph retrieval planning for resume processing workflows.\n\nImplements L1 planning for multi-hop knowledge graph retrieval to support\ncomprehensive resume enhancement and job alignment.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Set')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='HopDirection',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Direction of traversal in resume processing knowledge graph.\n\n    Ensures proper navigation through resume-related career data.\n    ')),
+        Assign(
+          targets=[
+            Name(id='OUTGOING', ctx=Store())],
+          value=Constant(value='outgoing')),
+        Assign(
+          targets=[
+            Name(id='INCOMING', ctx=Store())],
+          value=Constant(value='incoming')),
+        Assign(
+          targets=[
+            Name(id='BIDIRECTIONAL', ctx=Store())],
+          value=Constant(value='both'))]),
+    ClassDef(
+      name='QueryType',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Type of resume processing KG query.\n\n    Defines query patterns for optimal resume data retrieval.\n    ')),
+        Assign(
+          targets=[
+            Name(id='ENTITY_FACTS', ctx=Store())],
+          value=Constant(value='entity_facts')),
+        Assign(
+          targets=[
+            Name(id='PATH_FINDING', ctx=Store())],
+          value=Constant(value='path_finding')),
+        Assign(
+          targets=[
+            Name(id='NEIGHBORHOOD', ctx=Store())],
+          value=Constant(value='neighborhood')),
+        Assign(
+          targets=[
+            Name(id='PATTERN_MATCH', ctx=Store())],
+          value=Constant(value='pattern_match')),
+        Assign(
+          targets=[
+            Name(id='TEMPORAL_SLICE', ctx=Store())],
+          value=Constant(value='temporal_slice'))]),
+    ClassDef(
+      name='HopSpec',
+      body=[
+        Expr(
+          value=Constant(value='Specification for a single hop in resume processing traversal.\n\n    Defines navigation steps for comprehensive resume data retrieval.\n    ')),
+        AnnAssign(
+          target=Name(id='hop_number', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='direction', ctx=Store()),
+          annotation=Name(id='HopDirection', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='predicate_filter', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entity_type_filter', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_results', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=100),
+          simple=1),
+        AnnAssign(
+          target=Name(id='min_confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='valid_at', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='datetime', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_invalidated', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='KGQueryPlan',
+      body=[
+        Expr(
+          value=Constant(value='Plan for résumé processing knowledge graph query execution.')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query_type', ctx=Store()),
+          annotation=Name(id='QueryType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='start_entities', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_entities', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='hops', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='HopSpec', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_hops', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=3),
+          simple=1),
+        AnnAssign(
+          target=Name(id='predicate_whitelist', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Set', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='predicate_blacklist', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Set', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='temporal_constraint', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='datetime', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='aggregate_results', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='deduplicate', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PathTemplate',
+      body=[
+        Expr(
+          value=Constant(value='Template for résumé processing known traversal pattern.')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='hops', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='HopSpec', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='applicable_query_types', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='QueryType', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='required_predicates', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='KGRetrievalPlanner',
+      body=[
+        Expr(
+          value=Constant(value='\n    Planner for résumé processing multi-hop knowledge graph retrieval.\n    \n    Creates execution plans for KG queries in résumé enhancement workflows.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize planner with path templates.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_templates',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_templates',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='_build_templates',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Build predefined path templates.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='person_company_skills'),
+                  Constant(value='similar_skills'),
+                  Constant(value='job_requirements'),
+                  Constant(value='career_path')],
+                values=[
+                  Call(
+                    func=Name(id='PathTemplate', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='name',
+                        value=Constant(value='person_company_skills')),
+                      keyword(
+                        arg='description',
+                        value=Constant(value='Find skills used at companies where person worked')),
+                      keyword(
+                        arg='hops',
+                        value=List(
+                          elts=[
+                            Call(
+                              func=Name(id='HopSpec', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='hop_number',
+                                  value=Constant(value=1)),
+                                keyword(
+                                  arg='direction',
+                                  value=Attribute(
+                                    value=Name(id='HopDirection', ctx=Load()),
+                                    attr='OUTGOING',
+                                    ctx=Load())),
+                                keyword(
+                                  arg='predicate_filter',
+                                  value=List(
+                                    elts=[
+                                      Constant(value='worked_at')],
+                                    ctx=Load()))]),
+                            Call(
+                              func=Name(id='HopSpec', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='hop_number',
+                                  value=Constant(value=2)),
+                                keyword(
+                                  arg='direction',
+                                  value=Attribute(
+                                    value=Name(id='HopDirection', ctx=Load()),
+                                    attr='INCOMING',
+                                    ctx=Load())),
+                                keyword(
+                                  arg='predicate_filter',
+                                  value=List(
+                                    elts=[
+                                      Constant(value='requires_skill'),
+                                      Constant(value='prefers_skill')],
+                                    ctx=Load()))])],
+                          ctx=Load())),
+                      keyword(
+                        arg='applicable_query_types',
+                        value=List(
+                          elts=[
+                            Attribute(
+                              value=Name(id='QueryType', ctx=Load()),
+                              attr='NEIGHBORHOOD',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='QueryType', ctx=Load()),
+                              attr='PATTERN_MATCH',
+                              ctx=Load())],
+                          ctx=Load()))]),
+                  Call(
+                    func=Name(id='PathTemplate', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='name',
+                        value=Constant(value='similar_skills')),
+                      keyword(
+                        arg='description',
+                        value=Constant(value='Find entities with similar skills')),
+                      keyword(
+                        arg='hops',
+                        value=List(
+                          elts=[
+                            Call(
+                              func=Name(id='HopSpec', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='hop_number',
+                                  value=Constant(value=1)),
+                                keyword(
+                                  arg='direction',
+                                  value=Attribute(
+                                    value=Name(id='HopDirection', ctx=Load()),
+                                    attr='OUTGOING',
+                                    ctx=Load())),
+                                keyword(
+                                  arg='predicate_filter',
+                                  value=List(
+                                    elts=[
+                                      Constant(value='has_skill')],
+                                    ctx=Load()))]),
+                            Call(
+                              func=Name(id='HopSpec', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='hop_number',
+                                  value=Constant(value=2)),
+                                keyword(
+                                  arg='direction',
+                                  value=Attribute(
+                                    value=Name(id='HopDirection', ctx=Load()),
+                                    attr='INCOMING',
+                                    ctx=Load())),
+                                keyword(
+                                  arg='predicate_filter',
+                                  value=List(
+                                    elts=[
+                                      Constant(value='has_skill')],
+                                    ctx=Load()))])],
+                          ctx=Load())),
+                      keyword(
+                        arg='applicable_query_types',
+                        value=List(
+                          elts=[
+                            Attribute(
+                              value=Name(id='QueryType', ctx=Load()),
+                              attr='NEIGHBORHOOD',
+                              ctx=Load())],
+                          ctx=Load()))]),
+                  Call(
+                    func=Name(id='PathTemplate', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='name',
+                        value=Constant(value='job_requirements')),
+                      keyword(
+                        arg='description',
+                        value=Constant(value='Find all requirements for a job')),
+                      keyword(
+                        arg='hops',
+                        value=List(
+                          elts=[
+                            Call(
+                              func=Name(id='HopSpec', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='hop_number',
+                                  value=Constant(value=1)),
+                                keyword(
+                                  arg='direction',
+                                  value=Attribute(
+                                    value=Name(id='HopDirection', ctx=Load()),
+                                    attr='OUTGOING',
+                                    ctx=Load())),
+                                keyword(
+                                  arg='predicate_filter',
+                                  value=List(
+                                    elts=[
+                                      Constant(value='requires_skill'),
+                                      Constant(value='requires_experience'),
+                                      Constant(value='prefers_skill')],
+                                    ctx=Load())),
+                                keyword(
+                                  arg='max_results',
+                                  value=Constant(value=50))])],
+                          ctx=Load())),
+                      keyword(
+                        arg='applicable_query_types',
+                        value=List(
+                          elts=[
+                            Attribute(
+                              value=Name(id='QueryType', ctx=Load()),
+                              attr='ENTITY_FACTS',
+                              ctx=Load())],
+                          ctx=Load()))]),
+                  Call(
+                    func=Name(id='PathTemplate', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='name',
+                        value=Constant(value='career_path')),
+                      keyword(
+                        arg='description',
+                        value=Constant(value='Traverse career history')),
+                      keyword(
+                        arg='hops',
+                        value=List(
+                          elts=[
+                            Call(
+                              func=Name(id='HopSpec', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='hop_number',
+                                  value=Constant(value=1)),
+                                keyword(
+                                  arg='direction',
+                                  value=Attribute(
+                                    value=Name(id='HopDirection', ctx=Load()),
+                                    attr='OUTGOING',
+                                    ctx=Load())),
+                                keyword(
+                                  arg='predicate_filter',
+                                  value=List(
+                                    elts=[
+                                      Constant(value='worked_at'),
+                                      Constant(value='held_role')],
+                                    ctx=Load()))]),
+                            Call(
+                              func=Name(id='HopSpec', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='hop_number',
+                                  value=Constant(value=2)),
+                                keyword(
+                                  arg='direction',
+                                  value=Attribute(
+                                    value=Name(id='HopDirection', ctx=Load()),
+                                    attr='OUTGOING',
+                                    ctx=Load())),
+                                keyword(
+                                  arg='predicate_filter',
+                                  value=List(
+                                    elts=[
+                                      Constant(value='part_of'),
+                                      Constant(value='subsidiary_of')],
+                                    ctx=Load()))])],
+                          ctx=Load())),
+                      keyword(
+                        arg='applicable_query_types',
+                        value=List(
+                          elts=[
+                            Attribute(
+                              value=Name(id='QueryType', ctx=Load()),
+                              attr='NEIGHBORHOOD',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='QueryType', ctx=Load()),
+                              attr='PATH_FINDING',
+                              ctx=Load())],
+                          ctx=Load()))])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='PathTemplate', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='plan_query',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_type',
+                annotation=Name(id='QueryType', ctx=Load())),
+              arg(
+                arg='start_entities',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='target_entities',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='predicates',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_hops',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='temporal_constraint',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='template_name',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=3),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Create a query plan for résumé processing KG retrieval.\n        \n        Args:\n            query_type: Type of résumé processing query\n            start_entities: Starting entities for résumé data traversal\n            target_entities: Target entities for résumé path finding\n            predicates: Specific predicates to traverse for résumé matching\n            max_hops: Maximum number of hops for résumé data retrieval\n            temporal_constraint: Optional temporal filter for accurate résumé information\n            template_name: Optional template to use for résumé processing patterns\n            context: Additional context for résumé enhancement workflows\n            \n        Returns:\n            KGQueryPlan for résumé processing execution\n        ')),
+            Assign(
+              targets=[
+                Name(id='query_id', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='kg_query_'),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()),
+                          args=[
+                            Name(id='UTC', ctx=Load())]),
+                        attr='strftime',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='%Y%m%d%H%M%S%f')]),
+                    conversion=-1)])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='template_name', ctx=Load()),
+                  Compare(
+                    left=Name(id='template_name', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_templates',
+                        ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='template', ctx=Store())],
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_templates',
+                      ctx=Load()),
+                    slice=Name(id='template_name', ctx=Load()),
+                    ctx=Load())),
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_plan_from_template',
+                      ctx=Load()),
+                    args=[
+                      Name(id='query_id', ctx=Load()),
+                      Name(id='template', ctx=Load()),
+                      Name(id='start_entities', ctx=Load()),
+                      Name(id='target_entities', ctx=Load()),
+                      Name(id='temporal_constraint', ctx=Load()),
+                      Name(id='context', ctx=Load())]))]),
+            If(
+              test=Compare(
+                left=Name(id='query_type', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='QueryType', ctx=Load()),
+                    attr='ENTITY_FACTS',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_plan_entity_facts',
+                      ctx=Load()),
+                    args=[
+                      Name(id='query_id', ctx=Load()),
+                      Name(id='start_entities', ctx=Load()),
+                      Name(id='predicates', ctx=Load()),
+                      Name(id='temporal_constraint', ctx=Load()),
+                      Name(id='context', ctx=Load())]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='query_type', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='QueryType', ctx=Load()),
+                        attr='PATH_FINDING',
+                        ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_plan_path_finding',
+                          ctx=Load()),
+                        args=[
+                          Name(id='query_id', ctx=Load()),
+                          Name(id='start_entities', ctx=Load()),
+                          BoolOp(
+                            op=Or(),
+                            values=[
+                              Name(id='target_entities', ctx=Load()),
+                              List(ctx=Load())]),
+                          Name(id='max_hops', ctx=Load()),
+                          Name(id='temporal_constraint', ctx=Load()),
+                          Name(id='context', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='query_type', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='QueryType', ctx=Load()),
+                            attr='NEIGHBORHOOD',
+                            ctx=Load())]),
+                      body=[
+                        Return(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_plan_neighborhood',
+                              ctx=Load()),
+                            args=[
+                              Name(id='query_id', ctx=Load()),
+                              Name(id='start_entities', ctx=Load()),
+                              Name(id='max_hops', ctx=Load()),
+                              Name(id='predicates', ctx=Load()),
+                              Name(id='temporal_constraint', ctx=Load()),
+                              Name(id='context', ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='query_type', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='QueryType', ctx=Load()),
+                                attr='TEMPORAL_SLICE',
+                                ctx=Load())]),
+                          body=[
+                            Return(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_plan_temporal_slice',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='query_id', ctx=Load()),
+                                  Name(id='start_entities', ctx=Load()),
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='temporal_constraint', ctx=Load()),
+                                      Call(
+                                        func=Attribute(
+                                          value=Name(id='datetime', ctx=Load()),
+                                          attr='now',
+                                          ctx=Load()),
+                                        args=[
+                                          Name(id='UTC', ctx=Load())])]),
+                                  Name(id='predicates', ctx=Load()),
+                                  Name(id='context', ctx=Load())]))],
+                          orelse=[
+                            Return(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_plan_neighborhood',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='query_id', ctx=Load()),
+                                  Name(id='start_entities', ctx=Load()),
+                                  Name(id='max_hops', ctx=Load()),
+                                  Name(id='predicates', ctx=Load()),
+                                  Name(id='temporal_constraint', ctx=Load()),
+                                  Name(id='context', ctx=Load())]))])])])])],
+          returns=Name(id='KGQueryPlan', ctx=Load())),
+        FunctionDef(
+          name='_plan_from_template',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='template',
+                annotation=Name(id='PathTemplate', ctx=Load())),
+              arg(
+                arg='start_entities',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='target_entities',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='temporal_constraint',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Create plan from a template.')),
+            Return(
+              value=Call(
+                func=Name(id='KGQueryPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_id',
+                    value=Name(id='query_id', ctx=Load())),
+                  keyword(
+                    arg='query_type',
+                    value=Subscript(
+                      value=Attribute(
+                        value=Name(id='template', ctx=Load()),
+                        attr='applicable_query_types',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=Name(id='start_entities', ctx=Load())),
+                  keyword(
+                    arg='target_entities',
+                    value=Name(id='target_entities', ctx=Load())),
+                  keyword(
+                    arg='hops',
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='template', ctx=Load()),
+                          attr='hops',
+                          ctx=Load()),
+                        attr='copy',
+                        ctx=Load()))),
+                  keyword(
+                    arg='max_hops',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='template', ctx=Load()),
+                          attr='hops',
+                          ctx=Load())])),
+                  keyword(
+                    arg='temporal_constraint',
+                    value=Name(id='temporal_constraint', ctx=Load())),
+                  keyword(
+                    arg='context',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='context', ctx=Load()),
+                        Dict()]))]))],
+          returns=Name(id='KGQueryPlan', ctx=Load())),
+        FunctionDef(
+          name='_plan_entity_facts',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='entities',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='predicates',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='temporal_constraint',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Plan query to get all facts about entities.')),
+            Assign(
+              targets=[
+                Name(id='hops', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='HopSpec', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='hop_number',
+                        value=Constant(value=1)),
+                      keyword(
+                        arg='direction',
+                        value=Attribute(
+                          value=Name(id='HopDirection', ctx=Load()),
+                          attr='BIDIRECTIONAL',
+                          ctx=Load())),
+                      keyword(
+                        arg='predicate_filter',
+                        value=Name(id='predicates', ctx=Load())),
+                      keyword(
+                        arg='valid_at',
+                        value=Name(id='temporal_constraint', ctx=Load()))])],
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='KGQueryPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_id',
+                    value=Name(id='query_id', ctx=Load())),
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='ENTITY_FACTS',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=Name(id='entities', ctx=Load())),
+                  keyword(
+                    arg='hops',
+                    value=Name(id='hops', ctx=Load())),
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=1)),
+                  keyword(
+                    arg='temporal_constraint',
+                    value=Name(id='temporal_constraint', ctx=Load())),
+                  keyword(
+                    arg='context',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='context', ctx=Load()),
+                        Dict()]))]))],
+          returns=Name(id='KGQueryPlan', ctx=Load())),
+        FunctionDef(
+          name='_plan_path_finding',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='start_entities',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='target_entities',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_hops',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='temporal_constraint',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Plan path finding query between entities.')),
+            Assign(
+              targets=[
+                Name(id='hops', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='i', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='max_hops', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hops', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='HopSpec', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='hop_number',
+                            value=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Add(),
+                              right=Constant(value=1))),
+                          keyword(
+                            arg='direction',
+                            value=Attribute(
+                              value=Name(id='HopDirection', ctx=Load()),
+                              attr='BIDIRECTIONAL',
+                              ctx=Load())),
+                          keyword(
+                            arg='valid_at',
+                            value=Name(id='temporal_constraint', ctx=Load())),
+                          keyword(
+                            arg='max_results',
+                            value=Constant(value=50))])]))]),
+            Return(
+              value=Call(
+                func=Name(id='KGQueryPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_id',
+                    value=Name(id='query_id', ctx=Load())),
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='PATH_FINDING',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=Name(id='start_entities', ctx=Load())),
+                  keyword(
+                    arg='target_entities',
+                    value=Name(id='target_entities', ctx=Load())),
+                  keyword(
+                    arg='hops',
+                    value=Name(id='hops', ctx=Load())),
+                  keyword(
+                    arg='max_hops',
+                    value=Name(id='max_hops', ctx=Load())),
+                  keyword(
+                    arg='temporal_constraint',
+                    value=Name(id='temporal_constraint', ctx=Load())),
+                  keyword(
+                    arg='deduplicate',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='context',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='context', ctx=Load()),
+                        Dict()]))]))],
+          returns=Name(id='KGQueryPlan', ctx=Load())),
+        FunctionDef(
+          name='_plan_neighborhood',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='entities',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_hops',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='predicates',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='temporal_constraint',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Plan N-hop neighborhood exploration.')),
+            Assign(
+              targets=[
+                Name(id='hops', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='i', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='max_hops', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hops', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='HopSpec', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='hop_number',
+                            value=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Add(),
+                              right=Constant(value=1))),
+                          keyword(
+                            arg='direction',
+                            value=Attribute(
+                              value=Name(id='HopDirection', ctx=Load()),
+                              attr='OUTGOING',
+                              ctx=Load())),
+                          keyword(
+                            arg='predicate_filter',
+                            value=Name(id='predicates', ctx=Load())),
+                          keyword(
+                            arg='valid_at',
+                            value=Name(id='temporal_constraint', ctx=Load())),
+                          keyword(
+                            arg='max_results',
+                            value=BinOp(
+                              left=Constant(value=100),
+                              op=FloorDiv(),
+                              right=BinOp(
+                                left=Name(id='i', ctx=Load()),
+                                op=Add(),
+                                right=Constant(value=1))))])]))]),
+            Return(
+              value=Call(
+                func=Name(id='KGQueryPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_id',
+                    value=Name(id='query_id', ctx=Load())),
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='NEIGHBORHOOD',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=Name(id='entities', ctx=Load())),
+                  keyword(
+                    arg='hops',
+                    value=Name(id='hops', ctx=Load())),
+                  keyword(
+                    arg='max_hops',
+                    value=Name(id='max_hops', ctx=Load())),
+                  keyword(
+                    arg='temporal_constraint',
+                    value=Name(id='temporal_constraint', ctx=Load())),
+                  keyword(
+                    arg='aggregate_results',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='context',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='context', ctx=Load()),
+                        Dict()]))]))],
+          returns=Name(id='KGQueryPlan', ctx=Load())),
+        FunctionDef(
+          name='_plan_temporal_slice',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='entities',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='timestamp',
+                annotation=Name(id='datetime', ctx=Load())),
+              arg(
+                arg='predicates',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Plan query for facts valid at a specific time.')),
+            Assign(
+              targets=[
+                Name(id='hops', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='HopSpec', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='hop_number',
+                        value=Constant(value=1)),
+                      keyword(
+                        arg='direction',
+                        value=Attribute(
+                          value=Name(id='HopDirection', ctx=Load()),
+                          attr='BIDIRECTIONAL',
+                          ctx=Load())),
+                      keyword(
+                        arg='predicate_filter',
+                        value=Name(id='predicates', ctx=Load())),
+                      keyword(
+                        arg='valid_at',
+                        value=Name(id='timestamp', ctx=Load())),
+                      keyword(
+                        arg='include_invalidated',
+                        value=Constant(value=False))])],
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='KGQueryPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_id',
+                    value=Name(id='query_id', ctx=Load())),
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='TEMPORAL_SLICE',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=Name(id='entities', ctx=Load())),
+                  keyword(
+                    arg='hops',
+                    value=Name(id='hops', ctx=Load())),
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=1)),
+                  keyword(
+                    arg='temporal_constraint',
+                    value=Name(id='timestamp', ctx=Load())),
+                  keyword(
+                    arg='context',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='context', ctx=Load()),
+                        Dict()]))]))],
+          returns=Name(id='KGQueryPlan', ctx=Load())),
+        FunctionDef(
+          name='get_template',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get a path template by name.\n        \n        Args:\n            name: Template name\n            \n        Returns:\n            PathTemplate or None\n        ')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_templates',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='name', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='PathTemplate', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='list_templates',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='List available template names.\n        \n        Returns:\n            List of template names\n        ')),
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_templates',
+                        ctx=Load()),
+                      attr='keys',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='plan_entity_retrieval',
+      args=arguments(
+        args=[
+          arg(
+            arg='entity_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='predicates',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='max_hops',
+            annotation=Name(id='int', ctx=Load()))],
+        defaults=[
+          Constant(value=None),
+          Constant(value=1)]),
+      body=[
+        Expr(
+          value=Constant(value='Create a simple plan to retrieve facts about an entity.\n    \n    Args:\n        entity_id: Entity to query\n        predicates: Optional predicate filter\n        max_hops: Number of hops\n        \n    Returns:\n        KGQueryPlan\n    ')),
+        Assign(
+          targets=[
+            Name(id='planner', ctx=Store())],
+          value=Call(
+            func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='planner', ctx=Load()),
+              attr='plan_query',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query_type',
+                value=Attribute(
+                  value=Name(id='QueryType', ctx=Load()),
+                  attr='ENTITY_FACTS',
+                  ctx=Load())),
+              keyword(
+                arg='start_entities',
+                value=List(
+                  elts=[
+                    Name(id='entity_id', ctx=Load())],
+                  ctx=Load())),
+              keyword(
+                arg='predicates',
+                value=Name(id='predicates', ctx=Load())),
+              keyword(
+                arg='max_hops',
+                value=Name(id='max_hops', ctx=Load()))]))],
+      returns=Name(id='KGQueryPlan', ctx=Load())),
+    FunctionDef(
+      name='plan_skill_similarity',
+      args=arguments(
+        args=[
+          arg(
+            arg='entity_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='max_similar',
+            annotation=Name(id='int', ctx=Load()))],
+        defaults=[
+          Constant(value=10)]),
+      body=[
+        Expr(
+          value=Constant(value='Plan query to find entities with similar skills.\n    \n    Args:\n        entity_id: Entity to find similar for\n        max_similar: Maximum similar entities to return\n        \n    Returns:\n        KGQueryPlan\n    ')),
+        Assign(
+          targets=[
+            Name(id='planner', ctx=Store())],
+          value=Call(
+            func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='planner', ctx=Load()),
+              attr='plan_query',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query_type',
+                value=Attribute(
+                  value=Name(id='QueryType', ctx=Load()),
+                  attr='NEIGHBORHOOD',
+                  ctx=Load())),
+              keyword(
+                arg='start_entities',
+                value=List(
+                  elts=[
+                    Name(id='entity_id', ctx=Load())],
+                  ctx=Load())),
+              keyword(
+                arg='template_name',
+                value=Constant(value='similar_skills')),
+              keyword(
+                arg='context',
+                value=Dict(
+                  keys=[
+                    Constant(value='max_similar')],
+                  values=[
+                    Name(id='max_similar', ctx=Load())]))]))],
+      returns=Name(id='KGQueryPlan', ctx=Load())),
+    FunctionDef(
+      name='plan_job_requirements',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_id',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Plan query to get all job requirements.\n    \n    Args:\n        job_id: Job entity ID\n        \n    Returns:\n        KGQueryPlan\n    ')),
+        Assign(
+          targets=[
+            Name(id='planner', ctx=Store())],
+          value=Call(
+            func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='planner', ctx=Load()),
+              attr='plan_query',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query_type',
+                value=Attribute(
+                  value=Name(id='QueryType', ctx=Load()),
+                  attr='ENTITY_FACTS',
+                  ctx=Load())),
+              keyword(
+                arg='start_entities',
+                value=List(
+                  elts=[
+                    Name(id='job_id', ctx=Load())],
+                  ctx=Load())),
+              keyword(
+                arg='template_name',
+                value=Constant(value='job_requirements'))]))],
+      returns=Name(id='KGQueryPlan', ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='HopDirection'),
+          Constant(value='QueryType'),
+          Constant(value='HopSpec'),
+          Constant(value='KGQueryPlan'),
+          Constant(value='PathTemplate'),
+          Constant(value='KGRetrievalPlanner'),
+          Constant(value='plan_entity_retrieval'),
+          Constant(value='plan_skill_similarity'),
+          Constant(value='plan_job_requirements')],
+        ctx=Load()))])

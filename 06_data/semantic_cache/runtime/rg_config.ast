@@ -1,0 +1,642 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nResume Engine Configuration\nConfiguration dataclasses for all L1-L5 components\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Set')],
+      level=0),
+    ClassDef(
+      name='FilePathsConfig',
+      body=[
+        Expr(
+          value=Constant(value='File path configuration')),
+        AnnAssign(
+          target=Name(id='master_resume_path', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job_description_path', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='output_dir', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='config_dir', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='config'),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ArtistConfig',
+      body=[
+        Expr(
+          value=Constant(value='Artist generation configuration')),
+        AnnAssign(
+          target=Name(id='temperature', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.9),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_tokens', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=2048),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='gemini-pro'),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ValidatorConfig',
+      body=[
+        Expr(
+          value=Constant(value='Validation configuration with forbidden verbs and constraints')),
+        AnnAssign(
+          target=Name(id='forbidden_verbs', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=List(
+                    elts=[
+                      Constant(value='spearheaded'),
+                      Constant(value='leveraged'),
+                      Constant(value='utilized'),
+                      Constant(value='facilitated'),
+                      Constant(value='orchestrated'),
+                      Constant(value='championed'),
+                      Constant(value='pioneered'),
+                      Constant(value='revolutionized'),
+                      Constant(value='transformed'),
+                      Constant(value='optimized'),
+                      Constant(value='enhanced'),
+                      Constant(value='streamlined'),
+                      Constant(value='synergized'),
+                      Constant(value='enabled'),
+                      Constant(value='empowered'),
+                      Constant(value='drove')],
+                    ctx=Load())))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='required_sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Set(
+                    elts=[
+                      Constant(value='K0_NAME'),
+                      Constant(value='K0_CONTACT'),
+                      Constant(value='K0_HEADLINE'),
+                      Constant(value='K1_EXECUTIVE_SUMMARY'),
+                      Constant(value='K2_UNIFY_BULLETS'),
+                      Constant(value='K2_UNIFY_OVERVIEW'),
+                      Constant(value='K3_IBM_BULLETS'),
+                      Constant(value='K3_IBM_OVERVIEW'),
+                      Constant(value='K4_TRADERSENSE_NARRATIVE'),
+                      Constant(value='K5_EY_NARRATIVE'),
+                      Constant(value='K6_EARLY_CAREER_NARRATIVE'),
+                      Constant(value='K7_EDUCATION'),
+                      Constant(value='K8_CERTIFICATIONS'),
+                      Constant(value='K9_COMPETENCIES'),
+                      Constant(value='K10_SKILLS'),
+                      Constant(value='K11_COVER_LETTER')])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='bullet_word_count_sections_to_check', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Set(
+                    elts=[
+                      Constant(value='K2_UNIFY_BULLETS'),
+                      Constant(value='K3_IBM_BULLETS'),
+                      Constant(value='K9_COMPETENCIES')])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='provenance_split_targets', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Dict(
+                    keys=[
+                      Constant(value='K2_UNIFY_BULLETS'),
+                      Constant(value='K3_IBM_BULLETS'),
+                      Constant(value='K9_COMPETENCIES')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='Verbatim'),
+                          Constant(value='Customized'),
+                          Constant(value='Synthetic')],
+                        values=[
+                          Constant(value=2),
+                          Constant(value=3),
+                          Constant(value=2)]),
+                      Dict(
+                        keys=[
+                          Constant(value='Verbatim'),
+                          Constant(value='Customized'),
+                          Constant(value='Synthetic')],
+                        values=[
+                          Constant(value=2),
+                          Constant(value=2),
+                          Constant(value=2)]),
+                      Dict(
+                        keys=[
+                          Constant(value='Verbatim'),
+                          Constant(value='Customized'),
+                          Constant(value='Synthetic')],
+                        values=[
+                          Constant(value=2),
+                          Constant(value=2),
+                          Constant(value=2)])])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='pipeline_status_enum', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=List(
+                    elts=[
+                      Constant(value='Applied'),
+                      Constant(value='Follow-Up'),
+                      Constant(value='Interview'),
+                      Constant(value='Rejected'),
+                      Constant(value='Closed'),
+                      Constant(value='Waiting')],
+                    ctx=Load())))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='WebRagConfig',
+      body=[
+        Expr(
+          value=Constant(value='Web RAG configuration with industry peer mapping')),
+        AnnAssign(
+          target=Name(id='peers_by_industry', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Dict(
+                    keys=[
+                      Constant(value='Financial Technology'),
+                      Constant(value='Healthcare'),
+                      Constant(value='Retail/E-Commerce'),
+                      Constant(value='Software/SaaS'),
+                      Constant(value='Technology')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='JPMorgan'),
+                          Constant(value='Goldman Sachs'),
+                          Constant(value='Morgan Stanley'),
+                          Constant(value='Stripe'),
+                          Constant(value='Square')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='UnitedHealth'),
+                          Constant(value='CVS Health'),
+                          Constant(value='Anthem'),
+                          Constant(value='Cigna'),
+                          Constant(value='Humana')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Amazon'),
+                          Constant(value='Walmart'),
+                          Constant(value='Target'),
+                          Constant(value='Shopify'),
+                          Constant(value='eBay')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Salesforce'),
+                          Constant(value='Oracle'),
+                          Constant(value='SAP'),
+                          Constant(value='Adobe'),
+                          Constant(value='Workday')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Google'),
+                          Constant(value='Microsoft'),
+                          Constant(value='Meta'),
+                          Constant(value='Apple'),
+                          Constant(value='Amazon')],
+                        ctx=Load())])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='enabled', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_search_results', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=10),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.7),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='EnricherConfig',
+      body=[
+        Expr(
+          value=Constant(value='Data enrichment configuration with canonical verb mapping')),
+        AnnAssign(
+          target=Name(id='canonical_verbs', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Dict(
+                    keys=[
+                      Constant(value='led'),
+                      Constant(value='built'),
+                      Constant(value='drove'),
+                      Constant(value='launched'),
+                      Constant(value='scaled'),
+                      Constant(value='delivered'),
+                      Constant(value='achieved'),
+                      Constant(value='established'),
+                      Constant(value='managed'),
+                      Constant(value='developed')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='led'),
+                          Constant(value='lead'),
+                          Constant(value='leading')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='built'),
+                          Constant(value='build'),
+                          Constant(value='building')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='drove'),
+                          Constant(value='drive'),
+                          Constant(value='driving')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='launched'),
+                          Constant(value='launch'),
+                          Constant(value='launching')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='scaled'),
+                          Constant(value='scale'),
+                          Constant(value='scaling')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='delivered'),
+                          Constant(value='deliver'),
+                          Constant(value='delivering')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='achieved'),
+                          Constant(value='achieve'),
+                          Constant(value='achieving')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='established'),
+                          Constant(value='establish'),
+                          Constant(value='establishing')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='managed'),
+                          Constant(value='manage'),
+                          Constant(value='managing')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='developed'),
+                          Constant(value='develop'),
+                          Constant(value='developing')],
+                        ctx=Load())])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='enable_verb_canonicalization', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='enable_skill_mapping', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='duplicate_threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.9),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ContentConstraintsConfig',
+      body=[
+        Expr(
+          value=Constant(value='Content constraints for word counts and structure')),
+        AnnAssign(
+          target=Name(id='TOTAL_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=870),
+          simple=1),
+        AnnAssign(
+          target=Name(id='TOTAL_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1030),
+          simple=1),
+        AnnAssign(
+          target=Name(id='MIN_JD_KEYWORDS', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=7),
+          simple=1),
+        AnnAssign(
+          target=Name(id='HEADLINE_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=8),
+          simple=1),
+        AnnAssign(
+          target=Name(id='HEADLINE_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=11),
+          simple=1),
+        AnnAssign(
+          target=Name(id='HEADLINE_COMPONENT_WORDS_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=2),
+          simple=1),
+        AnnAssign(
+          target=Name(id='HEADLINE_COMPONENT_WORDS_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=4),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EXEC_SUMMARY_SENTENCE_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=6),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EXEC_SUMMARY_SENTENCE_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=7),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EXEC_SUMMARY_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=140),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EXEC_SUMMARY_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=170),
+          simple=1),
+        AnnAssign(
+          target=Name(id='K1_MIN_DIFFERENTIATORS', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=4),
+          simple=1),
+        AnnAssign(
+          target=Name(id='UNIFY_OVERVIEW_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=25),
+          simple=1),
+        AnnAssign(
+          target=Name(id='UNIFY_OVERVIEW_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=40),
+          simple=1),
+        AnnAssign(
+          target=Name(id='IBM_OVERVIEW_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=25),
+          simple=1),
+        AnnAssign(
+          target=Name(id='IBM_OVERVIEW_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=35),
+          simple=1),
+        AnnAssign(
+          target=Name(id='TRADERSENSE_NARRATIVE_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=40),
+          simple=1),
+        AnnAssign(
+          target=Name(id='TRADERSENSE_NARRATIVE_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=60),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EY_NARRATIVE_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=40),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EY_NARRATIVE_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=60),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EARLY_CAREER_NARRATIVE_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=50),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EARLY_CAREER_NARRATIVE_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=70),
+          simple=1),
+        AnnAssign(
+          target=Name(id='UNIFY_IBM_COMBINED_PERCENT_MIN', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=35.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='UNIFY_IBM_COMBINED_PERCENT_MAX', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=45.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='UNIFY_IBM_RATIO_MIN', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='UNIFY_IBM_RATIO_MAX', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.3),
+          simple=1),
+        AnnAssign(
+          target=Name(id='COVER_LETTER_P1_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=80),
+          simple=1),
+        AnnAssign(
+          target=Name(id='COVER_LETTER_P1_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=100),
+          simple=1),
+        AnnAssign(
+          target=Name(id='COVER_LETTER_P2_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=90),
+          simple=1),
+        AnnAssign(
+          target=Name(id='COVER_LETTER_P2_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=120),
+          simple=1),
+        AnnAssign(
+          target=Name(id='COVER_LETTER_P3_WORD_COUNT_MIN', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=80),
+          simple=1),
+        AnnAssign(
+          target=Name(id='COVER_LETTER_P3_WORD_COUNT_MAX', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=100),
+          simple=1),
+        AnnAssign(
+          target=Name(id='COVER_LETTER_JD_RELEVANCE_THRESHOLD', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.35),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SignalControlConfig',
+      body=[
+        Expr(
+          value=Constant(value='Signal control configuration for content generation')),
+        AnnAssign(
+          target=Name(id='K1_MAX_DIFFERENTIATORS', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=4),
+          simple=1),
+        AnnAssign(
+          target=Name(id='RESUME_MAX_JD_KEYWORDS', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=16),
+          simple=1),
+        AnnAssign(
+          target=Name(id='CL_MAX_JD_SIMILARITY', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.65),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='AppConfig',
+      body=[
+        Expr(
+          value=Constant(value='Application configuration aggregating all sub-configs')),
+        AnnAssign(
+          target=Name(id='file_paths', ctx=Store()),
+          annotation=Name(id='FilePathsConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='artist', ctx=Store()),
+          annotation=Name(id='ArtistConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='validator', ctx=Store()),
+          annotation=Name(id='ValidatorConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='web_rag', ctx=Store()),
+          annotation=Name(id='WebRagConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='enricher', ctx=Store()),
+          annotation=Name(id='EnricherConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content_constraints', ctx=Store()),
+          annotation=Name(id='ContentConstraintsConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='signal_control', ctx=Store()),
+          annotation=Name(id='SignalControlConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='test_mode', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

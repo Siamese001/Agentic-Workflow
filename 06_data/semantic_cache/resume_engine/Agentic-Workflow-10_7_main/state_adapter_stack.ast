@@ -1,0 +1,1620 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Layer-4 state adapter responsible for applying typed patches.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='copy')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='asdict'),
+        alias(name='is_dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='Mapping'),
+        alias(name='MutableMapping')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel'),
+        alias(name='ConfigDict')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='A2AMessage'),
+        alias(name='EphemeralState'),
+        alias(name='EpisodicMemory'),
+        alias(name='MainGraphState'),
+        alias(name='MemoryState'),
+        alias(name='SemanticMemoryRef'),
+        alias(name='WorkflowPhase')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='StatePatch',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='resume', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='strategy', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rag', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='bullets', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='drafting', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='artifacts', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_report', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='policy_decision', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='constitutional_review', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='memory', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='MemoryState', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='ephemeral', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='EphemeralState', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='extra', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='dict', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='model_config', ctx=Store())],
+          value=Call(
+            func=Name(id='ConfigDict', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='extra',
+                value=Constant(value='allow'))]))]),
+    ClassDef(
+      name='StateAdapterStack',
+      body=[
+        Expr(
+          value=Constant(value='L4 Memory & State: the ONLY component allowed to mutate workflow state.')),
+        AnnAssign(
+          target=Name(id='LEGAL_NEXT_PHASES', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='WorkflowPhase', ctx=Load()),
+                Subscript(
+                  value=Name(id='set', ctx=Load()),
+                  slice=Name(id='WorkflowPhase', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(
+            keys=[
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='INIT',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='SAFETY',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='STRATEGY',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='RAG',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='BULLETS',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='DRAFTING',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='QA',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='HIL',
+                ctx=Load())],
+            values=[
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='SAFETY',
+                    ctx=Load())]),
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='STRATEGY',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='COMPLETE',
+                    ctx=Load())]),
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='RAG',
+                    ctx=Load())]),
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='BULLETS',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='DRAFTING',
+                    ctx=Load())]),
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='DRAFTING',
+                    ctx=Load())]),
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='QA',
+                    ctx=Load())]),
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='HIL',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='COMPLETE',
+                    ctx=Load())]),
+              Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='COMPLETE',
+                    ctx=Load())])]),
+          simple=1),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Store())],
+              value=Name(id='context', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='debug_mode',
+                  ctx=Store())],
+              value=Name(id='debug_mode', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='set_phase',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Name(id='MainGraphState', ctx=Load())),
+              arg(
+                arg='next_phase',
+                annotation=Name(id='WorkflowPhase', ctx=Load()))]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='next_phase', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='LEGAL_NEXT_PHASES',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='state', ctx=Load()),
+                        attr='phase',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='set', ctx=Load()))])]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Illegal transition '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='state', ctx=Load()),
+                              attr='phase',
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value='->'),
+                          FormattedValue(
+                            value=Name(id='next_phase', ctx=Load()),
+                            conversion=-1)])]))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='phase',
+                  ctx=Store())],
+              value=Name(id='next_phase', ctx=Load())),
+            Return(
+              value=Name(id='state', ctx=Load()))],
+          returns=Name(id='MainGraphState', ctx=Load())),
+        FunctionDef(
+          name='apply_patch',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state_dict',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='patch',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Name(id='StatePatch', ctx=Load())))]),
+          body=[
+            Expr(
+              value=Constant(value='Apply a schema-validated patch to the workflow state.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='state_dict', ctx=Load()),
+                    Name(id='MutableMapping', ctx=Load())])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='state_dict', ctx=Store())],
+                  value=Dict())]),
+            AnnAssign(
+              target=Name(id='patch_obj', ctx=Store()),
+              annotation=Name(id='StatePatch', ctx=Load()),
+              simple=1),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='patch', ctx=Load()),
+                  Name(id='StatePatch', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='patch_obj', ctx=Store())],
+                  value=Name(id='patch', ctx=Load()))],
+              orelse=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='patch', ctx=Load()),
+                      Name(id='Mapping', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='patch_obj', ctx=Store())],
+                      value=Call(
+                        func=Name(id='StatePatch', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            value=Name(id='patch', ctx=Load()))]))],
+                  orelse=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='copy', ctx=Load()),
+                          attr='deepcopy',
+                          ctx=Load()),
+                        args=[
+                          Name(id='state_dict', ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='typed_state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='MainGraphState', ctx=Load()),
+                  attr='from_dict',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='copy', ctx=Load()),
+                      attr='deepcopy',
+                      ctx=Load()),
+                    args=[
+                      Name(id='state_dict', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='merged_dict', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='typed_state', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load()))),
+            For(
+              target=Name(id='key', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='patch_obj', ctx=Load()),
+                attr='model_fields',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='extra')]),
+                  body=[
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='value', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='patch_obj', ctx=Load()),
+                      Name(id='key', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='value', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=[
+                    Continue()]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='hasattr', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Constant(value='model_dump')]),
+                      Call(
+                        func=Name(id='callable', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='value', ctx=Load()),
+                            attr='model_dump',
+                            ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='merged_dict', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_normalize_patch',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='value', ctx=Load()),
+                              attr='model_dump',
+                              ctx=Load()))]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Name(id='Mapping', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='existing', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='merged_dict', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Name(id='key', ctx=Load()),
+                              Dict()])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='merged_dict', ctx=Load()),
+                              slice=Name(id='key', ctx=Load()),
+                              ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_deep_merge',
+                              ctx=Load()),
+                            args=[
+                              IfExp(
+                                test=Call(
+                                  func=Name(id='isinstance', ctx=Load()),
+                                  args=[
+                                    Name(id='existing', ctx=Load()),
+                                    Name(id='Mapping', ctx=Load())]),
+                                body=Call(
+                                  func=Name(id='dict', ctx=Load()),
+                                  args=[
+                                    Name(id='existing', ctx=Load())]),
+                                orelse=Dict()),
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_normalize_patch',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='value', ctx=Load())])]))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='merged_dict', ctx=Load()),
+                              slice=Name(id='key', ctx=Load()),
+                              ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='copy', ctx=Load()),
+                              attr='deepcopy',
+                              ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load())]))])])]),
+            Assign(
+              targets=[
+                Name(id='extra', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='patch_obj', ctx=Load()),
+                      Constant(value='model_extra'),
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='patch_obj', ctx=Load()),
+                      Constant(value='__pydantic_extra__'),
+                      Dict()])])),
+            If(
+              test=Attribute(
+                value=Name(id='patch_obj', ctx=Load()),
+                attr='extra',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='extra', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_deep_merge',
+                      ctx=Load()),
+                    args=[
+                      Name(id='extra', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_normalize_patch',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='patch_obj', ctx=Load()),
+                            attr='extra',
+                            ctx=Load())])]))]),
+            If(
+              test=Name(id='extra', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='merged_dict', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_deep_merge',
+                      ctx=Load()),
+                    args=[
+                      Name(id='merged_dict', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_normalize_patch',
+                          ctx=Load()),
+                        args=[
+                          Name(id='extra', ctx=Load())])]))]),
+            Assign(
+              targets=[
+                Name(id='validated_state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='MainGraphState', ctx=Load()),
+                  attr='from_dict',
+                  ctx=Load()),
+                args=[
+                  Name(id='merged_dict', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='wrapper_cls', ctx=Store())],
+              value=Call(
+                func=Name(id='type', ctx=Load()),
+                args=[
+                  Constant(value='StateWrapper'),
+                  Tuple(
+                    elts=[
+                      Name(id='dict', ctx=Load())],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='__getattr__')],
+                    values=[
+                      Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='self'),
+                            arg(arg='key')]),
+                        body=Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Name(id='key', ctx=Load())]))])])),
+            Assign(
+              targets=[
+                Name(id='wrapped_state', ctx=Store())],
+              value=Call(
+                func=Name(id='wrapper_cls', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='validated_state', ctx=Load()),
+                      attr='to_dict',
+                      ctx=Load()))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_enforce_budget',
+                  ctx=Load()),
+                args=[
+                  Name(id='wrapped_state', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_normalize_patch',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='value',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='Mapping', ctx=Load())]),
+              body=[
+                Return(
+                  value=DictComp(
+                    key=Name(id='k', ctx=Load()),
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_normalize_patch',
+                        ctx=Load()),
+                      args=[
+                        Name(id='v', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='k', ctx=Store()),
+                            Name(id='v', ctx=Store())],
+                          ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='value', ctx=Load()),
+                            attr='items',
+                            ctx=Load())),
+                        is_async=0)]))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='list', ctx=Load())]),
+              body=[
+                Return(
+                  value=ListComp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_normalize_patch',
+                        ctx=Load()),
+                      args=[
+                        Name(id='v', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='v', ctx=Store()),
+                        iter=Name(id='value', ctx=Load()),
+                        is_async=0)]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Constant(value='model_dump')]),
+                  Call(
+                    func=Name(id='callable', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='value', ctx=Load()),
+                        attr='model_dump',
+                        ctx=Load())])]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_normalize_patch',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='value', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load()))]))]),
+            If(
+              test=Call(
+                func=Name(id='is_dataclass', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_normalize_patch',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='asdict', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load())])]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='copy', ctx=Load()),
+                  attr='deepcopy',
+                  ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load())]))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='_deep_merge',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='base',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='patch',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='patch_value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='patch_value', ctx=Load()),
+                          Name(id='Mapping', ctx=Load())]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='patch_value', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='__delete__')])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='base', ctx=Load()),
+                          attr='pop',
+                          ctx=Load()),
+                        args=[
+                          Name(id='key', ctx=Load()),
+                          Constant(value=None)])),
+                    Continue()]),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='patch_value', ctx=Load()),
+                      Name(id='Mapping', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='existing', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='base', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Name(id='key', ctx=Load())])),
+                    If(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Call(
+                          func=Name(id='isinstance', ctx=Load()),
+                          args=[
+                            Name(id='existing', ctx=Load()),
+                            Name(id='Mapping', ctx=Load())])),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='existing', ctx=Store())],
+                          value=Dict())]),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='base', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_deep_merge',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='dict', ctx=Load()),
+                            args=[
+                              Name(id='existing', ctx=Load())]),
+                          Call(
+                            func=Name(id='dict', ctx=Load()),
+                            args=[
+                              Name(id='patch_value', ctx=Load())])]))],
+                  orelse=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Name(id='patch_value', ctx=Load()),
+                            ops=[
+                              Is()],
+                            comparators=[
+                              Constant(value=None)]),
+                          Compare(
+                            left=Name(id='key', ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='base', ctx=Load())])]),
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='ValueError', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value="Deletion of '"),
+                                  FormattedValue(
+                                    value=Name(id='key', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value="' requires explicit __delete__ flag")])]))],
+                      orelse=[
+                        If(
+                          test=Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='patch_value', ctx=Load()),
+                              Name(id='list', ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='base', ctx=Load()),
+                                  slice=Name(id='key', ctx=Load()),
+                                  ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='copy', ctx=Load()),
+                                  attr='deepcopy',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='patch_value', ctx=Load())]))],
+                          orelse=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='base', ctx=Load()),
+                                  slice=Name(id='key', ctx=Load()),
+                                  ctx=Store())],
+                              value=Name(id='patch_value', ctx=Load()))])])])]),
+            Return(
+              value=Name(id='base', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_enforce_budget',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='budget_manager', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Constant(value='context_budget_manager'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='budget_manager', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='budget_manager', ctx=Load()),
+                        Constant(value='enforce_all')]))]),
+              body=[
+                Return(
+                  value=Name(id='state', ctx=Load()))]),
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='budget_manager', ctx=Load()),
+                      attr='enforce_all',
+                      ctx=Load()),
+                    args=[
+                      Name(id='state', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='warning',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='Soft mode: context budget enforcement skipped (%s)'),
+                          Name(id='exc', ctx=Load())])),
+                    Return(
+                      value=Name(id='state', ctx=Load()))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='patch_memory',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwonlyargs=[
+              arg(
+                arg='conversation',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='dict', ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None))),
+              arg(
+                arg='agent_notes',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None))),
+              arg(
+                arg='vector_store_ids',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None))),
+              arg(
+                arg='tags',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            kw_defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Delegate to the module-level memory patch builder.')),
+            Return(
+              value=Call(
+                func=Name(id='patch_memory', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='conversation',
+                    value=Name(id='conversation', ctx=Load())),
+                  keyword(
+                    arg='agent_notes',
+                    value=Name(id='agent_notes', ctx=Load())),
+                  keyword(
+                    arg='vector_store_ids',
+                    value=Name(id='vector_store_ids', ctx=Load())),
+                  keyword(
+                    arg='tags',
+                    value=Name(id='tags', ctx=Load()))]))],
+          returns=Name(id='StatePatch', ctx=Load()))]),
+    FunctionDef(
+      name='patch_memory',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='conversation',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Iterable', ctx=Load()),
+                slice=Name(id='dict', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None))),
+          arg(
+            arg='agent_notes',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Iterable', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None))),
+          arg(
+            arg='vector_store_ids',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Iterable', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None))),
+          arg(
+            arg='tags',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Iterable', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Build a memory-focused state patch with explicit replacements.')),
+        Assign(
+          targets=[
+            Name(id='episodic', ctx=Store())],
+          value=Constant(value=None)),
+        Assign(
+          targets=[
+            Name(id='semantic', ctx=Store())],
+          value=Constant(value=None)),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Name(id='conversation', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Name(id='agent_notes', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='episodic', ctx=Store())],
+              value=Call(
+                func=Name(id='EpisodicMemory', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='conversation',
+                    value=Call(
+                      func=Name(id='list', ctx=Load()),
+                      args=[
+                        BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='conversation', ctx=Load()),
+                            List(ctx=Load())])])),
+                  keyword(
+                    arg='agent_notes',
+                    value=Call(
+                      func=Name(id='list', ctx=Load()),
+                      args=[
+                        BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='agent_notes', ctx=Load()),
+                            List(ctx=Load())])]))]))]),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Name(id='vector_store_ids', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Name(id='tags', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='semantic', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticMemoryRef', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='vector_store_ids',
+                    value=Call(
+                      func=Name(id='list', ctx=Load()),
+                      args=[
+                        BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='vector_store_ids', ctx=Load()),
+                            List(ctx=Load())])])),
+                  keyword(
+                    arg='tags',
+                    value=Call(
+                      func=Name(id='list', ctx=Load()),
+                      args=[
+                        BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='tags', ctx=Load()),
+                            List(ctx=Load())])]))]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='episodic', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Name(id='semantic', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='StatePatch', ctx=Load())))]),
+        Assign(
+          targets=[
+            Name(id='memory', ctx=Store())],
+          value=Call(
+            func=Name(id='MemoryState', ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='episodic', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='memory', ctx=Load()),
+                  attr='episodic',
+                  ctx=Store())],
+              value=Name(id='episodic', ctx=Load()))]),
+        If(
+          test=Compare(
+            left=Name(id='semantic', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='memory', ctx=Load()),
+                  attr='semantic',
+                  ctx=Store())],
+              value=Name(id='semantic', ctx=Load()))]),
+        Return(
+          value=Call(
+            func=Name(id='StatePatch', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='memory',
+                value=Name(id='memory', ctx=Load()))]))],
+      returns=Name(id='StatePatch', ctx=Load())),
+    FunctionDef(
+      name='patch_ephemeral_events',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='events',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Iterable', ctx=Load()),
+                slice=Name(id='Any', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None))),
+          arg(
+            arg='debug_traces',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Iterable', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None))),
+          arg(
+            arg='last_node',
+            annotation=BinOp(
+              left=Name(id='str', ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Build a patch targeting ephemeral execution metadata.')),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='events', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Name(id='debug_traces', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Name(id='last_node', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='StatePatch', ctx=Load())))]),
+        Assign(
+          targets=[
+            Name(id='ephemeral', ctx=Store())],
+          value=Call(
+            func=Name(id='EphemeralState', ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='events', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ephemeral', ctx=Load()),
+                  attr='events',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='events', ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='debug_traces', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ephemeral', ctx=Load()),
+                  attr='debug_traces',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='debug_traces', ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='last_node', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ephemeral', ctx=Load()),
+                  attr='last_node',
+                  ctx=Store())],
+              value=Name(id='last_node', ctx=Load()))]),
+        Return(
+          value=Call(
+            func=Name(id='StatePatch', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='ephemeral',
+                value=Name(id='ephemeral', ctx=Load()))]))],
+      returns=Name(id='StatePatch', ctx=Load())),
+    FunctionDef(
+      name='build_a2a_message_patch',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='sender',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='message_type',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='payload',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='recipient',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='timestamp',
+            annotation=BinOp(
+              left=Name(id='str', ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          Constant(value='ALL'),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Construct a patch that appends a new A2A message.')),
+        Assign(
+          targets=[
+            Name(id='message_kwargs', ctx=Store())],
+          value=Call(
+            func=Name(id='dict', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='sender',
+                value=Name(id='sender', ctx=Load())),
+              keyword(
+                arg='recipient',
+                value=Name(id='recipient', ctx=Load())),
+              keyword(
+                arg='message_type',
+                value=Name(id='message_type', ctx=Load())),
+              keyword(
+                arg='payload',
+                value=Name(id='payload', ctx=Load()))])),
+        If(
+          test=Compare(
+            left=Name(id='timestamp', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='message_kwargs', ctx=Load()),
+                  slice=Constant(value='timestamp'),
+                  ctx=Store())],
+              value=Name(id='timestamp', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='message', ctx=Store())],
+          value=Call(
+            func=Name(id='A2AMessage', ctx=Load()),
+            keywords=[
+              keyword(
+                value=Name(id='message_kwargs', ctx=Load()))])),
+        Return(
+          value=Call(
+            func=Name(id='StatePatch', ctx=Load()),
+            keywords=[
+              keyword(
+                value=Dict(
+                  keys=[
+                    Constant(value='a2a')],
+                  values=[
+                    Dict(
+                      keys=[
+                        Constant(value='messages')],
+                      values=[
+                        List(
+                          elts=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='message', ctx=Load()),
+                                attr='model_dump',
+                                ctx=Load()))],
+                          ctx=Load())])]))]))],
+      returns=Name(id='StatePatch', ctx=Load()))])

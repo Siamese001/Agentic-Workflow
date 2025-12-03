@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\orc-layer\\safety-phase\\manage-data-costs\\general\\update-memory\\enforce_data_limits.py",
+    "rel_path": "enforce_data_limits.py",
+    "root_name": "data_source",
+    "file_hash": "affa300aed5fa5d02308aadeebf5b4ef5c23cada4c1467590ae8defd55949c04",
+    "file_size": 11284,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.8348095
+}

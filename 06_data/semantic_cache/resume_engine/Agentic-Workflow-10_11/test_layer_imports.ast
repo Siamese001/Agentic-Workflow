@@ -1,0 +1,766 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='ast')]),
+    Import(
+      names=[
+        alias(name='pathlib')]),
+    Assign(
+      targets=[
+        Name(id='PROJECT_ROOT', ctx=Store())],
+      value=Subscript(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pathlib', ctx=Load()),
+                  attr='Path',
+                  ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parents',
+          ctx=Load()),
+        slice=Constant(value=1),
+        ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='FORBIDDEN_TOP_LEVEL', ctx=Store())],
+      value=Set(
+        elts=[
+          Constant(value='l1'),
+          Constant(value='l2'),
+          Constant(value='cognitive_agents')])),
+    Assign(
+      targets=[
+        Name(id='PROVIDERS_PACKAGE', ctx=Store())],
+      value=Constant(value='providers')),
+    Assign(
+      targets=[
+        Name(id='FORBIDDEN_IMPORTERS_FOR_PROVIDERS', ctx=Store())],
+      value=Set(
+        elts=[
+          Constant(value='core'),
+          Constant(value='meta'),
+          Constant(value='prompts'),
+          Constant(value='profiles')])),
+    FunctionDef(
+      name='_iter_project_py_files',
+      args=arguments(),
+      body=[
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='PROJECT_ROOT', ctx=Load()),
+              attr='glob',
+              ctx=Load()),
+            args=[
+              Constant(value='*.py')]),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='name',
+                  ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Set(
+                    elts=[
+                      Constant(value='l1.py'),
+                      Constant(value='l2.py'),
+                      Constant(value='cognitive_agents.py'),
+                      Constant(value='import_check.py')])]),
+              body=[
+                Continue()]),
+            Expr(
+              value=Yield(
+                value=Name(id='path', ctx=Load())))]),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='PROJECT_ROOT', ctx=Load()),
+              attr='iterdir',
+              ctx=Load())),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='path', ctx=Load()),
+                      attr='is_dir',
+                      ctx=Load())),
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='path', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Set(
+                        elts=[
+                          Constant(value='tests'),
+                          Constant(value='.mypy_cache'),
+                          Constant(value='.pytest_cache'),
+                          Constant(value='.ruff_cache'),
+                          Constant(value='.git')])])]),
+              body=[
+                For(
+                  target=Name(id='sub', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='path', ctx=Load()),
+                      attr='rglob',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='*.py')]),
+                  body=[
+                    Expr(
+                      value=Yield(
+                        value=Name(id='sub', ctx=Load())))])])])]),
+    FunctionDef(
+      name='_get_imported_modules',
+      args=arguments(
+        args=[
+          arg(
+            arg='path',
+            annotation=Attribute(
+              value=Name(id='pathlib', ctx=Load()),
+              attr='Path',
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='tree', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='ast', ctx=Load()),
+              attr='parse',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='read_text',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='encoding',
+                    value=Constant(value='utf-8'))])],
+            keywords=[
+              keyword(
+                arg='filename',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='path', ctx=Load())]))])),
+        AnnAssign(
+          target=Name(id='modules', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='set', ctx=Load())),
+          simple=1),
+        For(
+          target=Name(id='node', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='ast', ctx=Load()),
+              attr='walk',
+              ctx=Load()),
+            args=[
+              Name(id='tree', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='node', ctx=Load()),
+                  Attribute(
+                    value=Name(id='ast', ctx=Load()),
+                    attr='Import',
+                    ctx=Load())]),
+              body=[
+                For(
+                  target=Name(id='alias', ctx=Store()),
+                  iter=Attribute(
+                    value=Name(id='node', ctx=Load()),
+                    attr='names',
+                    ctx=Load()),
+                  body=[
+                    If(
+                      test=Attribute(
+                        value=Name(id='alias', ctx=Load()),
+                        attr='name',
+                        ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='modules', ctx=Load()),
+                              attr='add',
+                              ctx=Load()),
+                            args=[
+                              Subscript(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='alias', ctx=Load()),
+                                      attr='name',
+                                      ctx=Load()),
+                                    attr='split',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='.')]),
+                                slice=Constant(value=0),
+                                ctx=Load())]))])])],
+              orelse=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='node', ctx=Load()),
+                      Attribute(
+                        value=Name(id='ast', ctx=Load()),
+                        attr='ImportFrom',
+                        ctx=Load())]),
+                  body=[
+                    If(
+                      test=Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='module',
+                        ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='modules', ctx=Load()),
+                              attr='add',
+                              ctx=Load()),
+                            args=[
+                              Subscript(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='node', ctx=Load()),
+                                      attr='module',
+                                      ctx=Load()),
+                                    attr='split',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='.')]),
+                                slice=Constant(value=0),
+                                ctx=Load())]))])])])]),
+        Return(
+          value=Name(id='modules', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='set', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_top_level_dir_for',
+      args=arguments(
+        args=[
+          arg(
+            arg='path',
+            annotation=Attribute(
+              value=Name(id='pathlib', ctx=Load()),
+              attr='Path',
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Return the top-level directory name for a given file, if any.')),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='rel', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='relative_to',
+                  ctx=Load()),
+                args=[
+                  Name(id='PROJECT_ROOT', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='ValueError', ctx=Load()),
+              body=[
+                Return(
+                  value=Constant(value=None))])]),
+        Assign(
+          targets=[
+            Name(id='parts', ctx=Store())],
+          value=Attribute(
+            value=Name(id='rel', ctx=Load()),
+            attr='parts',
+            ctx=Load())),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='parts', ctx=Load())]),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=1)]),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        Return(
+          value=Subscript(
+            value=Name(id='parts', ctx=Load()),
+            slice=Constant(value=0),
+            ctx=Load()))],
+      returns=BinOp(
+        left=Name(id='str', ctx=Load()),
+        op=BitOr(),
+        right=Constant(value=None))),
+    FunctionDef(
+      name='test_no_direct_imports_of_top_level_l_layers',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Non-test modules must not import bare l1/l2/cognitive_agents.\n\n    They should import via core.l1, core.l2, core.cognitive_agents\n    instead. Tests are allowed to use the historical imports.\n    ')),
+        AnnAssign(
+          target=Name(id='violations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Subscript(
+                    value=Name(id='list', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Name(id='_iter_project_py_files', ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Constant(value='tests'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='path', ctx=Load()),
+                    attr='parts',
+                    ctx=Load())]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='imported', ctx=Store())],
+              value=Call(
+                func=Name(id='_get_imported_modules', ctx=Load()),
+                args=[
+                  Name(id='path', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='bad', ctx=Store())],
+              value=BinOp(
+                left=Name(id='imported', ctx=Load()),
+                op=BitAnd(),
+                right=Name(id='FORBIDDEN_TOP_LEVEL', ctx=Load()))),
+            If(
+              test=Name(id='bad', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Tuple(
+                        elts=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='path', ctx=Load())]),
+                          Call(
+                            func=Name(id='sorted', ctx=Load()),
+                            args=[
+                              Name(id='bad', ctx=Load())])],
+                        ctx=Load())]))])]),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='violations', ctx=Load())),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Forbidden direct imports found: '),
+              FormattedValue(
+                value=Name(id='violations', ctx=Load()),
+                conversion=-1)]))]),
+    FunctionDef(
+      name='test_non_providers_do_not_import_providers',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Core/meta/prompts/profiles must not import the top-level providers package.')),
+        AnnAssign(
+          target=Name(id='violations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Subscript(
+                    value=Name(id='list', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Name(id='_iter_project_py_files', ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Constant(value='tests'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='path', ctx=Load()),
+                    attr='parts',
+                    ctx=Load())]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='top', ctx=Store())],
+              value=Call(
+                func=Name(id='_top_level_dir_for', ctx=Load()),
+                args=[
+                  Name(id='path', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='top', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='FORBIDDEN_IMPORTERS_FOR_PROVIDERS', ctx=Load())]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='imported', ctx=Store())],
+              value=Call(
+                func=Name(id='_get_imported_modules', ctx=Load()),
+                args=[
+                  Name(id='path', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='PROVIDERS_PACKAGE', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='imported', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Tuple(
+                        elts=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='path', ctx=Load())]),
+                          Call(
+                            func=Name(id='sorted', ctx=Load()),
+                            args=[
+                              Name(id='imported', ctx=Load())])],
+                        ctx=Load())]))])]),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='violations', ctx=Load())),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Non-provider modules importing providers: '),
+              FormattedValue(
+                value=Name(id='violations', ctx=Load()),
+                conversion=-1)]))]),
+    FunctionDef(
+      name='test_meta_does_not_import_core_or_legacy_l_layers',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='meta/ modules must not import core or legacy l1/l2/cognitive_agents.')),
+        AnnAssign(
+          target=Name(id='violations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Subscript(
+                    value=Name(id='list', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Name(id='_iter_project_py_files', ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Constant(value='tests'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='path', ctx=Load()),
+                    attr='parts',
+                    ctx=Load())]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='top', ctx=Store())],
+              value=Call(
+                func=Name(id='_top_level_dir_for', ctx=Load()),
+                args=[
+                  Name(id='path', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='top', ctx=Load()),
+                ops=[
+                  NotEq()],
+                comparators=[
+                  Constant(value='meta')]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='imported', ctx=Store())],
+              value=Call(
+                func=Name(id='_get_imported_modules', ctx=Load()),
+                args=[
+                  Name(id='path', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='bad', ctx=Store())],
+              value=BinOp(
+                left=Name(id='imported', ctx=Load()),
+                op=BitAnd(),
+                right=BinOp(
+                  left=Name(id='FORBIDDEN_TOP_LEVEL', ctx=Load()),
+                  op=BitOr(),
+                  right=Set(
+                    elts=[
+                      Constant(value='core')])))),
+            If(
+              test=Name(id='bad', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Tuple(
+                        elts=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='path', ctx=Load())]),
+                          Call(
+                            func=Name(id='sorted', ctx=Load()),
+                            args=[
+                              Name(id='bad', ctx=Load())])],
+                        ctx=Load())]))])]),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='violations', ctx=Load())),
+          msg=JoinedStr(
+            values=[
+              Constant(value='meta modules importing forbidden core/L layers: '),
+              FormattedValue(
+                value=Name(id='violations', ctx=Load()),
+                conversion=-1)]))]),
+    FunctionDef(
+      name='test_prompt_files_do_not_import_providers_or_core',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='prompt_* files must not import providers or core/l1/l2/cognitive_agents.')),
+        AnnAssign(
+          target=Name(id='violations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Subscript(
+                    value=Name(id='list', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Name(id='_iter_project_py_files', ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Constant(value='tests'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='path', ctx=Load()),
+                    attr='parts',
+                    ctx=Load())]),
+              body=[
+                Continue()]),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='name',
+                  ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Set(
+                    elts=[
+                      Constant(value='prompt_builder.py'),
+                      Constant(value='prompt_system_v10_10.py')])]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='imported', ctx=Store())],
+              value=Call(
+                func=Name(id='_get_imported_modules', ctx=Load()),
+                args=[
+                  Name(id='path', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='bad', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            If(
+              test=Compare(
+                left=Name(id='PROVIDERS_PACKAGE', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='imported', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='bad', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Name(id='PROVIDERS_PACKAGE', ctx=Load())]))]),
+            If(
+              test=Compare(
+                left=Constant(value='core'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='imported', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='bad', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='core')]))]),
+            AugAssign(
+              target=Name(id='bad', ctx=Store()),
+              op=BitOr(),
+              value=BinOp(
+                left=Name(id='imported', ctx=Load()),
+                op=BitAnd(),
+                right=Name(id='FORBIDDEN_TOP_LEVEL', ctx=Load()))),
+            If(
+              test=Name(id='bad', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Tuple(
+                        elts=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='path', ctx=Load())]),
+                          Call(
+                            func=Name(id='sorted', ctx=Load()),
+                            args=[
+                              Name(id='bad', ctx=Load())])],
+                        ctx=Load())]))])]),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='violations', ctx=Load())),
+          msg=JoinedStr(
+            values=[
+              Constant(value='prompt_* files importing forbidden modules: '),
+              FormattedValue(
+                value=Name(id='violations', ctx=Load()),
+                conversion=-1)]))])])

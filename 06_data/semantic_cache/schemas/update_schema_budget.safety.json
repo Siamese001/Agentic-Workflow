@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 54,
+  "generated_at": 1764728343.3013754,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\safety-phase\\manage-schema-costs\\general\\update-memory\\update_schema_budget.py"
+}

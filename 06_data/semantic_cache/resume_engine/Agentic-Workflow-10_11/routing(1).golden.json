@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/routing.py\n\"\"\"\nRouting Policy for Agentic Workflow v10_10\n=========================================\n\nThis is the v10_10 refactor of the v10_9 routing layer.\n\nIt removes:\n    - PlanObject-dependent logic\n    - L5.ModelRouter\n    - PromptEnvelope construction\n    - META-only routing criteria classes\n    - direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)\n    - simulated model invocation stubs\n\nand replaces them with a **minimal, deterministic RoutingPolicy** that:\n\n    - Selects models based on task + ComplexityLevel.\n    - Is influenced by a MetaProfileSnapshot (read-only).\n    - Provides ToT branch counts for StrategyLLMAgent.\n    - Contains NO provider SDK calls.\n    - Contains NO L1/L2/L3/L4/L5 logic.\n\nThis module is used only by L2 cognitive agents and L1 complexity\nclassification. It is **pure decision logic**.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Optional, Any, List, Dict\n\nfrom core.mode",
+  "full_hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
+  "generated_at": 1764728225.9017005,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\routing(1).py"
+}

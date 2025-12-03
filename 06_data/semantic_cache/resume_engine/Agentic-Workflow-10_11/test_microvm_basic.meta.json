@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_microvm_basic.py",
+    "rel_path": "test_microvm_basic.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "3b9c280da63ee80cca2f92060f1d3e47a93eb67cd60d8ecd3efb78f1797d2fc9",
+    "file_size": 707,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.4717839
+}

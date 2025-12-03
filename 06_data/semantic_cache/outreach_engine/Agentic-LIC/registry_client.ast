@@ -1,0 +1,872 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Simple MCP registry client used for discovery and invocation stubs.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List'),
+        alias(name='Sequence')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='_TRUST_ORDER', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='low'),
+          Constant(value='medium'),
+          Constant(value='high')],
+        values=[
+          Constant(value=0),
+          Constant(value=1),
+          Constant(value=2)])),
+    ClassDef(
+      name='ToolSpec',
+      body=[
+        Expr(
+          value=Constant(value='Metadata describing a discoverable MCP tool.')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='capabilities', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Sequence', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cost', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='trust_tier', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='latency_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        FunctionDef(
+          name='trust_rank',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='_TRUST_ORDER', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='trust_tier',
+                        ctx=Load()),
+                      attr='lower',
+                      ctx=Load())),
+                  Constant(value=0)]))],
+          returns=Name(id='int', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='MCPClient',
+      body=[
+        Expr(
+          value=Constant(value='In-memory implementation of an MCP registry client.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tools',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='ToolSpec', ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_tools',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='ToolSpec', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            For(
+              target=Name(id='tool', ctx=Store()),
+              iter=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='tools', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_default_tools',
+                      ctx=Load()))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='register',
+                      ctx=Load()),
+                    args=[
+                      Name(id='tool', ctx=Load())]))]),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_usage',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='int', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='register',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='spec',
+                annotation=Name(id='ToolSpec', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_tools',
+                    ctx=Load()),
+                  slice=Attribute(
+                    value=Name(id='spec', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='spec', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='discover',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='capability',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='constraints',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='object', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Return tools that advertise the requested capability.')),
+            Assign(
+              targets=[
+                Name(id='constraints', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='constraints', ctx=Load()),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='capability', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='capability', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Name(id='candidates', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='ToolSpec', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='spec', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_tools',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='capability', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='cap', ctx=Load()),
+                                attr='lower',
+                                ctx=Load()))]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='cap', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='spec', ctx=Load()),
+                              attr='capabilities',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='candidates', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='spec', ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='allowlist', ctx=Store())],
+              value=SetComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='item', ctx=Load()),
+                    attr='lower',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='item', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='constraints', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='allowlist'),
+                        List(ctx=Load())]),
+                    is_async=0)])),
+            If(
+              test=Name(id='allowlist', ctx=Load()),
+              body=[
+                AnnAssign(
+                  target=Name(id='filtered', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='ToolSpec', ctx=Load()),
+                    ctx=Load()),
+                  value=List(ctx=Load()),
+                  simple=1),
+                For(
+                  target=Name(id='spec', ctx=Store()),
+                  iter=Name(id='candidates', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='name', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='name',
+                            ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='identifier', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='id',
+                            ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))),
+                    If(
+                      test=BoolOp(
+                        op=Or(),
+                        values=[
+                          Compare(
+                            left=Name(id='identifier', ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='allowlist', ctx=Load())]),
+                          Compare(
+                            left=Name(id='name', ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='allowlist', ctx=Load())])]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='filtered', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='spec', ctx=Load())]))])]),
+                Assign(
+                  targets=[
+                    Name(id='candidates', ctx=Store())],
+                  value=Name(id='filtered', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='denylist', ctx=Store())],
+              value=SetComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='item', ctx=Load()),
+                    attr='lower',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='item', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='constraints', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='denylist'),
+                        List(ctx=Load())]),
+                    is_async=0)])),
+            If(
+              test=Name(id='denylist', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='filtered', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='spec', ctx=Store()),
+                  iter=Name(id='candidates', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='identifier', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='id',
+                            ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='name', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='name',
+                            ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Name(id='identifier', ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Name(id='denylist', ctx=Load())]),
+                          Compare(
+                            left=Name(id='name', ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Name(id='denylist', ctx=Load())])]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='filtered', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='spec', ctx=Load())]))])]),
+                Assign(
+                  targets=[
+                    Name(id='candidates', ctx=Store())],
+                  value=Name(id='filtered', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='max_cost', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='constraints', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='max_cost')])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='max_cost', ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Name(id='int', ctx=Load()),
+                      Name(id='float', ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='candidates', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='spec', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='spec', ctx=Store()),
+                        iter=Name(id='candidates', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='spec', ctx=Load()),
+                              attr='cost',
+                              ctx=Load()),
+                            ops=[
+                              LtE()],
+                            comparators=[
+                              Call(
+                                func=Name(id='float', ctx=Load()),
+                                args=[
+                                  Name(id='max_cost', ctx=Load())])])],
+                        is_async=0)]))]),
+            Assign(
+              targets=[
+                Name(id='min_trust', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='constraints', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='min_trust')])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='min_trust', ctx=Load()),
+                  Name(id='str', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='min_rank', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='_TRUST_ORDER', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='min_trust', ctx=Load()),
+                          attr='lower',
+                          ctx=Load())),
+                      Constant(value=0)])),
+                Assign(
+                  targets=[
+                    Name(id='candidates', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='spec', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='spec', ctx=Store()),
+                        iter=Name(id='candidates', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='spec', ctx=Load()),
+                                attr='trust_rank',
+                                ctx=Load())),
+                            ops=[
+                              GtE()],
+                            comparators=[
+                              Name(id='min_rank', ctx=Load())])],
+                        is_async=0)]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='candidates', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='spec')]),
+                      body=Tuple(
+                        elts=[
+                          UnaryOp(
+                            op=USub(),
+                            operand=Call(
+                              func=Attribute(
+                                value=Name(id='spec', ctx=Load()),
+                                attr='trust_rank',
+                                ctx=Load()))),
+                          Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='cost',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='latency_ms',
+                            ctx=Load())],
+                        ctx=Load())))])),
+            Return(
+              value=Name(id='candidates', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ToolSpec', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='invoke',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='args',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='object', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Invoke the tool and return a deterministic stub response.')),
+            If(
+              test=Compare(
+                left=Name(id='tool_id', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_tools',
+                    ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='KeyError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value="Unknown MCP tool '"),
+                          FormattedValue(
+                            value=Name(id='tool_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="'")])]))]),
+            Assign(
+              targets=[
+                Name(id='args', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='args', ctx=Load()),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='spec', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_tools',
+                  ctx=Load()),
+                slice=Name(id='tool_id', ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_usage',
+                    ctx=Load()),
+                  slice=Name(id='tool_id', ctx=Load()),
+                  ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_usage',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='tool_id', ctx=Load()),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Constant(value=1))),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='query')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='input')]),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='spec', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' response for '),
+                  FormattedValue(
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='query', ctx=Load()),
+                        Constant(value='default query')]),
+                    conversion=-1)])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='ok'),
+                  Constant(value='content'),
+                  Constant(value='usage_count'),
+                  Constant(value='latency_ms')],
+                values=[
+                  Constant(value=True),
+                  Name(id='content', ctx=Load()),
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_usage',
+                      ctx=Load()),
+                    slice=Name(id='tool_id', ctx=Load()),
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='spec', ctx=Load()),
+                    attr='latency_ms',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='object', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='usage_count',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_usage',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='tool_id', ctx=Load()),
+                  Constant(value=0)]))],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='_default_tools',
+          args=arguments(),
+          body=[
+            Return(
+              value=Tuple(
+                elts=[
+                  Call(
+                    func=Name(id='ToolSpec', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='web_search_v1')),
+                      keyword(
+                        arg='name',
+                        value=Constant(value='Web Search')),
+                      keyword(
+                        arg='capabilities',
+                        value=Tuple(
+                          elts=[
+                            Constant(value='web_search'),
+                            Constant(value='news')],
+                          ctx=Load())),
+                      keyword(
+                        arg='cost',
+                        value=Constant(value=0.45)),
+                      keyword(
+                        arg='trust_tier',
+                        value=Constant(value='high')),
+                      keyword(
+                        arg='latency_ms',
+                        value=Constant(value=320)),
+                      keyword(
+                        arg='description',
+                        value=Constant(value='Search engine integration'))]),
+                  Call(
+                    func=Name(id='ToolSpec', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='profile_lookup_v1')),
+                      keyword(
+                        arg='name',
+                        value=Constant(value='Profile Lookup')),
+                      keyword(
+                        arg='capabilities',
+                        value=Tuple(
+                          elts=[
+                            Constant(value='profile_lookup'),
+                            Constant(value='enrichment')],
+                          ctx=Load())),
+                      keyword(
+                        arg='cost',
+                        value=Constant(value=0.3)),
+                      keyword(
+                        arg='trust_tier',
+                        value=Constant(value='medium')),
+                      keyword(
+                        arg='latency_ms',
+                        value=Constant(value=210)),
+                      keyword(
+                        arg='description',
+                        value=Constant(value='Enrich contact profiles'))]),
+                  Call(
+                    func=Name(id='ToolSpec', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='news_digest_beta')),
+                      keyword(
+                        arg='name',
+                        value=Constant(value='News Digest')),
+                      keyword(
+                        arg='capabilities',
+                        value=Tuple(
+                          elts=[
+                            Constant(value='news'),
+                            Constant(value='market_intel')],
+                          ctx=Load())),
+                      keyword(
+                        arg='cost',
+                        value=Constant(value=0.25)),
+                      keyword(
+                        arg='trust_tier',
+                        value=Constant(value='low')),
+                      keyword(
+                        arg='latency_ms',
+                        value=Constant(value=450)),
+                      keyword(
+                        arg='description',
+                        value=Constant(value='Beta digest of recent company news'))])],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Sequence', ctx=Load()),
+            slice=Name(id='ToolSpec', ctx=Load()),
+            ctx=Load()))])])

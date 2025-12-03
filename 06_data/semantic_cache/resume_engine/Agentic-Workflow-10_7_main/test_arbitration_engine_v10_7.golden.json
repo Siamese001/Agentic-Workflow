@@ -1,0 +1,6 @@
+{
+  "golden_content": "import copy\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom agent_orchestration_v10_7 import _attach_arbitration_report\nfrom core_v10_7.config import ConfigSection\nfrom core_v10_7.models import ArbitrationReport\nfrom core_v10_7.services import ArbitrationEngine, MetricsCollector\n\n\nBASE_STAGES = {\n    \"strategy_post_plan\": {\"enabled\": True, \"allow_revision\": True},\n    \"prompt_rag_join\": {\"enabled\": True, \"allow_revision\": False},\n    \"draft_post_assembly\": {\"enabled\": True, \"allow_revision\": True},\n    \"bullets_post_selection\": {\"enabled\": True, \"allow_revision\": True},\n    \"qa_post_validation\": {\"enabled\": True, \"allow_revision\": True},\n}\n\n\ndef make_config(*, enabled: bool = True, stage_overrides: dict | None = None):\n    cfg = {\n        \"enabled\": enabled,\n        \"default_mode\": \"observe_only\",\n        \"max_revision_loops_per_stage\": 1,\n        \"stages\": copy.deepcopy(BASE_STAGES),\n    }\n    if stage_overrides:\n        for stage, overrides in stage_overrides.items():\n        ",
+  "full_hash": "079e45a7c62f4e8ad8905f715088cbf92c1a4f3a18863efa286e4b0d589c4382",
+  "generated_at": 1764728230.4620798,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\core\\test_arbitration_engine_v10_7.py"
+}

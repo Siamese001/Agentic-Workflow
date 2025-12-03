@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\n\nimport json\nimport re\nimport hashlib\nimport math\nimport logging\nimport os\nimport time\nimport requests\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nimport argparse\nimport sys\nfrom dataclasses import dataclass, field, asdict\nfrom pathlib import Path\nimport copy\n\n__version__ = \"9.71\" # Implemented Provenance Split Logic (V/C/S); Added Cover Letter Structure Validation & Hardened Formatting.\n# v9.71: Implemented Provenance Split Logic (V/C/S); Added Cover Letter Structure Validation & Hardened Formatting.\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\nexcept ImportError:\n    GEMINI_AVAILABLE = False\n    print(\"Warning: google-generativeai package not installed. Web RAG disabled.\")\n\n# v5.90: Switched to scikit-learn for robust cosine similarity\ntry:\n    from sklearn.feature_extraction.text import TfidfVectorizer\n    from sklearn.metrics.pairwise import cosine_simila",
+  "full_hash": "6d8b35dc466fe6cc8f6ec53bba7d3827de203cdbbe71997d62c6d1082784da6f",
+  "generated_at": 1764728322.434473,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v9_70.py"
+}

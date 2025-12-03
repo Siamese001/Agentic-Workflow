@@ -1,0 +1,6 @@
+{
+  "golden_content": "from src.lic_agentic.rag.content_store import ContentStore\nfrom src.lic_agentic.rag.retrieval_planner import RetrievalPlan\nfrom src.lic_agentic.rag.tool_registry import ToolRegistry\n\n\ndef test_dedupe_and_budget():\n    plan = RetrievalPlan([], {\"ttl_s\": 3600, \"company_id\": \"ACME\"})\n    plan.add({\"tool\": \"web_search\", \"query\": \"ACME revenue\"})\n    plan.add({\"tool\": \"web_search\", \"query\": \"ACME revenue\"})\n    plan.add({\"tool\": \"news\", \"query\": \"ACME earnings\"})\n    plan.dedupe()\n    plan.budget(max_calls=2)\n    assert len(plan.jobs) == 2\n\n\ndef test_execute_uses_cache_when_fresh():\n    store = ContentStore()\n    registry = ToolRegistry.default_with_builtins()\n    plan = RetrievalPlan([\"ACME revenue\"], {\"ttl_s\": 3600, \"company_id\": \"ACME\"})\n    plan.add({\"tool\": \"web_search\", \"query\": \"ACME revenue\"})\n    plan.dedupe()\n    first_results = plan.execute(registry, store)\n    second_results = plan.execute(registry, store)\n    assert first_results[0][0] == \"live\"\n    assert second_results[0][0] ",
+  "full_hash": "fda0a812d8977115f52f6a7525dfb28ac2bf6faa4ddab2d3a51c13fc63b2e21a",
+  "generated_at": 1764728331.2182658,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_retrieval_planner.py"
+}

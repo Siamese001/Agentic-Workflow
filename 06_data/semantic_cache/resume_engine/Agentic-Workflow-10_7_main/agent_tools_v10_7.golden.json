@@ -1,0 +1,6 @@
+{
+  "golden_content": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\nif VENDOR_PATH not in sys.path:\n    sys.path.insert(0, VENDOR_PATH)\n\n# File: agent_tools_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n# - REFACTORED (Fix #14, #17, #19, #20, #24): All tools (Drafting, RAG, QA)\n#   refactored to use the new *asynchronous* _format_prompt_with_defaults\n#   from core_v10_7. This correctly injects Goal State, Top Failures,\n#   Cognitive Modes, Reflection steps, and uses agentic pruning.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #8): Added new stubbed tools 'UIUpdateElementTool'\n#   and 'UIFireEventTool' for UI control.\n# - FIXED: All v10_5 imports and class names updated to v10_7.\n# - FIXED (Bug): QABiasDetectorTool now correctly calls the synchronous\n#   'bias_agent.run' method from within its async method using\n#   'asyncio.to_thread' to prevent bl",
+  "full_hash": "7b75e9666e1ff83aa016c19597f4a80b89a2a856eddab3d7c5362a1b6cc7dcfd",
+  "generated_at": 1764728229.3130515,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_tools_v10_7.py"
+}

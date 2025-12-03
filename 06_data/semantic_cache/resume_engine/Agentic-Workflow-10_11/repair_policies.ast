@@ -1,0 +1,204 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Expr(
+      value=Constant(value='AIS repair / mitigation policies.\n\nPolicies consume FailureSignal-like inputs and propose coarse-grained\nrepair actions (retry, downgrade, replan, escalate).\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='failure_detector',
+      names=[
+        alias(name='FailureSignal')],
+      level=1),
+    ClassDef(
+      name='RepairAction',
+      body=[
+        Expr(
+          value=Constant(value='Single AIS repair action recommendation.')),
+        AnnAssign(
+          target=Name(id='kind', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reason', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='propose_repairs',
+      args=arguments(
+        args=[
+          arg(
+            arg='signals',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='FailureSignal', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Map FailureSignal list into a set of RepairAction recommendations.')),
+        AnnAssign(
+          target=Name(id='actions', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RepairAction', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='sig', ctx=Store()),
+          iter=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='signals', ctx=Load()),
+              List(ctx=Load())]),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='sig', ctx=Load()),
+                  attr='severity',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='high')]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='actions', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='RepairAction', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='kind',
+                            value=Constant(value='escalate')),
+                          keyword(
+                            arg='reason',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='High-severity failure: '),
+                                FormattedValue(
+                                  value=Attribute(
+                                    value=Name(id='sig', ctx=Load()),
+                                    attr='code',
+                                    ctx=Load()),
+                                  conversion=-1)])),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='signal')],
+                              values=[
+                                Name(id='sig', ctx=Load())]))])]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='sig', ctx=Load()),
+                      attr='severity',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='medium')]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='actions', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='RepairAction', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='kind',
+                                value=Constant(value='retry')),
+                              keyword(
+                                arg='reason',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Medium-severity failure: '),
+                                    FormattedValue(
+                                      value=Attribute(
+                                        value=Name(id='sig', ctx=Load()),
+                                        attr='code',
+                                        ctx=Load()),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='signal')],
+                                  values=[
+                                    Name(id='sig', ctx=Load())]))])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='actions', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='RepairAction', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='kind',
+                                value=Constant(value='observe')),
+                              keyword(
+                                arg='reason',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Low-severity failure: '),
+                                    FormattedValue(
+                                      value=Attribute(
+                                        value=Name(id='sig', ctx=Load()),
+                                        attr='code',
+                                        ctx=Load()),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='signal')],
+                                  values=[
+                                    Name(id='sig', ctx=Load())]))])]))])])]),
+        Return(
+          value=Name(id='actions', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='RepairAction', ctx=Load()),
+        ctx=Load()))])

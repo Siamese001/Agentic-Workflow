@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: run_batch_v6_0.py\n# NEW: Batch processing harness for v6.0\n# Processes all job_input.json files in batch_queue/ folder\n# Writes one-line summaries to batch_summary_v6_0.csv\n# Moves completed files to batch_complete/\n\nimport os\nimport csv\nimport json\nimport logging\nimport shutil\nfrom datetime import datetime\n\n# Imports from its *own* versioned files\nfrom main_v6_0 import WorkflowV60, setup_logging \nfrom core_v6_0 import CONFIG, CircuitBreakerOpenError\n\nlogger = logging.getLogger(\"batch_runner_v6_0\")\nsetup_logging(debug_mode=False)\n\nBATCH_QUEUE_DIR = \"batch_queue\"\nBATCH_COMPLETE_DIR = \"batch_complete\"\nSUMMARY_FILE = \"batch_summary_v6_0.csv\"\n\ndef run_batch():\n    \"\"\"\n    Main batch processing loop.\n    Processes all .json files in batch_queue/ directory.\n    \"\"\"\n    # Ensure directories exist\n    os.makedirs(BATCH_QUEUE_DIR, exist_ok=True)\n    os.makedirs(BATCH_COMPLETE_DIR, exist_ok=True)\n    \n    # Get all job files\n    job_files = [f for f in os.listdir(BATCH_QUEUE_DIR) if f.en",
+  "full_hash": "d74e7eb2c633046c40864d0023957b62bd928d8fc81786f59613fc40fa3c53f0",
+  "generated_at": 1764728327.5904217,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\run_batch_v6_0.py"
+}

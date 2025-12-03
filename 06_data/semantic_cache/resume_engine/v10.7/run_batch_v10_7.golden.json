@@ -1,0 +1,6 @@
+{
+  "golden_content": "# --- Vendor path bootstrap for Codex offline environment ---\nimport sys\nimport os\n\nVENDOR_PATH = os.path.join(os.path.dirname(__file__), \"vendor\")\nif VENDOR_PATH not in sys.path:\n    sys.path.insert(0, VENDOR_PATH)\n\n# File: run_batch_v10_7.py\n# Version: 10.7 (Refactored)\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7 (e.g., core_v10_7, ConfigV10_7).\n# - UPDATED: create_workflow_context call updated to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #25): Added backpressure check. The batch\n#   will not run if the number of files in BATCH_QUEUE_DIR\n#   exceeds config.batch_config.max_batch_queue_size.\n# - FIXED: All v10_5 imports and class names updated to v10_7.\n\nimport os\nimport csv\nimport logging\nimport shutil\nimport asyncio\nimport uuid\nimport sys\nfrom datetime import datetime\nfrom typing import Any, Dict, List\n\n# v10.7: Import from new main/core\nfrom main_v10_7 import setup_logging, load_job_input\nfrom core_v10_7 import (\n    ConfigV10_7,\n    ContextBudgetMan",
+  "full_hash": "e5eb5b7f13221deb349d9137021ae799ca419635555ac21717fc9b603bc69a49",
+  "generated_at": 1764728329.5815752,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\run_batch_v10_7.py"
+}

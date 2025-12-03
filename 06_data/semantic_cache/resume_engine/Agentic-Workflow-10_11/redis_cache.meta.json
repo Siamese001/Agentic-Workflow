@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\cache\\redis_cache.py",
+    "rel_path": "redis_cache.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "f9b45a973bffd319a218a540b91055374ffb6bc4d4c2aaae1450ceb9511c53b8",
+    "file_size": 3473,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728225.5551665
+}

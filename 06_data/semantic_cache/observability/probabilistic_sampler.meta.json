@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\retriever-microagent-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\probabilistic_sampler.py",
+    "rel_path": "probabilistic_sampler.py",
+    "root_name": "observability",
+    "file_hash": "d6bd7304a701deb6a2a6be11072ae7dba6d660a39647dce8d7757de52a0e7420",
+    "file_size": 1376,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.3418584
+}

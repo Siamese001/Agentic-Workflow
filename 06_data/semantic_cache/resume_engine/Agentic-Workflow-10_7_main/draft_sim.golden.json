@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Synthetic draft simulator.\"\"\"\n\nimport random\nfrom typing import Any, Dict\n\nfrom simulations.models.draft_simulation import (\n    DraftSimMetrics,\n    DraftSimRequest,\n    DraftSimResult,\n)\nfrom simulations.utils import model_to_payload\n\n\nclass DraftSimulator:\n    \"\"\"Simulates draft-level properties.\"\"\"\n\n    async def run(self, request: DraftSimRequest) -> DraftSimResult:\n        section_count = len(request.draft_sections)\n        entropy = round(random.uniform(0.2, 0.9), 3)\n        cohesion = round(max(0.0, min(1.0, 0.5 + section_count * 0.05 + random.uniform(-0.2, 0.3))), 3)\n        rhythm_score = round(random.uniform(0.3, 0.95), 3)\n        metrics = DraftSimMetrics(entropy=entropy, cohesion=cohesion, rhythm_score=rhythm_score)\n        preview: Dict[str, Any] = {}\n        if request.draft_sections:\n            first_key = next(iter(request.draft_sections))\n            preview = {first_key: request.draft_sections[first_key]}\n        return DraftSimResult(\n            simulation_id=r",
+  "full_hash": "64cc2c6b7372175ed2a5346399fba205b78777fe7320f5e5ba7ddd6ea2460e26",
+  "generated_at": 1764728229.727555,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\draft_sim.py"
+}

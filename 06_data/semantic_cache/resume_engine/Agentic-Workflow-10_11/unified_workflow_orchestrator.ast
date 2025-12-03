@@ -1,0 +1,577 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL3 unified workflow orchestrator for resume job alignment.\n\nCoordinates all atomic layers for resume processing workflows.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Protocol')],
+      level=0),
+    ImportFrom(
+      module='l1.strategy_planning',
+      names=[
+        alias(name='plan_strategy')],
+      level=0),
+    ImportFrom(
+      module='l1.draft_planning',
+      names=[
+        alias(name='plan_drafting')],
+      level=0),
+    ImportFrom(
+      module='l1.qa_planning',
+      names=[
+        alias(name='plan_qa')],
+      level=0),
+    ImportFrom(
+      module='l1.safety_planning',
+      names=[
+        alias(name='plan_safety')],
+      level=0),
+    ImportFrom(
+      module='l1.result_parser',
+      names=[
+        alias(name='ResultParser')],
+      level=0),
+    ImportFrom(
+      module='l2.llm_caller',
+      names=[
+        alias(name='LLMCaller')],
+      level=0),
+    ImportFrom(
+      module='l2.strategy_executor',
+      names=[
+        alias(name='StrategyExecutor')],
+      level=0),
+    ImportFrom(
+      module='l2.draft_executor',
+      names=[
+        alias(name='DraftExecutor')],
+      level=0),
+    ImportFrom(
+      module='l2.qa_executor',
+      names=[
+        alias(name='QAExecutor')],
+      level=0),
+    ImportFrom(
+      module='l2.safety_executor',
+      names=[
+        alias(name='SafetyExecutor')],
+      level=0),
+    ImportFrom(
+      module='l3.strategy_orchestrator',
+      names=[
+        alias(name='StrategyOrchestrator')],
+      level=0),
+    ImportFrom(
+      module='l3.draft_orchestrator',
+      names=[
+        alias(name='DraftOrchestrator')],
+      level=0),
+    ImportFrom(
+      module='l3.qa_orchestrator',
+      names=[
+        alias(name='QAOrchestrator')],
+      level=0),
+    ImportFrom(
+      module='l3.safety_orchestrator',
+      names=[
+        alias(name='SafetyOrchestrator')],
+      level=0),
+    ImportFrom(
+      module='runtime.observability',
+      names=[
+        alias(name='record_event')],
+      level=0),
+    ClassDef(
+      name='StateManagerInterface',
+      bases=[
+        Name(id='Protocol', ctx=Load())],
+      body=[
+        FunctionDef(
+          name='save_state',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value=Ellipsis))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='load_state',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value=Ellipsis))],
+          returns=Name(id='Any', ctx=Load()))]),
+    ClassDef(
+      name='SafetyValidatorInterface',
+      bases=[
+        Name(id='Protocol', ctx=Load())],
+      body=[
+        FunctionDef(
+          name='is_safe',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value=Ellipsis))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='validate_content',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value=Ellipsis))],
+          returns=Name(id='list', ctx=Load()))]),
+    ClassDef(
+      name='UnifiedWorkflowOrchestrator',
+      body=[
+        Expr(
+          value=Constant(value='Pure orchestration for resume job alignment layer coordination.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='routing_policy',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='sandbox',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='state_manager',
+                annotation=Name(id='StateManagerInterface', ctx=Load())),
+              arg(
+                arg='safety_validator',
+                annotation=Name(id='SafetyValidatorInterface', ctx=Load())),
+              arg(
+                arg='meta_profile',
+                annotation=Name(id='Any', ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='llm_caller',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='LLMCaller', ctx=Load()),
+                args=[
+                  Name(id='routing_policy', ctx=Load()),
+                  Name(id='sandbox', ctx=Load()),
+                  Name(id='meta_profile', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='strategy_executor',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='StrategyExecutor', ctx=Load()),
+                args=[
+                  Name(id='routing_policy', ctx=Load()),
+                  Name(id='sandbox', ctx=Load()),
+                  Name(id='meta_profile', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='draft_executor',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='DraftExecutor', ctx=Load()),
+                args=[
+                  Name(id='routing_policy', ctx=Load()),
+                  Name(id='sandbox', ctx=Load()),
+                  Name(id='meta_profile', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='qa_executor',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='QAExecutor', ctx=Load()),
+                args=[
+                  Name(id='routing_policy', ctx=Load()),
+                  Name(id='sandbox', ctx=Load()),
+                  Name(id='meta_profile', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='safety_executor',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyExecutor', ctx=Load()),
+                args=[
+                  Name(id='routing_policy', ctx=Load()),
+                  Name(id='sandbox', ctx=Load()),
+                  Name(id='meta_profile', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='strategy_orchestrator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='StrategyOrchestrator', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='strategy_executor',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='draft_orchestrator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='DraftOrchestrator', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='draft_executor',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='qa_orchestrator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='QAOrchestrator', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='qa_executor',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='safety_orchestrator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyOrchestrator', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='safety_executor',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='state_manager',
+                  ctx=Store())],
+              value=Name(id='state_manager', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='safety_validator',
+                  ctx=Store())],
+              value=Name(id='safety_validator', ctx=Load()))]),
+        FunctionDef(
+          name='orchestrate_full_workflow',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='resume',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Orchestrates complete resume workflow for job alignment processing.')),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='full_workflow_start'),
+                  Dict()])),
+            Expr(
+              value=Call(
+                func=Name(id='plan_strategy', ctx=Load()),
+                args=[
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load()),
+                  Name(id='config', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='strategy_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='strategy_orchestrator',
+                    ctx=Load()),
+                  attr='orchestrate_strategy',
+                  ctx=Load()),
+                args=[
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load()),
+                  Name(id='config', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='parsed_strategy', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='ResultParser', ctx=Load())),
+                  attr='parse_strategy_result',
+                  ctx=Load()),
+                args=[
+                  Name(id='strategy_result', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='plan_drafting', ctx=Load()),
+                args=[
+                  Name(id='parsed_strategy', ctx=Load()),
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='draft_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='draft_orchestrator',
+                    ctx=Load()),
+                  attr='orchestrate_draft',
+                  ctx=Load()),
+                args=[
+                  Name(id='parsed_strategy', ctx=Load()),
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='parsed_draft', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='ResultParser', ctx=Load())),
+                  attr='parse_draft_result',
+                  ctx=Load()),
+                args=[
+                  Name(id='draft_result', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='plan_qa', ctx=Load()),
+                args=[
+                  Name(id='parsed_draft', ctx=Load()),
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='qa_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='qa_orchestrator',
+                    ctx=Load()),
+                  attr='orchestrate_qa',
+                  ctx=Load()),
+                args=[
+                  Name(id='parsed_draft', ctx=Load()),
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='parsed_qa', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='ResultParser', ctx=Load())),
+                  attr='parse_qa_result',
+                  ctx=Load()),
+                args=[
+                  Name(id='qa_result', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='plan_safety', ctx=Load()),
+                args=[
+                  Name(id='parsed_draft', ctx=Load()),
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='safety_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='safety_orchestrator',
+                    ctx=Load()),
+                  attr='orchestrate_safety',
+                  ctx=Load()),
+                args=[
+                  Name(id='parsed_draft', ctx=Load()),
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='parsed_safety', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='ResultParser', ctx=Load())),
+                  attr='parse_safety_result',
+                  ctx=Load()),
+                args=[
+                  Name(id='safety_result', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='workflow_state', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='job_data'),
+                  Constant(value='resume_data'),
+                  Constant(value='strategy_result'),
+                  Constant(value='draft_result'),
+                  Constant(value='metadata')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='title')],
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='job', ctx=Load()),
+                          Constant(value='title'),
+                          Constant(value='')])]),
+                  Dict(
+                    keys=[
+                      Constant(value='summary')],
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='resume', ctx=Load()),
+                          Constant(value='summary'),
+                          Constant(value='')])]),
+                  Attribute(
+                    value=Name(id='parsed_strategy', ctx=Load()),
+                    attr='strategy',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='parsed_draft', ctx=Load()),
+                    attr='content',
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='workflow_complete')],
+                    values=[
+                      Constant(value=True)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='state_manager',
+                    ctx=Load()),
+                  attr='save_state',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_state', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='final_content', ctx=Store())],
+              value=Attribute(
+                value=Name(id='parsed_draft', ctx=Load()),
+                attr='content',
+                ctx=Load())),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='safety_validator',
+                      ctx=Load()),
+                    attr='is_safe',
+                    ctx=Load()),
+                  args=[
+                    Name(id='final_content', ctx=Load())])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='violations', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='safety_validator',
+                        ctx=Load()),
+                      attr='validate_content',
+                      ctx=Load()),
+                    args=[
+                      Name(id='final_content', ctx=Load())])),
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Content failed safety validation: '),
+                          FormattedValue(
+                            value=Name(id='violations', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='full_workflow_complete'),
+                  Dict()])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='strategy'),
+                  Constant(value='draft'),
+                  Constant(value='qa'),
+                  Constant(value='safety'),
+                  Constant(value='state')],
+                values=[
+                  Name(id='parsed_strategy', ctx=Load()),
+                  Name(id='parsed_draft', ctx=Load()),
+                  Name(id='parsed_qa', ctx=Load()),
+                  Name(id='parsed_safety', ctx=Load()),
+                  Name(id='workflow_state', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))])])

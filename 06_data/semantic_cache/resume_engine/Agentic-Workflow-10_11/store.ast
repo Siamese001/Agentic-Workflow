@@ -1,0 +1,315 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nCMS store for resume generation prompt storage and retrieval.\n\nProvides storage functionality for compiled prompts and templates\nto ensure consistent resume improvement and job alignment.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ClassDef(
+      name='StoredPrompt',
+      body=[
+        Expr(
+          value=Constant(value='\n    Represents a stored resume generation prompt with metadata.\n\n    Ensures prompt storage supports consistent resume improvement.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='template', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_schema', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='version', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='1.0'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='created_at', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PromptStore',
+      body=[
+        Expr(
+          value=Constant(value='\n    CMS prompt storage for resume generation.\n\n    Provides storage and retrieval for compiled prompts and templates\n    to ensure consistent resume improvement and job alignment.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_prompts',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='StoredPrompt', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)]),
+        FunctionDef(
+          name='store',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='StoredPrompt', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Stores resume generation prompt and returns its ID.')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_prompts',
+                    ctx=Load()),
+                  slice=Attribute(
+                    value=Name(id='prompt', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='prompt', ctx=Load())),
+            Return(
+              value=Attribute(
+                value=Name(id='prompt', ctx=Load()),
+                attr='id',
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='retrieve',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Retrieves stored resume generation prompt by ID.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_prompts',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='StoredPrompt', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='list_prompts',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Lists all stored resume generation prompt IDs.')),
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_prompts',
+                        ctx=Load()),
+                      attr='keys',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='delete',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Deletes stored resume generation prompt.')),
+            If(
+              test=Compare(
+                left=Name(id='prompt_id', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_prompts',
+                    ctx=Load())]),
+              body=[
+                Delete(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_prompts',
+                        ctx=Load()),
+                      slice=Name(id='prompt_id', ctx=Load()),
+                      ctx=Del())]),
+                Return(
+                  value=Constant(value=True))]),
+            Return(
+              value=Constant(value=False))],
+          returns=Name(id='bool', ctx=Load()))]),
+    Assign(
+      targets=[
+        Name(id='default_store', ctx=Store())],
+      value=Call(
+        func=Name(id='PromptStore', ctx=Load()))),
+    FunctionDef(
+      name='get_store',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Gets the default resume generation prompt store instance.')),
+        Return(
+          value=Name(id='default_store', ctx=Load()))],
+      returns=Name(id='PromptStore', ctx=Load())),
+    FunctionDef(
+      name='store_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='content',
+            annotation=Name(id='str', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Convenience function to store resume generation prompt.')),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Name(id='StoredPrompt', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='content',
+                value=Name(id='content', ctx=Load())),
+              keyword(
+                value=Name(id='kwargs', ctx=Load()))])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='default_store', ctx=Load()),
+              attr='store',
+              ctx=Load()),
+            args=[
+              Name(id='prompt', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='retrieve_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Convenience function to retrieve resume generation prompt.')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='default_store', ctx=Load()),
+              attr='retrieve',
+              ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='StoredPrompt', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='get_prompt_version',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Gets the version of a stored resume generation prompt.')),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='default_store', ctx=Load()),
+              attr='retrieve',
+              ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load())])),
+        Return(
+          value=IfExp(
+            test=Name(id='prompt', ctx=Load()),
+            body=Attribute(
+              value=Name(id='prompt', ctx=Load()),
+              attr='version',
+              ctx=Load()),
+            orelse=Constant(value=None)))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load()))])

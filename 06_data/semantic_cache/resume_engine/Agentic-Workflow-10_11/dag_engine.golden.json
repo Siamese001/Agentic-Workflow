@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nDAG engine compatibility shim for r\u00e9sum\u00e9 processing workflows.\n\nPreserves backward compatibility while supporting comprehensive r\u00e9sum\u00e9 enhancement operations.\n\"\"\"\n\nfrom .dag_models import Node, Edge, Graph  # noqa: F401\nfrom .dag_executor import DAGExecutor  # noqa: F401\n\n\n\n",
+  "full_hash": "d25fda917f57412a8370b9b2ac1988e78d513803b792507496db64fb353c9f71",
+  "generated_at": 1764728224.180006,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag\\dag_engine.py"
+}

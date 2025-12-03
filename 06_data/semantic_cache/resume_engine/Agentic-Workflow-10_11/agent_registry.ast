@@ -1,0 +1,345 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='AgentCard'),
+        alias(name='AgentRole')],
+      level=0),
+    Expr(
+      value=Constant(value='\nMaintains catalog of specialized agents for résumé analysis workflow routing and coordination.\n\nImproves résumé processing by directing each analysis step to the appropriate specialist agent for optimal job matching results.\n')),
+    ClassDef(
+      name='AgentRegistry',
+      body=[
+        Expr(
+          value=Constant(value='\n    Stores specialized agent definitions for coordinating résumé analysis workflows with optimal specialist routing.\n\n    Improves résumé processing by assembling the right mix of planners, drafters, reviewers, and safety checkers for each job application.\n    ')),
+        AnnAssign(
+          target=Name(id='_agents', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='AgentCard', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='agents',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Provides access to all available résumé analysis agents for workflow routing and selection.\n\n        Improves résumé processing by enabling proper agent selection for each specialized analysis step in job matching workflows.\n        ')),
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_agents',
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='AgentCard', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='register_agent',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='agent_card',
+                annotation=Name(id='AgentCard', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Adds specialized résumé analysis agent to the registry for workflow routing and coordination.\n\n        Improves résumé processing by introducing new analysis capabilities and skills for better job matching results.\n        ')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_agents',
+                    ctx=Load()),
+                  slice=Attribute(
+                    value=Name(id='agent_card', ctx=Load()),
+                    attr='agent_id',
+                    ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='agent_card', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='get_agent',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='agent_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Retrieves specific résumé analysis agent for targeted workflow execution and coordination.\n\n        Improves résumé processing by enabling precise agent selection for specialized roles like quality review and job matching.\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='agent_id', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_agents',
+                    ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='KeyError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Unknown agent_id: '),
+                          FormattedValue(
+                            value=Name(id='agent_id', ctx=Load()),
+                            conversion=-1)])]))]),
+            Return(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_agents',
+                  ctx=Load()),
+                slice=Name(id='agent_id', ctx=Load()),
+                ctx=Load()))],
+          returns=Name(id='AgentCard', ctx=Load())),
+        FunctionDef(
+          name='find_agents_by_role',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='role',
+                annotation=BinOp(
+                  left=Name(id='AgentRole', ctx=Load()),
+                  op=BitOr(),
+                  right=Name(id='str', ctx=Load())))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Finds résumé analysis agents by specialized role for targeted workflow coordination and execution.\n\n        Improves résumé processing by enabling selection of appropriate planners, drafters, reviewers, and safety checkers for specific analysis tasks.\n        ')),
+            Assign(
+              targets=[
+                Name(id='role_value', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='role', ctx=Load()),
+                    Name(id='AgentRole', ctx=Load())]),
+                body=Attribute(
+                  value=Name(id='role', ctx=Load()),
+                  attr='value',
+                  ctx=Load()),
+                orelse=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='role', ctx=Load())]))),
+            Return(
+              value=ListComp(
+                elt=Name(id='a', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='a', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_agents',
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Attribute(
+                            value=Name(id='a', ctx=Load()),
+                            attr='role',
+                            ctx=Load()),
+                          attr='value',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Name(id='role_value', ctx=Load())])],
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='AgentCard', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='find_agents_by_type',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='agent_type',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Return all agents whose type matches a requested category.\n\n        This is a compatibility helper that lets older routing logic ask for\n        agents by a simple type label such as "planner" or "qa". It keeps\n        those flows working while still benefiting from the shared registry of\n        capabilities.\n        ')),
+            AnnAssign(
+              target=Name(id='matches', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='AgentCard', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='a', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_agents',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='atype', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='a', ctx=Load()),
+                      Constant(value='agent_type'),
+                      Constant(value=None)])),
+                If(
+                  test=Compare(
+                    left=Name(id='atype', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='agent_type', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='matches', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='a', ctx=Load())])),
+                    Continue()]),
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='role_val', ctx=Store())],
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='a', ctx=Load()),
+                          attr='role',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='role_val', ctx=Store())],
+                          value=Constant(value=None))])]),
+                If(
+                  test=Compare(
+                    left=Name(id='role_val', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='agent_type', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='matches', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='a', ctx=Load())]))])]),
+            Return(
+              value=Name(id='matches', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='AgentCard', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='find_agents_by_capability',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='capability',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Find agents that can perform a specific kind of improvement.\n\n        Capabilities might include things like "rewrite bullets", "summarize\n        experience", or "check safety". Selecting by capability lets the\n        system pull in specialized help for targeted resume improvements.\n        ')),
+            Return(
+              value=ListComp(
+                elt=Name(id='a', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='a', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_agents',
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Name(id='capability', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          BoolOp(
+                            op=Or(),
+                            values=[
+                              Attribute(
+                                value=Name(id='a', ctx=Load()),
+                                attr='capabilities',
+                                ctx=Load()),
+                              List(ctx=Load())])])],
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='AgentCard', ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\safety-phase\\manage-runtime-costs\\general\\update-memory\\track_runtime_usage.py",
+    "rel_path": "track_runtime_usage.py",
+    "root_name": "runtime",
+    "file_hash": "8b7d22b3531588e7577b9ca31bdc6a12bfd9068d5a18df8300c873685576e679",
+    "file_size": 11276,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.3033037
+}

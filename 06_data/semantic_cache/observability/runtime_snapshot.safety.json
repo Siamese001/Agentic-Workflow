@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 1,
+  "generated_at": 1764728350.4571683,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\snapshots\\-1_Periodic_snapshots\\executor-microagent-layer\\validate-phase-group\\dag-operations-ops\\runtime_snapshot.py"
+}

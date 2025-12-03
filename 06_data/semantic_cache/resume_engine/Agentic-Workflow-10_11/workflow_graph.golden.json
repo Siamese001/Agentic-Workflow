@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL3 orchestration layer for r\u00e9sum\u00e9 workflow coordination.\n\nManages workflow execution and correction loops to ensure comprehensive r\u00e9sum\u00e9 improvement.\n\"\"\"\n\n# FILE: l3/workflow_graph.py\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Optional, Callable, Awaitable\n\nfrom core.models.models import (\n    WorkflowPlanBundle,\n    ExecutionContext,\n    RAGResult,\n    StrategyResult,\n    DraftingResult,\n    QAResult,\n    SafetyResult,\n    L2ResultBundle,\n)\nfrom runtime.observability import (\n    start_span,\n    end_span,\n    emit_node_event,\n    log_exception,\n)\nfrom orchestration.dag_engine import Node as DagNode, Edge as DagEdge, Graph as DagGraph, DAGExecutor\nfrom orchestration.agent_registry import AgentRegistry\nfrom config.agent_profile import AgentCard\nfrom l2.execution import (\n    _execute_strategy,\n    _execute_retrieval,\n    _execute_drafting,\n    _execute_qa,\n    _execute_safety,\n)\nfrom core.routing import route_task_to_agent\n\n# Self-correction surfaces (met",
+  "full_hash": "ed9f96c034b11943f7a8dffbcbc218effb7ac59356cf96a1babe8030158c776e",
+  "generated_at": 1764728225.9806702,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\workflow_graph.py"
+}

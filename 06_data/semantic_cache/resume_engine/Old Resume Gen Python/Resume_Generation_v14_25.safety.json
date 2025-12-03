@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 9743,
+  "generated_at": 1764728275.2573972,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_25.py"
+}

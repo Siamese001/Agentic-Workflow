@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 490,
+  "generated_at": 1764728350.4129817,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\planner-microagent-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\dag_runtime_inspector.py"
+}

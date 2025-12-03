@@ -1,0 +1,6 @@
+{
+  "golden_content": "from src.lic_agentic.mcp import MCPClient, ToolSpec\nfrom src.lic_agentic.rag import MCPSelector, ToolRegistry, register_discovered_tools\nfrom src.lic_agentic.telemetry import PolicyController\n\n\ndef test_selector_respects_allowlist_and_quarantine():\n    client = MCPClient(\n        tools=[\n            ToolSpec(\n                id=\"trusted\",\n                name=\"Trusted\",\n                capabilities=(\"web_search\",),\n                cost=0.3,\n                trust_tier=\"high\",\n                latency_ms=250,\n            ),\n            ToolSpec(\n                id=\"beta\",\n                name=\"Beta\",\n                capabilities=(\"web_search\",),\n                cost=0.2,\n                trust_tier=\"low\",\n                latency_ms=400,\n            ),\n        ]\n    )\n    policy = PolicyController()\n    selector = MCPSelector(client, policy, allowlist=[\"trusted\", \"beta\"])\n    selections = selector.discover(\"web_search\")\n    assert selections[0].spec.id == \"trusted\"\n    assert any(sel.quaran",
+  "full_hash": "f001806ccecf1c4e1bc6655426e38875bc11aadf3e928e3760fcf94e62fcde5f",
+  "generated_at": 1764728331.115697,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_mcp_selector.py"
+}

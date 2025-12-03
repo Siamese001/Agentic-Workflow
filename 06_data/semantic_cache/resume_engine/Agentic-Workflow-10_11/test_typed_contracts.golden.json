@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: tests/contracts/test_typed_contracts.py\n\nfrom __future__ import annotations\n\nfrom pydantic import BaseModel\n\nfrom meta.schema_validation import validate_schema_version\nfrom core.models.models import (\n    StrategyPlan,\n    StrategyResult,\n    DraftingPlan,\n    DraftingResult,\n    QAPlan,\n    QAResult,\n    SafetyPlan,\n    SafetyResult,\n    WorkflowPlanBundle,\n    RAGPlan,\n    RAGResult,\n    L2ResultBundle,\n)\n\n\ndef test_core_models_have_v1_schema_version_defaults():\n    # Simple models with safe defaults can be instantiated without args.\n    simple_plans = [StrategyPlan, DraftingPlan, QAPlan, SafetyPlan, RAGPlan]\n    for cls in simple_plans:\n        obj = cls()  # type: ignore[call-arg]\n        assert getattr(obj, \"schema_version\", \"v1\") == \"v1\"\n\n    # Results require required list fields.\n    strategy_res = StrategyResult(branches=[])\n    assert strategy_res.schema_version == \"v1\"\n\n    drafting_res = DraftingResult(sections=[])\n    assert drafting_res.schema_version == \"v1\"\n\n   ",
+  "full_hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
+  "generated_at": 1764728226.4892092,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\contracts\\test_typed_contracts.py"
+}

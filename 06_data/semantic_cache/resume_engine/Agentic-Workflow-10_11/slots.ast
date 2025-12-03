@@ -1,0 +1,84 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nContext slot management for résumé processing workflows.\n\nDefines logical sections for organizing information in résumé improvement prompts.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ClassDef(
+      name='ContextSlot',
+      body=[
+        Expr(
+          value=Constant(value='\n    Represents context slot for résumé processing prompt organization.\n\n    Enables structured information placement for comprehensive résumé enhancement workflows.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_items', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='assign_to_slot',
+      args=arguments(
+        args=[
+          arg(
+            arg='slot',
+            annotation=Name(id='ContextSlot', ctx=Load())),
+          arg(
+            arg='texts',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Assigns context texts to résumé processing slots.\n\n    Ensures optimal information organization for résumé improvement prompt generation.\n    ')),
+        If(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='slot', ctx=Load()),
+              attr='max_items',
+              ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=0)]),
+          body=[
+            Return(
+              value=List(ctx=Load()))]),
+        Return(
+          value=Subscript(
+            value=Name(id='texts', ctx=Load()),
+            slice=Slice(
+              upper=Attribute(
+                value=Name(id='slot', ctx=Load()),
+                attr='max_items',
+                ctx=Load())),
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load()))])

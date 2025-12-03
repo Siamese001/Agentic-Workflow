@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 200,
+  "generated_at": 1764728330.4779387,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k3_message_architect.py"
+}

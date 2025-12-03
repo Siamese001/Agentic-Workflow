@@ -1,0 +1,249 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nCoordinates résumé analysis workflow execution with safety and retry mechanisms.\n\nImproves résumé processing reliability by managing complex multi-agent analysis workflows with error handling.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Awaitable'),
+        alias(name='Callable'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='TypeVar')],
+      level=0),
+    ImportFrom(
+      module='l5',
+      names=[
+        alias(name='SafetySystem')],
+      level=0),
+    ImportFrom(
+      module='integration',
+      names=[
+        alias(name='WorkflowExecutionConfig'),
+        alias(name='execute_workflow')],
+      level=1),
+    ImportFrom(
+      module='models.dag_models',
+      names=[
+        alias(name='DAGResult')],
+      level=1),
+    Assign(
+      targets=[
+        Name(id='TState', ctx=Store())],
+      value=Call(
+        func=Name(id='TypeVar', ctx=Load()),
+        args=[
+          Constant(value='TState')])),
+    ClassDef(
+      name='OrchestratorConfig',
+      body=[
+        Expr(
+          value=Constant(value='\n    Configures résumé analysis workflow execution settings for reliability and performance optimization.\n\n    Improves résumé processing by defining retry policies, timeouts, and failure handling for multi-agent workflows.\n    ')),
+        AnnAssign(
+          target=Name(id='max_retries', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=3),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retry_delay', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.5),
+          simple=1),
+        AnnAssign(
+          target=Name(id='fail_fast', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='default_node_timeout', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=30.0),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='WorkflowOrchestrator',
+      body=[
+        Expr(
+          value=Constant(value='\n    Manages complex résumé analysis workflows with multiple agents and safety validation.\n\n    Improves résumé processing by coordinating strategy, drafting, QA, and safety agents for comprehensive job matching analysis.\n    ')),
+        Expr(
+          value=Constant(value='High-level orchestrator for DAG-style workflows.\n\n    This remains L3-only: no direct state mutation, no safety logic.\n    It simply wires node executors into the shared integration layer.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='OrchestratorConfig', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='safety_system',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='SafetySystem', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Sets up résumé workflow coordination system with retry policies and safety validation.\n\n        Improves résumé processing reliability by configuring error handling and safety checks for multi-agent analysis.\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  Call(
+                    func=Name(id='OrchestratorConfig', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='safety_system',
+                  ctx=Store())],
+              value=Name(id='safety_system', ctx=Load()))],
+          returns=Constant(value=None)),
+        AsyncFunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='initial_state',
+                annotation=Name(id='TState', ctx=Load())),
+              arg(
+                arg='node_executors',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Subscript(
+                        value=Name(id='Callable', ctx=Load()),
+                        slice=Tuple(
+                          elts=[
+                            Constant(value=Ellipsis),
+                            Subscript(
+                              value=Name(id='Awaitable', ctx=Load()),
+                              slice=Name(id='Any', ctx=Load()),
+                              ctx=Load())],
+                          ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='node_dependencies',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Subscript(
+                        value=Name(id='List', ctx=Load()),
+                        slice=Name(id='str', ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            kwarg=arg(
+              arg='metadata',
+              annotation=Name(id='Any', ctx=Load()))),
+          body=[
+            Expr(
+              value=Constant(value='\n        Executes résumé analysis workflow with coordinated multi-agent processing and safety validation.\n\n        Improves résumé processing by managing complex analysis workflows with proper error handling and retry logic.\n        ')),
+            Assign(
+              targets=[
+                Name(id='wf_cfg', ctx=Store())],
+              value=Call(
+                func=Name(id='WorkflowExecutionConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='max_retries',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='max_retries',
+                      ctx=Load())),
+                  keyword(
+                    arg='retry_delay',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='retry_delay',
+                      ctx=Load())),
+                  keyword(
+                    arg='fail_fast',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='fail_fast',
+                      ctx=Load())),
+                  keyword(
+                    arg='default_node_timeout',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='default_node_timeout',
+                      ctx=Load()))])),
+            Return(
+              value=Await(
+                value=Call(
+                  func=Name(id='execute_workflow', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='workflow_id',
+                      value=Name(id='workflow_id', ctx=Load())),
+                    keyword(
+                      arg='initial_state',
+                      value=Name(id='initial_state', ctx=Load())),
+                    keyword(
+                      arg='node_executors',
+                      value=Name(id='node_executors', ctx=Load())),
+                    keyword(
+                      arg='node_dependencies',
+                      value=Name(id='node_dependencies', ctx=Load())),
+                    keyword(
+                      arg='safety_system',
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='safety_system',
+                        ctx=Load())),
+                    keyword(
+                      arg='config',
+                      value=Name(id='wf_cfg', ctx=Load())),
+                    keyword(
+                      value=Name(id='metadata', ctx=Load()))])))],
+          returns=Name(id='DAGResult', ctx=Load()))])])

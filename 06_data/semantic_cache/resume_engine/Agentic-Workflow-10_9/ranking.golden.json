@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: ranking.py\n\"\"\"\nRanking Utilities (v10_9) \u2014 PURE META-LAYER MODULE\n\nThis module provides deterministic ranking functions for use by:\n\n    \u2022 L2 RAGExecutor\n    \u2022 retrieval.py\n    \u2022 routing/meta layers\n    \u2022 simulation harness\n    \u2022 observability\n\nIt must remain strictly *META* and never call:\n    \u2022 L1 planners\n    \u2022 L2 executors directly\n    \u2022 L3 orchestration\n    \u2022 L4 StateAdapter\n    \u2022 L5 Safety/Policy engines\n    \u2022 Provider/LLM/DB/Network code\n\nAll ranking here is deterministic and side-effect-free.\n\nThe actual ranking algorithms are delegated to runtime_utils.Ranking.\nThis file wraps those behaviors and exposes a stable API.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom runtime_utils import Ranking as _Ranking\n\n\n# ============================================================================\n# 1. ALGORITHM WRAPPERS\n# ============================================================================\n\ndef bm25(items: List[Dict[str, Any]]) -> List[Dic",
+  "full_hash": "79ac04ef6cc1be7b9f59d617bff9d9f94bf006a717c5e11e5e5cee4675e7d486",
+  "generated_at": 1764728228.7501884,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\ranking.py"
+}

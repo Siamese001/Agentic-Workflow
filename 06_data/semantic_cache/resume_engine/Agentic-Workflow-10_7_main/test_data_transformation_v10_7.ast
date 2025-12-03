@@ -1,0 +1,600 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    FunctionDef(
+      name='_len_or_zero',
+      args=arguments(
+        args=[
+          arg(arg='x')]),
+      body=[
+        If(
+          test=Compare(
+            left=Name(id='x', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Constant(value=0))]),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='x', ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='list', ctx=Load()),
+                  Name(id='dict', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='x', ctx=Load())]))]),
+        Return(
+          value=Constant(value=1))]),
+    FunctionDef(
+      name='test_summary_shorter_than_input',
+      args=arguments(
+        args=[
+          arg(arg='resume_text')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Ensures the DraftingStack and Summarization agents are not identity functions.\n    A summary must be significantly shorter than the resume text.\n    ')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='resume_text', ctx=Load()),
+                  Constant(value='AI Exec')])])),
+        Assign(
+          targets=[
+            Name(id='summary', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary')]),
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='out', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary')])])),
+        Assert(
+          test=Name(id='summary', ctx=Load()),
+          msg=Constant(value='Summary is missing from workflow output')),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='summary', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='resume_text', ctx=Load())])]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Summary must be shorter than input resume.\nSummary len='),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='summary', ctx=Load())]),
+                conversion=-1),
+              Constant(value=' vs input len='),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='resume_text', ctx=Load())]),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='data',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='resume_text'),
+            List(
+              elts=[
+                Constant(value='Amit Ayer is a senior leader in AI strategy and professional services delivery.'),
+                Constant(value='Jane Doe is an experienced machine learning architect focused on cloud-scale LLM systems.')],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_strategy_includes_context_field',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    v10.7 extends Strategy fields from ["steps","goal"] to ["steps","goal","context"].\n    This verifies StrategyStack actually populates context.\n    ')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='AI Exec'),
+                  Constant(value='Anthropic')])])),
+        Assign(
+          targets=[
+            Name(id='strat', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='strategy')]),
+              Subscript(
+                value=Subscript(
+                  value=Name(id='out', ctx=Load()),
+                  slice=Constant(value='resume'),
+                  ctx=Load()),
+                slice=Constant(value='strategy'),
+                ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='strat', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          msg=Constant(value='Strategy block missing')),
+        Assert(
+          test=Compare(
+            left=Constant(value='context'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='strat', ctx=Load())]),
+          msg=Constant(value="Strategy must include 'context' in v10.7")),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='_len_or_zero', ctx=Load()),
+              args=[
+                Subscript(
+                  value=Name(id='strat', ctx=Load()),
+                  slice=Constant(value='context'),
+                  ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          msg=Constant(value='Context field must be non-empty'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='data',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_qa_issues_present_and_list_like',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value="\n    v10.7 QA block adds structured 'issues'.\n    Ensures QAStack is not simply returning legacy fields.\n    ")),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='AI Exec'),
+                  Constant(value='Databricks')])])),
+        Assign(
+          targets=[
+            Name(id='qa', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa')]),
+              Subscript(
+                value=Subscript(
+                  value=Name(id='out', ctx=Load()),
+                  slice=Constant(value='resume'),
+                  ctx=Load()),
+                slice=Constant(value='qa'),
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='issues'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='qa', ctx=Load())]),
+          msg=Constant(value="QA block missing required 'issues' field")),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Subscript(
+            value=Name(id='qa', ctx=Load()),
+            slice=Constant(value='issues'),
+            ctx=Load())),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='issues', ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='list', ctx=Load()),
+                  Name(id='tuple', ctx=Load())],
+                ctx=Load())]),
+          msg=JoinedStr(
+            values=[
+              Constant(value="'issues' must be a list; got "),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='type', ctx=Load()),
+                  args=[
+                    Name(id='issues', ctx=Load())]),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='data',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_event_history_accumulates',
+      args=arguments(
+        args=[
+          arg(arg='case')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Ensures the workflow generates more than 0 events and\n    that events represent multiple stages firing.\n\n    e.g., ["safety_pass","strategy_done","rag_query","draft_complete","qa_pass"]\n    ')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  BinOp(
+                    left=Constant(value='Case_'),
+                    op=Add(),
+                    right=Name(id='case', ctx=Load())),
+                  Constant(value='AI Director')])])),
+        Assign(
+          targets=[
+            Name(id='events', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='events')]),
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='out', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='events')])])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='events', ctx=Load()),
+              Name(id='list', ctx=Load())]),
+          msg=Constant(value='Events must be list-like')),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='events', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=2)]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Events should show multiple agent actions; got only: '),
+              FormattedValue(
+                value=Name(id='events', ctx=Load()),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='data',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='case'),
+            List(
+              elts=[
+                Constant(value='Default'),
+                Constant(value='QA-heavy'),
+                Constant(value='RAG-heavy')],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_rag_results_semantically_distinct',
+      args=arguments(
+        args=[
+          arg(arg='query')]),
+      body=[
+        Expr(
+          value=Constant(value="\n    Ensures that retrieval results differ from the prompt,\n    proving RAGStack isn't identity logic.\n    ")),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='RAG Test'),
+                  Name(id='query', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='rag_block', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='rag')]),
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='out', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='rag')])])),
+        Assert(
+          test=Name(id='rag_block', ctx=Load()),
+          msg=Constant(value='RAG block is missing from output')),
+        Assign(
+          targets=[
+            Name(id='doc', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='rag_block', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='top_document')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='rag_block', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='document')])])),
+        Assert(
+          test=Name(id='doc', ctx=Load()),
+          msg=Constant(value="RAG output missing 'document' or 'top_document'")),
+        Assert(
+          test=Compare(
+            left=Name(id='query', ctx=Load()),
+            ops=[
+              NotIn()],
+            comparators=[
+              Name(id='doc', ctx=Load())]),
+          msg=Constant(value='RAG result should not simply echo the query; ensure semantic retrieval occurs'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='data',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='query'),
+            List(
+              elts=[
+                Constant(value='cloud leadership'),
+                Constant(value='enterprise generative AI'),
+                Constant(value='risk modeling')],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_output_enriched_vs_input',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    High-level check that the system as a whole adds value.\n    The resume output should have more structure and fields\n    than the raw input string.\n    ')),
+        Assign(
+          targets=[
+            Name(id='raw_input', ctx=Store())],
+          value=Constant(value='I led ML teams in regulated financial services.')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='raw_input', ctx=Load()),
+                  Constant(value='CoreWeave')])])),
+        Assign(
+          targets=[
+            Name(id='resume_out', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='resume')]),
+              Name(id='out', ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='resume_out', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          msg=Constant(value='Output resume must be structured')),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Call(
+                  func=Attribute(
+                    value=Name(id='resume_out', ctx=Load()),
+                    attr='keys',
+                    ctx=Load()))]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=3)]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Resume output not enriched; keys='),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='resume_out', ctx=Load()),
+                        attr='keys',
+                        ctx=Load()))]),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='data',
+          ctx=Load())])])

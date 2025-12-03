@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"schema_version\": \"master_config_v10.7\",\n  \"description\": \"v10.7: Implements 15 new enhancements including Semantic Caching, Idempotency Validation, Concurrent Node Execution, Constitutional AI, and Agent-to-Agent (A2A) Comms.\",\n  \"version_notes\": {\n    \"v10_6_changes\": [\n      \"SCHEMA_VERSION: Updated to v10.6\",\n      \"FILE_PATHS: All logs/dbs updated to v10_7 versions.\",\n      \"FIX_5 (Concurrency): Architecture now supports concurrent node execution.\",\n      \"FIX_7 (Dynamic Tooling): Added ToolRegistry config (see meta_loop_config).\",\n      \"FIX_8 (UI Tools): Architecture supports UI control tools (logging only).\",\n      \"FIX_9 (Streaming): Architecture supports real-time streaming (via main).\",\n      \"FIX_10 (A2A Comms): Architecture supports A2A messaging via state.\",\n      \"FIX_13 (Semantic Caching): Added 'enable_semantic_caching' and 'semantic_cache_similarity_threshold' to caching_config.\",\n      \"FIX_14 (Smarter Pruning): Added 'summarizer_model' for agentic context prunin",
+  "full_hash": "45e7f701db45593dc4b5d96a9d00a0ee7df2d35d504d775c3e8b024e32f0054d",
+  "generated_at": 1764728330.320842,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\master_config_v10_7.json"
+}

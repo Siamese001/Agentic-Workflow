@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Resume Workflow v6.0 - Full Production Package\n\n## \ud83d\ude80 Version 6.0: \"Zero-Loss\" & Telemetry Patch\n\n**Release Date**: November 7, 2025  \n**Previous Version**: v5.9 (Batch Harness)\n\n---\n\n## \ud83d\udccb What's New in v6.0\n\n### Critical Features Implemented\n\n#### 1. **Comprehensive Telemetry & Alerting (Spell #9)**\n- \u2705 JSON-structured logging for all agent executions\n- \u2705 Dedicated `agent_telemetry` logger with execution metadata\n- \u2705 Automatic batch halt after 3 consecutive failures\n- \u2705 Per-agent timing, cost, and token tracking hooks\n\n#### 2. **Cost Tracking Infrastructure (Spell #6)**\n- \u2705 Cost ceiling configuration per workflow ($5.00 default)\n- \u2705 Cost estimator hooks (ready for un-stubbing)\n- \u2705 Token-level cost tracking placeholders in telemetry\n- \u2705 Alert thresholds at 80% of ceiling\n\n#### 3. **Circuit Breaker Pattern (Spell #5)**\n- \u2705 `CircuitBreakerOpenError` exception handling\n- \u2705 Failure threshold configuration (3 failures default)\n- \u2705 Integration points in batch runner and agent execution\n- \u2705 ",
+  "full_hash": "29b37dd1b9202f75401619f94f8caacc14d8a9957490ddc07aafcf8a01b58381",
+  "generated_at": 1764728327.4893281,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\Change Log\\README_v6_0.md"
+}

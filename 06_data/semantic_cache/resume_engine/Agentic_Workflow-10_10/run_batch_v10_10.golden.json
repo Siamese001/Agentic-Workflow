@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nrun_batch_v10_10.py\n\nBatch entrypoint for the v10_10 agentic workflow stack.\n\nResponsibilities:\n- Batch ingestion (multiple jobs / resumes) from JSONL.\n- Construct per-row ExecutionContext indirectly via main_v10_10.run_workflow.\n- Propagate Phase\u20113 knobs (HYDE, RRF, council size, correction loops, telemetry routing).\n- Ensure deterministic ordering and deterministic \"golden mode\".\n- Parallelization with safe concurrency limits.\n- Emit batch-level telemetry summary (G15\u2013G18).\n- Emit JSONL / structured outputs for downstream evaluation.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport dataclasses\nfrom dataclasses import dataclass, asdict\nimport json\nimport os\nimport sys\nimport time\nimport uuid\nfrom concurrent.futures import ThreadPoolExecutor, as_completed\nfrom typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple, cast\n\nfrom main_v10_10 import (\n    run_workflow,\n    RRFStrategy,\n    TelemetryRoutingMode,\n)\n\n\n# ------------------",
+  "full_hash": "32c013e8869be5e23c41d1b9cebf1502729ee9292d2ef7c33166d1864e2b7596",
+  "generated_at": 1764728228.465736,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\run_batch_v10_10.py"
+}

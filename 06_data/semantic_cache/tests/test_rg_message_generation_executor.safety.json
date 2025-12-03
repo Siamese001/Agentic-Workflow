@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 649,
+  "generated_at": 1764728354.7616005,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\planner-microagent-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\test_rg_message_generation_executor.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: tools_LIC.py\n# Description: Tool-Augmented Agents - \"Fast Loop\" tools for deterministic evaluation\n# v13.0: Replaces expensive LLM calls with cheap, fast, deterministic code\n\n__version__ = \"13.0\"\n\nimport re\nimport json\nfrom typing import Dict, List, Any, Tuple, Optional, Callable\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\nimport numpy as np\n\n\nclass CodeInterpreterTool:\n    \"\"\"\n    v13.0: Safe code execution environment for deterministic evaluation\n    \n    Provides a \"Fast Loop\" for validation and scoring before committing\n    to expensive LLM calls. Used by HOP-6 (ValidationAgent) to:\n    - Score message drafts for similarity to strategic brief\n    - Rank N candidates without LLM synthesis\n    - Run deterministic validation checks\n    \"\"\"\n    \n    def __init__(self):\n        \"\"\"Initialize code interpreter with safe function registry\"\"\"\n        self.functions = {\n            \"run_similarity_check\": self.run",
+  "full_hash": "89f018c06b5f131659b01908b3f82da2fb8899292aa6e60c605f9459d411d2c4",
+  "generated_at": 1764728331.5193925,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\tools_LIC.py"
+}

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 545,
+  "generated_at": 1764728354.70907,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\planner-microagent-layer\\aggregate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\test_e2e_rg_resume_flow.py"
+}

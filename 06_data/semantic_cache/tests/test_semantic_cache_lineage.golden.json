@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTest suite for semantic cache lineage and merge operations\n\nTests lineage chain building, semantic diff generation, and cross-version analysis\nfor both Resume Engine (RG) and Outreach Engine (LIC) engines.\n\"\"\"\n\nimport json\nimport pytest\nimport tempfile\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, List\n\n# Add project paths for imports\nproject_root = Path(__file__).parent.parent\nsys.path.append(str(project_root / \"schemas\"))\nsys.path.append(str(project_root / \"runtime\"))\n\nfrom semantic_lineage import (\n    EngineType, SemanticDiff, ASTSignature, FileSignature, FileExtension\n)\nfrom semantic_lineage_merge import (\n    VersionInfo, SemanticDiffer, LineageChain, LineageMergeProcessor\n)\n\n\nclass TestVersionInfo:\n    \"\"\"Test version parsing and ordering\"\"\"\n    \n    def test_numeric_version_parsing(self):\n        \"\"\"Test parsing of numeric versions\"\"\"\n        test_cases = [\n            (\"v2\", 2.0),\n            (\"v6.0\", 6.0),\n            (\"v1",
+  "full_hash": "4994c431c40c0f3f94248cf762695dc7805f19eb2ee6b179ec524bd14a9c57e3",
+  "generated_at": 1764728355.155172,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\test_semantic_cache_lineage.py"
+}

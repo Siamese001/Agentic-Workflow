@@ -1,0 +1,4963 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTelemetry Collection for Observability Testing\n\nCollects metrics, performance data, and quality trends from existing test suite.\nWraps unit/integration/E2E/golden tests to track execution patterns and quality over time.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Import(
+      names=[
+        alias(name='time')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field'),
+        alias(name='asdict')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    Import(
+      names=[
+        alias(name='threading')]),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='observability',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='integration',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='MetricType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of metrics collected.')),
+        Assign(
+          targets=[
+            Name(id='COUNTER', ctx=Store())],
+          value=Constant(value='counter')),
+        Assign(
+          targets=[
+            Name(id='GAUGE', ctx=Store())],
+          value=Constant(value='gauge')),
+        Assign(
+          targets=[
+            Name(id='HISTOGRAM', ctx=Store())],
+          value=Constant(value='histogram')),
+        Assign(
+          targets=[
+            Name(id='TIMER', ctx=Store())],
+          value=Constant(value='timer'))]),
+    ClassDef(
+      name='MetricPoint',
+      body=[
+        Expr(
+          value=Constant(value='Single metric data point.')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metric_type', ctx=Store()),
+          annotation=Name(id='MetricType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='value', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tags', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='ExecutionMetrics',
+      body=[
+        Expr(
+          value=Constant(value='Metrics collected from test execution.')),
+        AnnAssign(
+          target=Name(id='test_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='test_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='error_message', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='memory_usage', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cpu_usage', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='assertions_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='mock_calls_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True)),
+            keyword(
+              arg='slots',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='QualityMetrics',
+      body=[
+        Expr(
+          value=Constant(value='Quality metrics from scoring harness.')),
+        AnnAssign(
+          target=Name(id='domain', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='overall_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='component_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='evaluation_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='quality_level', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='SystemMetrics',
+      body=[
+        Expr(
+          value=Constant(value='System-level metrics.')),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_tests_run', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='success_rate', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='average_execution_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_execution_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='memory_peak', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cpu_peak', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='error_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='TelemetryCollector',
+      body=[
+        Expr(
+          value=Constant(value='Collects and aggregates telemetry data from test executions.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='metrics_buffer',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='MetricPoint', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='test_metrics',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='ExecutionMetrics', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='quality_metrics',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='QualityMetrics', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='system_metrics',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='SystemMetrics', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='collection_lock',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='threading', ctx=Load()),
+                  attr='Lock',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='counters',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='float', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='gauges',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='float', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='histograms',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='List', ctx=Load()),
+                      slice=Name(id='float', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='timers',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='List', ctx=Load()),
+                      slice=Name(id='float', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_cached_system_metrics',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='SystemMetrics', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_metrics_count_at_cache',
+                ctx=Store()),
+              annotation=Name(id='int', ctx=Load()),
+              value=Constant(value=0),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_stats_cache',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='float', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)]),
+        FunctionDef(
+          name='_invalidate_caches',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Invalidate caches when underlying metrics change.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_cached_system_metrics',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_metrics_count_at_cache',
+                  ctx=Store())],
+              value=Constant(value=0)),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_stats_cache',
+                    ctx=Load()),
+                  attr='clear',
+                  ctx=Load())))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='record_metric',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='metric_type',
+                annotation=Name(id='MetricType', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='tags',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='str', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='metadata',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Record a single metric point.')),
+            Assign(
+              targets=[
+                Name(id='metric', ctx=Store())],
+              value=Call(
+                func=Name(id='MetricPoint', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='metric_type',
+                    value=Name(id='metric_type', ctx=Load())),
+                  keyword(
+                    arg='value',
+                    value=Name(id='value', ctx=Load())),
+                  keyword(
+                    arg='timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='tags',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='tags', ctx=Load()),
+                        Dict()])),
+                  keyword(
+                    arg='metadata',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='metadata', ctx=Load()),
+                        Dict()]))])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collection_lock',
+                    ctx=Load()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics_buffer',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metric', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_aggregate_metric',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metric', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_invalidate_caches',
+                      ctx=Load())))])]),
+        FunctionDef(
+          name='record_test_execution',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='test_metrics',
+                annotation=Name(id='ExecutionMetrics', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Record test execution metrics.')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collection_lock',
+                    ctx=Load()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='test_metrics',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_metrics', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_execution_time'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='TIMER',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='test_metrics', ctx=Load()),
+                    attr='execution_time',
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test_type'),
+                        Constant(value='success')],
+                      values=[
+                        Attribute(
+                          value=Name(id='test_metrics', ctx=Load()),
+                          attr='test_type',
+                          ctx=Load()),
+                        Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='test_metrics', ctx=Load()),
+                              attr='success',
+                              ctx=Load())])]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_success'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='COUNTER',
+                    ctx=Load()),
+                  IfExp(
+                    test=Attribute(
+                      value=Name(id='test_metrics', ctx=Load()),
+                      attr='success',
+                      ctx=Load()),
+                    body=Constant(value=1.0),
+                    orelse=Constant(value=0.0))],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test_type')],
+                      values=[
+                        Attribute(
+                          value=Name(id='test_metrics', ctx=Load()),
+                          attr='test_type',
+                          ctx=Load())]))])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='test_metrics', ctx=Load()),
+                  attr='success',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='record_metric',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='test_failures'),
+                      Attribute(
+                        value=Name(id='MetricType', ctx=Load()),
+                        attr='COUNTER',
+                        ctx=Load()),
+                      Constant(value=1.0)],
+                    keywords=[
+                      keyword(
+                        arg='tags',
+                        value=Dict(
+                          keys=[
+                            Constant(value='test_type')],
+                          values=[
+                            Attribute(
+                              value=Name(id='test_metrics', ctx=Load()),
+                              attr='test_type',
+                              ctx=Load())]))]))])]),
+        FunctionDef(
+          name='record_quality_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='quality_metrics',
+                annotation=Name(id='QualityMetrics', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Record quality scoring metrics.')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collection_lock',
+                    ctx=Load()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='quality_metrics',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='quality_metrics', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='quality_overall_score'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='GAUGE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='quality_metrics', ctx=Load()),
+                    attr='overall_score',
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='domain'),
+                        Constant(value='level')],
+                      values=[
+                        Attribute(
+                          value=Name(id='quality_metrics', ctx=Load()),
+                          attr='domain',
+                          ctx=Load()),
+                        Attribute(
+                          value=Name(id='quality_metrics', ctx=Load()),
+                          attr='quality_level',
+                          ctx=Load())]))])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='component', ctx=Store()),
+                  Name(id='score', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='quality_metrics', ctx=Load()),
+                    attr='component_scores',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='record_metric',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='quality_component_score'),
+                      Attribute(
+                        value=Name(id='MetricType', ctx=Load()),
+                        attr='GAUGE',
+                        ctx=Load()),
+                      Name(id='score', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='tags',
+                        value=Dict(
+                          keys=[
+                            Constant(value='domain'),
+                            Constant(value='component')],
+                          values=[
+                            Attribute(
+                              value=Name(id='quality_metrics', ctx=Load()),
+                              attr='domain',
+                              ctx=Load()),
+                            Name(id='component', ctx=Load())]))]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='quality_evaluation_time'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='TIMER',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='quality_metrics', ctx=Load()),
+                    attr='evaluation_time',
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='domain')],
+                      values=[
+                        Attribute(
+                          value=Name(id='quality_metrics', ctx=Load()),
+                          attr='domain',
+                          ctx=Load())]))]))]),
+        FunctionDef(
+          name='_aggregate_metric',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='metric',
+                annotation=Name(id='MetricPoint', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Aggregate metric for statistical analysis.')),
+            Assign(
+              targets=[
+                Name(id='key', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='metric', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=':'),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='hash', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Name(id='tuple', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Name(id='sorted', ctx=Load()),
+                              args=[
+                                Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='metric', ctx=Load()),
+                                      attr='tags',
+                                      ctx=Load()),
+                                    attr='items',
+                                    ctx=Load()))])])]),
+                    conversion=-1)])),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='metric', ctx=Load()),
+                  attr='metric_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='COUNTER',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='counters',
+                        ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='counters',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Name(id='key', ctx=Load()),
+                        Constant(value=0.0)]),
+                    op=Add(),
+                    right=Attribute(
+                      value=Name(id='metric', ctx=Load()),
+                      attr='value',
+                      ctx=Load())))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='metric', ctx=Load()),
+                      attr='metric_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='MetricType', ctx=Load()),
+                        attr='GAUGE',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='gauges',
+                            ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='metric', ctx=Load()),
+                        attr='value',
+                        ctx=Load()))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='metric', ctx=Load()),
+                          attr='metric_type',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='MetricType', ctx=Load()),
+                            attr='HISTOGRAM',
+                            ctx=Load())]),
+                      body=[
+                        If(
+                          test=Compare(
+                            left=Name(id='key', ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='histograms',
+                                ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='histograms',
+                                    ctx=Load()),
+                                  slice=Name(id='key', ctx=Load()),
+                                  ctx=Store())],
+                              value=List(ctx=Load()))]),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Subscript(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='histograms',
+                                  ctx=Load()),
+                                slice=Name(id='key', ctx=Load()),
+                                ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='metric', ctx=Load()),
+                                attr='value',
+                                ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='metric', ctx=Load()),
+                              attr='metric_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='MetricType', ctx=Load()),
+                                attr='TIMER',
+                                ctx=Load())]),
+                          body=[
+                            If(
+                              test=Compare(
+                                left=Name(id='key', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='timers',
+                                    ctx=Load())]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Subscript(
+                                      value=Attribute(
+                                        value=Name(id='self', ctx=Load()),
+                                        attr='timers',
+                                        ctx=Load()),
+                                      slice=Name(id='key', ctx=Load()),
+                                      ctx=Store())],
+                                  value=List(ctx=Load()))]),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Subscript(
+                                    value=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='timers',
+                                      ctx=Load()),
+                                    slice=Name(id='key', ctx=Load()),
+                                    ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='metric', ctx=Load()),
+                                    attr='value',
+                                    ctx=Load())]))])])])])]),
+        FunctionDef(
+          name='get_system_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Calculate current system metrics with caching.')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collection_lock',
+                    ctx=Load()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='current_metrics_count', ctx=Store())],
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='test_metrics',
+                        ctx=Load())])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_cached_system_metrics',
+                          ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Constant(value=None)]),
+                      Compare(
+                        left=Name(id='current_metrics_count', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_metrics_count_at_cache',
+                            ctx=Load())])]),
+                  body=[
+                    Return(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_cached_system_metrics',
+                        ctx=Load()))]),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='test_metrics',
+                      ctx=Load())),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='system_metrics', ctx=Store())],
+                      value=Call(
+                        func=Name(id='SystemMetrics', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='timestamp',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load()))),
+                          keyword(
+                            arg='total_tests_run',
+                            value=Constant(value=0)),
+                          keyword(
+                            arg='success_rate',
+                            value=Constant(value=0.0)),
+                          keyword(
+                            arg='average_execution_time',
+                            value=Constant(value=0.0)),
+                          keyword(
+                            arg='total_execution_time',
+                            value=Constant(value=0.0)),
+                          keyword(
+                            arg='memory_peak',
+                            value=Constant(value=0.0)),
+                          keyword(
+                            arg='cpu_peak',
+                            value=Constant(value=0.0)),
+                          keyword(
+                            arg='error_count',
+                            value=Constant(value=0))]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='total_tests', ctx=Store())],
+                      value=Name(id='current_metrics_count', ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='successful_tests', ctx=Store())],
+                      value=Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Constant(value=1),
+                            generators=[
+                              comprehension(
+                                target=Name(id='tm', ctx=Store()),
+                                iter=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='test_metrics',
+                                  ctx=Load()),
+                                ifs=[
+                                  Attribute(
+                                    value=Name(id='tm', ctx=Load()),
+                                    attr='success',
+                                    ctx=Load())],
+                                is_async=0)])])),
+                    Assign(
+                      targets=[
+                        Name(id='success_rate', ctx=Store())],
+                      value=IfExp(
+                        test=Compare(
+                          left=Name(id='total_tests', ctx=Load()),
+                          ops=[
+                            Gt()],
+                          comparators=[
+                            Constant(value=0)]),
+                        body=BinOp(
+                          left=Name(id='successful_tests', ctx=Load()),
+                          op=Div(),
+                          right=Name(id='total_tests', ctx=Load())),
+                        orelse=Constant(value=0.0))),
+                    Assign(
+                      targets=[
+                        Name(id='execution_times', ctx=Store())],
+                      value=ListComp(
+                        elt=Attribute(
+                          value=Name(id='tm', ctx=Load()),
+                          attr='execution_time',
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='values_len', ctx=Store())],
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='execution_times', ctx=Load())])),
+                    If(
+                      test=Name(id='values_len', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='values_sum', ctx=Store())],
+                          value=Call(
+                            func=Name(id='sum', ctx=Load()),
+                            args=[
+                              Name(id='execution_times', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='average_execution_time', ctx=Store())],
+                          value=BinOp(
+                            left=Name(id='values_sum', ctx=Load()),
+                            op=Div(),
+                            right=Name(id='values_len', ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Name(id='total_execution_time', ctx=Store())],
+                          value=Name(id='values_sum', ctx=Load()))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='average_execution_time', ctx=Store())],
+                          value=Constant(value=0.0)),
+                        Assign(
+                          targets=[
+                            Name(id='total_execution_time', ctx=Store())],
+                          value=Constant(value=0.0))]),
+                    Assign(
+                      targets=[
+                        Name(id='memory_usage', ctx=Store())],
+                      value=ListComp(
+                        elt=Attribute(
+                          value=Name(id='tm', ctx=Load()),
+                          attr='memory_usage',
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='memory_peak', ctx=Store())],
+                      value=IfExp(
+                        test=Name(id='memory_usage', ctx=Load()),
+                        body=Call(
+                          func=Name(id='max', ctx=Load()),
+                          args=[
+                            Name(id='memory_usage', ctx=Load())]),
+                        orelse=Constant(value=0.0))),
+                    Assign(
+                      targets=[
+                        Name(id='cpu_usage', ctx=Store())],
+                      value=ListComp(
+                        elt=Attribute(
+                          value=Name(id='tm', ctx=Load()),
+                          attr='cpu_usage',
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='cpu_peak', ctx=Store())],
+                      value=IfExp(
+                        test=Name(id='cpu_usage', ctx=Load()),
+                        body=Call(
+                          func=Name(id='max', ctx=Load()),
+                          args=[
+                            Name(id='cpu_usage', ctx=Load())]),
+                        orelse=Constant(value=0.0))),
+                    Assign(
+                      targets=[
+                        Name(id='error_count', ctx=Store())],
+                      value=BinOp(
+                        left=Name(id='total_tests', ctx=Load()),
+                        op=Sub(),
+                        right=Name(id='successful_tests', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='system_metrics', ctx=Store())],
+                      value=Call(
+                        func=Name(id='SystemMetrics', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='timestamp',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load()))),
+                          keyword(
+                            arg='total_tests_run',
+                            value=Name(id='total_tests', ctx=Load())),
+                          keyword(
+                            arg='success_rate',
+                            value=Name(id='success_rate', ctx=Load())),
+                          keyword(
+                            arg='average_execution_time',
+                            value=Name(id='average_execution_time', ctx=Load())),
+                          keyword(
+                            arg='total_execution_time',
+                            value=Name(id='total_execution_time', ctx=Load())),
+                          keyword(
+                            arg='memory_peak',
+                            value=Name(id='memory_peak', ctx=Load())),
+                          keyword(
+                            arg='cpu_peak',
+                            value=Name(id='cpu_peak', ctx=Load())),
+                          keyword(
+                            arg='error_count',
+                            value=Name(id='error_count', ctx=Load()))]))]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_cached_system_metrics',
+                      ctx=Store())],
+                  value=Name(id='system_metrics', ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_metrics_count_at_cache',
+                      ctx=Store())],
+                  value=Name(id='current_metrics_count', ctx=Load())),
+                Return(
+                  value=Name(id='system_metrics', ctx=Load()))])],
+          returns=Name(id='SystemMetrics', ctx=Load())),
+        FunctionDef(
+          name='get_metric_statistics',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='metric_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='metric_type',
+                annotation=Name(id='MetricType', ctx=Load())),
+              arg(
+                arg='tags',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='str', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Get statistical summary for a specific metric with caching.')),
+            Assign(
+              targets=[
+                Name(id='key', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='metric_name', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=':'),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='hash', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Name(id='tuple', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Name(id='sorted', ctx=Load()),
+                              args=[
+                                Call(
+                                  func=Attribute(
+                                    value=BoolOp(
+                                      op=Or(),
+                                      values=[
+                                        Name(id='tags', ctx=Load()),
+                                        Dict()]),
+                                    attr='items',
+                                    ctx=Load()))])])]),
+                    conversion=-1)])),
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_stats_cache',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_stats_cache',
+                      ctx=Load()),
+                    slice=Name(id='key', ctx=Load()),
+                    ctx=Load()))]),
+            AnnAssign(
+              target=Name(id='result', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='float', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='metric_type', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='MetricType', ctx=Load()),
+                        attr='HISTOGRAM',
+                        ctx=Load())]),
+                  Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='histograms',
+                        ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='values', ctx=Store())],
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='histograms',
+                      ctx=Load()),
+                    slice=Name(id='key', ctx=Load()),
+                    ctx=Load())),
+                If(
+                  test=Name(id='values', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='values_len', ctx=Store())],
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='values', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='values_sum', ctx=Store())],
+                      value=Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          Name(id='values', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='values_sorted', ctx=Store())],
+                      value=Call(
+                        func=Name(id='sorted', ctx=Load()),
+                        args=[
+                          Name(id='values', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='mean', ctx=Store())],
+                      value=BinOp(
+                        left=Name(id='values_sum', ctx=Load()),
+                        op=Div(),
+                        right=Name(id='values_len', ctx=Load()))),
+                    If(
+                      test=Compare(
+                        left=BinOp(
+                          left=Name(id='values_len', ctx=Load()),
+                          op=Mod(),
+                          right=Constant(value=2)),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value=1)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='median', ctx=Store())],
+                          value=Subscript(
+                            value=Name(id='values_sorted', ctx=Load()),
+                            slice=BinOp(
+                              left=Name(id='values_len', ctx=Load()),
+                              op=FloorDiv(),
+                              right=Constant(value=2)),
+                            ctx=Load()))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='median', ctx=Store())],
+                          value=BinOp(
+                            left=BinOp(
+                              left=Subscript(
+                                value=Name(id='values_sorted', ctx=Load()),
+                                slice=BinOp(
+                                  left=BinOp(
+                                    left=Name(id='values_len', ctx=Load()),
+                                    op=FloorDiv(),
+                                    right=Constant(value=2)),
+                                  op=Sub(),
+                                  right=Constant(value=1)),
+                                ctx=Load()),
+                              op=Add(),
+                              right=Subscript(
+                                value=Name(id='values_sorted', ctx=Load()),
+                                slice=BinOp(
+                                  left=Name(id='values_len', ctx=Load()),
+                                  op=FloorDiv(),
+                                  right=Constant(value=2)),
+                                ctx=Load())),
+                            op=Div(),
+                            right=Constant(value=2)))]),
+                    If(
+                      test=Compare(
+                        left=Name(id='values_len', ctx=Load()),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Constant(value=1)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='var', ctx=Store())],
+                          value=BinOp(
+                            left=Call(
+                              func=Name(id='sum', ctx=Load()),
+                              args=[
+                                GeneratorExp(
+                                  elt=BinOp(
+                                    left=BinOp(
+                                      left=Name(id='x', ctx=Load()),
+                                      op=Sub(),
+                                      right=Name(id='mean', ctx=Load())),
+                                    op=Pow(),
+                                    right=Constant(value=2)),
+                                  generators=[
+                                    comprehension(
+                                      target=Name(id='x', ctx=Store()),
+                                      iter=Name(id='values', ctx=Load()),
+                                      is_async=0)])]),
+                            op=Div(),
+                            right=Name(id='values_len', ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Name(id='std_dev', ctx=Store())],
+                          value=BinOp(
+                            left=Name(id='var', ctx=Load()),
+                            op=Pow(),
+                            right=Constant(value=0.5)))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='std_dev', ctx=Store())],
+                          value=Constant(value=0.0))]),
+                    Assign(
+                      targets=[
+                        Name(id='result', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='count'),
+                          Constant(value='sum'),
+                          Constant(value='mean'),
+                          Constant(value='median'),
+                          Constant(value='min'),
+                          Constant(value='max'),
+                          Constant(value='std_dev')],
+                        values=[
+                          Name(id='values_len', ctx=Load()),
+                          Name(id='values_sum', ctx=Load()),
+                          Name(id='mean', ctx=Load()),
+                          Name(id='median', ctx=Load()),
+                          Subscript(
+                            value=Name(id='values_sorted', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          Subscript(
+                            value=Name(id='values_sorted', ctx=Load()),
+                            slice=UnaryOp(
+                              op=USub(),
+                              operand=Constant(value=1)),
+                            ctx=Load()),
+                          Name(id='std_dev', ctx=Load())]))])],
+              orelse=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='metric_type', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='MetricType', ctx=Load()),
+                            attr='TIMER',
+                            ctx=Load())]),
+                      Compare(
+                        left=Name(id='key', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='timers',
+                            ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='values', ctx=Store())],
+                      value=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='timers',
+                          ctx=Load()),
+                        slice=Name(id='key', ctx=Load()),
+                        ctx=Load())),
+                    If(
+                      test=Name(id='values', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='values_len', ctx=Store())],
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='values', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='values_sum', ctx=Store())],
+                          value=Call(
+                            func=Name(id='sum', ctx=Load()),
+                            args=[
+                              Name(id='values', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='values_sorted', ctx=Store())],
+                          value=Call(
+                            func=Name(id='sorted', ctx=Load()),
+                            args=[
+                              Name(id='values', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='mean', ctx=Store())],
+                          value=BinOp(
+                            left=Name(id='values_sum', ctx=Load()),
+                            op=Div(),
+                            right=Name(id='values_len', ctx=Load()))),
+                        If(
+                          test=Compare(
+                            left=BinOp(
+                              left=Name(id='values_len', ctx=Load()),
+                              op=Mod(),
+                              right=Constant(value=2)),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value=1)]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='median', ctx=Store())],
+                              value=Subscript(
+                                value=Name(id='values_sorted', ctx=Load()),
+                                slice=BinOp(
+                                  left=Name(id='values_len', ctx=Load()),
+                                  op=FloorDiv(),
+                                  right=Constant(value=2)),
+                                ctx=Load()))],
+                          orelse=[
+                            Assign(
+                              targets=[
+                                Name(id='median', ctx=Store())],
+                              value=BinOp(
+                                left=BinOp(
+                                  left=Subscript(
+                                    value=Name(id='values_sorted', ctx=Load()),
+                                    slice=BinOp(
+                                      left=BinOp(
+                                        left=Name(id='values_len', ctx=Load()),
+                                        op=FloorDiv(),
+                                        right=Constant(value=2)),
+                                      op=Sub(),
+                                      right=Constant(value=1)),
+                                    ctx=Load()),
+                                  op=Add(),
+                                  right=Subscript(
+                                    value=Name(id='values_sorted', ctx=Load()),
+                                    slice=BinOp(
+                                      left=Name(id='values_len', ctx=Load()),
+                                      op=FloorDiv(),
+                                      right=Constant(value=2)),
+                                    ctx=Load())),
+                                op=Div(),
+                                right=Constant(value=2)))]),
+                        Assign(
+                          targets=[
+                            Name(id='result', ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='count'),
+                              Constant(value='sum'),
+                              Constant(value='mean'),
+                              Constant(value='median'),
+                              Constant(value='min'),
+                              Constant(value='max'),
+                              Constant(value='p95'),
+                              Constant(value='p99')],
+                            values=[
+                              Name(id='values_len', ctx=Load()),
+                              Name(id='values_sum', ctx=Load()),
+                              Name(id='mean', ctx=Load()),
+                              Name(id='median', ctx=Load()),
+                              Subscript(
+                                value=Name(id='values_sorted', ctx=Load()),
+                                slice=Constant(value=0),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='values_sorted', ctx=Load()),
+                                slice=UnaryOp(
+                                  op=USub(),
+                                  operand=Constant(value=1)),
+                                ctx=Load()),
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_percentile_fast',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='values_sorted', ctx=Load()),
+                                  Constant(value=95)]),
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_percentile_fast',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='values_sorted', ctx=Load()),
+                                  Constant(value=99)])]))])])]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_stats_cache',
+                    ctx=Load()),
+                  slice=Name(id='key', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='result', ctx=Load())),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_percentile_fast',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sorted_values',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='percentile',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Fast percentile calculation for pre-sorted values.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='sorted_values', ctx=Load())),
+              body=[
+                Return(
+                  value=Constant(value=0.0))]),
+            Assign(
+              targets=[
+                Name(id='values_len', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='sorted_values', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='index', ctx=Store())],
+              value=BinOp(
+                left=BinOp(
+                  left=Name(id='percentile', ctx=Load()),
+                  op=Div(),
+                  right=Constant(value=100)),
+                op=Mult(),
+                right=BinOp(
+                  left=Name(id='values_len', ctx=Load()),
+                  op=Sub(),
+                  right=Constant(value=1)))),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='index', ctx=Load()),
+                  attr='is_integer',
+                  ctx=Load())),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='sorted_values', ctx=Load()),
+                    slice=Call(
+                      func=Name(id='int', ctx=Load()),
+                      args=[
+                        Name(id='index', ctx=Load())]),
+                    ctx=Load()))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='lower_index', ctx=Store())],
+                  value=Call(
+                    func=Name(id='int', ctx=Load()),
+                    args=[
+                      Name(id='index', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='upper_index', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='lower_index', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Assign(
+                  targets=[
+                    Name(id='lower_val', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='sorted_values', ctx=Load()),
+                    slice=Name(id='lower_index', ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='upper_val', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='sorted_values', ctx=Load()),
+                    slice=Name(id='upper_index', ctx=Load()),
+                    ctx=Load())),
+                Return(
+                  value=BinOp(
+                    left=Name(id='lower_val', ctx=Load()),
+                    op=Add(),
+                    right=BinOp(
+                      left=BinOp(
+                        left=Name(id='upper_val', ctx=Load()),
+                        op=Sub(),
+                        right=Name(id='lower_val', ctx=Load())),
+                      op=Mult(),
+                      right=BinOp(
+                        left=Name(id='index', ctx=Load()),
+                        op=Sub(),
+                        right=Name(id='lower_index', ctx=Load())))))])],
+          returns=Name(id='float', ctx=Load())),
+        FunctionDef(
+          name='export_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Export all collected metrics for analysis.')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collection_lock',
+                    ctx=Load()))],
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='timestamp'),
+                      Constant(value='counters'),
+                      Constant(value='gauges'),
+                      Constant(value='histograms'),
+                      Constant(value='timers'),
+                      Constant(value='test_metrics'),
+                      Constant(value='quality_metrics'),
+                      Constant(value='system_metrics')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load())),
+                          attr='isoformat',
+                          ctx=Load())),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='counters',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='gauges',
+                        ctx=Load()),
+                      DictComp(
+                        key=Name(id='k', ctx=Load()),
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='get_metric_statistics',
+                            ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='k', ctx=Load()),
+                                  attr='split',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value=':')]),
+                              slice=Constant(value=0),
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='MetricType', ctx=Load()),
+                              attr='HISTOGRAM',
+                              ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='k', ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='histograms',
+                                  ctx=Load()),
+                                attr='keys',
+                                ctx=Load())),
+                            is_async=0)]),
+                      DictComp(
+                        key=Name(id='k', ctx=Load()),
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='get_metric_statistics',
+                            ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='k', ctx=Load()),
+                                  attr='split',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value=':')]),
+                              slice=Constant(value=0),
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='MetricType', ctx=Load()),
+                              attr='TIMER',
+                              ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='k', ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='timers',
+                                  ctx=Load()),
+                                attr='keys',
+                                ctx=Load())),
+                            is_async=0)]),
+                      ListComp(
+                        elt=Call(
+                          func=Name(id='asdict', ctx=Load()),
+                          args=[
+                            Name(id='tm', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            is_async=0)]),
+                      ListComp(
+                        elt=Call(
+                          func=Name(id='asdict', ctx=Load()),
+                          args=[
+                            Name(id='qm', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='qm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='quality_metrics',
+                              ctx=Load()),
+                            is_async=0)]),
+                      ListComp(
+                        elt=Call(
+                          func=Name(id='asdict', ctx=Load()),
+                          args=[
+                            Name(id='sm', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='sm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='system_metrics',
+                              ctx=Load()),
+                            is_async=0)])]))])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='clear_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Clear all collected metrics and caches.')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collection_lock',
+                    ctx=Load()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics_buffer',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='test_metrics',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='quality_metrics',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='counters',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='gauges',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='histograms',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='timers',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='system_metrics',
+                        ctx=Load()),
+                      attr='clear',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_invalidate_caches',
+                      ctx=Load())))])])]),
+    ClassDef(
+      name='TestTelemetryCollection',
+      body=[
+        Expr(
+          value=Constant(value='Test telemetry collection functionality.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Setup fresh telemetry collector for each test.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='collector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='TelemetryCollector', ctx=Load())))]),
+        FunctionDef(
+          name='test_metric_recording_and_aggregation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test basic metric recording and aggregation.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_counter'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='COUNTER',
+                    ctx=Load()),
+                  Constant(value=1.0)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test')],
+                      values=[
+                        Constant(value='unit')]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_counter'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='COUNTER',
+                    ctx=Load()),
+                  Constant(value=2.0)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test')],
+                      values=[
+                        Constant(value='unit')]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_gauge'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='GAUGE',
+                    ctx=Load()),
+                  Constant(value=42.5)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test')],
+                      values=[
+                        Constant(value='unit')]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_histogram'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='HISTOGRAM',
+                    ctx=Load()),
+                  Constant(value=1.0)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test')],
+                      values=[
+                        Constant(value='unit')]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_histogram'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='HISTOGRAM',
+                    ctx=Load()),
+                  Constant(value=3.0)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test')],
+                      values=[
+                        Constant(value='unit')]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_timer'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='TIMER',
+                    ctx=Load()),
+                  Constant(value=0.1)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test')],
+                      values=[
+                        Constant(value='unit')]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_timer'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='TIMER',
+                    ctx=Load()),
+                  Constant(value=0.2)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test')],
+                      values=[
+                        Constant(value='unit')]))])),
+            Assign(
+              targets=[
+                Name(id='counter_keys', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='k', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='collector',
+                            ctx=Load()),
+                          attr='counters',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Constant(value='test_counter'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='k', ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='counter_keys', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='actual_counter_key', ctx=Store())],
+              value=Subscript(
+                value=Name(id='counter_keys', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='counters',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='actual_counter_key', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3.0)])),
+            Assign(
+              targets=[
+                Name(id='gauge_keys', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='k', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='collector',
+                            ctx=Load()),
+                          attr='gauges',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Constant(value='test_gauge'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='k', ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='gauge_keys', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='actual_gauge_key', ctx=Store())],
+              value=Subscript(
+                value=Name(id='gauge_keys', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='gauges',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='actual_gauge_key', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=42.5)])),
+            Assign(
+              targets=[
+                Name(id='histogram_keys', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='k', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='collector',
+                            ctx=Load()),
+                          attr='histograms',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Constant(value='test_histogram'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='k', ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='histogram_keys', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='actual_histogram_key', ctx=Store())],
+              value=Subscript(
+                value=Name(id='histogram_keys', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='collector',
+                            ctx=Load()),
+                          attr='histograms',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Name(id='actual_histogram_key', ctx=Load()),
+                        List(ctx=Load())])]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assign(
+              targets=[
+                Name(id='timer_keys', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='k', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='collector',
+                            ctx=Load()),
+                          attr='timers',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Constant(value='test_timer'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='k', ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='timer_keys', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='actual_timer_key', ctx=Store())],
+              value=Subscript(
+                value=Name(id='timer_keys', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='collector',
+                            ctx=Load()),
+                          attr='timers',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Name(id='actual_timer_key', ctx=Load()),
+                        List(ctx=Load())])]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assign(
+              targets=[
+                Name(id='timer_stats', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='get_metric_statistics',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_timer'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='TIMER',
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='test')],
+                    values=[
+                      Constant(value='unit')])])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='timer_stats', ctx=Load()),
+                  slice=Constant(value='count'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='timer_stats', ctx=Load()),
+                  slice=Constant(value='mean'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='approx',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0.15)])])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='timer_stats', ctx=Load()),
+                  slice=Constant(value='p95'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='approx',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0.195)])]))]),
+        FunctionDef(
+          name='test_test_execution_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test test execution metrics collection.')),
+            Assign(
+              targets=[
+                Name(id='test_metrics', ctx=Store())],
+              value=Call(
+                func=Name(id='ExecutionMetrics', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='test_name',
+                    value=Constant(value='test_sample')),
+                  keyword(
+                    arg='test_type',
+                    value=Constant(value='unit')),
+                  keyword(
+                    arg='execution_time',
+                    value=Constant(value=0.05)),
+                  keyword(
+                    arg='success',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='assertions_count',
+                    value=Constant(value=5)),
+                  keyword(
+                    arg='mock_calls_count',
+                    value=Constant(value=3))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_test_execution',
+                  ctx=Load()),
+                args=[
+                  Name(id='test_metrics', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='test_metrics',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='test_metrics',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='test_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_sample')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='test_metrics',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='success',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_tests_run',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='success_rate',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='average_execution_time',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.05)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='error_count',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_quality_metrics_collection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test quality metrics collection from scoring harness.')),
+            Assign(
+              targets=[
+                Name(id='quality_metrics', ctx=Store())],
+              value=Call(
+                func=Name(id='QualityMetrics', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='domain',
+                    value=Constant(value='resume_analysis')),
+                  keyword(
+                    arg='overall_score',
+                    value=Constant(value=0.85)),
+                  keyword(
+                    arg='component_scores',
+                    value=Dict(
+                      keys=[
+                        Constant(value='structural'),
+                        Constant(value='skill_coverage')],
+                      values=[
+                        Constant(value=0.9),
+                        Constant(value=0.8)])),
+                  keyword(
+                    arg='evaluation_time',
+                    value=Constant(value=0.001)),
+                  keyword(
+                    arg='quality_level',
+                    value=Constant(value='good'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_quality_metrics',
+                  ctx=Load()),
+                args=[
+                  Name(id='quality_metrics', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='quality_metrics',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='quality_metrics',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='domain',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='resume_analysis')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='quality_metrics',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='overall_score',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.85)])),
+            Assign(
+              targets=[
+                Name(id='gauge_keys', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='k', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='collector',
+                            ctx=Load()),
+                          attr='gauges',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Constant(value='quality'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='k', ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='gauge_keys', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=2)]))]),
+        FunctionDef(
+          name='test_system_metrics_calculation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test system metrics calculation across multiple test executions.')),
+            Assign(
+              targets=[
+                Name(id='test_executions', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='ExecutionMetrics', ctx=Load()),
+                    args=[
+                      Constant(value='test1'),
+                      Constant(value='unit'),
+                      Constant(value=0.1),
+                      Constant(value=True)],
+                    keywords=[
+                      keyword(
+                        arg='memory_usage',
+                        value=Constant(value=50.0)),
+                      keyword(
+                        arg='cpu_usage',
+                        value=Constant(value=0.5))]),
+                  Call(
+                    func=Name(id='ExecutionMetrics', ctx=Load()),
+                    args=[
+                      Constant(value='test2'),
+                      Constant(value='unit'),
+                      Constant(value=0.2),
+                      Constant(value=True)],
+                    keywords=[
+                      keyword(
+                        arg='memory_usage',
+                        value=Constant(value=75.0)),
+                      keyword(
+                        arg='cpu_usage',
+                        value=Constant(value=0.8))]),
+                  Call(
+                    func=Name(id='ExecutionMetrics', ctx=Load()),
+                    args=[
+                      Constant(value='test3'),
+                      Constant(value='integration'),
+                      Constant(value=0.15),
+                      Constant(value=False)],
+                    keywords=[
+                      keyword(
+                        arg='memory_usage',
+                        value=Constant(value=60.0)),
+                      keyword(
+                        arg='cpu_usage',
+                        value=Constant(value=0.6))]),
+                  Call(
+                    func=Name(id='ExecutionMetrics', ctx=Load()),
+                    args=[
+                      Constant(value='test4'),
+                      Constant(value='e2e'),
+                      Constant(value=0.5),
+                      Constant(value=True)],
+                    keywords=[
+                      keyword(
+                        arg='memory_usage',
+                        value=Constant(value=100.0)),
+                      keyword(
+                        arg='cpu_usage',
+                        value=Constant(value=1.2))]),
+                  Call(
+                    func=Name(id='ExecutionMetrics', ctx=Load()),
+                    args=[
+                      Constant(value='test5'),
+                      Constant(value='golden'),
+                      Constant(value=0.05),
+                      Constant(value=True)],
+                    keywords=[
+                      keyword(
+                        arg='memory_usage',
+                        value=Constant(value=40.0)),
+                      keyword(
+                        arg='cpu_usage',
+                        value=Constant(value=0.3))])],
+                ctx=Load())),
+            For(
+              target=Name(id='te', ctx=Store()),
+              iter=Name(id='test_executions', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='record_test_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='te', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_tests_run',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='success_rate',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='average_execution_time',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.2)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_execution_time',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='memory_peak',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=100.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='cpu_peak',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.2)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='error_count',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_trend_analysis_simulation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test trend analysis across multiple time periods.')),
+            Assign(
+              targets=[
+                Name(id='period1_metrics', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='ExecutionMetrics', ctx=Load()),
+                  args=[
+                    JoinedStr(
+                      values=[
+                        Constant(value='test_'),
+                        FormattedValue(
+                          value=Name(id='i', ctx=Load()),
+                          conversion=-1)]),
+                    Constant(value='unit'),
+                    BinOp(
+                      left=Constant(value=0.1),
+                      op=Add(),
+                      right=BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.01))),
+                    Constant(value=True)]),
+                generators=[
+                  comprehension(
+                    target=Name(id='i', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='range', ctx=Load()),
+                      args=[
+                        Constant(value=5)]),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='period2_metrics', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='ExecutionMetrics', ctx=Load()),
+                  args=[
+                    JoinedStr(
+                      values=[
+                        Constant(value='test_'),
+                        FormattedValue(
+                          value=Name(id='i', ctx=Load()),
+                          conversion=-1)]),
+                    Constant(value='unit'),
+                    BinOp(
+                      left=Constant(value=0.2),
+                      op=Add(),
+                      right=BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.02))),
+                    Compare(
+                      left=BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Mod(),
+                        right=Constant(value=3)),
+                      ops=[
+                        NotEq()],
+                      comparators=[
+                        Constant(value=0)])]),
+                generators=[
+                  comprehension(
+                    target=Name(id='i', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='range', ctx=Load()),
+                      args=[
+                        Constant(value=5)]),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='period3_metrics', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='ExecutionMetrics', ctx=Load()),
+                  args=[
+                    JoinedStr(
+                      values=[
+                        Constant(value='test_'),
+                        FormattedValue(
+                          value=Name(id='i', ctx=Load()),
+                          conversion=-1)]),
+                    Constant(value='unit'),
+                    BinOp(
+                      left=Constant(value=0.08),
+                      op=Add(),
+                      right=BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.01))),
+                    Constant(value=True)]),
+                generators=[
+                  comprehension(
+                    target=Name(id='i', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='range', ctx=Load()),
+                      args=[
+                        Constant(value=5)]),
+                    is_async=0)])),
+            For(
+              target=Name(id='te', ctx=Store()),
+              iter=Name(id='period1_metrics', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='record_test_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='te', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='system1', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='initial_success_rate', ctx=Store())],
+              value=Attribute(
+                value=Name(id='system1', ctx=Load()),
+                attr='success_rate',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='initial_avg_time', ctx=Store())],
+              value=Attribute(
+                value=Name(id='system1', ctx=Load()),
+                attr='average_execution_time',
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='clear_metrics',
+                  ctx=Load()))),
+            For(
+              target=Name(id='te', ctx=Store()),
+              iter=Name(id='period2_metrics', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='record_test_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='te', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='system2', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='degraded_success_rate', ctx=Store())],
+              value=Attribute(
+                value=Name(id='system2', ctx=Load()),
+                attr='success_rate',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='degraded_avg_time', ctx=Store())],
+              value=Attribute(
+                value=Name(id='system2', ctx=Load()),
+                attr='average_execution_time',
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='clear_metrics',
+                  ctx=Load()))),
+            For(
+              target=Name(id='te', ctx=Store()),
+              iter=Name(id='period3_metrics', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='collector',
+                        ctx=Load()),
+                      attr='record_test_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='te', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='system3', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='recovery_success_rate', ctx=Store())],
+              value=Attribute(
+                value=Name(id='system3', ctx=Load()),
+                attr='success_rate',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='recovery_avg_time', ctx=Store())],
+              value=Attribute(
+                value=Name(id='system3', ctx=Load()),
+                attr='average_execution_time',
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Name(id='initial_success_rate', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Name(id='degraded_success_rate', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='initial_avg_time', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Name(id='degraded_avg_time', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='recovery_success_rate', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Name(id='degraded_success_rate', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='recovery_avg_time', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Name(id='degraded_avg_time', ctx=Load())]))]),
+        FunctionDef(
+          name='test_metric_export_and_analysis',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test metric export and analysis capabilities.')),
+            Assign(
+              targets=[
+                Name(id='test_metrics', ctx=Store())],
+              value=Call(
+                func=Name(id='ExecutionMetrics', ctx=Load()),
+                args=[
+                  Constant(value='export_test'),
+                  Constant(value='unit'),
+                  Constant(value=0.12),
+                  Constant(value=True)],
+                keywords=[
+                  keyword(
+                    arg='memory_usage',
+                    value=Constant(value=80.0))])),
+            Assign(
+              targets=[
+                Name(id='quality_metrics', ctx=Store())],
+              value=Call(
+                func=Name(id='QualityMetrics', ctx=Load()),
+                args=[
+                  Constant(value='job_matching'),
+                  Constant(value=0.75),
+                  Dict(
+                    keys=[
+                      Constant(value='alignment'),
+                      Constant(value='coverage')],
+                    values=[
+                      Constant(value=0.8),
+                      Constant(value=0.7)]),
+                  Constant(value=0.002),
+                  Constant(value='good')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_test_execution',
+                  ctx=Load()),
+                args=[
+                  Name(id='test_metrics', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_quality_metrics',
+                  ctx=Load()),
+                args=[
+                  Name(id='quality_metrics', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='record_metric',
+                  ctx=Load()),
+                args=[
+                  Constant(value='custom_metric'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='GAUGE',
+                    ctx=Load()),
+                  Constant(value=42.0)],
+                keywords=[
+                  keyword(
+                    arg='tags',
+                    value=Dict(
+                      keys=[
+                        Constant(value='type')],
+                      values=[
+                        Constant(value='custom')]))])),
+            Assign(
+              targets=[
+                Name(id='exported', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='collector',
+                    ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Constant(value='timestamp'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='exported', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='counters'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='exported', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='gauges'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='exported', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='test_metrics'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='exported', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='quality_metrics'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='exported', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='system_metrics'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='exported', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='exported', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='exported', ctx=Load()),
+                      slice=Constant(value='quality_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='exported', ctx=Load()),
+                      slice=Constant(value='gauges'),
+                      ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='json_str', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='exported', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='default',
+                    value=Name(id='str', ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='json_str', ctx=Load()),
+                  Name(id='str', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='json_str', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))])]),
+    ClassDef(
+      name='TestObservabilityIntegration',
+      body=[
+        Expr(
+          value=Constant(value='Test observability integration with existing test infrastructure.')),
+        FunctionDef(
+          name='test_unit_test_observability_wrapper',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test observability wrapper for unit tests.')),
+            Assign(
+              targets=[
+                Name(id='collector', ctx=Store())],
+              value=Call(
+                func=Name(id='TelemetryCollector', ctx=Load()))),
+            FunctionDef(
+              name='mock_unit_test',
+              args=arguments(
+                args=[
+                  arg(
+                    arg='test_name',
+                    annotation=Name(id='str', ctx=Load())),
+                  arg(
+                    arg='success',
+                    annotation=Name(id='bool', ctx=Load())),
+                  arg(
+                    arg='execution_time',
+                    annotation=Name(id='float', ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='start_time', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='time', ctx=Load()),
+                      attr='time',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='actual_time', ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='time', ctx=Load()),
+                        attr='time',
+                        ctx=Load())),
+                    op=Sub(),
+                    right=Name(id='start_time', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='test_metrics', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ExecutionMetrics', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='test_name',
+                        value=Name(id='test_name', ctx=Load())),
+                      keyword(
+                        arg='test_type',
+                        value=Constant(value='unit')),
+                      keyword(
+                        arg='execution_time',
+                        value=Name(id='actual_time', ctx=Load())),
+                      keyword(
+                        arg='success',
+                        value=Name(id='success', ctx=Load())),
+                      keyword(
+                        arg='assertions_count',
+                        value=IfExp(
+                          test=Name(id='success', ctx=Load()),
+                          body=Constant(value=3),
+                          orelse=Constant(value=0))),
+                      keyword(
+                        arg='mock_calls_count',
+                        value=Constant(value=5))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='record_test_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_metrics', ctx=Load())])),
+                Return(
+                  value=Name(id='success', ctx=Load()))]),
+            Expr(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='mock_unit_test', ctx=Load()),
+                    args=[
+                      Constant(value='test_resume_parsing'),
+                      Constant(value=True),
+                      Constant(value=0.01)]),
+                  Call(
+                    func=Name(id='mock_unit_test', ctx=Load()),
+                    args=[
+                      Constant(value='test_skill_extraction'),
+                      Constant(value=True),
+                      Constant(value=0.02)]),
+                  Call(
+                    func=Name(id='mock_unit_test', ctx=Load()),
+                    args=[
+                      Constant(value='test_job_matching'),
+                      Constant(value=False),
+                      Constant(value=0.015)]),
+                  Call(
+                    func=Name(id='mock_unit_test', ctx=Load()),
+                    args=[
+                      Constant(value='test_format_validation'),
+                      Constant(value=True),
+                      Constant(value=0.008)]),
+                  Call(
+                    func=Name(id='mock_unit_test', ctx=Load()),
+                    args=[
+                      Constant(value='test_error_handling'),
+                      Constant(value=True),
+                      Constant(value=0.012)])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_tests_run',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='success_rate',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='average_execution_time',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='error_count',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='failed_tests', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='tm', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='tm', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='test_metrics',
+                      ctx=Load()),
+                    ifs=[
+                      UnaryOp(
+                        op=Not(),
+                        operand=Attribute(
+                          value=Name(id='tm', ctx=Load()),
+                          attr='success',
+                          ctx=Load()))],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='failed_tests', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Name(id='failed_tests', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='test_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_job_matching')]))]),
+        FunctionDef(
+          name='test_e2e_workflow_observability',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test observability integration with E2E workflow.')),
+            Assign(
+              targets=[
+                Name(id='collector', ctx=Store())],
+              value=Call(
+                func=Name(id='TelemetryCollector', ctx=Load()))),
+            FunctionDef(
+              name='mock_e2e_phase',
+              args=arguments(
+                args=[
+                  arg(
+                    arg='phase_name',
+                    annotation=Name(id='str', ctx=Load())),
+                  arg(
+                    arg='duration',
+                    annotation=Name(id='float', ctx=Load())),
+                  arg(
+                    arg='success',
+                    annotation=Name(id='bool', ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='start_time', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='time', ctx=Load()),
+                      attr='time',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='actual_time', ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='time', ctx=Load()),
+                        attr='time',
+                        ctx=Load())),
+                    op=Sub(),
+                    right=Name(id='start_time', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='phase_metrics', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ExecutionMetrics', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='test_name',
+                        value=JoinedStr(
+                          values=[
+                            Constant(value='e2e_'),
+                            FormattedValue(
+                              value=Name(id='phase_name', ctx=Load()),
+                              conversion=-1)])),
+                      keyword(
+                        arg='test_type',
+                        value=Constant(value='e2e')),
+                      keyword(
+                        arg='execution_time',
+                        value=Name(id='actual_time', ctx=Load())),
+                      keyword(
+                        arg='success',
+                        value=Name(id='success', ctx=Load())),
+                      keyword(
+                        arg='memory_usage',
+                        value=BinOp(
+                          left=Constant(value=100.0),
+                          op=Add(),
+                          right=BinOp(
+                            left=Name(id='duration', ctx=Load()),
+                            op=Mult(),
+                            right=Constant(value=10)))),
+                      keyword(
+                        arg='cpu_usage',
+                        value=BinOp(
+                          left=Constant(value=0.5),
+                          op=Add(),
+                          right=BinOp(
+                            left=Name(id='duration', ctx=Load()),
+                            op=Mult(),
+                            right=Constant(value=0.1))))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='record_test_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='phase_metrics', ctx=Load())])),
+                Return(
+                  value=Name(id='success', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='phases', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='planning_phase'),
+                      Constant(value=0.1),
+                      Constant(value=True)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='execution_phase'),
+                      Constant(value=0.3),
+                      Constant(value=True)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='orchestration_phase'),
+                      Constant(value=0.2),
+                      Constant(value=True)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='validation_phase'),
+                      Constant(value=0.15),
+                      Constant(value=True)],
+                    ctx=Load())],
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Name(id='mock_e2e_phase', ctx=Load()),
+                      args=[
+                        Name(id='name', ctx=Load()),
+                        Name(id='duration', ctx=Load()),
+                        Name(id='success', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='name', ctx=Store()),
+                            Name(id='duration', ctx=Store()),
+                            Name(id='success', ctx=Store())],
+                          ctx=Store()),
+                        iter=Name(id='phases', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_tests_run',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=4)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='success_rate',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='average_execution_time',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='memory_peak',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=100.0)])),
+            Assign(
+              targets=[
+                Name(id='phase_metrics_map', ctx=Store())],
+              value=DictComp(
+                key=Attribute(
+                  value=Name(id='tm', ctx=Load()),
+                  attr='test_name',
+                  ctx=Load()),
+                value=Name(id='tm', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='tm', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='test_metrics',
+                      ctx=Load()),
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='e2e_planning_phase'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='phase_metrics_map', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='e2e_execution_phase'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='phase_metrics_map', ctx=Load())]))]),
+        FunctionDef(
+          name='test_quality_scoring_observability',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test observability integration with quality scoring.')),
+            Assign(
+              targets=[
+                Name(id='collector', ctx=Store())],
+              value=Call(
+                func=Name(id='TelemetryCollector', ctx=Load()))),
+            FunctionDef(
+              name='mock_quality_scoring',
+              args=arguments(
+                args=[
+                  arg(
+                    arg='domain',
+                    annotation=Name(id='str', ctx=Load())),
+                  arg(
+                    arg='score',
+                    annotation=Name(id='float', ctx=Load())),
+                  arg(
+                    arg='eval_time',
+                    annotation=Name(id='float', ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='quality_metrics', ctx=Store())],
+                  value=Call(
+                    func=Name(id='QualityMetrics', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='domain',
+                        value=Name(id='domain', ctx=Load())),
+                      keyword(
+                        arg='overall_score',
+                        value=Name(id='score', ctx=Load())),
+                      keyword(
+                        arg='component_scores',
+                        value=Dict(
+                          keys=[
+                            Constant(value='completeness'),
+                            Constant(value='accuracy'),
+                            Constant(value='format')],
+                          values=[
+                            BinOp(
+                              left=Name(id='score', ctx=Load()),
+                              op=Mult(),
+                              right=Constant(value=0.9)),
+                            BinOp(
+                              left=Name(id='score', ctx=Load()),
+                              op=Mult(),
+                              right=Constant(value=0.85)),
+                            BinOp(
+                              left=Name(id='score', ctx=Load()),
+                              op=Mult(),
+                              right=Constant(value=0.95))])),
+                      keyword(
+                        arg='evaluation_time',
+                        value=Name(id='eval_time', ctx=Load())),
+                      keyword(
+                        arg='quality_level',
+                        value=IfExp(
+                          test=Compare(
+                            left=Name(id='score', ctx=Load()),
+                            ops=[
+                              Gt()],
+                            comparators=[
+                              Constant(value=0.7)]),
+                          body=Constant(value='good'),
+                          orelse=Constant(value='acceptable')))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='record_quality_metrics',
+                      ctx=Load()),
+                    args=[
+                      Name(id='quality_metrics', ctx=Load())])),
+                Return(
+                  value=Name(id='quality_metrics', ctx=Load()))]),
+            Expr(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='mock_quality_scoring', ctx=Load()),
+                    args=[
+                      Constant(value='resume_analysis'),
+                      Constant(value=0.85),
+                      Constant(value=0.001)]),
+                  Call(
+                    func=Name(id='mock_quality_scoring', ctx=Load()),
+                    args=[
+                      Constant(value='job_matching'),
+                      Constant(value=0.78),
+                      Constant(value=0.0015)]),
+                  Call(
+                    func=Name(id='mock_quality_scoring', ctx=Load()),
+                    args=[
+                      Constant(value='skill_extraction'),
+                      Constant(value=0.72),
+                      Constant(value=0.0008)]),
+                  Call(
+                    func=Name(id='mock_quality_scoring', ctx=Load()),
+                    args=[
+                      Constant(value='resume_analysis'),
+                      Constant(value=0.91),
+                      Constant(value=0.0012)]),
+                  Call(
+                    func=Name(id='mock_quality_scoring', ctx=Load()),
+                    args=[
+                      Constant(value='job_matching'),
+                      Constant(value=0.83),
+                      Constant(value=0.0011)])],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='quality_metrics',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assign(
+              targets=[
+                Name(id='resume_scores', ctx=Store())],
+              value=ListComp(
+                elt=Attribute(
+                  value=Name(id='qm', ctx=Load()),
+                  attr='overall_score',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='qm', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='quality_metrics',
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='qm', ctx=Load()),
+                          attr='domain',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='resume_analysis')])],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='job_scores', ctx=Store())],
+              value=ListComp(
+                elt=Attribute(
+                  value=Name(id='qm', ctx=Load()),
+                  attr='overall_score',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='qm', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='quality_metrics',
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='qm', ctx=Load()),
+                          attr='domain',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='job_matching')])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='resume_scores', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='job_scores', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='score', ctx=Load()),
+                      ops=[
+                        Gt()],
+                      comparators=[
+                        Constant(value=0.7)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='score', ctx=Store()),
+                        iter=Name(id='resume_scores', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='score', ctx=Load()),
+                      ops=[
+                        Gt()],
+                      comparators=[
+                        Constant(value=0.7)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='score', ctx=Store()),
+                        iter=Name(id='job_scores', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='gauge_keys', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='k', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='collector', ctx=Load()),
+                          attr='gauges',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Constant(value='quality_overall_score'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='k', ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='gauge_keys', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=2)])),
+            Assign(
+              targets=[
+                Name(id='timer_stats', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='get_metric_statistics',
+                  ctx=Load()),
+                args=[
+                  Constant(value='quality_evaluation_time'),
+                  Attribute(
+                    value=Name(id='MetricType', ctx=Load()),
+                    attr='TIMER',
+                    ctx=Load())])),
+            If(
+              test=Name(id='timer_stats', ctx=Load()),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='timer_stats', ctx=Load()),
+                      slice=Constant(value='count'),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=5)])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='timer_stats', ctx=Load()),
+                      slice=Constant(value='mean'),
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0.0005)])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='timer_stats', ctx=Load()),
+                      slice=Constant(value='max'),
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='timer_stats', ctx=Load()),
+                        slice=Constant(value='min'),
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_observability_dashboard_simulation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test observability dashboard data simulation.')),
+            Assign(
+              targets=[
+                Name(id='collector', ctx=Store())],
+              value=Call(
+                func=Name(id='TelemetryCollector', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='test_scenarios', ctx=Store())],
+              value=List(
+                elts=[
+                  Starred(
+                    value=ListComp(
+                      elt=Call(
+                        func=Name(id='ExecutionMetrics', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='unit_test_'),
+                              FormattedValue(
+                                value=Name(id='i', ctx=Load()),
+                                conversion=-1)]),
+                          Constant(value='unit'),
+                          BinOp(
+                            left=Constant(value=0.01),
+                            op=Add(),
+                            right=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Mult(),
+                              right=Constant(value=0.002))),
+                          Compare(
+                            left=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Mod(),
+                              right=Constant(value=10)),
+                            ops=[
+                              NotEq()],
+                            comparators=[
+                              Constant(value=0)])]),
+                      generators=[
+                        comprehension(
+                          target=Name(id='i', ctx=Store()),
+                          iter=Call(
+                            func=Name(id='range', ctx=Load()),
+                            args=[
+                              Constant(value=20)]),
+                          is_async=0)]),
+                    ctx=Load()),
+                  Starred(
+                    value=ListComp(
+                      elt=Call(
+                        func=Name(id='ExecutionMetrics', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='integration_test_'),
+                              FormattedValue(
+                                value=Name(id='i', ctx=Load()),
+                                conversion=-1)]),
+                          Constant(value='integration'),
+                          BinOp(
+                            left=Constant(value=0.05),
+                            op=Add(),
+                            right=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Mult(),
+                              right=Constant(value=0.01))),
+                          Compare(
+                            left=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Mod(),
+                              right=Constant(value=5)),
+                            ops=[
+                              NotEq()],
+                            comparators=[
+                              Constant(value=0)])]),
+                      generators=[
+                        comprehension(
+                          target=Name(id='i', ctx=Store()),
+                          iter=Call(
+                            func=Name(id='range', ctx=Load()),
+                            args=[
+                              Constant(value=10)]),
+                          is_async=0)]),
+                    ctx=Load()),
+                  Starred(
+                    value=ListComp(
+                      elt=Call(
+                        func=Name(id='ExecutionMetrics', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='e2e_test_'),
+                              FormattedValue(
+                                value=Name(id='i', ctx=Load()),
+                                conversion=-1)]),
+                          Constant(value='e2e'),
+                          BinOp(
+                            left=Constant(value=0.2),
+                            op=Add(),
+                            right=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Mult(),
+                              right=Constant(value=0.05))),
+                          Compare(
+                            left=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Mod(),
+                              right=Constant(value=8)),
+                            ops=[
+                              NotEq()],
+                            comparators=[
+                              Constant(value=0)])]),
+                      generators=[
+                        comprehension(
+                          target=Name(id='i', ctx=Store()),
+                          iter=Call(
+                            func=Name(id='range', ctx=Load()),
+                            args=[
+                              Constant(value=5)]),
+                          is_async=0)]),
+                    ctx=Load()),
+                  Starred(
+                    value=ListComp(
+                      elt=Call(
+                        func=Name(id='ExecutionMetrics', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='golden_test_'),
+                              FormattedValue(
+                                value=Name(id='i', ctx=Load()),
+                                conversion=-1)]),
+                          Constant(value='golden'),
+                          BinOp(
+                            left=Constant(value=0.005),
+                            op=Add(),
+                            right=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Mult(),
+                              right=Constant(value=0.001))),
+                          Constant(value=True)]),
+                      generators=[
+                        comprehension(
+                          target=Name(id='i', ctx=Store()),
+                          iter=Call(
+                            func=Name(id='range', ctx=Load()),
+                            args=[
+                              Constant(value=5)]),
+                          is_async=0)]),
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Name(id='tm', ctx=Store()),
+              iter=Name(id='test_scenarios', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='collector', ctx=Load()),
+                      attr='record_test_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='tm', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='exported_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='dashboard_kpis', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='total_tests'),
+                  Constant(value='overall_success_rate'),
+                  Constant(value='avg_execution_time'),
+                  Constant(value='total_execution_time'),
+                  Constant(value='error_count'),
+                  Constant(value='unit_tests'),
+                  Constant(value='integration_tests'),
+                  Constant(value='e2e_tests'),
+                  Constant(value='golden_tests'),
+                  Constant(value='fastest_test'),
+                  Constant(value='slowest_test'),
+                  Constant(value='memory_peak'),
+                  Constant(value='cpu_peak')],
+                values=[
+                  Attribute(
+                    value=Name(id='system_metrics', ctx=Load()),
+                    attr='total_tests_run',
+                    ctx=Load()),
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='system_metrics', ctx=Load()),
+                          attr='success_rate',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.1%')]))]),
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='system_metrics', ctx=Load()),
+                          attr='average_execution_time',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')])),
+                      Constant(value='s')]),
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='system_metrics', ctx=Load()),
+                          attr='total_execution_time',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='s')]),
+                  Attribute(
+                    value=Name(id='system_metrics', ctx=Load()),
+                    attr='error_count',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      ListComp(
+                        elt=Name(id='tm', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='collector', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='tm', ctx=Load()),
+                                  attr='test_type',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='unit')])],
+                            is_async=0)])]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      ListComp(
+                        elt=Name(id='tm', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='collector', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='tm', ctx=Load()),
+                                  attr='test_type',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='integration')])],
+                            is_async=0)])]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      ListComp(
+                        elt=Name(id='tm', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='collector', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='tm', ctx=Load()),
+                                  attr='test_type',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='e2e')])],
+                            is_async=0)])]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      ListComp(
+                        elt=Name(id='tm', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='collector', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='tm', ctx=Load()),
+                                  attr='test_type',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='golden')])],
+                            is_async=0)])]),
+                  Call(
+                    func=Name(id='min', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Attribute(
+                          value=Name(id='tm', ctx=Load()),
+                          attr='execution_time',
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='collector', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Attribute(
+                          value=Name(id='tm', ctx=Load()),
+                          attr='execution_time',
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='tm', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='collector', ctx=Load()),
+                              attr='test_metrics',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='system_metrics', ctx=Load()),
+                          attr='memory_peak',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.1f')])),
+                      Constant(value='MB')]),
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='system_metrics', ctx=Load()),
+                          attr='cpu_peak',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='%')])])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='dashboard_kpis', ctx=Load()),
+                  slice=Constant(value='total_tests'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=40)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='dashboard_kpis', ctx=Load()),
+                  slice=Constant(value='unit_tests'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=20)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='dashboard_kpis', ctx=Load()),
+                  slice=Constant(value='integration_tests'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=10)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='dashboard_kpis', ctx=Load()),
+                  slice=Constant(value='e2e_tests'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='dashboard_kpis', ctx=Load()),
+                  slice=Constant(value='golden_tests'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assign(
+              targets=[
+                Name(id='avg_time_str', ctx=Store())],
+              value=Subscript(
+                value=Name(id='dashboard_kpis', ctx=Load()),
+                slice=Constant(value='avg_execution_time'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='avg_time_val', ctx=Store())],
+              value=Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='avg_time_str', ctx=Load()),
+                      attr='rstrip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='s')])])),
+            Assert(
+              test=Compare(
+                left=Name(id='avg_time_val', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=1e-08)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='float', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='dashboard_kpis', ctx=Load()),
+                      slice=Constant(value='fastest_test'),
+                      ctx=Load())]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Call(
+                    func=Name(id='float', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='dashboard_kpis', ctx=Load()),
+                        slice=Constant(value='slowest_test'),
+                        ctx=Load())])])),
+            Assert(
+              test=Compare(
+                left=Constant(value='test_metrics'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='exported_metrics', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='exported_metrics', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=40)])),
+            Assign(
+              targets=[
+                Name(id='dashboard_json', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='dashboard_kpis', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='dashboard_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='loads',
+                  ctx=Load()),
+                args=[
+                  Name(id='dashboard_json', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='dashboard_data', ctx=Load()),
+                  slice=Constant(value='total_tests'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=40)]))])])])

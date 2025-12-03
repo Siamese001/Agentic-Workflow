@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Strategy stack shim for v10.8.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom agent_stacks_v10_8.components.strategy import (\n    QueryComplexityClassifier,\n    ToTStrategistAgent,\n)\n\n\nclass StrategyStackV10_8:\n    \"\"\"Layer-pure facade around the v10.7 strategy agents.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        self._complexity_classifier = QueryComplexityClassifier(context, debug_mode)\n        self._strategist = ToTStrategistAgent(context, debug_mode)\n\n    async def classify_complexity_async(\n        self, job_description: str, workflow_id: str\n    ) -> str:\n        \"\"\"Delegate complexity classification to the v10.7 classifier.\"\"\"\n\n        return await self._complexity_classifier.run_async(job_description, workflow_id)\n\n    async def plan_strategy_async(\n        self,\n        job_context: Dict[str, Any],\n        workflow_id: str,\n       ",
+  "full_hash": "b02f855a4074864baa1b0157285e1c1716513be994a46cc84523305611987fb7",
+  "generated_at": 1764728230.3222167,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\strategy_stack.py"
+}

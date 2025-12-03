@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nGlobal K-key Validator Implementation for Agentic-Workflow\n\nImplements G9: Global K-key validator framework\n\nProvides comprehensive validation of all phase K-keys (K1-K40) across\nPhases 0.5, 1, 2, 3, and 4. Generates pass/fail reports and ensures\ncompliance with the Agentic-Workflow zero-loss, root-immutability constraints.\n\"\"\"\n\nimport json\nimport yaml\nimport re\nimport sys\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Optional, Tuple, Set\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom datetime import datetime\n\n\nclass ValidationResult(Enum):\n    PASS = \"PASS\"\n    FAIL = \"FAIL\"\n    SKIP = \"SKIP\"\n\n\n@dataclass\nclass KKeyResult:\n    key: str\n    description: str\n    status: ValidationResult\n    details: str\n    timestamp: str\n\n\nclass KKeyValidator:\n    \"\"\"\n    Global K-key validator for all phases\n    \n    Validates phase compliance by parsing phase specifications and checking\n    conditions against the actual workspace state and SSoT ",
+  "full_hash": "fd981b4dc7baed4770965e5688e0a7758802b3ed93d3861a6a129860dca71c56",
+  "generated_at": 1764728345.6496758,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\k_validator.py"
+}

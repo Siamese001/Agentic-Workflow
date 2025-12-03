@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 40,
+  "generated_at": 1764728329.0585208,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\tests\\system\\test_mcp_context_v10_7.py"
+}

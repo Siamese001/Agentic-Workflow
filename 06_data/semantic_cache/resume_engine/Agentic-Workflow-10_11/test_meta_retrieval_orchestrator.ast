@@ -1,0 +1,1818 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List')],
+      level=0),
+    Import(
+      names=[
+        alias(name='types')]),
+    ImportFrom(
+      module='meta.retrieval',
+      names=[
+        alias(name='orchestrate_retrieval')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='Evidence'),
+        alias(name='RetrievalConfig'),
+        alias(name='CouncilVote'),
+        alias(name='RAGResult')],
+      level=0),
+    ClassDef(
+      name='_DummyCtx',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='wf-test')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workflow_id',
+                  ctx=Store())],
+              value=Name(id='workflow_id', ctx=Load()))],
+          returns=Constant(value=None))]),
+    FunctionDef(
+      name='_make_ev',
+      args=arguments(
+        args=[
+          arg(
+            arg='text',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='score',
+            annotation=Name(id='float', ctx=Load())),
+          arg(
+            arg='source',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='Evidence', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='text',
+                value=Name(id='text', ctx=Load())),
+              keyword(
+                arg='score',
+                value=Name(id='score', ctx=Load())),
+              keyword(
+                arg='source',
+                value=Name(id='source', ctx=Load())),
+              keyword(arg='metadata', value=Dict())]))],
+      returns=Name(id='Evidence', ctx=Load())),
+    FunctionDef(
+      name='test_orchestrate_retrieval_combines_bm25_and_dense_hits',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Import(
+          names=[
+            alias(name='meta.retrieval', asname='m')]),
+        Assign(
+          targets=[
+            Name(id='bm25_hits', ctx=Store())],
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='_make_ev', ctx=Load()),
+                args=[
+                  Constant(value='bm25-doc'),
+                  Constant(value=1.0),
+                  Constant(value='bm25')])],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='dense_hits', ctx=Store())],
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='_make_ev', ctx=Load()),
+                args=[
+                  Constant(value='dense-doc'),
+                  Constant(value=0.5),
+                  Constant(value='dense')])],
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_bm25',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='bm25_hits', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_dense',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='dense_hits', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_chroma',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_bm25'),
+              Name(id='_fake_bm25', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_dense'),
+              Name(id='_fake_dense', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_chroma'),
+              Name(id='_fake_chroma', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_attempt'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_success'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_failure'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='start_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='types', ctx=Load()),
+                    attr='SimpleNamespace',
+                    ctx=Load())))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='end_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_hits',
+                value=Constant(value=10))])),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyCtx', ctx=Load()))),
+        AnnAssign(
+          target=Name(id='rag', ctx=Store()),
+          annotation=Name(id='RAGResult', ctx=Load()),
+          value=Call(
+            func=Name(id='orchestrate_retrieval', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Constant(value='base-query')),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load())),
+              keyword(
+                arg='hyde_query',
+                value=Constant(value=None)),
+              keyword(
+                arg='council_vote',
+                value=Constant(value=None))]),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='texts', ctx=Store())],
+          value=SetComp(
+            elt=Attribute(
+              value=Name(id='e', ctx=Load()),
+              attr='text',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='e', ctx=Store()),
+                iter=Attribute(
+                  value=Name(id='rag', ctx=Load()),
+                  attr='evidence',
+                  ctx=Load()),
+                is_async=0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='bm25-doc'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='texts', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='dense-doc'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='texts', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='rag', ctx=Load()),
+              attr='used_hyde',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_orchestrate_retrieval_sets_used_hyde_flag',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Import(
+          names=[
+            alias(name='meta.retrieval', asname='m')]),
+        FunctionDef(
+          name='_fake_bm25',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='_make_ev', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='bm25-'),
+                          FormattedValue(
+                            value=Name(id='query', ctx=Load()),
+                            conversion=-1)]),
+                      Constant(value=1.0),
+                      Constant(value='bm25')])],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_dense',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_chroma',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_bm25'),
+              Name(id='_fake_bm25', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_dense'),
+              Name(id='_fake_dense', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_chroma'),
+              Name(id='_fake_chroma', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_attempt'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_success'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_failure'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='start_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='types', ctx=Load()),
+                    attr='SimpleNamespace',
+                    ctx=Load())))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='end_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_hits',
+                value=Constant(value=5))])),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyCtx', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='rag', ctx=Store())],
+          value=Call(
+            func=Name(id='orchestrate_retrieval', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Constant(value='base-query')),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load())),
+              keyword(
+                arg='hyde_query',
+                value=Constant(value='hyde-query')),
+              keyword(
+                arg='council_vote',
+                value=Call(
+                  func=Name(id='CouncilVote', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='members',
+                      value=Constant(value=1)),
+                    keyword(
+                      arg='selected_id',
+                      value=Constant(value='hyde_test')),
+                    keyword(
+                      arg='scores',
+                      value=Dict(
+                        keys=[
+                          Constant(value='hyde_test')],
+                        values=[
+                          Constant(value=1.0)])),
+                    keyword(
+                      arg='ties',
+                      value=List(ctx=Load())),
+                    keyword(
+                      arg='reason',
+                      value=Constant(value='Testing HYDE flag'))]))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='rag', ctx=Load()),
+              attr='used_hyde',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_orchestrate_retrieval_includes_chroma_hits',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Import(
+          names=[
+            alias(name='meta.retrieval', asname='m')]),
+        FunctionDef(
+          name='_fake_bm25',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_dense',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_chroma',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='_make_ev', ctx=Load()),
+                    args=[
+                      Constant(value='chroma-doc'),
+                      Constant(value=0.9),
+                      Constant(value='chroma')])],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_bm25'),
+              Name(id='_fake_bm25', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_dense'),
+              Name(id='_fake_dense', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_chroma'),
+              Name(id='_fake_chroma', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_attempt'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_success'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_failure'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='start_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='types', ctx=Load()),
+                    attr='SimpleNamespace',
+                    ctx=Load())))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='end_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        ClassDef(
+          name='_Cfg',
+          body=[
+            FunctionDef(
+              name='__init__',
+              args=arguments(
+                args=[
+                  arg(arg='self')]),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='strategy',
+                      ctx=Store())],
+                  value=Constant(value='hybrid')),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='max_hits',
+                      ctx=Store())],
+                  value=Constant(value=5)),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='chroma',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='types', ctx=Load()),
+                      attr='SimpleNamespace',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='enabled',
+                        value=Constant(value=True)),
+                      keyword(
+                        arg='collection_name',
+                        value=Constant(value='test_collection'))]))],
+              returns=Constant(value=None))]),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='_Cfg', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyCtx', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='rag', ctx=Store())],
+          value=Call(
+            func=Name(id='orchestrate_retrieval', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Constant(value='base-query')),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load())),
+              keyword(
+                arg='hyde_query',
+                value=Constant(value=None)),
+              keyword(
+                arg='council_vote',
+                value=Constant(value=None))])),
+        Assign(
+          targets=[
+            Name(id='texts', ctx=Store())],
+          value=SetComp(
+            elt=Attribute(
+              value=Name(id='e', ctx=Load()),
+              attr='text',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='e', ctx=Store()),
+                iter=Attribute(
+                  value=Name(id='rag', ctx=Load()),
+                  attr='evidence',
+                  ctx=Load()),
+                is_async=0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='chroma-doc'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='texts', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_orchestrate_retrieval_passes_council_vote_to_fuse',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Import(
+          names=[
+            alias(name='meta.retrieval', asname='m')]),
+        FunctionDef(
+          name='_fake_bm25',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='_make_ev', ctx=Load()),
+                    args=[
+                      Constant(value='doc'),
+                      Constant(value=1.0),
+                      Constant(value='bm25')])],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_dense',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_chroma',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='captured', ctx=Store())],
+          value=Dict()),
+        FunctionDef(
+          name='_fake_fuse',
+          args=arguments(
+            args=[
+              arg(arg='lex_results'),
+              arg(arg='dense_results'),
+              arg(arg='cfg'),
+              arg(arg='council_vote'),
+              arg(arg='used_hyde')]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='captured', ctx=Load()),
+                  slice=Constant(value='council'),
+                  ctx=Store())],
+              value=Name(id='council_vote', ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='RAGResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='evidence',
+                    value=BinOp(
+                      left=Call(
+                        func=Name(id='list', ctx=Load()),
+                        args=[
+                          Name(id='lex_results', ctx=Load())]),
+                      op=Add(),
+                      right=Call(
+                        func=Name(id='list', ctx=Load()),
+                        args=[
+                          Name(id='dense_results', ctx=Load())]))),
+                  keyword(
+                    arg='used_hyde',
+                    value=Name(id='used_hyde', ctx=Load()))]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_bm25'),
+              Name(id='_fake_bm25', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_dense'),
+              Name(id='_fake_dense', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_chroma'),
+              Name(id='_fake_chroma', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='fuse_and_rank'),
+              Name(id='_fake_fuse', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_attempt'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_success'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_failure'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='start_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='types', ctx=Load()),
+                    attr='SimpleNamespace',
+                    ctx=Load())))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='end_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_hits',
+                value=Constant(value=5))])),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyCtx', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='council', ctx=Store())],
+          value=Call(
+            func=Name(id='CouncilVote', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='members',
+                value=Constant(value=3)),
+              keyword(
+                arg='selected_id',
+                value=Constant(value='id-1')),
+              keyword(
+                arg='scores',
+                value=Dict(
+                  keys=[
+                    Constant(value='id-1')],
+                  values=[
+                    Constant(value=1.0)])),
+              keyword(
+                arg='ties',
+                value=List(ctx=Load())),
+              keyword(
+                arg='reason',
+                value=Constant(value='Test vote for id-1'))])),
+        Assign(
+          targets=[
+            Name(id='rag', ctx=Store())],
+          value=Call(
+            func=Name(id='orchestrate_retrieval', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Constant(value='base-query')),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load())),
+              keyword(
+                arg='hyde_query',
+                value=Constant(value=None)),
+              keyword(
+                arg='council_vote',
+                value=Name(id='council', ctx=Load()))])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='rag', ctx=Load()),
+              Name(id='RAGResult', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='captured', ctx=Load()),
+              slice=Constant(value='council'),
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='council', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_orchestrate_retrieval_isolates_bm25_failure',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Expr(
+          value=Constant(value='If BM25 fails, dense results should still be used.')),
+        Import(
+          names=[
+            alias(name='meta.retrieval', asname='m')]),
+        FunctionDef(
+          name='_failing_bm25',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='RuntimeError', ctx=Load()),
+                args=[
+                  Constant(value='bm25 failure')]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_dense',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='_make_ev', ctx=Load()),
+                    args=[
+                      Constant(value='dense-only'),
+                      Constant(value=0.7),
+                      Constant(value='dense')])],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_fake_chroma',
+          args=arguments(
+            args=[
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='cfg',
+                annotation=Name(id='RetrievalConfig', ctx=Load())),
+              arg(
+                arg='max_hits',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_bm25'),
+              Name(id='_failing_bm25', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_dense'),
+              Name(id='_fake_dense', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_chroma'),
+              Name(id='_fake_chroma', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_attempt'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_success'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_failure'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='start_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='types', ctx=Load()),
+                    attr='SimpleNamespace',
+                    ctx=Load())))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='end_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_hits',
+                value=Constant(value=5))])),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyCtx', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='rag', ctx=Store())],
+          value=Call(
+            func=Name(id='orchestrate_retrieval', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Constant(value='base-query')),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load())),
+              keyword(
+                arg='hyde_query',
+                value=Constant(value=None)),
+              keyword(
+                arg='council_vote',
+                value=Constant(value=None))])),
+        Assign(
+          targets=[
+            Name(id='texts', ctx=Store())],
+          value=SetComp(
+            elt=Attribute(
+              value=Name(id='e', ctx=Load()),
+              attr='text',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='e', ctx=Store()),
+                iter=Attribute(
+                  value=Name(id='rag', ctx=Load()),
+                  attr='evidence',
+                  ctx=Load()),
+                is_async=0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='dense-only'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='texts', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_orchestrate_retrieval_handles_no_hits',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Expr(
+          value=Constant(value='If all retrievers return no hits, orchestrator returns empty evidence.')),
+        Import(
+          names=[
+            alias(name='meta.retrieval', asname='m')]),
+        FunctionDef(
+          name='_empty',
+          args=arguments(
+            vararg=arg(arg='args'),
+            kwarg=arg(arg='kwargs')),
+          body=[
+            Return(
+              value=List(ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_bm25'),
+              Name(id='_empty', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_dense'),
+              Name(id='_empty', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='_run_chroma'),
+              Name(id='_empty', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_attempt'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_success'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='emit_retrieval_failure'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='start_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='types', ctx=Load()),
+                    attr='SimpleNamespace',
+                    ctx=Load())))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='m', ctx=Load()),
+              Constant(value='end_span'),
+              Lambda(
+                args=arguments(
+                  vararg=arg(arg='a'),
+                  kwarg=arg(arg='k')),
+                body=Constant(value=None))],
+            keywords=[
+              keyword(
+                arg='raising',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_hits',
+                value=Constant(value=5))])),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyCtx', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='rag', ctx=Store())],
+          value=Call(
+            func=Name(id='orchestrate_retrieval', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Constant(value='base-query')),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load())),
+              keyword(
+                arg='hyde_query',
+                value=Constant(value=None)),
+              keyword(
+                arg='council_vote',
+                value=Constant(value=None))])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='rag', ctx=Load()),
+              Name(id='RAGResult', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='rag', ctx=Load()),
+              attr='evidence',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(ctx=Load())]))],
+      returns=Constant(value=None))])

@@ -1,0 +1,531 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nUnified Router - Resume Generation + LinkedIn Outreach\nProvides single API for both independent engines\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='TaskType',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Supported task types for unified routing')),
+        Assign(
+          targets=[
+            Name(id='RESUME_GENERATION', ctx=Store())],
+          value=Constant(value='resume')),
+        Assign(
+          targets=[
+            Name(id='LINKEDIN_OUTREACH', ctx=Store())],
+          value=Constant(value='linkedin_outreach'))]),
+    ClassDef(
+      name='UnifiedRouter',
+      body=[
+        Expr(
+          value=Constant(value='\n    Unified router that delegates to appropriate specialized engine\n    Resume generation runs first, followed by LinkedIn outreach if requested\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize both specialized engines')),
+            ImportFrom(
+              module='resume_engine.rg_planner',
+              names=[
+                alias(name='RGPlanner')],
+              level=0),
+            ImportFrom(
+              module='resume_engine.rg_orchestrator',
+              names=[
+                alias(name='RGOrchestrator')],
+              level=0),
+            ImportFrom(
+              module='resume_engine.state',
+              names=[
+                alias(name='RGStateManager')],
+              level=0),
+            ImportFrom(
+              module='resume_engine.l5.rg_safety_validator',
+              names=[
+                alias(name='RGSafetyValidator')],
+              level=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='resume_planner',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RGPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='resume_orchestrator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RGOrchestrator', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='resume_state_manager',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RGStateManager', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='resume_safety_validator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RGSafetyValidator', ctx=Load())))]),
+        FunctionDef(
+          name='generate_content',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='task_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='input_data',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Unified entry point for both resume generation and LinkedIn outreach\n        \n        Args:\n            task_type: "resume" or "linkedin_outreach"\n            input_data: Task-specific input data\n            \n        Returns:\n            Unified response format with task results\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='task_type', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='TaskType', ctx=Load()),
+                    attr='RESUME_GENERATION',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_generate_resume',
+                      ctx=Load()),
+                    args=[
+                      Name(id='input_data', ctx=Load())]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='task_type', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='TaskType', ctx=Load()),
+                        attr='LINKEDIN_OUTREACH',
+                        ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_generate_outreach',
+                          ctx=Load()),
+                        args=[
+                          Name(id='input_data', ctx=Load())]))],
+                  orelse=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Unsupported task type: '),
+                              FormattedValue(
+                                value=Name(id='task_type', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Name(id='dict', ctx=Load())),
+        FunctionDef(
+          name='_generate_resume',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job_input',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate resume using RG v10_12 engine\n        ')),
+            Assign(
+              targets=[
+                Name(id='job_description', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='job_input', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job_description')])),
+            Assign(
+              targets=[
+                Name(id='master_resume', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='job_input', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='master_resume')])),
+            Assign(
+              targets=[
+                Name(id='target_seniority', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='job_input', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='target_seniority'),
+                  Constant(value='mid')])),
+            Assign(
+              targets=[
+                Name(id='constraints', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='job_input', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='constraints')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='resume_planner',
+                    ctx=Load()),
+                  attr='create_complete_plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job_description',
+                    value=Name(id='job_description', ctx=Load())),
+                  keyword(
+                    arg='master_resume',
+                    value=Name(id='master_resume', ctx=Load())),
+                  keyword(
+                    arg='target_seniority',
+                    value=Name(id='target_seniority', ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Name(id='constraints', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='orchestrator_output', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='resume_orchestrator',
+                    ctx=Load()),
+                  attr='execute_complete_workflow',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='master_resume',
+                    value=Name(id='master_resume', ctx=Load())),
+                  keyword(
+                    arg='job_description',
+                    value=Name(id='job_description', ctx=Load())),
+                  keyword(
+                    arg='target_seniority',
+                    value=Name(id='target_seniority', ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Name(id='constraints', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='workflow_state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='resume_state_manager',
+                    ctx=Load()),
+                  attr='create_workflow_state',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_id',
+                    value=Constant(value='unified_resume')),
+                  keyword(
+                    arg='input_parameters',
+                    value=Name(id='job_input', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='resume_state_manager',
+                    ctx=Load()),
+                  attr='update_workflow_state',
+                  ctx=Load()),
+                args=[
+                  Constant(value='unified_resume'),
+                  Constant(value='execution'),
+                  Name(id='orchestrator_output', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='resume_state_manager',
+                    ctx=Load()),
+                  attr='complete_workflow',
+                  ctx=Load()),
+                args=[
+                  Constant(value='unified_resume')])),
+            Assign(
+              targets=[
+                Name(id='final_resume', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='orchestrator_output', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='final_resume'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='safety_report', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='resume_safety_validator',
+                    ctx=Load()),
+                  attr='validate_resume_safety',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='resume_content',
+                    value=Name(id='final_resume', ctx=Load())),
+                  keyword(
+                    arg='job_context',
+                    value=Dict(
+                      keys=[
+                        Constant(value='job_description')],
+                      values=[
+                        Name(id='job_description', ctx=Load())]))])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='task_type'),
+                  Constant(value='status'),
+                  Constant(value='resume'),
+                  Constant(value='safety_report'),
+                  Constant(value='workflow_state')],
+                values=[
+                  Attribute(
+                    value=Name(id='TaskType', ctx=Load()),
+                    attr='RESUME_GENERATION',
+                    ctx=Load()),
+                  Constant(value='completed'),
+                  Name(id='final_resume', ctx=Load()),
+                  Name(id='safety_report', ctx=Load()),
+                  Name(id='workflow_state', ctx=Load())]))],
+          returns=Name(id='dict', ctx=Load())),
+        FunctionDef(
+          name='_generate_outreach',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='outreach_input',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate LinkedIn outreach using LIC engine\n        TODO: Implement when outreach engine is fully integrated\n        ')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='task_type'),
+                  Constant(value='status'),
+                  Constant(value='message')],
+                values=[
+                  Attribute(
+                    value=Name(id='TaskType', ctx=Load()),
+                    attr='LINKEDIN_OUTREACH',
+                    ctx=Load()),
+                  Constant(value='not_implemented'),
+                  Constant(value='LinkedIn outreach engine integration pending')]))],
+          returns=Name(id='dict', ctx=Load())),
+        FunctionDef(
+          name='generate_sequential',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='resume_input',
+                annotation=Name(id='dict', ctx=Load())),
+              arg(
+                arg='outreach_input',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='dict', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate resume first, then LinkedIn outreach if provided\n        Resume generation runs first, followed by LinkedIn outreach\n        \n        Args:\n            resume_input: Resume generation input data\n            outreach_input: Optional LinkedIn outreach input data\n            \n        Returns:\n            Combined results from both engines\n        ')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workflow_type'),
+                  Constant(value='resume_result'),
+                  Constant(value='outreach_result')],
+                values=[
+                  Constant(value='sequential'),
+                  Constant(value=None),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='results', ctx=Load()),
+                  slice=Constant(value='resume_result'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_resume',
+                  ctx=Load()),
+                args=[
+                  Name(id='resume_input', ctx=Load())])),
+            If(
+              test=Name(id='outreach_input', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='outreach_result'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_generate_outreach',
+                      ctx=Load()),
+                    args=[
+                      Name(id='outreach_input', ctx=Load())]))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Name(id='dict', ctx=Load()))]),
+    Assign(
+      targets=[
+        Name(id='_unified_router', ctx=Store())],
+      value=Call(
+        func=Name(id='UnifiedRouter', ctx=Load()))),
+    FunctionDef(
+      name='generate_resume_v10_12',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_input',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Resume generation API (backward compatible)\n    ')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_unified_router', ctx=Load()),
+              attr='generate_content',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='TaskType', ctx=Load()),
+                attr='RESUME_GENERATION',
+                ctx=Load()),
+              Name(id='job_input', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    FunctionDef(
+      name='generate_linkedin_outreach',
+      args=arguments(
+        args=[
+          arg(
+            arg='outreach_input',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    LinkedIn outreach API\n    ')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_unified_router', ctx=Load()),
+              attr='generate_content',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='TaskType', ctx=Load()),
+                attr='LINKEDIN_OUTREACH',
+                ctx=Load()),
+              Name(id='outreach_input', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    FunctionDef(
+      name='generate_sequential_workflow',
+      args=arguments(
+        args=[
+          arg(
+            arg='resume_input',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='outreach_input',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='dict', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Sequential workflow: Resume generation first, then LinkedIn outreach\n    ')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_unified_router', ctx=Load()),
+              attr='generate_sequential',
+              ctx=Load()),
+            args=[
+              Name(id='resume_input', ctx=Load()),
+              Name(id='outreach_input', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='UnifiedRouter'),
+          Constant(value='TaskType'),
+          Constant(value='generate_resume_v10_12'),
+          Constant(value='generate_linkedin_outreach'),
+          Constant(value='generate_sequential_workflow')],
+        ctx=Load()))])

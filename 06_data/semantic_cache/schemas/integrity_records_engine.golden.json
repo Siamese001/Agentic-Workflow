@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nIntegrity Records Engine for Agentic-Workflow\n\nImplements Phase 0.5 integrity records management for K8-K10 validation\n\nProvides integrity record creation, validation, and management\nfor maintaining SSoT integrity across operations.\n\"\"\"\n\nimport json\nimport yaml\nimport sys\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Optional, Set\nfrom dataclasses import dataclass\nfrom datetime import datetime\n\n\n@dataclass\nclass IntegrityRecord:\n    component: str\n    operation: str\n    timestamp: str\n    hash_before: str\n    hash_after: str\n    status: str\n    validated_by: str\n\n\nclass IntegrityRecordsEngine:\n    \"\"\"\n    Integrity records management engine\n    \n    Creates, maintains, and validates integrity records\n    for all SSoT operations and components.\n    \"\"\"\n    \n    def __init__(self, workspace_root: Path):\n        self.workspace_root = Path(workspace_root)\n        self.records_file = self.workspace_root / \"02_schemas\" / \"integrity_records.json\"\n    ",
+  "full_hash": "d9ec7d47ba04a301eff30a7021bfbfac4fb648be8712eb4c1423b0aa5526a8f5",
+  "generated_at": 1764728345.5922074,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\integrity_records_engine.py"
+}

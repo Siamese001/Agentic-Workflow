@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\memory_LIC.py",
+    "rel_path": "memory_LIC.py",
+    "root_name": "outreach_engine/Agentic LIC",
+    "file_hash": "65e2747ea627e8dd221f62a82a2971a734db72d41d3e18aea7aab1db298b664d",
+    "file_size": 14028,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.4206045
+}

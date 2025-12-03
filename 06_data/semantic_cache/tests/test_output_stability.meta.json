@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\observer-microagent-layer\\aggregate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\test_output_stability.py",
+    "rel_path": "test_output_stability.py",
+    "root_name": "tests",
+    "file_hash": "0c2ce47abbd341b7ea1fbb9db89e79e79ad7c200c82aa919830ba9598b0cc51c",
+    "file_size": 1322,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.1455061
+}

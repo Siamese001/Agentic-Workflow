@@ -1,0 +1,179 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for orchestration safety application and enforcement.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='SafetyLevel',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Orchestration safety levels.')),
+        Assign(
+          targets=[
+            Name(id='CRITICAL', ctx=Store())],
+          value=Constant(value='critical')),
+        Assign(
+          targets=[
+            Name(id='HIGH', ctx=Store())],
+          value=Constant(value='high')),
+        Assign(
+          targets=[
+            Name(id='MEDIUM', ctx=Store())],
+          value=Constant(value='medium')),
+        Assign(
+          targets=[
+            Name(id='LOW', ctx=Store())],
+          value=Constant(value='low'))]),
+    ClassDef(
+      name='SafetyCategory',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Orchestration safety categories.')),
+        Assign(
+          targets=[
+            Name(id='WORKFLOW_SAFETY', ctx=Store())],
+          value=Constant(value='workflow_safety')),
+        Assign(
+          targets=[
+            Name(id='RESOURCE_SAFETY', ctx=Store())],
+          value=Constant(value='resource_safety')),
+        Assign(
+          targets=[
+            Name(id='COORDINATION_SAFETY', ctx=Store())],
+          value=Constant(value='coordination_safety')),
+        Assign(
+          targets=[
+            Name(id='COMMUNICATION_SAFETY', ctx=Store())],
+          value=Constant(value='communication_safety'))]),
+    ClassDef(
+      name='OrchestrationSafetyRule',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual orchestration safety rule.')),
+        AnnAssign(
+          target=Name(id='rule_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='category', ctx=Store()),
+          annotation=Name(id='SafetyCategory', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_level', ctx=Store()),
+          annotation=Name(id='SafetyLevel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rule_expression', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='auto_correctable', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SafetyApplication',
+      body=[
+        Expr(
+          value=Constant(value='Schema for safety application context.')),
+        AnnAssign(
+          target=Name(id='application_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_orchestration_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='applied_rules', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='OrchestrationSafetyRule', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='application_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SafetyApplicationResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for safety application results.')),
+        AnnAssign(
+          target=Name(id='result_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='application', ctx=Store()),
+          annotation=Name(id='SafetyApplication', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_passed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='violations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='auto_corrections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

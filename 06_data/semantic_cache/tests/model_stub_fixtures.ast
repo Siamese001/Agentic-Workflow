@@ -1,0 +1,191 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSafety Routing Invariance Tests - Phase 10\n\nTests for safety routing behavior:\n- safety always uses heavy models\n- budget constraints never apply to safety\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock'),
+        alias(name='patch')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='runtime.infra.model_routing.policies',
+      names=[
+        alias(name='ModelRoutingPolicy')],
+      level=0),
+    ImportFrom(
+      module='runtime.execution_budget_manager',
+      names=[
+        alias(name='ExecutionBudgetManager'),
+        alias(name='BudgetLimits'),
+        alias(name='get_budget_manager')],
+      level=0),
+    ImportFrom(
+      module='agentic_core.l1_planning.planners.lic_outreach_dataclasses',
+      names=[
+        alias(name='ArchetypeType')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ComplexityLevel')],
+      level=0),
+    ClassDef(
+      name='TestSafetyRoutingInvariance',
+      body=[
+        Expr(
+          value=Constant(value='Test suite for safety routing invariance under all conditions.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Setup test fixtures for each test method.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ExecutionBudgetManager', ctx=Load()),
+                  attr='_instance',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='budget_manager',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='get_budget_manager', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='budget_manager',
+                    ctx=Load()),
+                  attr='reset_usage',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='routing_policy',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='ModelRoutingPolicy', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mock_mission',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mock_recipient',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load())))]),
+        FunctionDef(
+          name='test_safety_always_uses_heavy_models_regardless_of_budget',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that safety stages always use heavy models even with zero budget.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_ignores_budget_constraints',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that safety stages bypass all budget-based routing constraints.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_ignores_archetype_complexity',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that safety uses heavy models regardless of archetype complexity.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_routing_consistency_across_stages',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that safety routing is consistent across different safety stages.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_routing_under_extreme_budget_pressure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test safety routing under extreme budget exhaustion scenarios.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_routing_in_concurrent_context',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test safety routing invariance in concurrent execution.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_routing_error_isolation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value="Test that routing errors don't affect safety execution.")),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_routing_model_selection_accuracy',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that safety routing selects correct heavy models.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_routing_provider_selection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that safety routing respects provider selection while using heavy models.')),
+            Pass()]),
+        FunctionDef(
+          name='test_safety_routing_configuration_independence',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that safety routing is independent of routing configuration.')),
+            Pass()])])])

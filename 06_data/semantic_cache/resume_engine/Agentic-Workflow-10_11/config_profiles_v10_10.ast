@@ -1,0 +1,1183 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nConfigures résumé analysis execution profiles for optimizing reasoning, retrieval, cost, and safety parameters.\n\nImproves résumé processing by defining tailored analysis configurations for different job matching scenarios and use cases.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel'),
+        alias(name='Field')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='RetrievalConfig'),
+        alias(name='ContextBudget'),
+        alias(name='ReasoningMode'),
+        alias(name='RedisCacheConfig'),
+        alias(name='ChromaVectorConfig'),
+        alias(name='GoogleGenAIConfig'),
+        alias(name='BM25BackendConfig'),
+        alias(name='ComplexityLevel')],
+      level=0),
+    ImportFrom(
+      module='config.llm_profile',
+      names=[
+        alias(name='LLMProfile')],
+      level=0),
+    ImportFrom(
+      module='config.retrieval_profile',
+      names=[
+        alias(name='RetrievalProfile')],
+      level=0),
+    ImportFrom(
+      module='config.safety_profile',
+      names=[
+        alias(name='SafetyProfile')],
+      level=0),
+    ImportFrom(
+      module='config.context_profile',
+      names=[
+        alias(name='ContextProfile')],
+      level=0),
+    ImportFrom(
+      module='config.budget_profile',
+      names=[
+        alias(name='BudgetProfile')],
+      level=0),
+    ClassDef(
+      name='SafetyTier',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines safety validation levels for résumé processing.\n\n    Ensures appropriate security measures for professional résumé improvement standards.\n    ')),
+        Assign(
+          targets=[
+            Name(id='STANDARD', ctx=Store())],
+          value=Constant(value='standard')),
+        Assign(
+          targets=[
+            Name(id='STRICT', ctx=Store())],
+          value=Constant(value='strict')),
+        Assign(
+          targets=[
+            Name(id='RELAXED', ctx=Store())],
+          value=Constant(value='relaxed')),
+        Assign(
+          targets=[
+            Name(id='DEBUG', ctx=Store())],
+          value=Constant(value='debug'))]),
+    ClassDef(
+      name='ModelTier',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Specifies model performance tiers for résumé analysis.\n\n    Balances cost and quality for optimal résumé enhancement processing.\n    ')),
+        Assign(
+          targets=[
+            Name(id='CHEAP', ctx=Store())],
+          value=Constant(value='cheap')),
+        Assign(
+          targets=[
+            Name(id='BALANCED', ctx=Store())],
+          value=Constant(value='balanced')),
+        Assign(
+          targets=[
+            Name(id='PREMIUM', ctx=Store())],
+          value=Constant(value='premium'))]),
+    ClassDef(
+      name='DAGMode',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Controls résumé processing workflow execution strategy.\n\n    Optimizes speed and resource usage for comprehensive résumé improvement.\n    ')),
+        Assign(
+          targets=[
+            Name(id='SEQUENTIAL', ctx=Store())],
+          value=Constant(value='sequential')),
+        Assign(
+          targets=[
+            Name(id='PARALLEL', ctx=Store())],
+          value=Constant(value='parallel'))]),
+    ClassDef(
+      name='ExecutionProfileSpec',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Configures comprehensive résumé analysis execution parameters.\n\n    Optimizes processing strategy for different résumé improvement scenarios and requirements.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reasoning_mode', ctx=Store()),
+          annotation=Name(id='ReasoningMode', ctx=Load()),
+          value=Attribute(
+            value=Name(id='ReasoningMode', ctx=Load()),
+            attr='COT',
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_tier', ctx=Store()),
+          annotation=Name(id='SafetyTier', ctx=Load()),
+          value=Attribute(
+            value=Name(id='SafetyTier', ctx=Load()),
+            attr='STANDARD',
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_tier', ctx=Store()),
+          annotation=Name(id='ModelTier', ctx=Load()),
+          value=Attribute(
+            value=Name(id='ModelTier', ctx=Load()),
+            attr='BALANCED',
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='min_complexity', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='ComplexityLevel', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_cost_usd', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_latency_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=3000),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval', ctx=Store()),
+          annotation=Name(id='RetrievalConfig', ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='RetrievalConfig', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_budget', ctx=Store()),
+          annotation=Name(id='ContextBudget', ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='ContextBudget', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='drafting_depth', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=3),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa_depth', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='medium'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dag_mode', ctx=Store()),
+          annotation=Name(id='DAGMode', ctx=Load()),
+          value=Attribute(
+            value=Name(id='DAGMode', ctx=Load()),
+            attr='SEQUENTIAL',
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='allow_async', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='telemetry_granularity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='standard'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='pii_detection_enabled', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='policy_engine_enabled', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa_council_size', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='enable_correction_loop', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_corrections', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rag_allow_hyde', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='hyde_model_tier', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='balanced'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='routing_telemetry_mode', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='simple'),
+          simple=1)]),
+    ClassDef(
+      name='ExecutionProfileV2',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Aggregates specialized profiles for comprehensive résumé processing.\n\n    Combines LLM, retrieval, safety, context, and budget configurations for optimal résumé improvement.\n    ')),
+        AnnAssign(
+          target=Name(id='llm', ctx=Store()),
+          annotation=Name(id='LLMProfile', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval', ctx=Store()),
+          annotation=Name(id='RetrievalProfile', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety', ctx=Store()),
+          annotation=Name(id='SafetyProfile', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Name(id='ContextProfile', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='budget', ctx=Store()),
+          annotation=Name(id='BudgetProfile', ctx=Load()),
+          simple=1)]),
+    FunctionDef(
+      name='build_execution_profile_v2',
+      args=arguments(
+        args=[
+          arg(
+            arg='spec',
+            annotation=Name(id='ExecutionProfileSpec', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Builds comprehensive résumé processing profile from specifications.\n\n    Creates optimized configuration for different résumé improvement scenarios and requirements.\n    ')),
+        Assign(
+          targets=[
+            Name(id='llm', ctx=Store())],
+          value=Call(
+            func=Name(id='LLMProfile', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='reasoning_mode',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=IfExp(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='spec', ctx=Load()),
+                        attr='model_tier',
+                        ctx=Load()),
+                      Constant(value='value')]),
+                  body=Attribute(
+                    value=Attribute(
+                      value=Name(id='spec', ctx=Load()),
+                      attr='model_tier',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  orelse=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='spec', ctx=Load()),
+                        attr='model_tier',
+                        ctx=Load())]))),
+              keyword(
+                arg='max_cost_usd',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='max_cost_usd',
+                  ctx=Load())),
+              keyword(
+                arg='max_latency_ms',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='max_latency_ms',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='retrieval', ctx=Store())],
+          value=Call(
+            func=Name(id='RetrievalProfile', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='retrieval',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='retrieval',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='safety', ctx=Store())],
+          value=Call(
+            func=Name(id='SafetyProfile', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='safety_tier',
+                value=IfExp(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='spec', ctx=Load()),
+                        attr='safety_tier',
+                        ctx=Load()),
+                      Constant(value='value')]),
+                  body=Attribute(
+                    value=Attribute(
+                      value=Name(id='spec', ctx=Load()),
+                      attr='safety_tier',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  orelse=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='spec', ctx=Load()),
+                        attr='safety_tier',
+                        ctx=Load())]))),
+              keyword(
+                arg='pii_detection_enabled',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='pii_detection_enabled',
+                  ctx=Load())),
+              keyword(
+                arg='policy_engine_enabled',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='policy_engine_enabled',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='ContextProfile', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context_budget',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='context_budget',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='budget', ctx=Store())],
+          value=Call(
+            func=Name(id='BudgetProfile', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_cost_usd',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='max_cost_usd',
+                  ctx=Load())),
+              keyword(
+                arg='max_latency_ms',
+                value=Attribute(
+                  value=Name(id='spec', ctx=Load()),
+                  attr='max_latency_ms',
+                  ctx=Load()))])),
+        Return(
+          value=Call(
+            func=Name(id='ExecutionProfileV2', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='llm',
+                value=Name(id='llm', ctx=Load())),
+              keyword(
+                arg='retrieval',
+                value=Name(id='retrieval', ctx=Load())),
+              keyword(
+                arg='safety',
+                value=Name(id='safety', ctx=Load())),
+              keyword(
+                arg='context',
+                value=Name(id='context', ctx=Load())),
+              keyword(
+                arg='budget',
+                value=Name(id='budget', ctx=Load()))]))],
+      returns=Name(id='ExecutionProfileV2', ctx=Load())),
+    FunctionDef(
+      name='_balanced_hybrid_retrieval',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='allow_hyde',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='qa_council_size',
+            annotation=Name(id='int', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates balanced retrieval configuration for résumé evidence gathering.\n\n    Optimizes search strategy to find relevant data for comprehensive résumé improvement.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Constant(value='hybrid')),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=True)),
+              keyword(
+                arg='max_hits',
+                value=Constant(value=50)),
+              keyword(
+                arg='bm25_k1',
+                value=Constant(value=1.2)),
+              keyword(
+                arg='bm25_b',
+                value=Constant(value=0.75)),
+              keyword(
+                arg='bm25_backend',
+                value=Call(
+                  func=Name(id='BM25BackendConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='backend',
+                      value=Constant(value='rank_bm25')),
+                    keyword(
+                      arg='k1',
+                      value=Constant(value=1.2)),
+                    keyword(
+                      arg='b',
+                      value=Constant(value=0.75))])),
+              keyword(
+                arg='rrf_weights',
+                value=Constant(value=None)),
+              keyword(
+                arg='allow_hyde',
+                value=Name(id='allow_hyde', ctx=Load())),
+              keyword(
+                arg='qa_council_size',
+                value=Name(id='qa_council_size', ctx=Load())),
+              keyword(
+                arg='qa_council_mode',
+                value=Constant(value='simple')),
+              keyword(
+                arg='redis_cache',
+                value=Call(
+                  func=Name(id='RedisCacheConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True))])),
+              keyword(
+                arg='chroma',
+                value=Call(
+                  func=Name(id='ChromaVectorConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True)),
+                    keyword(
+                      arg='collection_name',
+                      value=Constant(value='resume_documents'))])),
+              keyword(
+                arg='google_genai',
+                value=Call(
+                  func=Name(id='GoogleGenAIConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True)),
+                    keyword(
+                      arg='model',
+                      value=Constant(value='gemini-pro'))]))]))],
+      returns=Name(id='RetrievalConfig', ctx=Load())),
+    FunctionDef(
+      name='_cheap_bm25_retrieval',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates cost-effective retrieval configuration for résumé processing.\n\n    Provides efficient keyword-based search for budget-conscious résumé improvement.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Constant(value='bm25')),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=False)),
+              keyword(
+                arg='max_hits',
+                value=Constant(value=25)),
+              keyword(
+                arg='bm25_k1',
+                value=Constant(value=1.0)),
+              keyword(
+                arg='bm25_b',
+                value=Constant(value=0.75)),
+              keyword(
+                arg='bm25_backend',
+                value=Call(
+                  func=Name(id='BM25BackendConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='backend',
+                      value=Constant(value='rank_bm25')),
+                    keyword(
+                      arg='k1',
+                      value=Constant(value=1.0)),
+                    keyword(
+                      arg='b',
+                      value=Constant(value=0.75))])),
+              keyword(
+                arg='rrf_weights',
+                value=Constant(value=None)),
+              keyword(
+                arg='allow_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='qa_council_size',
+                value=Constant(value=1)),
+              keyword(
+                arg='qa_council_mode',
+                value=Constant(value='simple')),
+              keyword(
+                arg='redis_cache',
+                value=Call(
+                  func=Name(id='RedisCacheConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True))]))]))],
+      returns=Name(id='RetrievalConfig', ctx=Load())),
+    FunctionDef(
+      name='_premium_dense_retrieval',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='allow_hyde',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='qa_council_size',
+            annotation=Name(id='int', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=False),
+          Constant(value=1)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates high-quality semantic retrieval for résumé enhancement.\n\n    Optimizes conceptual search to find relevant evidence for comprehensive résumé improvement.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Constant(value='dense')),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=False)),
+              keyword(
+                arg='max_hits',
+                value=Constant(value=40)),
+              keyword(
+                arg='bm25_k1',
+                value=Constant(value=1.2)),
+              keyword(
+                arg='bm25_b',
+                value=Constant(value=0.75)),
+              keyword(
+                arg='bm25_backend',
+                value=Call(
+                  func=Name(id='BM25BackendConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='backend',
+                      value=Constant(value='rank_bm25')),
+                    keyword(
+                      arg='k1',
+                      value=Constant(value=1.2)),
+                    keyword(
+                      arg='b',
+                      value=Constant(value=0.75))])),
+              keyword(
+                arg='rrf_weights',
+                value=Constant(value=None)),
+              keyword(
+                arg='allow_hyde',
+                value=Name(id='allow_hyde', ctx=Load())),
+              keyword(
+                arg='qa_council_size',
+                value=Name(id='qa_council_size', ctx=Load())),
+              keyword(
+                arg='qa_council_mode',
+                value=Constant(value='simple')),
+              keyword(
+                arg='redis_cache',
+                value=Call(
+                  func=Name(id='RedisCacheConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True))])),
+              keyword(
+                arg='chroma',
+                value=Call(
+                  func=Name(id='ChromaVectorConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True)),
+                    keyword(
+                      arg='collection_name',
+                      value=Constant(value='resume_documents'))])),
+              keyword(
+                arg='google_genai',
+                value=Call(
+                  func=Name(id='GoogleGenAIConfig', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True)),
+                    keyword(
+                      arg='model',
+                      value=Constant(value='gemini-pro'))]))]))],
+      returns=Name(id='RetrievalConfig', ctx=Load())),
+    AnnAssign(
+      target=Name(id='EXECUTION_PROFILES', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='ExecutionProfileSpec', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Dict(
+        keys=[
+          Constant(value='RESUME_HIGH_QUALITY'),
+          Constant(value='RESUME_FAST'),
+          Constant(value='OUTREACH_QUICK'),
+          Constant(value='DEBUG_DIAGNOSTIC')],
+        values=[
+          Call(
+            func=Name(id='ExecutionProfileSpec', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Constant(value='RESUME_HIGH_QUALITY')),
+              keyword(
+                arg='description',
+                value=Constant(value='High-quality resume with full RAG, HYDE, deep drafting, strict QA and safety.')),
+              keyword(
+                arg='reasoning_mode',
+                value=Attribute(
+                  value=Name(id='ReasoningMode', ctx=Load()),
+                  attr='TOT',
+                  ctx=Load())),
+              keyword(
+                arg='safety_tier',
+                value=Attribute(
+                  value=Name(id='SafetyTier', ctx=Load()),
+                  attr='STRICT',
+                  ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Attribute(
+                  value=Name(id='ModelTier', ctx=Load()),
+                  attr='PREMIUM',
+                  ctx=Load())),
+              keyword(
+                arg='max_cost_usd',
+                value=Constant(value=0.25)),
+              keyword(
+                arg='max_latency_ms',
+                value=Constant(value=4500)),
+              keyword(
+                arg='retrieval',
+                value=Call(
+                  func=Name(id='_balanced_hybrid_retrieval', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='allow_hyde',
+                      value=Constant(value=True)),
+                    keyword(
+                      arg='qa_council_size',
+                      value=Constant(value=3))])),
+              keyword(
+                arg='context_budget',
+                value=Call(
+                  func=Name(id='ContextBudget', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='total_tokens',
+                      value=Constant(value=2000)),
+                    keyword(
+                      arg='planning_tokens',
+                      value=Constant(value=300)),
+                    keyword(
+                      arg='rag_tokens',
+                      value=Constant(value=1000)),
+                    keyword(
+                      arg='drafting_tokens',
+                      value=Constant(value=600)),
+                    keyword(
+                      arg='qa_tokens',
+                      value=Constant(value=256)),
+                    keyword(
+                      arg='safety_tokens',
+                      value=Constant(value=256))])),
+              keyword(
+                arg='drafting_depth',
+                value=Constant(value=4)),
+              keyword(
+                arg='qa_depth',
+                value=Constant(value='deep')),
+              keyword(
+                arg='dag_mode',
+                value=Attribute(
+                  value=Name(id='DAGMode', ctx=Load()),
+                  attr='PARALLEL',
+                  ctx=Load())),
+              keyword(
+                arg='allow_async',
+                value=Constant(value=True)),
+              keyword(
+                arg='telemetry_granularity',
+                value=Constant(value='verbose')),
+              keyword(
+                arg='pii_detection_enabled',
+                value=Constant(value=True)),
+              keyword(
+                arg='policy_engine_enabled',
+                value=Constant(value=True)),
+              keyword(
+                arg='qa_council_size',
+                value=Constant(value=3)),
+              keyword(
+                arg='enable_correction_loop',
+                value=Constant(value=True)),
+              keyword(
+                arg='max_corrections',
+                value=Constant(value=2)),
+              keyword(
+                arg='rag_allow_hyde',
+                value=Constant(value=True)),
+              keyword(
+                arg='hyde_model_tier',
+                value=Constant(value='premium')),
+              keyword(
+                arg='routing_telemetry_mode',
+                value=Constant(value='full'))]),
+          Call(
+            func=Name(id='ExecutionProfileSpec', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Constant(value='RESUME_FAST')),
+              keyword(
+                arg='description',
+                value=Constant(value='Faster resume generation with BM25-only RAG, shallower drafting and QA, standard safety.')),
+              keyword(
+                arg='reasoning_mode',
+                value=Attribute(
+                  value=Name(id='ReasoningMode', ctx=Load()),
+                  attr='COT',
+                  ctx=Load())),
+              keyword(
+                arg='safety_tier',
+                value=Attribute(
+                  value=Name(id='SafetyTier', ctx=Load()),
+                  attr='STANDARD',
+                  ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Attribute(
+                  value=Name(id='ModelTier', ctx=Load()),
+                  attr='BALANCED',
+                  ctx=Load())),
+              keyword(
+                arg='max_cost_usd',
+                value=Constant(value=0.1)),
+              keyword(
+                arg='max_latency_ms',
+                value=Constant(value=2500)),
+              keyword(
+                arg='retrieval',
+                value=Call(
+                  func=Name(id='_cheap_bm25_retrieval', ctx=Load()))),
+              keyword(
+                arg='context_budget',
+                value=Call(
+                  func=Name(id='ContextBudget', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='total_tokens',
+                      value=Constant(value=1400)),
+                    keyword(
+                      arg='planning_tokens',
+                      value=Constant(value=200)),
+                    keyword(
+                      arg='rag_tokens',
+                      value=Constant(value=600)),
+                    keyword(
+                      arg='drafting_tokens',
+                      value=Constant(value=400)),
+                    keyword(
+                      arg='qa_tokens',
+                      value=Constant(value=128)),
+                    keyword(
+                      arg='safety_tokens',
+                      value=Constant(value=128))])),
+              keyword(
+                arg='drafting_depth',
+                value=Constant(value=2)),
+              keyword(
+                arg='qa_depth',
+                value=Constant(value='medium')),
+              keyword(
+                arg='dag_mode',
+                value=Attribute(
+                  value=Name(id='DAGMode', ctx=Load()),
+                  attr='SEQUENTIAL',
+                  ctx=Load())),
+              keyword(
+                arg='allow_async',
+                value=Constant(value=False)),
+              keyword(
+                arg='telemetry_granularity',
+                value=Constant(value='standard')),
+              keyword(
+                arg='pii_detection_enabled',
+                value=Constant(value=True)),
+              keyword(
+                arg='policy_engine_enabled',
+                value=Constant(value=True)),
+              keyword(
+                arg='qa_council_size',
+                value=Constant(value=1)),
+              keyword(
+                arg='enable_correction_loop',
+                value=Constant(value=True)),
+              keyword(
+                arg='max_corrections',
+                value=Constant(value=1)),
+              keyword(
+                arg='rag_allow_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='hyde_model_tier',
+                value=Constant(value='balanced')),
+              keyword(
+                arg='routing_telemetry_mode',
+                value=Constant(value='simple'))]),
+          Call(
+            func=Name(id='ExecutionProfileSpec', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Constant(value='OUTREACH_QUICK')),
+              keyword(
+                arg='description',
+                value=Constant(value='Quick outreach-style drafting with hybrid RAG but no HYDE, lighter QA and relaxed safety.')),
+              keyword(
+                arg='reasoning_mode',
+                value=Attribute(
+                  value=Name(id='ReasoningMode', ctx=Load()),
+                  attr='REACT',
+                  ctx=Load())),
+              keyword(
+                arg='safety_tier',
+                value=Attribute(
+                  value=Name(id='SafetyTier', ctx=Load()),
+                  attr='RELAXED',
+                  ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Attribute(
+                  value=Name(id='ModelTier', ctx=Load()),
+                  attr='CHEAP',
+                  ctx=Load())),
+              keyword(
+                arg='max_cost_usd',
+                value=Constant(value=0.05)),
+              keyword(
+                arg='max_latency_ms',
+                value=Constant(value=2000)),
+              keyword(
+                arg='retrieval',
+                value=Call(
+                  func=Name(id='_balanced_hybrid_retrieval', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='allow_hyde',
+                      value=Constant(value=False)),
+                    keyword(
+                      arg='qa_council_size',
+                      value=Constant(value=1))])),
+              keyword(
+                arg='context_budget',
+                value=Call(
+                  func=Name(id='ContextBudget', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='total_tokens',
+                      value=Constant(value=1200)),
+                    keyword(
+                      arg='planning_tokens',
+                      value=Constant(value=150)),
+                    keyword(
+                      arg='rag_tokens',
+                      value=Constant(value=500)),
+                    keyword(
+                      arg='drafting_tokens',
+                      value=Constant(value=350)),
+                    keyword(
+                      arg='qa_tokens',
+                      value=Constant(value=100)),
+                    keyword(
+                      arg='safety_tokens',
+                      value=Constant(value=100))])),
+              keyword(
+                arg='drafting_depth',
+                value=Constant(value=2)),
+              keyword(
+                arg='qa_depth',
+                value=Constant(value='shallow')),
+              keyword(
+                arg='dag_mode',
+                value=Attribute(
+                  value=Name(id='DAGMode', ctx=Load()),
+                  attr='PARALLEL',
+                  ctx=Load())),
+              keyword(
+                arg='allow_async',
+                value=Constant(value=True)),
+              keyword(
+                arg='telemetry_granularity',
+                value=Constant(value='minimal')),
+              keyword(
+                arg='pii_detection_enabled',
+                value=Constant(value=True)),
+              keyword(
+                arg='policy_engine_enabled',
+                value=Constant(value=False)),
+              keyword(
+                arg='qa_council_size',
+                value=Constant(value=1)),
+              keyword(
+                arg='enable_correction_loop',
+                value=Constant(value=False)),
+              keyword(
+                arg='max_corrections',
+                value=Constant(value=0)),
+              keyword(
+                arg='rag_allow_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='hyde_model_tier',
+                value=Constant(value='balanced')),
+              keyword(
+                arg='routing_telemetry_mode',
+                value=Constant(value='simple'))]),
+          Call(
+            func=Name(id='ExecutionProfileSpec', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Constant(value='DEBUG_DIAGNOSTIC')),
+              keyword(
+                arg='description',
+                value=Constant(value='Diagnostic profile: dense retrieval only, verbose telemetry, debug safety tier.')),
+              keyword(
+                arg='reasoning_mode',
+                value=Attribute(
+                  value=Name(id='ReasoningMode', ctx=Load()),
+                  attr='REACT',
+                  ctx=Load())),
+              keyword(
+                arg='safety_tier',
+                value=Attribute(
+                  value=Name(id='SafetyTier', ctx=Load()),
+                  attr='DEBUG',
+                  ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Attribute(
+                  value=Name(id='ModelTier', ctx=Load()),
+                  attr='CHEAP',
+                  ctx=Load())),
+              keyword(
+                arg='max_cost_usd',
+                value=Constant(value=1.0)),
+              keyword(
+                arg='max_latency_ms',
+                value=Constant(value=10000)),
+              keyword(
+                arg='retrieval',
+                value=Call(
+                  func=Name(id='_premium_dense_retrieval', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='allow_hyde',
+                      value=Constant(value=True)),
+                    keyword(
+                      arg='qa_council_size',
+                      value=Constant(value=1))])),
+              keyword(
+                arg='context_budget',
+                value=Call(
+                  func=Name(id='ContextBudget', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='total_tokens',
+                      value=Constant(value=2500)),
+                    keyword(
+                      arg='planning_tokens',
+                      value=Constant(value=500)),
+                    keyword(
+                      arg='rag_tokens',
+                      value=Constant(value=1200)),
+                    keyword(
+                      arg='drafting_tokens',
+                      value=Constant(value=800)),
+                    keyword(
+                      arg='qa_tokens',
+                      value=Constant(value=400)),
+                    keyword(
+                      arg='safety_tokens',
+                      value=Constant(value=400))])),
+              keyword(
+                arg='drafting_depth',
+                value=Constant(value=5)),
+              keyword(
+                arg='qa_depth',
+                value=Constant(value='deep')),
+              keyword(
+                arg='dag_mode',
+                value=Attribute(
+                  value=Name(id='DAGMode', ctx=Load()),
+                  attr='PARALLEL',
+                  ctx=Load())),
+              keyword(
+                arg='allow_async',
+                value=Constant(value=True)),
+              keyword(
+                arg='telemetry_granularity',
+                value=Constant(value='verbose')),
+              keyword(
+                arg='pii_detection_enabled',
+                value=Constant(value=False)),
+              keyword(
+                arg='policy_engine_enabled',
+                value=Constant(value=False)),
+              keyword(
+                arg='qa_council_size',
+                value=Constant(value=1)),
+              keyword(
+                arg='enable_correction_loop',
+                value=Constant(value=True)),
+              keyword(
+                arg='max_corrections',
+                value=Constant(value=3)),
+              keyword(
+                arg='rag_allow_hyde',
+                value=Constant(value=True)),
+              keyword(
+                arg='hyde_model_tier',
+                value=Constant(value='premium')),
+              keyword(
+                arg='routing_telemetry_mode',
+                value=Constant(value='full'))])]),
+      simple=1),
+    FunctionDef(
+      name='get_profile',
+      args=arguments(
+        args=[
+          arg(
+            arg='profile_id',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Return a validated ExecutionProfileSpec by ID.\n    Raises KeyError for unknown profiles.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='profile_id', ctx=Load()),
+            ops=[
+              NotIn()],
+            comparators=[
+              Name(id='EXECUTION_PROFILES', ctx=Load())]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='KeyError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Unknown execution profile: '),
+                      FormattedValue(
+                        value=Name(id='profile_id', ctx=Load()),
+                        conversion=-1)])]))]),
+        Return(
+          value=Subscript(
+            value=Name(id='EXECUTION_PROFILES', ctx=Load()),
+            slice=Name(id='profile_id', ctx=Load()),
+            ctx=Load()))],
+      returns=Name(id='ExecutionProfileSpec', ctx=Load()))])

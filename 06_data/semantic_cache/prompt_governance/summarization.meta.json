@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\retriever-microagent-layer\\act-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\summarization.yaml",
+    "rel_path": "summarization.yaml",
+    "root_name": "prompt_governance",
+    "file_hash": "1bb21a9a3c98216b156cce68dc196b204ecf13ff4f5babbae9316d89f8083504",
+    "file_size": 20470,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728348.1003556
+}

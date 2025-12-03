@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Monolith\\test_resume_workflow_v16_20.py",
+    "rel_path": "test_resume_workflow_v16_20.py",
+    "root_name": "resume_engine/Monolith",
+    "file_hash": "ef8c2c8e074a87d6914bdc909714079dc44140182229b1e307e10f37e0e896a9",
+    "file_size": 23440,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728233.1503942
+}

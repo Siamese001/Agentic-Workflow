@@ -1,0 +1,331 @@
+Module(
+  body=[
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Assign(
+      targets=[
+        Name(id='PROJECT_ROOT', ctx=Store())],
+      value=Subscript(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parents',
+          ctx=Load()),
+        slice=Constant(value=2),
+        ctx=Load())),
+    FunctionDef(
+      name='test_only_providers_contain_provider_sdks',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Verify that only providers/ directory contains external SDK imports.\n    \n    This enforces architectural separation where concrete SDK dependencies\n    (openai, anthropic, redis, chromadb, pinecone, etc.) are isolated\n    to the providers layer only.\n    ')),
+        Assign(
+          targets=[
+            Name(id='external_sdks', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='openai'),
+              Constant(value='anthropic'),
+              Constant(value='redis'),
+              Constant(value='chromadb'),
+              Constant(value='pinecone'),
+              Constant(value='google.generativeai'),
+              Constant(value='transformers'),
+              Constant(value='torch'),
+              Constant(value='numpy'),
+              Constant(value='pandas'),
+              Constant(value='sklearn'),
+              Constant(value='matplotlib'),
+              Constant(value='seaborn')])),
+        Assign(
+          targets=[
+            Name(id='violations', ctx=Store())],
+          value=List(ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='exclude_dirs', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='providers'),
+              Constant(value='tests'),
+              Constant(value='__pycache__'),
+              Constant(value='.venv'),
+              Constant(value='.pytest_cache')])),
+        For(
+          target=Name(id='py_file', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='PROJECT_ROOT', ctx=Load()),
+              attr='rglob',
+              ctx=Load()),
+            args=[
+              Constant(value='*.py')]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='exclude_dir', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Attribute(
+                          value=Name(id='py_file', ctx=Load()),
+                          attr='parts',
+                          ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='exclude_dir', ctx=Store()),
+                        iter=Name(id='exclude_dirs', ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Continue()]),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Constant(value='test'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='py_file', ctx=Load()),
+                        attr='name',
+                        ctx=Load())]),
+                  Compare(
+                    left=Constant(value='tests'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='py_file', ctx=Load()),
+                        attr='parts',
+                        ctx=Load())])]),
+              body=[
+                Continue()]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='py_file', ctx=Load()),
+                      attr='read_text',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))])),
+                For(
+                  target=Name(id='sdk', ctx=Store()),
+                  iter=Name(id='external_sdks', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='import_patterns', ctx=Store())],
+                      value=List(
+                        elts=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='^\\s*import\\s+'),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='re', ctx=Load()),
+                                    attr='escape',
+                                    ctx=Load()),
+                                  args=[
+                                    Name(id='sdk', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value='\\b')]),
+                          JoinedStr(
+                            values=[
+                              Constant(value='^\\s*from\\s+'),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='re', ctx=Load()),
+                                    attr='escape',
+                                    ctx=Load()),
+                                  args=[
+                                    Name(id='sdk', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value='\\s+import')])],
+                        ctx=Load())),
+                    For(
+                      target=Name(id='pattern', ctx=Store()),
+                      iter=Name(id='import_patterns', ctx=Load()),
+                      body=[
+                        If(
+                          test=Call(
+                            func=Attribute(
+                              value=Name(id='re', ctx=Load()),
+                              attr='search',
+                              ctx=Load()),
+                            args=[
+                              Name(id='pattern', ctx=Load()),
+                              Name(id='content', ctx=Load()),
+                              Attribute(
+                                value=Name(id='re', ctx=Load()),
+                                attr='MULTILINE',
+                                ctx=Load())]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='violations', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='file'),
+                                      Constant(value='sdk'),
+                                      Constant(value='line')],
+                                    values=[
+                                      Call(
+                                        func=Name(id='str', ctx=Load()),
+                                        args=[
+                                          Call(
+                                            func=Attribute(
+                                              value=Name(id='py_file', ctx=Load()),
+                                              attr='relative_to',
+                                              ctx=Load()),
+                                            args=[
+                                              Name(id='PROJECT_ROOT', ctx=Load())])]),
+                                      Name(id='sdk', ctx=Load()),
+                                      Call(
+                                        func=Name(id='next', ctx=Load()),
+                                        args=[
+                                          GeneratorExp(
+                                            elt=BinOp(
+                                              left=Name(id='i', ctx=Load()),
+                                              op=Add(),
+                                              right=Constant(value=1)),
+                                            generators=[
+                                              comprehension(
+                                                target=Tuple(
+                                                  elts=[
+                                                    Name(id='i', ctx=Store()),
+                                                    Name(id='line', ctx=Store())],
+                                                  ctx=Store()),
+                                                iter=Call(
+                                                  func=Name(id='enumerate', ctx=Load()),
+                                                  args=[
+                                                    Call(
+                                                      func=Attribute(
+                                                        value=Name(id='content', ctx=Load()),
+                                                        attr='split',
+                                                        ctx=Load()),
+                                                      args=[
+                                                        Constant(value='\n')])]),
+                                                ifs=[
+                                                  Call(
+                                                    func=Attribute(
+                                                      value=Name(id='re', ctx=Load()),
+                                                      attr='search',
+                                                      ctx=Load()),
+                                                    args=[
+                                                      Name(id='pattern', ctx=Load()),
+                                                      Name(id='line', ctx=Load())])],
+                                                is_async=0)]),
+                                          Constant(value=None)])])]))])])])],
+              handlers=[
+                ExceptHandler(
+                  type=Tuple(
+                    elts=[
+                      Name(id='UnicodeDecodeError', ctx=Load()),
+                      Name(id='PermissionError', ctx=Load())],
+                    ctx=Load()),
+                  body=[
+                    Continue()])])]),
+        If(
+          test=Name(id='violations', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='violation_details', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='violation', ctx=Store()),
+              iter=Name(id='violations', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violation_details', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='violation', ctx=Load()),
+                              slice=Constant(value='file'),
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=':'),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='violation', ctx=Load()),
+                              slice=Constant(value='line'),
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' - '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='violation', ctx=Load()),
+                              slice=Constant(value='sdk'),
+                              ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='fail',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=JoinedStr(
+                        values=[
+                          Constant(value='Found '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='violations', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=' provider SDK isolation violations:\n')]),
+                      op=Add(),
+                      right=Call(
+                        func=Attribute(
+                          value=Constant(value='\n'),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='violation_details', ctx=Load())])),
+                    op=Add(),
+                    right=Constant(value='\n\nExternal SDKs should only be imported in providers/ directory'))]))])],
+      returns=Constant(value=None))])

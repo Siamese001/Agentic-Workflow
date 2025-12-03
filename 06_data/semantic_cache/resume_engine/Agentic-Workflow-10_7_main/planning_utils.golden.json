@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Shared helpers for lightweight L1 planning stacks.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Iterable, List\n\n\ndef extract_job_profile(state: Dict[str, Any]) -> Dict[str, Any]:\n    job = state.get(\"job\") or {}\n\n    def _first(*keys: str) -> str:\n        for key in keys:\n            value = job.get(key)\n            if value:\n                return str(value)\n        return \"\"\n\n    raw_requirements = (\n        job.get(\"top_requirements\")\n        or job.get(\"required_skills\")\n        or job.get(\"keywords\")\n        or job.get(\"skills\")\n        or []\n    )\n    requirements: List[str]\n    if isinstance(raw_requirements, str):\n        requirements = [part.strip() for part in raw_requirements.split(\",\") if part.strip()]\n    elif isinstance(raw_requirements, Iterable):\n        requirements = [str(item).strip() for item in raw_requirements if str(item).strip()]\n    else:\n        requirements = []\n\n    return {\n        \"title\": _first(\"job_title\", \"title\", \"role\"),\n ",
+  "full_hash": "bdc97534515df2e7f6655f6dea7e018a71f0678a371d508224ed09c9f812cc08",
+  "generated_at": 1764728230.2176507,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\planning_utils.py"
+}

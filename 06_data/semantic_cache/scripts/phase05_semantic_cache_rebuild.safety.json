@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": true,
+  "has_network_calls": true,
+  "has_system_calls": true,
+  "line_count": 715,
+  "generated_at": 1764728352.0786831,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\phase05_semantic_cache_rebuild.py"
+}

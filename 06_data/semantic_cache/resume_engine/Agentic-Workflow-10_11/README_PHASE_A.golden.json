@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Phase A: L1 Planning Layer Refactoring\n\n**Date:** November 24, 2025  \n**Status:** \u2705 Complete  \n**Verification:** All tests passing (15/15)\n\n---\n\n## Overview\n\nThis refactoring established the L1 planning layer with strict separation between planning and execution.\n\n## Key Changes\n\n### 1. L1 Planning Layer Structure\n- Created/verified `l1/` package with pure planning modules\n- All planning logic extracted from `cognitive_agents.py` and `l2.py`\n- 8 planning functions, 8 immutable plan dataclasses\n\n### 2. Fixed Circular Dependencies\n- Modified `core/l2.py` to use lazy imports\n- Resolved naming conflicts\n\n### 3. Reorganized File Structure\n- Renamed `l1.py` \u2192 `workflow_planning.py` (L0 layer)\n- Renamed `l1_planning/` \u2192 `l1/` (L1 layer)\n- Renamed `l2/` \u2192 `l2_tools/` (avoid conflict with `l2.py`)\n- Created `core/workflow_planning.py` for backward compatibility\n\n## Files in This Folder\n\n1. **PHASE_A_COMPLETE.md** - Detailed completion report with all requirements\n2. **PHASE_A_SUMMARY.md** - E",
+  "full_hash": "939021a94636d58ba0bcfb9d85f26b719619083049c8bb2caf05c7412f5d9a4a",
+  "generated_at": 1764728226.2341814,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\11-24-2025\\phase_a_l1_planning\\README_PHASE_A.md"
+}

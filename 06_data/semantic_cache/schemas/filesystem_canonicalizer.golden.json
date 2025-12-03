@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nFilesystem Canonicalizer Engine for Agentic-Workflow\n\nImplements Phase 1 filesystem canonicalization for K14-K17 validation\n\nProvides filesystem structure canonicalization, normalization,\nand validation capabilities for Phase 1 operations.\n\"\"\"\n\nimport os\nimport sys\nimport json\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Optional, Set, Tuple\nfrom dataclasses import dataclass\nfrom datetime import datetime\n\n\n@dataclass\nclass CanonicalizationResult:\n    original_structure: Dict[str, Any]\n    canonical_structure: Dict[str, Any]\n    normalization_applied: List[str]\n    validation_status: str\n    timestamp: str\n\n\nclass FilesystemCanonicalizer:\n    \"\"\"\n    Filesystem canonicalization engine\n    \n    Normalizes and validates filesystem structure according to\n    canonical SSoT definitions for Phase 1 compliance.\n    \"\"\"\n    \n    def __init__(self, workspace_root: Path):\n        self.workspace_root = Path(workspace_root)\n        self.canonical_ssot_pat",
+  "full_hash": "19b81cb21bb6e442461af35c4011c40b13582d175cccee67ed02b02dd8c2c0ef",
+  "generated_at": 1764728345.5353622,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\filesystem_canonicalizer.py"
+}

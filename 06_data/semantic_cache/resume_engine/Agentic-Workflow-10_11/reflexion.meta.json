@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\reflexion.py",
+    "rel_path": "reflexion.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "91128200259e44de3cf106a2f411342ab2bd1dbd31704c4bba1711a6db712b4d",
+    "file_size": 1618,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728224.2798088
+}

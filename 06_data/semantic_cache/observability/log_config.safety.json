@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 55,
+  "generated_at": 1764728350.6034193,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\executor-microagent-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\log_config.py"
+}

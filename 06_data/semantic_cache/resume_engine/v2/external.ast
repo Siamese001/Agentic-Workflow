@@ -1,0 +1,3206 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='models_RES',
+      names=[
+        alias(name='JDEnforcementRule'),
+        alias(name='JDEnforcementResult')],
+      level=0),
+    ImportFrom(
+      module='config_RES_v2',
+      names=[
+        alias(name='CONFIG')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='mock_indicators', ctx=Store())],
+      value=Set(
+        elts=[
+          Constant(value='mock'),
+          Constant(value='test'),
+          Constant(value='dummy'),
+          Constant(value='example'),
+          Constant(value='sample'),
+          Constant(value='[placeholder'),
+          Constant(value='[your name]'),
+          Constant(value='[company name]'),
+          Constant(value='[missing_context]'),
+          Constant(value='[unserializable')])),
+    ClassDef(
+      name='JDEnforcementValidator',
+      body=[
+        Expr(
+          value=Constant(value="\n    Tracks and validates the flow of JD-specific data through the workflow.\n    This is not a simple validator; it's a separate, long-running agent that monitors \n    JD compliance across the entire workflow lifecycle.\n    (Extracted from validation_RES_v2.py lines 152-523)\n    ")),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job_description',
+                annotation=Name(id='str', ctx=Load())),
+              arg(arg='logger')],
+            defaults=[
+              Constant(value=''),
+              Constant(value=None)]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='enforcement_results',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='JDEnforcementResult', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='jd_hash',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='jd_keywords',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='job_description',
+                  ctx=Store())],
+              value=Name(id='job_description', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Name(id='logger', ctx=Load()))]),
+        FunctionDef(
+          name='_check_mock_data',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='data',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='rule',
+                annotation=Name(id='JDEnforcementRule', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='data_str', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Name(id='data', ctx=Load())]),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='has_mock', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='indicator', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='data_str', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='indicator', ctx=Store()),
+                        iter=Name(id='mock_indicators', ctx=Load()),
+                        is_async=0)])])),
+            Return(
+              value=Call(
+                func=Name(id='JDEnforcementResult', ctx=Load()),
+                args=[
+                  Name(id='rule', ctx=Load()),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='has_mock', ctx=Load())),
+                  IfExp(
+                    test=UnaryOp(
+                      op=Not(),
+                      operand=Name(id='has_mock', ctx=Load())),
+                    body=JoinedStr(
+                      values=[
+                        Constant(value='No mock data indicators found in '),
+                        FormattedValue(
+                          value=Attribute(
+                            value=Name(id='rule', ctx=Load()),
+                            attr='name',
+                            ctx=Load()),
+                          conversion=-1)]),
+                    orelse=JoinedStr(
+                      values=[
+                        Constant(value='Mock data indicators found in '),
+                        FormattedValue(
+                          value=Attribute(
+                            value=Name(id='rule', ctx=Load()),
+                            attr='name',
+                            ctx=Load()),
+                          conversion=-1)])),
+                  Name(id='gate_id', ctx=Load())]))],
+          returns=Name(id='JDEnforcementResult', ctx=Load())),
+        FunctionDef(
+          name='_check_jd_keywords',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='data',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='rule',
+                annotation=Name(id='JDEnforcementRule', ctx=Load())),
+              arg(
+                arg='min_count',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='jd_keywords',
+                  ctx=Load())),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='JDEnforcementResult', ctx=Load()),
+                    args=[
+                      Name(id='rule', ctx=Load()),
+                      Constant(value=False),
+                      Constant(value='JD keywords list is empty, cannot check'),
+                      Name(id='gate_id', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='data_str', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='data', ctx=Load()),
+                    Tuple(
+                      elts=[
+                        Name(id='dict', ctx=Load()),
+                        Name(id='list', ctx=Load())],
+                      ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='json', ctx=Load()),
+                    attr='dumps',
+                    ctx=Load()),
+                  args=[
+                    Name(id='data', ctx=Load())]),
+                orelse=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='data', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='data_str', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='data_str', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='keywords_found', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='kw', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='kw', ctx=Store()),
+                    iter=Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='jd_keywords',
+                        ctx=Load()),
+                      slice=Slice(
+                        upper=Constant(value=15)),
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='kw', ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='data_str', ctx=Load())])],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='passed', ctx=Store())],
+              value=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='keywords_found', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Name(id='min_count', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='JDEnforcementResult', ctx=Load()),
+                args=[
+                  Name(id='rule', ctx=Load()),
+                  Name(id='passed', ctx=Load()),
+                  IfExp(
+                    test=Name(id='passed', ctx=Load()),
+                    body=JoinedStr(
+                      values=[
+                        Constant(value='Found '),
+                        FormattedValue(
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='keywords_found', ctx=Load())]),
+                          conversion=-1),
+                        Constant(value=' JD keywords in '),
+                        FormattedValue(
+                          value=Attribute(
+                            value=Name(id='rule', ctx=Load()),
+                            attr='name',
+                            ctx=Load()),
+                          conversion=-1),
+                        Constant(value=' (>= '),
+                        FormattedValue(
+                          value=Name(id='min_count', ctx=Load()),
+                          conversion=-1),
+                        Constant(value=')')]),
+                    orelse=JoinedStr(
+                      values=[
+                        Constant(value='Found only '),
+                        FormattedValue(
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='keywords_found', ctx=Load())]),
+                          conversion=-1),
+                        Constant(value=' JD keywords in '),
+                        FormattedValue(
+                          value=Attribute(
+                            value=Name(id='rule', ctx=Load()),
+                            attr='name',
+                            ctx=Load()),
+                          conversion=-1),
+                        Constant(value=' (< '),
+                        FormattedValue(
+                          value=Name(id='min_count', ctx=Load()),
+                          conversion=-1),
+                        Constant(value=')')])),
+                  Name(id='gate_id', ctx=Load())]))],
+          returns=Name(id='JDEnforcementResult', ctx=Load())),
+        FunctionDef(
+          name='validate_jd_input',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job_description',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='job_description', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=100)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E1_JD_MIN_LENGTH',
+                            ctx=Load()),
+                          Constant(value=True),
+                          JoinedStr(
+                            values=[
+                              Constant(value='JD length: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='job_description', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' chars')]),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E1_JD_MIN_LENGTH',
+                            ctx=Load()),
+                          Constant(value=False),
+                          JoinedStr(
+                            values=[
+                              Constant(value='JD too short: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='job_description', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' chars < 100 minimum')]),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='job_description', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job_description', ctx=Load()),
+                      attr='strip',
+                      ctx=Load()))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E2_JD_NON_NULL',
+                            ctx=Load()),
+                          Constant(value=True),
+                          Constant(value='JD is non-null and non-empty'),
+                          Name(id='gate_id', ctx=Load())])])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='jd_hash',
+                      ctx=Store())],
+                  value=Subscript(
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='hashlib', ctx=Load()),
+                            attr='sha256',
+                            ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='job_description', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))]),
+                        attr='hexdigest',
+                        ctx=Load())),
+                    slice=Slice(
+                      upper=Constant(value=16)),
+                    ctx=Load()))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E2_JD_NON_NULL',
+                            ctx=Load()),
+                          Constant(value=False),
+                          Constant(value='JD is null or empty'),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='results', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='JDEnforcementResult', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='JDEnforcementRule', ctx=Load()),
+                        attr='E3_JD_PARSING_SUCCESS',
+                        ctx=Load()),
+                      Constant(value=True),
+                      Constant(value='JD input is valid for parsing'),
+                      Name(id='gate_id', ctx=Load())])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_jd_parsing',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='parsed_jd',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='parsed_jd', ctx=Load()),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='parsed_jd', ctx=Load()),
+                      Name(id='dict', ctx=Load())])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E3_JD_PARSING_SUCCESS',
+                            ctx=Load()),
+                          Constant(value=True),
+                          JoinedStr(
+                            values=[
+                              Constant(value='JD parsed with '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='parsed_jd', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' fields')]),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E3_JD_PARSING_SUCCESS',
+                            ctx=Load()),
+                          Constant(value=False),
+                          Constant(value='JD parsing failed or returned non-dict'),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Assign(
+              targets=[
+                Name(id='primary_theme', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='parsed_jd', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='primary_theme'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='secondary_themes', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='parsed_jd', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='secondary_themes'),
+                  List(ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='primary_theme', ctx=Load()),
+                  Name(id='secondary_themes', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E4_THEMES_EXTRACTED',
+                            ctx=Load()),
+                          Constant(value=True),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Primary theme + '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='secondary_themes', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' secondary themes')]),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E4_THEMES_EXTRACTED',
+                            ctx=Load()),
+                          Constant(value=False),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Missing themes: primary='),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='bool', ctx=Load()),
+                                  args=[
+                                    Name(id='primary_theme', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=', secondary='),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='secondary_themes', ctx=Load())]),
+                                conversion=-1)]),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Assign(
+              targets=[
+                Name(id='required_skills', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='parsed_jd', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='required_skills'),
+                  List(ctx=Load())])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='required_skills', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=5)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E5_SKILLS_EXTRACTED',
+                            ctx=Load()),
+                          Constant(value=True),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Extracted '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='required_skills', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' skills')]),
+                          Name(id='gate_id', ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='jd_keywords',
+                        ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Name(id='required_skills', ctx=Load())]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E5_SKILLS_EXTRACTED',
+                            ctx=Load()),
+                          Constant(value=False),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Insufficient skills: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='required_skills', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' < 5 minimum')]),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_thematic_analysis',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='thematic_analysis',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='thematic_analysis', ctx=Load()),
+                  Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='thematic_analysis', ctx=Load()),
+                      Constant(value='primary_theme')])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E6_JD_TO_THEMATIC',
+                            ctx=Load()),
+                          Constant(value=True),
+                          Constant(value='ThematicAnalysis created from JD'),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E6_JD_TO_THEMATIC',
+                            ctx=Load()),
+                          Constant(value=False),
+                          Constant(value='ThematicAnalysis missing or invalid'),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            If(
+              test=Name(id='thematic_analysis', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='thematic_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='thematic_analysis', ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='has_mock', ctx=Store())],
+                  value=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='indicator', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='thematic_str', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='indicator', ctx=Store()),
+                            iter=Name(id='mock_indicators', ctx=Load()),
+                            is_async=0)])])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='has_mock', ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E7_THEMATIC_USES_JD',
+                                ctx=Load()),
+                              Constant(value=True),
+                              Constant(value='ThematicAnalysis contains no mock data indicators'),
+                              Name(id='gate_id', ctx=Load())])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E7_THEMATIC_USES_JD',
+                                ctx=Load()),
+                              Constant(value=False),
+                              Constant(value='ThematicAnalysis may contain mock data'),
+                              Name(id='gate_id', ctx=Load())])]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_enrichment',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='enriched_data',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='enriched_data', ctx=Load()),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='enriched_data', ctx=Load()),
+                      Name(id='dict', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='enriched_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dumps',
+                          ctx=Load()),
+                        args=[
+                          Name(id='enriched_data', ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='keywords_found', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='kw', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='jd_keywords',
+                            ctx=Load()),
+                          slice=Slice(
+                            upper=Constant(value=10)),
+                          ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='kw', ctx=Load()),
+                                attr='lower',
+                                ctx=Load())),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='enriched_str', ctx=Load())])],
+                        is_async=0)])),
+                If(
+                  test=Name(id='keywords_found', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E10_ENRICHMENT_USES_JD',
+                                ctx=Load()),
+                              Constant(value=True),
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Found '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='keywords_found', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' JD keywords in enriched data')]),
+                              Name(id='gate_id', ctx=Load())])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E10_ENRICHMENT_USES_JD',
+                                ctx=Load()),
+                              Constant(value=False),
+                              Constant(value='No JD keywords found in enriched data'),
+                              Name(id='gate_id', ctx=Load())])]))])]),
+            If(
+              test=Name(id='enriched_data', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='enriched_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='enriched_data', ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='has_mock', ctx=Store())],
+                  value=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='indicator', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='enriched_str', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='indicator', ctx=Store()),
+                            iter=Name(id='mock_indicators', ctx=Load()),
+                            is_async=0)])])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='has_mock', ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E14_NO_MOCK_DATA',
+                                ctx=Load()),
+                              Constant(value=True),
+                              Constant(value='No mock data in enrichment'),
+                              Name(id='gate_id', ctx=Load())])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E14_NO_MOCK_DATA',
+                                ctx=Load()),
+                              Constant(value=False),
+                              Constant(value='Mock data indicators found in enrichment'),
+                              Name(id='gate_id', ctx=Load())])]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_artist_inputs',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='enriched_scaffold',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='thematic_analysis',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Name(id='thematic_analysis', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E8_ARTIST_RECEIVES_JD',
+                            ctx=Load()),
+                          Constant(value=True),
+                          Constant(value='Artist received JD-derived thematic_analysis'),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E8_ARTIST_RECEIVES_JD',
+                            ctx=Load()),
+                          Constant(value=False),
+                          Constant(value='Artist did not receive thematic_analysis'),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='enriched_scaffold', ctx=Load()),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='enriched_scaffold', ctx=Load()),
+                      Name(id='dict', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='enriched_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dumps',
+                          ctx=Load()),
+                        args=[
+                          Name(id='enriched_scaffold', ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='keywords_found', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='kw', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='jd_keywords',
+                            ctx=Load()),
+                          slice=Slice(
+                            upper=Constant(value=10)),
+                          ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='kw', ctx=Load()),
+                                attr='lower',
+                                ctx=Load())),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='enriched_str', ctx=Load())])],
+                        is_async=0)])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E10_ENRICHMENT_USES_JD',
+                            ctx=Load()),
+                          Call(
+                            func=Name(id='bool', ctx=Load()),
+                            args=[
+                              Name(id='keywords_found', ctx=Load())]),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Found '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='keywords_found', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' JD keywords in enriched data provided to Artist')]),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_preflight',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='staging_buffer', ctx=Load()),
+                  Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='staging_buffer', ctx=Load()),
+                      Constant(value='_data')])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='buffer_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dumps',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='staging_buffer', ctx=Load()),
+                            attr='_data',
+                            ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='keywords_found', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='kw', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='jd_keywords',
+                            ctx=Load()),
+                          slice=Slice(
+                            upper=Constant(value=15)),
+                          ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='kw', ctx=Load()),
+                                attr='lower',
+                                ctx=Load())),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='buffer_str', ctx=Load())])],
+                        is_async=0)])),
+                If(
+                  test=Name(id='keywords_found', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E11_VALIDATION_CHECKS_JD',
+                                ctx=Load()),
+                              Constant(value=True),
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Validation found '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='keywords_found', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' JD keywords')]),
+                              Name(id='gate_id', ctx=Load())])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E11_VALIDATION_CHECKS_JD',
+                                ctx=Load()),
+                              Constant(value=False),
+                              Constant(value='Validation found no JD keywords'),
+                              Name(id='gate_id', ctx=Load())])]))])]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='staging_buffer', ctx=Load()),
+                  Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='staging_buffer', ctx=Load()),
+                      Constant(value='_data')])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='buffer_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dumps',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='staging_buffer', ctx=Load()),
+                            attr='_data',
+                            ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='keywords_found_final', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='kw', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='jd_keywords',
+                            ctx=Load()),
+                          slice=Slice(
+                            upper=Constant(value=15)),
+                          ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='kw', ctx=Load()),
+                                attr='lower',
+                                ctx=Load())),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='buffer_str', ctx=Load())])],
+                        is_async=0)])),
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='keywords_found_final', ctx=Load())]),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=3)]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E9_CONTENT_HAS_JD_KW',
+                                ctx=Load()),
+                              Constant(value=True),
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Pre-flight check found '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='keywords_found_final', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' JD keywords in final buffer')]),
+                              Name(id='gate_id', ctx=Load())])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='JDEnforcementResult', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='JDEnforcementRule', ctx=Load()),
+                                attr='E9_CONTENT_HAS_JD_KW',
+                                ctx=Load()),
+                              Constant(value=False),
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Pre-flight check found only '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='keywords_found_final', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' JD keywords in final buffer')]),
+                              Name(id='gate_id', ctx=Load())])]))])]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='staging_buffer', ctx=Load()),
+                  Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='staging_buffer', ctx=Load()),
+                      Constant(value='_data')])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='buffer_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='staging_buffer', ctx=Load()),
+                            attr='_data',
+                            ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='has_mock', ctx=Store())],
+                  value=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='indicator', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='buffer_str', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='indicator', ctx=Store()),
+                            iter=Name(id='mock_indicators', ctx=Load()),
+                            is_async=0)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E14_NO_MOCK_DATA',
+                            ctx=Load()),
+                          UnaryOp(
+                            op=Not(),
+                            operand=Name(id='has_mock', ctx=Load())),
+                          IfExp(
+                            test=UnaryOp(
+                              op=Not(),
+                              operand=Name(id='has_mock', ctx=Load())),
+                            body=Constant(value='No mock data indicators found in final staging buffer'),
+                            orelse=Constant(value='Mock data indicators found in final staging buffer')),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_file_output',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='file_paths',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Name(id='file_paths', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E12_FILES_CONTAIN_JD',
+                            ctx=Load()),
+                          Constant(value=True),
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='file_paths', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' files generated (assumed to contain JD content)')]),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E12_FILES_CONTAIN_JD',
+                            ctx=Load()),
+                          Constant(value=False),
+                          Constant(value='No files generated'),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            If(
+              test=Name(id='file_paths', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='paths_str', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Constant(value=''),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='file_paths', ctx=Load()),
+                              attr='values',
+                              ctx=Load()))]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='has_mock', ctx=Store())],
+                  value=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='indicator', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='paths_str', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='indicator', ctx=Store()),
+                            iter=Name(id='mock_indicators', ctx=Load()),
+                            is_async=0)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E14_NO_MOCK_DATA',
+                            ctx=Load()),
+                          UnaryOp(
+                            op=Not(),
+                            operand=Name(id='has_mock', ctx=Load())),
+                          IfExp(
+                            test=UnaryOp(
+                              op=Not(),
+                              operand=Name(id='has_mock', ctx=Load())),
+                            body=Constant(value='No mock data indicators found in file paths'),
+                            orelse=Constant(value='Mock data indicators found in file paths')),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E14_NO_MOCK_DATA',
+                            ctx=Load()),
+                          Constant(value=True),
+                          Constant(value='No files to check for mock data'),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_qa_report',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='qa_report',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='gate_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Name(id='qa_report', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E13_QA_VERIFIES_JD',
+                            ctx=Load()),
+                          Constant(value=True),
+                          Constant(value='QA report generated'),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E13_QA_VERIFIES_JD',
+                            ctx=Load()),
+                          Constant(value=False),
+                          Constant(value='QA report missing'),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Assign(
+              targets=[
+                Name(id='total_enforcements', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='passed_enforcements', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Constant(value=1),
+                    generators=[
+                      comprehension(
+                        target=Name(id='r', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='enforcement_results',
+                          ctx=Load()),
+                        ifs=[
+                          Attribute(
+                            value=Name(id='r', ctx=Load()),
+                            attr='passed',
+                            ctx=Load())],
+                        is_async=0)])])),
+            If(
+              test=Compare(
+                left=Name(id='total_enforcements', ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=15)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E15_COMPLETE_AUDIT',
+                            ctx=Load()),
+                          Constant(value=True),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Complete audit: '),
+                              FormattedValue(
+                                value=Name(id='passed_enforcements', ctx=Load()),
+                                conversion=-1),
+                              Constant(value='/'),
+                              FormattedValue(
+                                value=Name(id='total_enforcements', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' enforcements passed')]),
+                          Name(id='gate_id', ctx=Load())])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='JDEnforcementResult', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='JDEnforcementRule', ctx=Load()),
+                            attr='E15_COMPLETE_AUDIT',
+                            ctx=Load()),
+                          Constant(value=False),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Incomplete audit: '),
+                              FormattedValue(
+                                value=Name(id='total_enforcements', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' checks < 15 enforcements')]),
+                          Name(id='gate_id', ctx=Load())])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforcement_results',
+                    ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDEnforcementResult', ctx=Load()),
+            ctx=Load()))]),
+    Expr(
+      value=UnaryOp(
+        op=USub(),
+        operand=Name(id='e', ctx=Load()))),
+    ClassDef(
+      name='AppTrackerQAValidator',
+      body=[
+        Expr(
+          value=Constant(value='\n    Validates the data for the app_tracker.json file against its schema.\n    This is a specialized schema validation tool that should be separate \n    from resume content validation.\n    (Extracted from validation_RES_v2.py lines 528-708)\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='run_sha',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='actor_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='validator_config',
+                annotation=Name(id='Any', ctx=Load()))],
+            defaults=[
+              Constant(value=''),
+              Constant(value=''),
+              Constant(value=None)]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='validator_config', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='validator_config', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='CONFIG', ctx=Load()),
+                    attr='validator',
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='SCHEMA_FIELDS_V4',
+                  ctx=Store())],
+              value=IfExp(
+                test=Attribute(
+                  value=Name(id='validator_config', ctx=Load()),
+                  attr='app_tracker_schema',
+                  ctx=Load()),
+                body=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='validator_config', ctx=Load()),
+                          attr='app_tracker_schema',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load()))]),
+                orelse=List(ctx=Load()))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='SCHEMA_FIELDS_V4',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='CRITICAL: app_tracker_schema is empty or failed to load. Cannot initialize AppTrackerQAValidator schema.')]))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='PIPELINE_STATUS_ENUM',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='validator_config', ctx=Load()),
+                attr='pipeline_status_enum',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='errors',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='run_sha',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='run_sha', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_generate_sha',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='actor_id',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='actor_id', ctx=Load()),
+                  Constant(value='system')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='timestamp',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())),
+                  attr='isoformat',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='rule_pass_counts',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='rule_fail_counts',
+                  ctx=Store())],
+              value=Dict())]),
+        FunctionDef(
+          name='_validate_string_field',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='idx',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='row',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='field',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='rule_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='error_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='min_length',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='value', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='row', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='field', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='value', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_log_fail',
+                      ctx=Load()),
+                    args=[
+                      Name(id='rule_id', ctx=Load()),
+                      Name(id='idx', ctx=Load()),
+                      Name(id='field', ctx=Load()),
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='error_name', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' name cannot be empty.')]),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Provide valid '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='error_name', ctx=Load()),
+                                attr='lower',
+                                ctx=Load())),
+                            conversion=-1),
+                          Constant(value=' name.')])]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='value', ctx=Load())]),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Name(id='min_length', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_fail',
+                          ctx=Load()),
+                        args=[
+                          Name(id='rule_id', ctx=Load()),
+                          Name(id='idx', ctx=Load()),
+                          Name(id='field', ctx=Load()),
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Name(id='error_name', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' name too short')]),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Provide valid '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='error_name', ctx=Load()),
+                                    attr='lower',
+                                    ctx=Load())),
+                                conversion=-1),
+                              Constant(value=' name ('),
+                              FormattedValue(
+                                value=Name(id='min_length', ctx=Load()),
+                                conversion=-1),
+                              Constant(value='+ chars)')])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_pass',
+                          ctx=Load()),
+                        args=[
+                          Name(id='rule_id', ctx=Load())]))])])]),
+        FunctionDef(
+          name='_generate_sha',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Generates a simple SHA for the run.')),
+            Return(
+              value=Subscript(
+                value=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='hashlib', ctx=Load()),
+                        attr='sha256',
+                        ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=JoinedStr(
+                              values=[
+                                FormattedValue(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Name(id='datetime', ctx=Load()),
+                                          attr='now',
+                                          ctx=Load())),
+                                      attr='isoformat',
+                                      ctx=Load())),
+                                  conversion=-1)]),
+                            attr='encode',
+                            ctx=Load()))]),
+                    attr='hexdigest',
+                    ctx=Load())),
+                slice=Slice(
+                  upper=Constant(value=12)),
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_log_pass',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rule_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Logs a passed rule check.')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rule_pass_counts',
+                    ctx=Load()),
+                  slice=Name(id='rule_id', ctx=Load()),
+                  ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='rule_pass_counts',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='rule_id', ctx=Load()),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Constant(value=1)))]),
+        FunctionDef(
+          name='_log_fail',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rule_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='row_idx',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='field',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='message',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='fix',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Expr(
+              value=Constant(value='Logs a failed rule check.')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rule_fail_counts',
+                    ctx=Load()),
+                  slice=Name(id='rule_id', ctx=Load()),
+                  ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='rule_fail_counts',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='rule_id', ctx=Load()),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Constant(value=1))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='errors',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='row_index'),
+                      Constant(value='field'),
+                      Constant(value='RULE_ID'),
+                      Constant(value='message'),
+                      Constant(value='suggested_fix')],
+                    values=[
+                      Name(id='row_idx', ctx=Load()),
+                      Name(id='field', ctx=Load()),
+                      Name(id='rule_id', ctx=Load()),
+                      Name(id='message', ctx=Load()),
+                      Name(id='fix', ctx=Load())])]))]),
+        FunctionDef(
+          name='_parse_date',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='date_str',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Parses a date string in MM/DD/YYYY format.')),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='date_str', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='date_str', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())))]),
+              body=[
+                Return(
+                  value=Constant(value=None))]),
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='strptime',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='date_str', ctx=Load()),
+                          attr='strip',
+                          ctx=Load())),
+                      Constant(value='%m/%d/%Y')]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ValueError', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Constant(value=None))])])],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='datetime', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_is_valid_url',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='url',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validates a URL format.')),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='url', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='url', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())))]),
+              body=[
+                Return(
+                  value=Constant(value=True))]),
+            Assign(
+              targets=[
+                Name(id='url_pattern', ctx=Store())],
+              value=Constant(value='^https?://[^\\s<>"{}|\\\\^`\\[\\]]+$')),
+            Return(
+              value=Call(
+                func=Name(id='bool', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='match',
+                      ctx=Load()),
+                    args=[
+                      Name(id='url_pattern', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='url', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))])]))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='validate_tracker_data',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tracker_rows',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Dict', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validates a list of app tracker rows.')),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='idx', ctx=Store()),
+                  Name(id='row', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='tracker_rows', ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='list', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='row', ctx=Load()),
+                            attr='keys',
+                            ctx=Load()))]),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='SCHEMA_FIELDS_V4',
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_fail',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R1'),
+                          Name(id='idx', ctx=Load()),
+                          Constant(value='schema'),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Schema fields mismatch at row '),
+                              FormattedValue(
+                                value=Name(id='idx', ctx=Load()),
+                                conversion=-1)]),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Ensure exactly '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='SCHEMA_FIELDS_V4',
+                                      ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' fields in correct order')])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_pass',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R1S')]))])]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='idx', ctx=Store()),
+                  Name(id='row', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='tracker_rows', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_validate_row',
+                      ctx=Load()),
+                    args=[
+                      Name(id='idx', ctx=Load()),
+                      Name(id='row', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='logger', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='checked_rules', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='rule_pass_counts',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load()))]),
+                op=Add(),
+                right=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='rule_fail_counts',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load()))]))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='AppTracker Validation: Checked rules for populated fields: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='sorted', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Name(id='list', ctx=Load()),
+                              args=[
+                                Call(
+                                  func=Name(id='set', ctx=Load()),
+                                  args=[
+                                    Name(id='checked_rules', ctx=Load())])])]),
+                        conversion=-1)])])),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='errors',
+                ctx=Load()),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_generate_blocked_outcome',
+                      ctx=Load())))],
+              orelse=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_generate_passed_outcome',
+                      ctx=Load()),
+                    args=[
+                      Name(id='tracker_rows', ctx=Load())]))])],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_validate_row',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='idx',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='row',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validates a single row of app tracker data.')),
+            Assign(
+              targets=[
+                Name(id='status', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='row', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Pipeline Status'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='status', ctx=Load()),
+                  Compare(
+                    left=Name(id='status', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='PIPELINE_STATUS_ENUM',
+                        ctx=Load())])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_log_fail',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='R2'),
+                      Name(id='idx', ctx=Load()),
+                      Constant(value='Pipeline Status'),
+                      JoinedStr(
+                        values=[
+                          Constant(value="Invalid status '"),
+                          FormattedValue(
+                            value=Name(id='status', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="'")]),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Use one of: '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value=', '),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='PIPELINE_STATUS_ENUM',
+                                  ctx=Load())]),
+                            conversion=-1)])]))],
+              orelse=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='status', ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_fail',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R2'),
+                          Name(id='idx', ctx=Load()),
+                          Constant(value='Pipeline Status'),
+                          Constant(value='Pipeline Status cannot be empty.'),
+                          Constant(value="Should be 'Applied'.")]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_pass',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R2')]))])]),
+            Assign(
+              targets=[
+                Name(id='jd_url', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='row', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='JD URL'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='app_date', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='row', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Application Date'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            If(
+              test=Name(id='app_date', ctx=Load()),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_parse_date',
+                        ctx=Load()),
+                      args=[
+                        Name(id='app_date', ctx=Load())])),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_fail',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R11'),
+                          Name(id='idx', ctx=Load()),
+                          Constant(value='Application Date'),
+                          JoinedStr(
+                            values=[
+                              Constant(value="Invalid date format '"),
+                              FormattedValue(
+                                value=Name(id='app_date', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="'")]),
+                          Constant(value='Use MM/DD/YYYY format')]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_pass',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R11')]))])],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_log_fail',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='R11'),
+                      Name(id='idx', ctx=Load()),
+                      Constant(value='Application Date'),
+                      Constant(value='Application Date cannot be empty.'),
+                      Constant(value='Use MM/DD/YYYY format.')]))]),
+            If(
+              test=Name(id='jd_url', ctx=Load()),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='app_date', ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_fail',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R10'),
+                          Name(id='idx', ctx=Load()),
+                          Constant(value='Application Date'),
+                          Constant(value='Application Date required when JD URL present'),
+                          Constant(value='Add valid MM/DD/YYYY date')]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_parse_date',
+                          ctx=Load()),
+                        args=[
+                          Name(id='app_date', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_log_pass',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='R10')]))])])]),
+            If(
+              test=Name(id='jd_url', ctx=Load()),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_is_valid_url',
+                        ctx=Load()),
+                      args=[
+                        Name(id='jd_url', ctx=Load())])),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_fail',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R17'),
+                          Name(id='idx', ctx=Load()),
+                          Constant(value='JD URL'),
+                          JoinedStr(
+                            values=[
+                              Constant(value="Invalid URL format: '"),
+                              FormattedValue(
+                                value=Name(id='jd_url', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="'")]),
+                          Constant(value='Provide valid HTTP/HTTPS URL')]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_pass',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R17')]))])],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_log_pass',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='R17')]))]),
+            Assign(
+              targets=[
+                Name(id='versioned_resume', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='row', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Versioned Resume'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            If(
+              test=Name(id='versioned_resume', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='filename_pattern', ctx=Store())],
+                  value=Constant(value='^[A-Za-z0-9_\\-]+(\\.(md|pdf|docx|doc))?$')),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='re', ctx=Load()),
+                        attr='match',
+                        ctx=Load()),
+                      args=[
+                        Name(id='filename_pattern', ctx=Load()),
+                        Name(id='versioned_resume', ctx=Load())])),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_fail',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R20'),
+                          Name(id='idx', ctx=Load()),
+                          Constant(value='Versioned Resume'),
+                          JoinedStr(
+                            values=[
+                              Constant(value="Invalid filename format: '"),
+                              FormattedValue(
+                                value=Name(id='versioned_resume', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="'")]),
+                          Constant(value='Use format: Name_Resume_Company_Title (alphanumeric, underscores, hyphens only)')]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_log_pass',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='R20')]))])],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_validate_string_field',
+                      ctx=Load()),
+                    args=[
+                      Name(id='idx', ctx=Load()),
+                      Name(id='row', ctx=Load()),
+                      Constant(value='Versioned Resume'),
+                      Constant(value='R20'),
+                      Constant(value='Versioned Resume filename')],
+                    keywords=[
+                      keyword(
+                        arg='min_length',
+                        value=Constant(value=1))]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_string_field',
+                  ctx=Load()),
+                args=[
+                  Name(id='idx', ctx=Load()),
+                  Name(id='row', ctx=Load()),
+                  Constant(value='Company'),
+                  Constant(value='R21'),
+                  Constant(value='Company')],
+                keywords=[
+                  keyword(
+                    arg='min_length',
+                    value=Constant(value=2))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_string_field',
+                  ctx=Load()),
+                args=[
+                  Name(id='idx', ctx=Load()),
+                  Name(id='row', ctx=Load()),
+                  Constant(value='Job Title'),
+                  Constant(value='R22'),
+                  Constant(value='Job Title')],
+                keywords=[
+                  keyword(
+                    arg='min_length',
+                    value=Constant(value=3))]))]),
+        FunctionDef(
+          name='_generate_passed_outcome',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tracker_rows',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Dict', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generates the result dictionary for a successful validation.')),
+            Assign(
+              targets=[
+                Name(id='status_counts', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Name(id='row', ctx=Store()),
+              iter=Name(id='tracker_rows', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='status', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='row', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='Pipeline Status'),
+                              Constant(value='')]),
+                          attr='strip',
+                          ctx=Load())),
+                      Constant(value='Unknown')])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='status_counts', ctx=Load()),
+                      slice=Name(id='status', ctx=Load()),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='status_counts', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Name(id='status', ctx=Load()),
+                        Constant(value=0)]),
+                    op=Add(),
+                    right=Constant(value=1)))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='result'),
+                  Constant(value='counts_by_rule'),
+                  Constant(value='totals_by_status'),
+                  Constant(value='run_sha'),
+                  Constant(value='actor_id'),
+                  Constant(value='timestamp')],
+                values=[
+                  Constant(value='PASSED'),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rule_pass_counts',
+                    ctx=Load()),
+                  Name(id='status_counts', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='run_sha',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='actor_id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='timestamp',
+                    ctx=Load())]))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_generate_blocked_outcome',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Generates the result dictionary for a failed validation.')),
+            Assign(
+              targets=[
+                Name(id='failure_histogram', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Name(id='error', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='errors',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='rule_id', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='error', ctx=Load()),
+                    slice=Constant(value='RULE_ID'),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='failure_histogram', ctx=Load()),
+                      slice=Name(id='rule_id', ctx=Load()),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='failure_histogram', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Name(id='rule_id', ctx=Load()),
+                        Constant(value=0)]),
+                    op=Add(),
+                    right=Constant(value=1)))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='result'),
+                  Constant(value='errors'),
+                  Constant(value='failure_histogram_by_rule'),
+                  Constant(value='run_sha'),
+                  Constant(value='actor_id'),
+                  Constant(value='timestamp')],
+                values=[
+                  Constant(value='BLOCKED'),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='errors',
+                    ctx=Load()),
+                  Name(id='failure_histogram', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='run_sha',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='actor_id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='timestamp',
+                    ctx=Load())]))],
+          returns=Name(id='Dict', ctx=Load()))])])

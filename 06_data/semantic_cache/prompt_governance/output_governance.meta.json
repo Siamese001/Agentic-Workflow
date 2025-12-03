@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\budget-manager-layer\\act-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\output_governance.yaml",
+    "rel_path": "output_governance.yaml",
+    "root_name": "prompt_governance",
+    "file_hash": "691742d6f0ea4cd1b5d59b619efba7f1e6f37fe38b5ad7cae85efe8e020579d1",
+    "file_size": 14953,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.9570162
+}

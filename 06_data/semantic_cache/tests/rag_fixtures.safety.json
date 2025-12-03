@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 167,
+  "generated_at": 1764728353.7841005,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\budget-manager-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\rag_fixtures.py"
+}

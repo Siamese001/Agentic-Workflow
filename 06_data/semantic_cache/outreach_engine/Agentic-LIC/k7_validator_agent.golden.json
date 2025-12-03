@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Validator agent for outreach drafts.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Mapping\n\nfrom ..qa import MetricsTracker, QAResult, QAValidator\n\n\n@dataclass(frozen=True)\nclass ValidationResult:\n    \"\"\"Outcome of validator execution.\"\"\"\n\n    passed: bool\n    reasons: tuple[str, ...]\n    final_draft: str\n    attempts: int\n    qa_result: QAResult\n\n\nArtifactMap = Mapping[str, str]\n\n\nclass ValidatorAgent:\n    \"\"\"Apply QA rules and perform limited retries to reach a pass state.\"\"\"\n\n    def __init__(self, *, qa_validator: QAValidator | None = None, metrics: MetricsTracker | None = None, max_retries: int = 0) -> None:\n        self.qa_validator = qa_validator or QAValidator()\n        self.metrics = metrics or MetricsTracker()\n        self.max_retries = max(0, int(max_retries))\n\n    def check(self, draft: str, route_decision, pii_map: Dict[str, str], *, artifacts: ArtifactMap | None = None) -> ValidationResult:\n        artifacts = artifac",
+  "full_hash": "07f7888ef3795bbf0e5ce8b76f42125c501e429a27fc80ca43ea33edcc369521",
+  "generated_at": 1764728330.5057154,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k7_validator_agent.py"
+}

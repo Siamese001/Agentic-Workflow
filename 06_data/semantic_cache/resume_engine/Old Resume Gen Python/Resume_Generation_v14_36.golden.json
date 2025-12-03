@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v14.36\n\nAPI Client Initialization Fix: Proper Error Handling for Failed Gemini Client\n\nThis version fixes an AttributeError where code attempted to call methods on a None\nGeminiWebSearchClient. The issue occurred when the GenerativeModel initialization\nfailed but the exception was caught and self.client was set to None, allowing the\nobject to be created in a broken state.\n\nKey Changes from v14.35:\n1. Fixed GeminiWebSearchClient.__init__ to raise exception instead of continuing\n   - Changed line 1698 from setting self.client = None to re-raising exception\n   - Ensures failed initialization prevents object creation\n   - Prevents downstream AttributeError: 'NoneType' object has no attribute 'search_and_analyze'\n2. This allows the proper exception handling in EnhancedJobDescriptionAnalyzer\n   to catch the failure and set self.gemini_client = None appropriately\n\nThe issue manifested as:\n  AttributeError: 'NoneType' object has no attribute 'search_and_analyze'\n  ",
+  "full_hash": "09b7eaf9ab1dde13f5b8b191da7518623b65605aa12b785ec335ada3f952ff72",
+  "generated_at": 1764728283.6630938,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_36.py"
+}

@@ -1,0 +1,1566 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nUnified Multi-Agent Coordination Module (v10_9) — META Layer Only (RESTORED + ENHANCED)\n\nThis module defines the ENTIRE meta-level multi-agent behavior for the\nv10_9 agentic workflow.\n\nIt is strictly **META-ONLY** (Layer above L1–L5):\n\n    ❌ NO L1 cognition\n    ❌ NO L2 execution\n    ❌ NO L3 orchestration / DAG control flow\n    ❌ NO L4 state mutation\n    ❌ NO L5 safety/policy decisions\n\n    ✔️ Provides multi-agent committees (QA council, Safety observers, etc.)\n    ✔️ Normalizes agent roles and graph topologies\n    ✔️ Performs deterministic scoring + voting\n    ✔️ Generates multi-agent surfaces for self-correction\n    ✔️ Produces patch-ready payloads for L4.StateAdapter (but does not mutate)\n    ✔️ Aligns with the new meta_profile layer (typed biases)\n    ✔️ Maximizes 14/14 agentic architecture compliance\n\nThis unifies meta-coordination behavior lost in 10_9 and restores 10_8\nmulti-agent functionality (committee arbitration, QA/Safety mixed panels,\ndelegation metadata, self-correction surfaces).\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='MultiAgentVote'),
+        alias(name='MultiAgentCouncilResult'),
+        alias(name='SelfCorrectionSurface'),
+        alias(name='PlanObject'),
+        alias(name='StatePatch')],
+      level=0),
+    ClassDef(
+      name='AgentRole',
+      body=[
+        Expr(
+          value=Constant(value='\n    Agent role categories. These are NOT executable agents; they purely\n    label advisory components in meta-level councils.\n\n    Each role must own at most 1–2 capabilities to preserve agentic\n    subdomain separation.\n    ')),
+        Assign(
+          targets=[
+            Name(id='PLANNER', ctx=Store())],
+          value=Constant(value='planner')),
+        Assign(
+          targets=[
+            Name(id='RETRIEVER', ctx=Store())],
+          value=Constant(value='retriever')),
+        Assign(
+          targets=[
+            Name(id='DRAFTER', ctx=Store())],
+          value=Constant(value='drafter')),
+        Assign(
+          targets=[
+            Name(id='BULLET', ctx=Store())],
+          value=Constant(value='bullet')),
+        Assign(
+          targets=[
+            Name(id='QA', ctx=Store())],
+          value=Constant(value='qa')),
+        Assign(
+          targets=[
+            Name(id='SAFETY', ctx=Store())],
+          value=Constant(value='safety')),
+        Assign(
+          targets=[
+            Name(id='HIL', ctx=Store())],
+          value=Constant(value='hil')),
+        Assign(
+          targets=[
+            Name(id='META', ctx=Store())],
+          value=Constant(value='meta'))]),
+    ClassDef(
+      name='AgentNode',
+      body=[
+        Expr(
+          value=Constant(value='\n    Static node definition for a meta-agent in a graph.\n    ')),
+        AnnAssign(
+          target=Name(id='role', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='config', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='AgentGraph',
+      body=[
+        Expr(
+          value=Constant(value='\n    Static meta-agent directed graph.\n\n    * nodes: agent_name -> AgentNode\n    * edges: directed edges (advisory flow)\n    ')),
+        AnnAssign(
+          target=Name(id='nodes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='AgentNode', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='edges', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='add_node',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='role',
+                annotation=Name(id='str', ctx=Load()))],
+            kwarg=arg(
+              arg='config',
+              annotation=Name(id='Any', ctx=Load()))),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load()),
+                  slice=Name(id='name', ctx=Load()),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='AgentNode', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role',
+                    value=Name(id='role', ctx=Load())),
+                  keyword(
+                    arg='config',
+                    value=Call(
+                      func=Name(id='dict', ctx=Load()),
+                      args=[
+                        Name(id='config', ctx=Load())]))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='add_edge',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='source',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='edges',
+                        ctx=Load()),
+                      attr='setdefault',
+                      ctx=Load()),
+                    args=[
+                      Name(id='source', ctx=Load()),
+                      List(ctx=Load())]),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='target', ctx=Load())]))],
+          returns=Constant(value=None))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='summarize_graph',
+      args=arguments(
+        args=[
+          arg(
+            arg='graph',
+            annotation=Name(id='AgentGraph', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Pure-data summary for telemetry.')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='nodes'),
+              Constant(value='edges'),
+              Constant(value='metadata')],
+            values=[
+              DictComp(
+                key=Name(id='name', ctx=Load()),
+                value=Dict(
+                  keys=[
+                    Constant(value='role'),
+                    Constant(value='config')],
+                  values=[
+                    Attribute(
+                      value=Name(id='node', ctx=Load()),
+                      attr='role',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='node', ctx=Load()),
+                      attr='config',
+                      ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='name', ctx=Store()),
+                        Name(id='node', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='graph', ctx=Load()),
+                          attr='nodes',
+                          ctx=Load()),
+                        attr='items',
+                        ctx=Load())),
+                    is_async=0)]),
+              DictComp(
+                key=Name(id='src', ctx=Load()),
+                value=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Name(id='tgts', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='src', ctx=Store()),
+                        Name(id='tgts', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='graph', ctx=Load()),
+                          attr='edges',
+                          ctx=Load()),
+                        attr='items',
+                        ctx=Load())),
+                    is_async=0)]),
+              Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='graph', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='COUNCIL_OF_QA', ctx=Store())],
+      value=Call(
+        func=Name(id='AgentGraph', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='nodes',
+            value=Dict(
+              keys=[
+                Constant(value='qa_primary'),
+                Constant(value='qa_secondary'),
+                Constant(value='safety_observer'),
+                Constant(value='meta_observer')],
+              values=[
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='role',
+                      value=Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='QA',
+                        ctx=Load())),
+                    keyword(
+                      arg='config',
+                      value=Dict(
+                        keys=[
+                          Constant(value='id'),
+                          Constant(value='weight'),
+                          Constant(value='tier')],
+                        values=[
+                          Constant(value=1),
+                          Constant(value=1.0),
+                          Constant(value='primary')]))]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='role',
+                      value=Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='QA',
+                        ctx=Load())),
+                    keyword(
+                      arg='config',
+                      value=Dict(
+                        keys=[
+                          Constant(value='id'),
+                          Constant(value='weight'),
+                          Constant(value='tier')],
+                        values=[
+                          Constant(value=2),
+                          Constant(value=0.8),
+                          Constant(value='secondary')]))]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='role',
+                      value=Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='SAFETY',
+                        ctx=Load())),
+                    keyword(
+                      arg='config',
+                      value=Dict(
+                        keys=[
+                          Constant(value='id'),
+                          Constant(value='weight'),
+                          Constant(value='tier')],
+                        values=[
+                          Constant(value=3),
+                          Constant(value=0.6),
+                          Constant(value='observer')]))]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='role',
+                      value=Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='META',
+                        ctx=Load())),
+                    keyword(
+                      arg='config',
+                      value=Dict(
+                        keys=[
+                          Constant(value='id'),
+                          Constant(value='weight'),
+                          Constant(value='tier')],
+                        values=[
+                          Constant(value=4),
+                          Constant(value=0.5),
+                          Constant(value='observer')]))])])),
+          keyword(
+            arg='edges',
+            value=Dict(
+              keys=[
+                Constant(value='qa_primary'),
+                Constant(value='qa_secondary')],
+              values=[
+                List(
+                  elts=[
+                    Constant(value='safety_observer'),
+                    Constant(value='meta_observer')],
+                  ctx=Load()),
+                List(
+                  elts=[
+                    Constant(value='safety_observer'),
+                    Constant(value='meta_observer')],
+                  ctx=Load())])),
+          keyword(
+            arg='metadata',
+            value=Dict(
+              keys=[
+                Constant(value='type'),
+                Constant(value='version')],
+              values=[
+                Constant(value='qa_council'),
+                Constant(value='v10_9_refactored')]))])),
+    FunctionDef(
+      name='_qa_candidate_scores',
+      args=arguments(
+        args=[
+          arg(
+            arg='graph',
+            annotation=Name(id='AgentGraph', ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='plan',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic scoring for each meta-agent in a QA council.\n    Higher score → higher scrutiny / more conservative decision\n    depending on severity and findings.\n    ')),
+        Assign(
+          targets=[
+            Name(id='severity', ctx=Store())],
+          value=Constant(value='normal')),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='plan', ctx=Load()),
+              Name(id='PlanObject', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='severity', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='severity'),
+                          Constant(value='normal')])]),
+                  attr='lower',
+                  ctx=Load())))],
+          orelse=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='severity', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='plan', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='severity'),
+                              Constant(value='normal')])]),
+                      attr='lower',
+                      ctx=Load())))])]),
+        Assign(
+          targets=[
+            Name(id='qa_result', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_result')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='report', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='qa_result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='report')]),
+              Name(id='qa_result', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='report', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='issues'),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='issue_count', ctx=Store())],
+          value=Call(
+            func=Name(id='len', ctx=Load()),
+            args=[
+              Name(id='issues', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='candidates', ctx=Store())],
+          value=List(ctx=Load())),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='node_name', ctx=Store()),
+              Name(id='node', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='graph', ctx=Load()),
+                attr='nodes',
+                ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='node', ctx=Load()),
+                  attr='role',
+                  ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='QA',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='SAFETY',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='META',
+                        ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='node_id', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='id'),
+                      Constant(value=0)])])),
+            Assign(
+              targets=[
+                Name(id='weight', ctx=Store())],
+              value=Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='weight'),
+                      Constant(value=1.0)])])),
+            Assign(
+              targets=[
+                Name(id='tier', ctx=Store())],
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='tier'),
+                      Constant(value='primary')])])),
+            Assign(
+              targets=[
+                Name(id='base', ctx=Store())],
+              value=Constant(value=0.5)),
+            If(
+              test=Compare(
+                left=Name(id='severity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='strict')]),
+              body=[
+                AugAssign(
+                  target=Name(id='base', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.2))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='severity', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='high')]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='base', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=0.1))])]),
+            If(
+              test=Compare(
+                left=Name(id='issue_count', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                AugAssign(
+                  target=Name(id='base', ctx=Store()),
+                  op=Add(),
+                  value=Call(
+                    func=Name(id='min', ctx=Load()),
+                    args=[
+                      Constant(value=0.3),
+                      BinOp(
+                        left=Name(id='issue_count', ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.05))]))]),
+            If(
+              test=Compare(
+                left=Name(id='tier', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='primary')]),
+              body=[
+                AugAssign(
+                  target=Name(id='base', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.05))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='tier', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='secondary')]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='base', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=0.02))])]),
+            AugAssign(
+              target=Name(id='base', ctx=Store()),
+              op=Add(),
+              value=BinOp(
+                left=BinOp(
+                  left=Name(id='node_id', ctx=Load()),
+                  op=Mod(),
+                  right=Constant(value=3)),
+                op=Mult(),
+                right=Constant(value=0.01))),
+            Assign(
+              targets=[
+                Name(id='score', ctx=Store())],
+              value=Call(
+                func=Name(id='round', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='base', ctx=Load()),
+                    op=Mult(),
+                    right=Name(id='weight', ctx=Load())),
+                  Constant(value=3)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='candidates', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='id'),
+                      Constant(value='node_name'),
+                      Constant(value='role'),
+                      Constant(value='tier'),
+                      Constant(value='score'),
+                      Constant(value='rationale')],
+                    values=[
+                      Name(id='node_id', ctx=Load()),
+                      Name(id='node_name', ctx=Load()),
+                      Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='role',
+                        ctx=Load()),
+                      Name(id='tier', ctx=Load()),
+                      Name(id='score', ctx=Load()),
+                      JoinedStr(
+                        values=[
+                          Constant(value='severity='),
+                          FormattedValue(
+                            value=Name(id='severity', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=', issues='),
+                          FormattedValue(
+                            value=Name(id='issue_count', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=', tier='),
+                          FormattedValue(
+                            value=Name(id='tier', ctx=Load()),
+                            conversion=-1)])])]))]),
+        Return(
+          value=Name(id='candidates', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='deterministic_vote',
+      args=arguments(
+        args=[
+          arg(
+            arg='candidates',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Highest score wins; ties broken by lowest agent_id.')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='candidates', ctx=Load())),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='node_name'),
+                  Constant(value='role'),
+                  Constant(value='score'),
+                  Constant(value='rationale')],
+                values=[
+                  Constant(value=0),
+                  Constant(value='none'),
+                  Constant(value='none'),
+                  Constant(value=0.0),
+                  Constant(value='no_candidates')]))]),
+        Assign(
+          targets=[
+            Name(id='sorted_candidates', ctx=Store())],
+          value=Call(
+            func=Name(id='sorted', ctx=Load()),
+            args=[
+              Name(id='candidates', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='c')]),
+                  body=Tuple(
+                    elts=[
+                      UnaryOp(
+                        op=USub(),
+                        operand=Call(
+                          func=Name(id='float', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='c', ctx=Load()),
+                              slice=Constant(value='score'),
+                              ctx=Load())])),
+                      Call(
+                        func=Name(id='int', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='c', ctx=Load()),
+                            slice=Constant(value='id'),
+                            ctx=Load())])],
+                    ctx=Load())))])),
+        Return(
+          value=Subscript(
+            value=Name(id='sorted_candidates', ctx=Load()),
+            slice=Constant(value=0),
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='build_council_result',
+      args=arguments(
+        args=[
+          arg(
+            arg='graph',
+            annotation=Name(id='AgentGraph', ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='plan',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Produce a fully typed MultiAgentCouncilResult for the QA council.\n\n    The council determines:\n        • aggregated_decision (allow / revise / escalate)\n        • aggregated_confidence\n        • individual votes\n        • rationale and metadata\n    ')),
+        Assign(
+          targets=[
+            Name(id='candidates', ctx=Store())],
+          value=Call(
+            func=Name(id='_qa_candidate_scores', ctx=Load()),
+            args=[
+              Name(id='graph', ctx=Load()),
+              Name(id='state', ctx=Load()),
+              Name(id='plan', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='winner', ctx=Store())],
+          value=Call(
+            func=Name(id='deterministic_vote', ctx=Load()),
+            args=[
+              Name(id='candidates', ctx=Load())])),
+        AnnAssign(
+          target=Name(id='votes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='MultiAgentVote', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='c', ctx=Store()),
+          iter=Name(id='candidates', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Subscript(
+                    value=Name(id='c', ctx=Load()),
+                    slice=Constant(value='score'),
+                    ctx=Load()),
+                  ops=[
+                    GtE()],
+                  comparators=[
+                    Constant(value=0.8)]),
+                body=Constant(value='revise'),
+                orelse=Constant(value='allow'))),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='c', ctx=Load()),
+                  slice=Constant(value='role'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='SAFETY',
+                    ctx=Load())]),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=Or(),
+                    values=[
+                      Compare(
+                        left=Constant(value='strict'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Subscript(
+                            value=Name(id='c', ctx=Load()),
+                            slice=Constant(value='rationale'),
+                            ctx=Load())]),
+                      Compare(
+                        left=Constant(value='issues='),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Subscript(
+                            value=Name(id='c', ctx=Load()),
+                            slice=Constant(value='rationale'),
+                            ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='decision', ctx=Store())],
+                      value=Constant(value='escalate'))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='votes', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='MultiAgentVote', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='agent_id',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='c', ctx=Load()),
+                              slice=Constant(value='id'),
+                              ctx=Load())])),
+                      keyword(
+                        arg='decision',
+                        value=Name(id='decision', ctx=Load())),
+                      keyword(
+                        arg='confidence',
+                        value=Call(
+                          func=Name(id='float', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='c', ctx=Load()),
+                              slice=Constant(value='score'),
+                              ctx=Load())])),
+                      keyword(
+                        arg='rationale',
+                        value=Subscript(
+                          value=Name(id='c', ctx=Load()),
+                          slice=Constant(value='rationale'),
+                          ctx=Load())),
+                      keyword(
+                        arg='payload',
+                        value=Dict(
+                          keys=[
+                            Constant(value='node_name'),
+                            Constant(value='role')],
+                          values=[
+                            Subscript(
+                              value=Name(id='c', ctx=Load()),
+                              slice=Constant(value='node_name'),
+                              ctx=Load()),
+                            Subscript(
+                              value=Name(id='c', ctx=Load()),
+                              slice=Constant(value='role'),
+                              ctx=Load())]))])]))]),
+        Assign(
+          targets=[
+            Name(id='winner_vote', ctx=Store())],
+          value=Call(
+            func=Name(id='next', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Name(id='v', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='v', ctx=Store()),
+                    iter=Name(id='votes', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='v', ctx=Load()),
+                          attr='agent_id',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Subscript(
+                                value=Name(id='winner', ctx=Load()),
+                                slice=Constant(value='id'),
+                                ctx=Load())])])],
+                    is_async=0)]),
+              Constant(value=None)])),
+        Assign(
+          targets=[
+            Name(id='aggregated_decision', ctx=Store())],
+          value=IfExp(
+            test=Name(id='winner_vote', ctx=Load()),
+            body=Attribute(
+              value=Name(id='winner_vote', ctx=Load()),
+              attr='decision',
+              ctx=Load()),
+            orelse=Constant(value='allow'))),
+        Assign(
+          targets=[
+            Name(id='aggregated_confidence', ctx=Store())],
+          value=Subscript(
+            value=Name(id='winner', ctx=Load()),
+            slice=Constant(value='score'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='council', ctx=Store())],
+          value=Call(
+            func=Name(id='MultiAgentCouncilResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='votes',
+                value=Name(id='votes', ctx=Load())),
+              keyword(
+                arg='aggregated_decision',
+                value=Name(id='aggregated_decision', ctx=Load())),
+              keyword(
+                arg='aggregated_confidence',
+                value=Name(id='aggregated_confidence', ctx=Load())),
+              keyword(
+                arg='rationale',
+                value=JoinedStr(
+                  values=[
+                    Constant(value='winner='),
+                    FormattedValue(
+                      value=Subscript(
+                        value=Name(id='winner', ctx=Load()),
+                        slice=Constant(value='node_name'),
+                        ctx=Load()),
+                      conversion=-1),
+                    Constant(value='('),
+                    FormattedValue(
+                      value=Subscript(
+                        value=Name(id='winner', ctx=Load()),
+                        slice=Constant(value='role'),
+                        ctx=Load()),
+                      conversion=-1),
+                    Constant(value=') score='),
+                    FormattedValue(
+                      value=Subscript(
+                        value=Name(id='winner', ctx=Load()),
+                        slice=Constant(value='score'),
+                        ctx=Load()),
+                      conversion=-1)])),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='graph'),
+                    Constant(value='severity'),
+                    Constant(value='issue_count')],
+                  values=[
+                    Call(
+                      func=Name(id='summarize_graph', ctx=Load()),
+                      args=[
+                        Name(id='graph', ctx=Load())]),
+                    IfExp(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='plan', ctx=Load()),
+                          Name(id='dict', ctx=Load())]),
+                      body=Call(
+                        func=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='severity')]),
+                      orelse=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='plan', ctx=Load()),
+                          Constant(value='severity'),
+                          Constant(value='normal')])),
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=BoolOp(
+                                  op=Or(),
+                                  values=[
+                                    Call(
+                                      func=Attribute(
+                                        value=Name(id='state', ctx=Load()),
+                                        attr='get',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value='qa_result')]),
+                                    Dict()]),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='report'),
+                                Dict()]),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='issues'),
+                            List(ctx=Load())])])]))])),
+        Return(
+          value=Name(id='council', ctx=Load()))],
+      returns=Name(id='MultiAgentCouncilResult', ctx=Load())),
+    ClassDef(
+      name='MultiAgentOrchestrator',
+      body=[
+        Expr(
+          value=Constant(value='\n    META-layer orchestrator.\n\n    Responsibilities:\n        • Evaluate a meta-agent graph (QA, Safety, Meta councils)\n        • Produce MultiAgentCouncilResult objects\n        • Provide patch-ready payloads for L4 without applying them\n        • Provide synthetic meta-layer messages for logging/prompts\n\n    It MUST NOT:\n        • call L1 planners\n        • call L2 executors\n        • call L3 DAG logic\n        • mutate L4 state directly\n        • make L5 decisions\n    ')),
+        AnnAssign(
+          target=Name(id='graph', ctx=Store()),
+          annotation=Name(id='AgentGraph', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='state_adapter', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='_plan_dict',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='PlanObject', ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='to_dict',
+                      ctx=Load())))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Name(id='plan', ctx=Load())]))]),
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='vars', ctx=Load()),
+                        args=[
+                          Name(id='plan', ctx=Load())])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='repr')],
+                        values=[
+                          Call(
+                            func=Name(id='repr', ctx=Load()),
+                            args=[
+                              Name(id='plan', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_synthetic_message_for_qa',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='p', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_plan_dict',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load())])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='content')],
+                values=[
+                  Constant(value='system'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='QA council evaluation for L1 objective: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='p', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='objective'),
+                            Constant(value='unknown-objective')]),
+                        conversion=-1),
+                      Constant(value='; severity='),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='p', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='severity'),
+                            Constant(value='normal')]),
+                        conversion=-1)])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='dispatch_for_qa',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='plan',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Execute the QA council and produce an L4-patch-ready payload:\n\n            {"multi_agent": {"qa_council": {...}}}\n        ')),
+            Assign(
+              targets=[
+                Name(id='synthetic_msg', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_synthetic_message_for_qa',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='council', ctx=Store())],
+              value=Call(
+                func=Name(id='build_council_result', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='graph',
+                    ctx=Load()),
+                  Name(id='state', ctx=Load()),
+                  Name(id='plan', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='surfaces', ctx=Store())],
+              value=List(
+                elts=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                      attr='QA_RECHECK',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                      attr='SAFETY_RISK',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                      attr='USER_FEEDBACK',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load())],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='payload', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='synthetic_message'),
+                  Constant(value='council'),
+                  Constant(value='surfaces')],
+                values=[
+                  Name(id='synthetic_msg', ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='votes'),
+                      Constant(value='aggregated_decision'),
+                      Constant(value='aggregated_confidence'),
+                      Constant(value='rationale')],
+                    values=[
+                      ListComp(
+                        elt=Attribute(
+                          value=Name(id='v', ctx=Load()),
+                          attr='__dict__',
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='v', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='council', ctx=Load()),
+                              attr='votes',
+                              ctx=Load()),
+                            is_async=0)]),
+                      Attribute(
+                        value=Name(id='council', ctx=Load()),
+                        attr='aggregated_decision',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='council', ctx=Load()),
+                        attr='aggregated_confidence',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='council', ctx=Load()),
+                        attr='rationale',
+                        ctx=Load())]),
+                  Name(id='surfaces', ctx=Load())])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='multi_agent')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='qa_council')],
+                    values=[
+                      Name(id='payload', ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='build_patch_for_block',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='council_result',
+                annotation=Name(id='MultiAgentCouncilResult', ctx=Load()))],
+            kwonlyargs=[
+              arg(
+                arg='reason',
+                annotation=Name(id='str', ctx=Load()))],
+            kw_defaults=[
+              None]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Build a meta-layer patch-ready payload for block/escalation cases.\n        ')),
+            Assign(
+              targets=[
+                Name(id='payload', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='blocked'),
+                  Constant(value='reason'),
+                  Constant(value='aggregated_decision'),
+                  Constant(value='aggregated_confidence'),
+                  Constant(value='votes')],
+                values=[
+                  Constant(value=True),
+                  Name(id='reason', ctx=Load()),
+                  Attribute(
+                    value=Name(id='council_result', ctx=Load()),
+                    attr='aggregated_decision',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='council_result', ctx=Load()),
+                    attr='aggregated_confidence',
+                    ctx=Load()),
+                  ListComp(
+                    elt=Attribute(
+                      value=Name(id='v', ctx=Load()),
+                      attr='__dict__',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='v', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='council_result', ctx=Load()),
+                          attr='votes',
+                          ctx=Load()),
+                        is_async=0)])])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='multi_agent')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='qa_block')],
+                    values=[
+                      Name(id='payload', ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Return pure-data description of this orchestrator (meta-only).\n        ')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='graph'),
+                  Constant(value='has_state_adapter')],
+                values=[
+                  Call(
+                    func=Name(id='summarize_graph', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='graph',
+                        ctx=Load())]),
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='state_adapter',
+                      ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

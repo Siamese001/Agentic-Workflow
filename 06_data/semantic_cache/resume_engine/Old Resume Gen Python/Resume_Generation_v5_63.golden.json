@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.63 - QA DISCONNECTION FIX\n\nv5.63 CRITICAL PATCH: Reconnect QA Sections 4 & 5 (Similarity Analysis)\n\nISSUES FIXED:\n\u2705 Section 4: AI Detection Defense - K.5B vs K.6B Overview-to-Bullet Similarity\n\u2705 Section 5: Deduplication Matrix - 78-Check Pairwise Similarity Analysis\n\nROOT CAUSE:\n- DuplicateDetector instance created in HOP-2 but never retained\n- Similarity computation methods never invoked during pipeline\n- Results never stored on WorkflowOrchestrator instance\n- QA report generation fails to find data attributes\n\nSOLUTION:\n1. Store DuplicateDetector on orchestrator instance (self.dup_detector)\n2. Invoke _invoke_deduplication_analysis() post-HOP-7, pre-HOP-8\n3. Store results: self.similarity_matrix_data, self.overview_similarity_data\n4. QA report generation now successfully accesses stored attributes\n\nBACKWARD COMPATIBILITY: \u2713 FULL - No breaking changes to v5.62\nPERFORMANCE IMPACT: ~2-5% additional overhead (similarity matrix computation)\nTESTING: Unit + I",
+  "full_hash": "1672ec9c78020ec1094b441fec9813feaa1ce1c755c6702ee3f98cd53a0747fd",
+  "generated_at": 1764728308.3725903,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_63.py"
+}

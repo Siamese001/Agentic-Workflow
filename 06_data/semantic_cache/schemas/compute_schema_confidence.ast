@@ -1,0 +1,174 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema confidence computation and scoring.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ConfidenceMetric',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Confidence computation metrics.')),
+        Assign(
+          targets=[
+            Name(id='STATISTICAL', ctx=Store())],
+          value=Constant(value='statistical')),
+        Assign(
+          targets=[
+            Name(id='HEURISTIC', ctx=Store())],
+          value=Constant(value='heuristic')),
+        Assign(
+          targets=[
+            Name(id='ENSEMBLE', ctx=Store())],
+          value=Constant(value='ensemble')),
+        Assign(
+          targets=[
+            Name(id='BAYESIAN', ctx=Store())],
+          value=Constant(value='bayesian'))]),
+    ClassDef(
+      name='ConfidenceLevel',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Confidence level classifications.')),
+        Assign(
+          targets=[
+            Name(id='VERY_LOW', ctx=Store())],
+          value=Constant(value='very_low')),
+        Assign(
+          targets=[
+            Name(id='LOW', ctx=Store())],
+          value=Constant(value='low')),
+        Assign(
+          targets=[
+            Name(id='MEDIUM', ctx=Store())],
+          value=Constant(value='medium')),
+        Assign(
+          targets=[
+            Name(id='HIGH', ctx=Store())],
+          value=Constant(value='high')),
+        Assign(
+          targets=[
+            Name(id='VERY_HIGH', ctx=Store())],
+          value=Constant(value='very_high'))]),
+    ClassDef(
+      name='ConfidenceConfiguration',
+      body=[
+        Expr(
+          value=Constant(value='Schema for confidence computation configuration.')),
+        AnnAssign(
+          target=Name(id='metric', ctx=Store()),
+          annotation=Name(id='ConfidenceMetric', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='threshold_levels', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='ConfidenceLevel', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_uncertainty', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_interval', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.95),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ConfidenceScore',
+      body=[
+        Expr(
+          value=Constant(value='Schema for confidence score representation.')),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_value', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_level', ctx=Store()),
+          annotation=Name(id='ConfidenceLevel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='uncertainty_estimate', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='contributing_factors', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ConfidenceComputationBatch',
+      body=[
+        Expr(
+          value=Constant(value='Schema for batch confidence computation results.')),
+        AnnAssign(
+          target=Name(id='batch_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ConfidenceScore', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='configuration', ctx=Store()),
+          annotation=Name(id='ConfidenceConfiguration', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='computation_statistics', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

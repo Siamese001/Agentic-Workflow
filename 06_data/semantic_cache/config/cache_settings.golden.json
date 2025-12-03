@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n    \"python.testing.pytestEnabled\": true,\n    \"python.testing.pytestArgs\": [\n        \"tests\"\n    ],\n    \"python.testing.unittestEnabled\": false\n}\n",
+  "full_hash": "bb20d90ba3427a99983274d7248d4ba5b857fbf46cb096d32b9d876f77165188",
+  "generated_at": 1764728348.5956037,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\cache_settings.yaml"
+}

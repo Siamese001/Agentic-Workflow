@@ -1,0 +1,181 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema component ranking and ordering.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='RankingCriterion',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Component ranking criteria.')),
+        Assign(
+          targets=[
+            Name(id='RELEVANCE', ctx=Store())],
+          value=Constant(value='relevance')),
+        Assign(
+          targets=[
+            Name(id='CONFIDENCE', ctx=Store())],
+          value=Constant(value='confidence')),
+        Assign(
+          targets=[
+            Name(id='COMPLEXITY', ctx=Store())],
+          value=Constant(value='complexity')),
+        Assign(
+          targets=[
+            Name(id='PERFORMANCE', ctx=Store())],
+          value=Constant(value='performance')),
+        Assign(
+          targets=[
+            Name(id='COMPLETENESS', ctx=Store())],
+          value=Constant(value='completeness'))]),
+    ClassDef(
+      name='RankingMethod',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Ranking computation methods.')),
+        Assign(
+          targets=[
+            Name(id='WEIGHTED_SUM', ctx=Store())],
+          value=Constant(value='weighted_sum')),
+        Assign(
+          targets=[
+            Name(id='PARETO_OPTIMAL', ctx=Store())],
+          value=Constant(value='pareto_optimal')),
+        Assign(
+          targets=[
+            Name(id='MULTI_CRITERIA', ctx=Store())],
+          value=Constant(value='multi_criteria')),
+        Assign(
+          targets=[
+            Name(id='HIERARCHICAL', ctx=Store())],
+          value=Constant(value='hierarchical'))]),
+    ClassDef(
+      name='RankingConfiguration',
+      body=[
+        Expr(
+          value=Constant(value='Schema for ranking configuration.')),
+        AnnAssign(
+          target=Name(id='method', ctx=Store()),
+          annotation=Name(id='RankingMethod', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='criteria', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RankingCriterion', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='weights', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='RankingCriterion', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_results', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=10),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tie_breaker', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='RankingCriterion', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ComponentRank',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual component rank.')),
+        AnnAssign(
+          target=Name(id='component_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rank_position', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='criterion_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='RankingCriterion', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='ranking_metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RankingResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for complete ranking results.')),
+        AnnAssign(
+          target=Name(id='ranking_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='ranked_components', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ComponentRank', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='configuration', ctx=Store()),
+          annotation=Name(id='RankingConfiguration', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='ranking_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

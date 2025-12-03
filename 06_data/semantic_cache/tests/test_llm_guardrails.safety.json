@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 38,
+  "generated_at": 1764728354.0515409,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\l5_safety\\rules\\router-microagent-layer\\validate-phase-group\\state-management-ops\\test_llm_guardrails.py"
+}

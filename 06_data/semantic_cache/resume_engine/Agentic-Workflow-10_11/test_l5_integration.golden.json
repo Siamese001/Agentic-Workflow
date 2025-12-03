@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L5 Safety Policy Layer Integration Tests.\"\"\"\n\nclass TestL5SafetyIntegration:\n    \"\"\"Integration tests for L5 safety policy layer.\"\"\"\n    \n    def test_policy_enforcement_flow(self):\n        \"\"\"Test policy enforcement flow.\"\"\"\n        assert True\n    \n    def test_safety_validation_chain(self):\n        \"\"\"Test safety validation chain.\"\"\"\n        assert True\n",
+  "full_hash": "3687bd27eb863fb2d37996b37abd0285d2dbc163a53f7d9e271c2cd5019ed4df",
+  "generated_at": 1764728227.1996574,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L5_safety_policy\\integration\\test_l5_integration.py"
+}

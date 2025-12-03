@@ -1,0 +1,6 @@
+{
+  "golden_content": "===============================================================================\nLINKEDIN OUTREACH - CANONICAL (Zero-Loss Overwrite, GPT-5 Runner with Router)\nVersion: 2025-09-05 v2.3.2\n===============================================================================\n\n# SUMMARY\n- Full router with NEW vs EXISTING and SINGLE vs MULTIPLE batching.\n- NEW:\n  \u2022 If Premium InMail is explicitly confirmed via the Operator Prompt Shell (3A) \u2192 route to a full-message shell (Recruiter or Contact or Executive per seniority).\n  \u2022 If Premium is explicitly NO (or unknown) \u2192 route to Short (NEW) connection message.\n- Short (NEW) uses Light RAG to align to \u226412-month company imperatives; strict 290\u2013310 counter; abbreviations required; no subject.\n- Full-message shells (rows 2\u20137) are standardized and laddered:\n  \u2022 All require a Capability Frame + three measurable bullets + explicit ask.\n  \u2022 Contact adds two tactical insights (Light RAG).\n  \u2022 Executive adds two strategic insights (Robust RAG) + one named tact",
+  "full_hash": "769166f98b4805db996900a84e4ea37aebaa187fc280282d5ed882bdaa2c0488",
+  "generated_at": 1764728340.0131397,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-04 v2.3.2.md"
+}

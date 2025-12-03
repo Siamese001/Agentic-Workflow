@@ -1,0 +1,32 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Compatibility layer that re-exports stack agents for v10.7.')),
+    ImportFrom(
+      module='stacks_v10_7',
+      names=[
+        alias(name='*')],
+      level=0),
+    ImportFrom(
+      module='stacks_v10_7',
+      names=[
+        alias(name='__all__', asname='_STACK_EXPORTS')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='wrap_mcp')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=BinOp(
+        left=Call(
+          func=Name(id='list', ctx=Load()),
+          args=[
+            Name(id='_STACK_EXPORTS', ctx=Load())]),
+        op=Add(),
+        right=List(
+          elts=[
+            Constant(value='wrap_mcp')],
+          ctx=Load())))])

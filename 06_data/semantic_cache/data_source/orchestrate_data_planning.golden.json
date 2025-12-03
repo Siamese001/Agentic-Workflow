@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - orchestrate_data_planning\nImplements L1 Cognitive Planning Layer for orchestrate data planning operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass OrchestrateDataPlanningOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass OrchestrateDataPlanningOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass OrchestrateDataPlanningOrchestratorResult:\n    \"\"\"L5 Result struc",
+  "full_hash": "3fc3bffe7e86552199235e15fb82cd9de1692a4e60221b1f5478c7d70f1d6bd8",
+  "generated_at": 1764728349.7583182,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\orc-layer\\plan-phase\\get-data-info\\general\\understand-request\\orchestrate_data_planning.py"
+}

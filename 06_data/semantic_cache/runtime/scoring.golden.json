@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Golden Scoring Tests.\"\"\"\n\nclass TestGoldenScoring:\n    \"\"\"Tests for golden scoring.\"\"\"\n    \n    def test_quality_score_calculation(self):\n        \"\"\"Test quality score calculation.\"\"\"\n        scores = [0.85, 0.90, 0.88, 0.92]\n        avg_score = sum(scores) / len(scores)\n        assert avg_score > 0.8\n    \n    def test_keyword_match_scoring(self):\n        \"\"\"Test keyword match scoring.\"\"\"\n        expected = [\"python\", \"aws\", \"docker\"]\n        actual = [\"python\", \"aws\", \"kubernetes\"]\n        matches = len(set(expected) & set(actual))\n        score = matches / len(expected)\n        assert score > 0.5\n",
+  "full_hash": "b4d345e9d4bbc4022de685433ead6d6ab2c50c669bd48f968397ae7ab68cf608",
+  "generated_at": 1764728347.6929543,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\retriever-microagent-layer\\rank-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\scoring.py"
+}

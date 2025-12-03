@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: config_LIC.py\n# Description: Configuration registry for the LIC workflow.\n\n__version__ = \"12.0\"\n# Holds all static configs for routes, archetypes, RAG, and reasoning.\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List, Any, Optional\n\nfrom models_LIC import Route, Archetype\n\n# ============================================================================\n# PRIORITY 2: GLOBAL CONSTRAINTS SSOT WITH API ACCESS LAYER\n# ============================================================================\n\n@dataclass\nclass ConfigRegistry:\n    \"\"\"\n    v11.5: Single Source of Truth for ALL configuration parameters\n    v11.6: Updated for 4-archetype standard\n    v11.10: Prompts (CTA_TEMPLATES, ARCHETYPE_PROMPT_TEMPLATES) moved to prompts.py\n    \n    This registry is data-only and contains no logic or mocked implementations.\n    All parameters are production-ready values derived from testing.\n    \"\"\"\n    \n    # Route-specific base constraints\n    ROUTE_CONSTRAINTS: Dict[Route, D",
+  "full_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+  "generated_at": 1764728340.9935777,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\config_LIC.py"
+}

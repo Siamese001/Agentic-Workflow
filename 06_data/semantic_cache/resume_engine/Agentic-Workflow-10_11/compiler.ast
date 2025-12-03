@@ -1,0 +1,159 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nCMS compiler for resume generation prompt compilation.\n\nProvides prompt compilation functionality to ensure consistent\nresume improvement and job alignment.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional')],
+      level=0),
+    FunctionDef(
+      name='compile_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Compiles prompt template for resume generation.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='context', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Dict())]),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prompt', ctx=Load()),
+                  attr='format',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Name(id='context', ctx=Load()))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='KeyError', ctx=Load()),
+              name='e',
+              body=[
+                Return(
+                  value=Name(id='prompt', ctx=Load()))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Return(
+                  value=Name(id='prompt', ctx=Load()))])])],
+      returns=Name(id='str', ctx=Load())),
+    ClassDef(
+      name='PromptCompiler',
+      body=[
+        Expr(
+          value=Constant(value='\n    CMS prompt compiler for resume generation.\n\n    Ensures consistent prompt compilation for improved resume\n    quality and job alignment.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='default_context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='default_context',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='default_context', ctx=Load()),
+                  Dict()]))]),
+        FunctionDef(
+          name='compile',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Compiles prompt with merged context for resume generation.')),
+            Assign(
+              targets=[
+                Name(id='merged_context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  None,
+                  None],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='default_context',
+                    ctx=Load()),
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='context', ctx=Load()),
+                      Dict()])])),
+            Return(
+              value=Call(
+                func=Name(id='compile_prompt', ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load()),
+                  Name(id='merged_context', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load()))])])

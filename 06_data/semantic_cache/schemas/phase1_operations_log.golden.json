@@ -1,0 +1,6 @@
+{
+  "golden_content": "[\n  {\n    \"iteration\": 0,\n    \"operation\": \"CREATE_TEMP_WORKSPACE\",\n    \"path\": \"C:/Users/amita/AppData/Local/Temp/phase1\",\n    \"details\": \"\"\n  }\n]",
+  "full_hash": "c410eeb95bcff418fd845b0db9ceddd92d8c9f680c6076b40a17d885cebd5bf4",
+  "generated_at": 1764728345.6664634,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\phase1_operations_log.json"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import json\n\nimport pytest\n\nfrom agent_stacks_v10_8 import (\n    BulletExecutionStack,\n    HILStackV10_8,\n    SafetyStackV10_8,\n)\nfrom stacks_v10_8.drafting_execution import DraftingExecutionStack\n\n\n@pytest.mark.asyncio\nasync def test_bullet_generation_helper_matches_node_inputs(workflow_context, monkeypatch):\n    state = {\n        \"metadata\": {\"workflow_id\": \"wf-helpers\"},\n        \"prompts\": {\"prompts\": {\"bullet_generation_prompt\": \"Write impact bullets\"}},\n        \"resume\": {\n            \"experience_bullets\": [\n                {\"id\": \"exp-1\"},\n                {\"id\": \"exp-2\"},\n                {\"id\": \"exp-3\"},\n                {\"id\": \"exp-4\"},\n            ]\n        },\n        \"strategy\": {\n            \"strategy_plan\": {\n                \"strategy_name\": \"default\",\n                \"focus_areas\": [\"impact\"],\n                \"key_achievements_to_highlight\": [\"growth\"],\n                \"tone\": \"bold\",\n            }\n        },\n    }\n    stack = BulletExecutionStack(workflow_context)\n    captu",
+  "full_hash": "448af1972c34fb6c8e6d1a5852cd3f7f3c6d33c017527bf8db1d434d7f269fa8",
+  "generated_at": 1764728230.7704382,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\stacks\\test_stack_node_equivalence_v10_7.py"
+}

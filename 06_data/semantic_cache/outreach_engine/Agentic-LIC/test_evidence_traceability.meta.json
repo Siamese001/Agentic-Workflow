@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_evidence_traceability.py",
+    "rel_path": "test_evidence_traceability.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "54b387af3c53efb1811e5ca447b06487979a4d268ea76127d14a8dee6f68f896",
+    "file_size": 532,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.9324143
+}

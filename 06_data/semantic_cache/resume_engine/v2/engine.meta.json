@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v2\\engine.py",
+    "rel_path": "engine.py",
+    "root_name": "resume_engine/v2",
+    "file_hash": "f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1",
+    "file_size": 5388,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728326.9856777
+}

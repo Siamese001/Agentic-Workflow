@@ -1,0 +1,150 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema embedding computation and vectorization.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='EmbeddingModel',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Available embedding model types.')),
+        Assign(
+          targets=[
+            Name(id='TRANSFORMER_SMALL', ctx=Store())],
+          value=Constant(value='transformer_small')),
+        Assign(
+          targets=[
+            Name(id='TRANSFORMER_MEDIUM', ctx=Store())],
+          value=Constant(value='transformer_medium')),
+        Assign(
+          targets=[
+            Name(id='TRANSFORMER_LARGE', ctx=Store())],
+          value=Constant(value='transformer_large')),
+        Assign(
+          targets=[
+            Name(id='CUSTOM', ctx=Store())],
+          value=Constant(value='custom'))]),
+    ClassDef(
+      name='VectorNormalization',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Vector normalization methods.')),
+        Assign(
+          targets=[
+            Name(id='NONE', ctx=Store())],
+          value=Constant(value='none')),
+        Assign(
+          targets=[
+            Name(id='L2', ctx=Store())],
+          value=Constant(value='l2')),
+        Assign(
+          targets=[
+            Name(id='L1', ctx=Store())],
+          value=Constant(value='l1')),
+        Assign(
+          targets=[
+            Name(id='MAX', ctx=Store())],
+          value=Constant(value='max'))]),
+    ClassDef(
+      name='EmbeddingConfiguration',
+      body=[
+        Expr(
+          value=Constant(value='Schema for embedding computation configuration.')),
+        AnnAssign(
+          target=Name(id='model', ctx=Store()),
+          annotation=Name(id='EmbeddingModel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='normalization', ctx=Store()),
+          annotation=Name(id='VectorNormalization', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dimensions', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='batch_size', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=32),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_metadata', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SchemaEmbedding',
+      body=[
+        Expr(
+          value=Constant(value='Schema for computed schema embedding.')),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='embedding_vector', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_used', ctx=Store()),
+          annotation=Name(id='EmbeddingModel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='computation_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='EmbeddingBatch',
+      body=[
+        Expr(
+          value=Constant(value='Schema for batch embedding results.')),
+        AnnAssign(
+          target=Name(id='batch_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='embeddings', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SchemaEmbedding', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='configuration', ctx=Store()),
+          annotation=Name(id='EmbeddingConfiguration', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='processing_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

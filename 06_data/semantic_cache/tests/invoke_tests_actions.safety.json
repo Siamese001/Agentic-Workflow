@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728354.254163,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\orc-layer\\act-phase\\use-tests-tools\\general\\use-a-tool\\invoke_tests_actions.py"
+}

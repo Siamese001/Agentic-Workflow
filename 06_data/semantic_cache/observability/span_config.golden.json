@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\n\nclass SafetyProfile(BaseModel):\n    \"\"\"Safety configuration profile used by execution profiles.\n\n    This is intentionally string/primitive based to avoid cycles and\n    mirrors the SafetyTier + policy toggles used in ExecutionProfileSpec.\n    \"\"\"\n\n    safety_tier: str = Field(default=\"standard\", description=\"Safety tier: standard | strict | relaxed | debug\")\n    pii_detection_enabled: bool = True\n    policy_engine_enabled: bool = True\n\n\n\n",
+  "full_hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
+  "generated_at": 1764728351.6504264,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\safety-guard-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\span_config.py"
+}

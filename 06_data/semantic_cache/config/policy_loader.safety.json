@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 30,
+  "generated_at": 1764728348.5087073,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\loaders\\Config_loaders_for_runtime\\router-microagent-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\policy_loader.py"
+}

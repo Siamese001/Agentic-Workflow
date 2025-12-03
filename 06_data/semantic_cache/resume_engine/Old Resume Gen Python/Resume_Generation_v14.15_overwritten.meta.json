@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14.15_overwritten.py",
+    "rel_path": "Resume_Generation_v14.15_overwritten.py",
+    "root_name": "resume_engine/Old Resume Gen Python",
+    "file_hash": "9e2e4a403a204d95c76e3ef61684297613c967ed5eea90cdaa86e31d760bdd52",
+    "file_size": 225,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728265.8876636
+}

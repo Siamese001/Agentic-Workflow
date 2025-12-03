@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\safety_stack.py",
+    "rel_path": "safety_stack.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "b021c776ac56e912ac16ba6227b282af2dda69ef7e3469d685f93d303ec72343",
+    "file_size": 3263,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728230.0700457
+}

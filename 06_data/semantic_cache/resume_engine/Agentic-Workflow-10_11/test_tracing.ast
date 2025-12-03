@@ -1,0 +1,52 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Observability Tracing Tests.')),
+    ClassDef(
+      name='TestTracing',
+      body=[
+        Expr(
+          value=Constant(value='Tests for observability tracing.')),
+        FunctionDef(
+          name='test_trace_span_creation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test trace span creation.')),
+            Assign(
+              targets=[
+                Name(id='span', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='start_time'),
+                  Constant(value='end_time')],
+                values=[
+                  Constant(value='test_span'),
+                  Constant(value=0),
+                  Constant(value=100)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='span', ctx=Load()),
+                  slice=Constant(value='name'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_span')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='span', ctx=Load()),
+                  slice=Constant(value='end_time'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='span', ctx=Load()),
+                    slice=Constant(value='start_time'),
+                    ctx=Load())]))])])])

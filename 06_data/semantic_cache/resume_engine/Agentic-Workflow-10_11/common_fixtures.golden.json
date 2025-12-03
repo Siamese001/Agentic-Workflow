@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Common Shared Fixtures.\"\"\"\nimport pytest\n\n@pytest.fixture\ndef mock_workflow_context():\n    \"\"\"Fixture providing mock workflow context.\"\"\"\n    return {\n        \"workflow_id\": \"wf_001\",\n        \"user_id\": \"user_001\",\n        \"session_id\": \"session_001\",\n        \"profile_name\": \"default\",\n    }\n\n@pytest.fixture\ndef mock_agent_config():\n    \"\"\"Fixture providing mock agent configuration.\"\"\"\n    return {\n        \"agent_id\": \"agent_001\",\n        \"type\": \"planner\",\n        \"model_tier\": \"balanced\",\n        \"max_tokens\": 4096,\n    }\n",
+  "full_hash": "17b94d3341c5404d7407f2fc11b2b76464c7d4353f3187f352ac6770d46ff203",
+  "generated_at": 1764728227.5509386,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\fixtures\\common_fixtures.py"
+}

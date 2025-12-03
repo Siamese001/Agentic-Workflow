@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import Any, List\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef generate_initial_hypotheses(task: str, rag_result: Any, agent_card: Any) -> List[Hypothesis]:\n    \"\"\"Generate a small set of coarse hypotheses from task + RAG.\n\n    This implementation is deterministic and uses only cheap heuristics:\n    - if there is any evidence, we create 1\u20133 simple hypotheses whose\n      confidence is proportional to the number of evidence items.\n    - if no evidence is present, we still produce a single low-confidence\n      hypothesis so downstream code has something to inspect.\n    \"\"\"\n\n    evidence = getattr(rag_result, \"evidence\", []) or []\n    evidence_ids = [str(i) for i in range(len(evidence))]\n    count = len(evidence)\n\n    base_conf = 0.2 if count == 0 else min(1.0, 0.3 + 0.1 * count)\n\n    hypotheses: List[Hypothesis] = []\n    # Primary hypothesis: task is achievable with current evidence.\n    hypotheses.append(\n        Hypothesis(\n     ",
+  "full_hash": "d4a76fa26d94a268b83ea385828b6da9f19fcc9e0035d13daf088f5a4f3d7e75",
+  "generated_at": 1764728347.6390502,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\planner-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\hypothesis.py"
+}

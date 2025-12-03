@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-12_v2.0.md",
+    "rel_path": "LIC_2025-09-12_v2.0.md",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "23f3ae92d54c4039d7ab0e010ae3fc980e725a74cccd9ec90abc4f3e17e11696",
+    "file_size": 20009,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728337.1842275
+}

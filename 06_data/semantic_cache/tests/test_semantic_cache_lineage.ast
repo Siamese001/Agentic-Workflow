@@ -1,0 +1,2671 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest suite for semantic cache lineage and merge operations\n\nTests lineage chain building, semantic diff generation, and cross-version analysis\nfor both Resume Engine (RG) and Outreach Engine (LIC) engines.\n')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Import(
+      names=[
+        alias(name='tempfile')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='project_root', ctx=Store())],
+      value=Attribute(
+        value=Attribute(
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Name(id='__file__', ctx=Load())]),
+          attr='parent',
+          ctx=Load()),
+        attr='parent',
+        ctx=Load())),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='schemas'))])])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='runtime'))])])),
+    ImportFrom(
+      module='semantic_lineage',
+      names=[
+        alias(name='EngineType'),
+        alias(name='SemanticDiff'),
+        alias(name='ASTSignature'),
+        alias(name='FileSignature'),
+        alias(name='FileExtension')],
+      level=0),
+    ImportFrom(
+      module='semantic_lineage_merge',
+      names=[
+        alias(name='VersionInfo'),
+        alias(name='SemanticDiffer'),
+        alias(name='LineageChain'),
+        alias(name='LineageMergeProcessor')],
+      level=0),
+    ClassDef(
+      name='TestVersionInfo',
+      body=[
+        Expr(
+          value=Constant(value='Test version parsing and ordering')),
+        FunctionDef(
+          name='test_numeric_version_parsing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test parsing of numeric versions')),
+            Assign(
+              targets=[
+                Name(id='test_cases', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='v2'),
+                      Constant(value=2.0)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='v6.0'),
+                      Constant(value=6.0)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='v10.7'),
+                      Constant(value=10.7)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='v123.456'),
+                      Constant(value=123.456)],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='version_str', ctx=Store()),
+                  Name(id='expected_number', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='test_cases', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='version_info', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='VersionInfo', ctx=Load()),
+                      attr='from_string',
+                      ctx=Load()),
+                    args=[
+                      Name(id='version_str', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_string',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='version_str', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_number',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='expected_number', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='numeric')])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='version_info', ctx=Load()),
+                        attr='sort_key',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)]))])]),
+        FunctionDef(
+          name='test_semantic_version_parsing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test parsing of semantic versions')),
+            Assign(
+              targets=[
+                Name(id='test_cases', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='10_11'),
+                      Constant(value=10.11)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='10_10'),
+                      Constant(value=10.1)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='9_0'),
+                      Constant(value=9.0)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='1_0'),
+                      Constant(value=1.0)],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='version_str', ctx=Store()),
+                  Name(id='expected_number', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='test_cases', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='version_info', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='VersionInfo', ctx=Load()),
+                      attr='from_string',
+                      ctx=Load()),
+                    args=[
+                      Name(id='version_str', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_string',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='version_str', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_number',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='expected_number', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='semantic')])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='version_info', ctx=Load()),
+                        attr='sort_key',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)]))])]),
+        FunctionDef(
+          name='test_named_version_parsing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test parsing of named versions')),
+            Assign(
+              targets=[
+                Name(id='test_cases', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='Monolithic'),
+                      Constant(value=1)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='Monolith'),
+                      Constant(value=2)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='Agentic-Workflow-10_11'),
+                      Constant(value=9)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='Agentic LIC'),
+                      Constant(value=12)],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='version_str', ctx=Store()),
+                  Name(id='expected_priority', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='test_cases', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='version_info', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='VersionInfo', ctx=Load()),
+                      attr='from_string',
+                      ctx=Load()),
+                    args=[
+                      Name(id='version_str', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_string',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='version_str', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='version_info', ctx=Load()),
+                      attr='version_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='named')])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='version_info', ctx=Load()),
+                        attr='sort_key',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=2)])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='version_info', ctx=Load()),
+                        attr='sort_key',
+                        ctx=Load()),
+                      slice=Constant(value=1),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='expected_priority', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_version_sorting',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test chronological version sorting')),
+            Assign(
+              targets=[
+                Name(id='version_strings', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='v10.7'),
+                  Constant(value='v2'),
+                  Constant(value='Monolithic'),
+                  Constant(value='10_11'),
+                  Constant(value='v6.0'),
+                  Constant(value='Agentic-Workflow-10_11')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='version_infos', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='VersionInfo', ctx=Load()),
+                    attr='from_string',
+                    ctx=Load()),
+                  args=[
+                    Name(id='v', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='v', ctx=Store()),
+                    iter=Name(id='version_strings', ctx=Load()),
+                    is_async=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='version_infos', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='v')]),
+                      body=Attribute(
+                        value=Name(id='v', ctx=Load()),
+                        attr='sort_key',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='expected_order', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='v2'),
+                  Constant(value='v6.0'),
+                  Constant(value='v10.7'),
+                  Constant(value='10_11'),
+                  Constant(value='Monolithic'),
+                  Constant(value='Agentic-Workflow-10_11')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='actual_order', ctx=Store())],
+              value=ListComp(
+                elt=Attribute(
+                  value=Name(id='v', ctx=Load()),
+                  attr='version_string',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='v', ctx=Store()),
+                    iter=Name(id='version_infos', ctx=Load()),
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Name(id='actual_order', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='expected_order', ctx=Load())]))])]),
+    ClassDef(
+      name='TestSemanticDiffer',
+      body=[
+        Expr(
+          value=Constant(value='Test semantic diff generation')),
+        FunctionDef(
+          name='create_test_signature',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='functions',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='classes',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='imports',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Create test AST signature')),
+            Assign(
+              targets=[
+                Name(id='file_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='FileSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test.py')])),
+                  keyword(
+                    arg='file_hash',
+                    value=Constant(value='test_hash')),
+                  keyword(
+                    arg='size_bytes',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='last_modified',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='test_version')),
+                  keyword(
+                    arg='file_extension',
+                    value=Attribute(
+                      value=Name(id='FileExtension', ctx=Load()),
+                      attr='PYTHON',
+                      ctx=Load()))])),
+            Return(
+              value=Call(
+                func=Name(id='ASTSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='root_nodes',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='import_graph',
+                    value=DictComp(
+                      key=Name(id='imp', ctx=Load()),
+                      value=List(
+                        elts=[
+                          Constant(value='line_1')],
+                        ctx=Load()),
+                      generators=[
+                        comprehension(
+                          target=Name(id='imp', ctx=Store()),
+                          iter=Name(id='imports', ctx=Load()),
+                          is_async=0)])),
+                  keyword(
+                    arg='function_signatures',
+                    value=DictComp(
+                      key=Name(id='func', ctx=Load()),
+                      value=JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='func', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='()')]),
+                      generators=[
+                        comprehension(
+                          target=Name(id='func', ctx=Store()),
+                          iter=Name(id='functions', ctx=Load()),
+                          is_async=0)])),
+                  keyword(
+                    arg='class_signatures',
+                    value=DictComp(
+                      key=Name(id='cls', ctx=Load()),
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='class '),
+                          FormattedValue(
+                            value=Name(id='cls', ctx=Load()),
+                            conversion=-1)]),
+                      generators=[
+                        comprehension(
+                          target=Name(id='cls', ctx=Store()),
+                          iter=Name(id='classes', ctx=Load()),
+                          is_async=0)])),
+                  keyword(
+                    arg='complexity_metrics',
+                    value=Dict(
+                      keys=[
+                        Constant(value='cyclomatic_complexity')],
+                      values=[
+                        Constant(value=1)]))]))],
+          returns=Name(id='ASTSignature', ctx=Load())),
+        FunctionDef(
+          name='test_function_addition_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test detection of added functions')),
+            Assign(
+              targets=[
+                Name(id='old_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='func1')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='new_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='func1'),
+                      Constant(value='func2')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='diff', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='SemanticDiffer', ctx=Load()),
+                  attr='compare_ast_signatures',
+                  ctx=Load()),
+                args=[
+                  Name(id='old_sig', ctx=Load()),
+                  Name(id='new_sig', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='func2'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='diff', ctx=Load()),
+                    attr='added_functions',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='func1'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='diff', ctx=Load()),
+                    attr='added_functions',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='diff', ctx=Load()),
+                      attr='removed_functions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='diff', ctx=Load()),
+                      attr='modified_functions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_function_removal_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test detection of removed functions')),
+            Assign(
+              targets=[
+                Name(id='old_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='func1'),
+                      Constant(value='func2')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='new_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='func1')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='diff', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='SemanticDiffer', ctx=Load()),
+                  attr='compare_ast_signatures',
+                  ctx=Load()),
+                args=[
+                  Name(id='old_sig', ctx=Load()),
+                  Name(id='new_sig', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='func2'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='diff', ctx=Load()),
+                    attr='removed_functions',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='func1'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='diff', ctx=Load()),
+                    attr='removed_functions',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='diff', ctx=Load()),
+                      attr='added_functions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='diff', ctx=Load()),
+                      attr='modified_functions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_function_modification_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test detection of modified functions')),
+            Assign(
+              targets=[
+                Name(id='old_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='func1')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='new_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='func1')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='new_sig', ctx=Load()),
+                    attr='function_signatures',
+                    ctx=Load()),
+                  slice=Constant(value='func1'),
+                  ctx=Store())],
+              value=Constant(value='func1(arg1)')),
+            Assign(
+              targets=[
+                Name(id='diff', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='SemanticDiffer', ctx=Load()),
+                  attr='compare_ast_signatures',
+                  ctx=Load()),
+                args=[
+                  Name(id='old_sig', ctx=Load()),
+                  Name(id='new_sig', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='func1'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='diff', ctx=Load()),
+                    attr='modified_functions',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='diff', ctx=Load()),
+                      attr='added_functions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='diff', ctx=Load()),
+                      attr='removed_functions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='func1'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='diff', ctx=Load()),
+                    attr='signature_changes',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_import_change_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test detection of import changes')),
+            Assign(
+              targets=[
+                Name(id='old_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='os'),
+                      Constant(value='sys')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='new_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='os'),
+                      Constant(value='json')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='diff', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='SemanticDiffer', ctx=Load()),
+                  attr='compare_ast_signatures',
+                  ctx=Load()),
+                args=[
+                  Name(id='old_sig', ctx=Load()),
+                  Name(id='new_sig', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='diff', ctx=Load()),
+                      attr='behavior_changes',
+                      ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='import'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='change', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='change', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='diff', ctx=Load()),
+                          attr='behavior_changes',
+                          ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_api_drift_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test API drift detection')),
+            Assign(
+              targets=[
+                Name(id='old_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='public_func'),
+                      Constant(value='_private_func')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='new_sig', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_test_signature',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='_private_func')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='api_drifts', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='SemanticDiffer', ctx=Load()),
+                  attr='detect_api_drift',
+                  ctx=Load()),
+                args=[
+                  Name(id='old_sig', ctx=Load()),
+                  Name(id='new_sig', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='api_drifts', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='public_func'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='drift', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='drift', ctx=Store()),
+                        iter=Name(id='api_drifts', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='removed'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='drift', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='drift', ctx=Store()),
+                        iter=Name(id='api_drifts', ctx=Load()),
+                        is_async=0)])]))])]),
+    ClassDef(
+      name='TestLineageChain',
+      body=[
+        Expr(
+          value=Constant(value='Test lineage chain functionality')),
+        FunctionDef(
+          name='test_lineage_chain_creation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test creation of lineage chains')),
+            Assign(
+              targets=[
+                Name(id='versions', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='v2'),
+                      Constant(value='hash1')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='v6.0'),
+                      Constant(value='hash2')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='v10.7'),
+                      Constant(value='hash3')],
+                    ctx=Load())],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='chain', ctx=Store())],
+              value=Call(
+                func=Name(id='LineageChain', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_key',
+                    value=Constant(value='test_file.py')),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='versions',
+                    value=Name(id='versions', ctx=Load())),
+                  keyword(
+                    arg='completeness',
+                    value=Constant(value=1.0)),
+                  keyword(
+                    arg='gaps',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='current_hash',
+                    value=Constant(value='hash3'))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='chain', ctx=Load()),
+                  attr='file_key',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_file.py')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='chain', ctx=Load()),
+                  attr='engine',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='EngineType', ctx=Load()),
+                    attr='RESUME_ENGINE',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='chain', ctx=Load()),
+                      attr='versions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='chain', ctx=Load()),
+                  attr='completeness',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='chain', ctx=Load()),
+                  attr='current_hash',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='hash3')]))]),
+        FunctionDef(
+          name='test_lineage_chain_with_gaps',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test lineage chain with missing versions')),
+            Assign(
+              targets=[
+                Name(id='versions', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='v2'),
+                      Constant(value='hash1')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='v10.7'),
+                      Constant(value='hash2')],
+                    ctx=Load())],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='chain', ctx=Store())],
+              value=Call(
+                func=Name(id='LineageChain', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_key',
+                    value=Constant(value='test_file.py')),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='versions',
+                    value=Name(id='versions', ctx=Load())),
+                  keyword(
+                    arg='completeness',
+                    value=Constant(value=0.67)),
+                  keyword(
+                    arg='gaps',
+                    value=List(
+                      elts=[
+                        Constant(value='v6.0')],
+                      ctx=Load())),
+                  keyword(
+                    arg='current_hash',
+                    value=Constant(value='hash2'))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='chain', ctx=Load()),
+                  attr='completeness',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.67)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='v6.0'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='chain', ctx=Load()),
+                    attr='gaps',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='chain', ctx=Load()),
+                      attr='versions',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)]))]),
+        FunctionDef(
+          name='test_lineage_chain_serialization',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test lineage chain serialization to dict')),
+            Assign(
+              targets=[
+                Name(id='versions', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='v2'),
+                      Constant(value='hash1')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='v6.0'),
+                      Constant(value='hash2')],
+                    ctx=Load())],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='chain', ctx=Store())],
+              value=Call(
+                func=Name(id='LineageChain', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_key',
+                    value=Constant(value='test_file.py')),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='versions',
+                    value=Name(id='versions', ctx=Load())),
+                  keyword(
+                    arg='completeness',
+                    value=Constant(value=1.0)),
+                  keyword(
+                    arg='gaps',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='current_hash',
+                    value=Constant(value='hash2'))])),
+            Assign(
+              targets=[
+                Name(id='chain_dict', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='chain', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='chain_dict', ctx=Load()),
+                  slice=Constant(value='file_key'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_file.py')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='chain_dict', ctx=Load()),
+                  slice=Constant(value='engine'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='RG')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='chain_dict', ctx=Load()),
+                  slice=Constant(value='versions'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='versions', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='chain_dict', ctx=Load()),
+                  slice=Constant(value='completeness'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='chain_dict', ctx=Load()),
+                  slice=Constant(value='current_hash'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='hash2')]))])]),
+    ClassDef(
+      name='TestLineageMergeProcessor',
+      body=[
+        Expr(
+          value=Constant(value='Test lineage merge processor functionality')),
+        FunctionDef(
+          name='create_mock_cache_structure',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='temp_dir',
+                annotation=Name(id='Path', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Create mock semantic cache structure for testing')),
+            Assign(
+              targets=[
+                Name(id='cache_root', ctx=Store())],
+              value=BinOp(
+                left=Name(id='temp_dir', ctx=Load()),
+                op=Div(),
+                right=Constant(value='semantic_cache'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='cache_root', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='parents',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='rg_dir', ctx=Store())],
+              value=BinOp(
+                left=Name(id='cache_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='resume_engine'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='rg_dir', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='v2_dir', ctx=Store())],
+              value=BinOp(
+                left=Name(id='rg_dir', ctx=Load()),
+                op=Div(),
+                right=Constant(value='v2'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='v2_dir', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='v6_dir', ctx=Store())],
+              value=BinOp(
+                left=Name(id='rg_dir', ctx=Load()),
+                op=Div(),
+                right=Constant(value='v6.0'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='v6_dir', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_mock_cache_file',
+                  ctx=Load()),
+                args=[
+                  Name(id='v2_dir', ctx=Load()),
+                  Constant(value='file1_hash'),
+                  Constant(value='file1.py')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_mock_cache_file',
+                  ctx=Load()),
+                args=[
+                  Name(id='v6_dir', ctx=Load()),
+                  Constant(value='file2_hash'),
+                  Constant(value='file1.py')])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='cache_root'),
+                  Constant(value='rg_dir')],
+                values=[
+                  Name(id='cache_root', ctx=Load()),
+                  Name(id='rg_dir', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='create_mock_cache_file',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='version_dir',
+                annotation=Name(id='Path', ctx=Load())),
+              arg(
+                arg='file_hash',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='filename',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Create mock cache file')),
+            Assign(
+              targets=[
+                Name(id='ast_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='signature'),
+                  Constant(value='root_nodes'),
+                  Constant(value='import_graph'),
+                  Constant(value='function_signatures'),
+                  Constant(value='class_signatures'),
+                  Constant(value='complexity_metrics')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='file_path')],
+                    values=[
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Name(id='version_dir', ctx=Load()),
+                            op=Div(),
+                            right=Name(id='filename', ctx=Load()))])]),
+                  List(ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='os')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='line_1')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='main')],
+                    values=[
+                      Constant(value='main()')]),
+                  Dict(),
+                  Dict(
+                    keys=[
+                      Constant(value='cyclomatic_complexity')],
+                    values=[
+                      Constant(value=1)])])),
+            Assign(
+              targets=[
+                Name(id='ast_file', ctx=Store())],
+              value=BinOp(
+                left=Name(id='version_dir', ctx=Load()),
+                op=Div(),
+                right=JoinedStr(
+                  values=[
+                    FormattedValue(
+                      value=Name(id='file_hash', ctx=Load()),
+                      conversion=-1),
+                    Constant(value='.ast')]))),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='ast_file', ctx=Load()),
+                      Constant(value='w')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='ast_data', ctx=Load()),
+                      Name(id='f', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='meta_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='file_path'),
+                  Constant(value='file_hash'),
+                  Constant(value='size_bytes'),
+                  Constant(value='last_modified'),
+                  Constant(value='engine'),
+                  Constant(value='archive_version'),
+                  Constant(value='file_extension')],
+                values=[
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='version_dir', ctx=Load()),
+                        op=Div(),
+                        right=Name(id='filename', ctx=Load()))]),
+                  Name(id='file_hash', ctx=Load()),
+                  Constant(value=100),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Constant(value='RG'),
+                  Attribute(
+                    value=Name(id='version_dir', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  Constant(value='.py')])),
+            Assign(
+              targets=[
+                Name(id='meta_file', ctx=Store())],
+              value=BinOp(
+                left=Name(id='version_dir', ctx=Load()),
+                op=Div(),
+                right=JoinedStr(
+                  values=[
+                    FormattedValue(
+                      value=Name(id='file_hash', ctx=Load()),
+                      conversion=-1),
+                    Constant(value='.ast.meta.json')]))),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='meta_file', ctx=Load()),
+                      Constant(value='w')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='meta_data', ctx=Load()),
+                      Name(id='f', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='embedding_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='vector_hash'),
+                  Constant(value='embedding_model'),
+                  Constant(value='vector_dimensions'),
+                  Constant(value='embedding_data'),
+                  Constant(value='confidence_score'),
+                  Constant(value='semantic_tags')],
+                values=[
+                  Constant(value='embed_hash'),
+                  Constant(value='test_model'),
+                  Constant(value=64),
+                  BinOp(
+                    left=List(
+                      elts=[
+                        Constant(value=0.1)],
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  Constant(value=0.9),
+                  List(
+                    elts=[
+                      Constant(value='test')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='embed_file', ctx=Store())],
+              value=BinOp(
+                left=Name(id='version_dir', ctx=Load()),
+                op=Div(),
+                right=JoinedStr(
+                  values=[
+                    FormattedValue(
+                      value=Name(id='file_hash', ctx=Load()),
+                      conversion=-1),
+                    Constant(value='.embedding')]))),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='embed_file', ctx=Load()),
+                      Constant(value='w')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='embedding_data', ctx=Load()),
+                      Name(id='f', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_processor_initialization',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test processor initialization')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='mock_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='create_mock_cache_structure',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='processor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='LineageMergeProcessor', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='mock_structure', ctx=Load()),
+                        slice=Constant(value='cache_root'),
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='processor', ctx=Load()),
+                      attr='cache_root',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='mock_structure', ctx=Load()),
+                        slice=Constant(value='cache_root'),
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='processor', ctx=Load()),
+                      attr='differ',
+                      ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='processor', ctx=Load()),
+                      attr='dependency_analyzer',
+                      ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))])]),
+        FunctionDef(
+          name='test_load_version_entries',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test loading version entries')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='mock_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='create_mock_cache_structure',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='processor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='LineageMergeProcessor', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='mock_structure', ctx=Load()),
+                        slice=Constant(value='cache_root'),
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='v2_dir', ctx=Store())],
+                  value=BinOp(
+                    left=Subscript(
+                      value=Name(id='mock_structure', ctx=Load()),
+                      slice=Constant(value='rg_dir'),
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='v2'))),
+                Assign(
+                  targets=[
+                    Name(id='entries', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='processor', ctx=Load()),
+                      attr='_load_version_entries',
+                      ctx=Load()),
+                    args=[
+                      Name(id='v2_dir', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='entries', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='file1_hash'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='entries', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Subscript(
+                        value=Subscript(
+                          value=Name(id='entries', ctx=Load()),
+                          slice=Constant(value='file1_hash'),
+                          ctx=Load()),
+                        slice=Constant(value='file_signature'),
+                        ctx=Load()),
+                      attr='file_hash',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='file1_hash')]))])]),
+        FunctionDef(
+          name='test_build_lineage_chains',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test building lineage chains')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='mock_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='create_mock_cache_structure',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='processor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='LineageMergeProcessor', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='mock_structure', ctx=Load()),
+                        slice=Constant(value='cache_root'),
+                        ctx=Load())])),
+                ImportFrom(
+                  module='semantic_lineage',
+                  names=[
+                    alias(name='FileSignature'),
+                    alias(name='EngineType'),
+                    alias(name='FileExtension')],
+                  level=0),
+                ImportFrom(
+                  module='datetime',
+                  names=[
+                    alias(name='datetime')],
+                  level=0),
+                Assign(
+                  targets=[
+                    Name(id='version_entries', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='v2'),
+                      Constant(value='v6.0')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='file1_hash')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='file_signature'),
+                              Constant(value='ast_data'),
+                              Constant(value='embedding_data')],
+                            values=[
+                              Call(
+                                func=Name(id='FileSignature', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='file_path',
+                                    value=Call(
+                                      func=Name(id='Path', ctx=Load()),
+                                      args=[
+                                        Constant(value='/test/file1.py')])),
+                                  keyword(
+                                    arg='file_hash',
+                                    value=Constant(value='file1_hash')),
+                                  keyword(
+                                    arg='size_bytes',
+                                    value=Constant(value=100)),
+                                  keyword(
+                                    arg='last_modified',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='datetime', ctx=Load()),
+                                        attr='now',
+                                        ctx=Load()))),
+                                  keyword(
+                                    arg='engine',
+                                    value=Attribute(
+                                      value=Name(id='EngineType', ctx=Load()),
+                                      attr='RESUME_ENGINE',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='archive_version',
+                                    value=Constant(value='v2')),
+                                  keyword(
+                                    arg='file_extension',
+                                    value=Attribute(
+                                      value=Name(id='FileExtension', ctx=Load()),
+                                      attr='PYTHON',
+                                      ctx=Load()))]),
+                              Dict(),
+                              Dict()])]),
+                      Dict(
+                        keys=[
+                          Constant(value='file2_hash')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='file_signature'),
+                              Constant(value='ast_data'),
+                              Constant(value='embedding_data')],
+                            values=[
+                              Call(
+                                func=Name(id='FileSignature', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='file_path',
+                                    value=Call(
+                                      func=Name(id='Path', ctx=Load()),
+                                      args=[
+                                        Constant(value='/test/file1.py')])),
+                                  keyword(
+                                    arg='file_hash',
+                                    value=Constant(value='file2_hash')),
+                                  keyword(
+                                    arg='size_bytes',
+                                    value=Constant(value=200)),
+                                  keyword(
+                                    arg='last_modified',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='datetime', ctx=Load()),
+                                        attr='now',
+                                        ctx=Load()))),
+                                  keyword(
+                                    arg='engine',
+                                    value=Attribute(
+                                      value=Name(id='EngineType', ctx=Load()),
+                                      attr='RESUME_ENGINE',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='archive_version',
+                                    value=Constant(value='v6.0')),
+                                  keyword(
+                                    arg='file_extension',
+                                    value=Attribute(
+                                      value=Name(id='FileExtension', ctx=Load()),
+                                      attr='PYTHON',
+                                      ctx=Load()))]),
+                              Dict(),
+                              Dict()])])])),
+                Assign(
+                  targets=[
+                    Name(id='chains', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='processor', ctx=Load()),
+                      attr='_build_lineage_chains',
+                      ctx=Load()),
+                    args=[
+                      Name(id='version_entries', ctx=Load()),
+                      Attribute(
+                        value=Name(id='EngineType', ctx=Load()),
+                        attr='RESUME_ENGINE',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='chains', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)])),
+                Assign(
+                  targets=[
+                    Name(id='chain', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='chains', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load())),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='chain', ctx=Load()),
+                      attr='engine',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='EngineType', ctx=Load()),
+                        attr='RESUME_ENGINE',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='chain', ctx=Load()),
+                          attr='versions',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=2)]))])]),
+        FunctionDef(
+          name='test_generate_semantic_diffs',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test semantic diff generation')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='mock_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='create_mock_cache_structure',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='processor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='LineageMergeProcessor', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='mock_structure', ctx=Load()),
+                        slice=Constant(value='cache_root'),
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='version_entries', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='v2'),
+                      Constant(value='v6.0')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='file1_hash')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='file_signature'),
+                              Constant(value='ast_data'),
+                              Constant(value='embedding_data')],
+                            values=[
+                              Constant(value=None),
+                              Dict(),
+                              Dict()])]),
+                      Dict(
+                        keys=[
+                          Constant(value='file2_hash')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='file_signature'),
+                              Constant(value='ast_data'),
+                              Constant(value='embedding_data')],
+                            values=[
+                              Constant(value=None),
+                              Dict(),
+                              Dict()])])])),
+                Assign(
+                  targets=[
+                    Name(id='diffs', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='processor', ctx=Load()),
+                      attr='_generate_semantic_diffs',
+                      ctx=Load()),
+                    args=[
+                      Name(id='version_entries', ctx=Load()),
+                      Attribute(
+                        value=Name(id='EngineType', ctx=Load()),
+                        attr='RESUME_ENGINE',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='v2_to_v6.0'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='diffs', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='summary'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='diffs', ctx=Load()),
+                        slice=Constant(value='v2_to_v6.0'),
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_save_lineage_results',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test saving lineage results')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='mock_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='create_mock_cache_structure',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='processor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='LineageMergeProcessor', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='mock_structure', ctx=Load()),
+                        slice=Constant(value='cache_root'),
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='results', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='resume_engine'),
+                      Constant(value='outreach_engine'),
+                      Constant(value='processing_timestamp')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='test')],
+                        values=[
+                          Constant(value='data')]),
+                      Dict(
+                        keys=[
+                          Constant(value='test')],
+                        values=[
+                          Constant(value='data')]),
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load())),
+                          attr='isoformat',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='output_file', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='processor', ctx=Load()),
+                      attr='save_lineage_results',
+                      ctx=Load()),
+                    args=[
+                      Name(id='results', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='output_file', ctx=Load()),
+                      attr='exists',
+                      ctx=Load()))),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='output_file', ctx=Load()),
+                        attr='parent',
+                        ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='lineage_results')])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='output_file', ctx=Load()),
+                          Constant(value='r')]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='saved_data', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='resume_engine'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='saved_data', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='outreach_engine'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='saved_data', ctx=Load())]))])])]),
+    ClassDef(
+      name='TestDependencyAnalyzer',
+      body=[
+        Expr(
+          value=Constant(value='Test dependency analysis functionality')),
+        FunctionDef(
+          name='test_build_dependency_graph',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test building dependency graph')),
+            ImportFrom(
+              module='semantic_lineage_merge',
+              names=[
+                alias(name='DependencyAnalyzer')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='signatures', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='file1.py'),
+                  Constant(value='file2.py')],
+                values=[
+                  Call(
+                    func=Name(id='ASTSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='signature',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='root_nodes',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='import_graph',
+                        value=Dict(
+                          keys=[
+                            Constant(value='os'),
+                            Constant(value='sys')],
+                          values=[
+                            List(
+                              elts=[
+                                Constant(value='line_1')],
+                              ctx=Load()),
+                            List(
+                              elts=[
+                                Constant(value='line_2')],
+                              ctx=Load())])),
+                      keyword(arg='function_signatures', value=Dict()),
+                      keyword(arg='class_signatures', value=Dict()),
+                      keyword(arg='complexity_metrics', value=Dict())]),
+                  Call(
+                    func=Name(id='ASTSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='signature',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='root_nodes',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='import_graph',
+                        value=Dict(
+                          keys=[
+                            Constant(value='json'),
+                            Constant(value='os')],
+                          values=[
+                            List(
+                              elts=[
+                                Constant(value='line_1')],
+                              ctx=Load()),
+                            List(
+                              elts=[
+                                Constant(value='line_3')],
+                              ctx=Load())])),
+                      keyword(arg='function_signatures', value=Dict()),
+                      keyword(arg='class_signatures', value=Dict()),
+                      keyword(arg='complexity_metrics', value=Dict())])])),
+            Assign(
+              targets=[
+                Name(id='graph', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='DependencyAnalyzer', ctx=Load()),
+                  attr='build_dependency_graph',
+                  ctx=Load()),
+                args=[
+                  Name(id='signatures', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='file1.py'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='graph', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='file2.py'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='graph', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='os'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='graph', ctx=Load()),
+                    slice=Constant(value='file1.py'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='sys'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='graph', ctx=Load()),
+                    slice=Constant(value='file1.py'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='json'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='graph', ctx=Load()),
+                    slice=Constant(value='file2.py'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='os'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='graph', ctx=Load()),
+                    slice=Constant(value='file2.py'),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_detect_dependency_changes',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test detection of dependency changes')),
+            ImportFrom(
+              module='semantic_lineage_merge',
+              names=[
+                alias(name='DependencyAnalyzer')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='old_graph', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='file1.py'),
+                  Constant(value='file2.py')],
+                values=[
+                  Set(
+                    elts=[
+                      Constant(value='os'),
+                      Constant(value='sys')]),
+                  Set(
+                    elts=[
+                      Constant(value='json')])])),
+            Assign(
+              targets=[
+                Name(id='new_graph', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='file1.py'),
+                  Constant(value='file2.py')],
+                values=[
+                  Set(
+                    elts=[
+                      Constant(value='os'),
+                      Constant(value='requests')]),
+                  Set(
+                    elts=[
+                      Constant(value='json'),
+                      Constant(value='yaml')])])),
+            Assign(
+              targets=[
+                Name(id='changes', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='DependencyAnalyzer', ctx=Load()),
+                  attr='detect_dependency_changes',
+                  ctx=Load()),
+                args=[
+                  Name(id='old_graph', ctx=Load()),
+                  Name(id='new_graph', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='changes', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=BoolOp(
+                      op=And(),
+                      values=[
+                        Compare(
+                          left=Constant(value='sys'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='change', ctx=Load())]),
+                        Compare(
+                          left=Constant(value='removed'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='change', ctx=Load())])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='change', ctx=Store()),
+                        iter=Name(id='changes', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=BoolOp(
+                      op=And(),
+                      values=[
+                        Compare(
+                          left=Constant(value='requests'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='change', ctx=Load())]),
+                        Compare(
+                          left=Constant(value='added'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='change', ctx=Load())])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='change', ctx=Store()),
+                        iter=Name(id='changes', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=BoolOp(
+                      op=And(),
+                      values=[
+                        Compare(
+                          left=Constant(value='yaml'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='change', ctx=Load())]),
+                        Compare(
+                          left=Constant(value='added'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='change', ctx=Load())])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='change', ctx=Store()),
+                        iter=Name(id='changes', ctx=Load()),
+                        is_async=0)])]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='main',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='__file__', ctx=Load()),
+                  Constant(value='-v')],
+                ctx=Load())]))])])

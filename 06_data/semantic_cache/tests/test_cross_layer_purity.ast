@@ -1,0 +1,1150 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nIntegration tests for Cross-Layer Purity\nTests that L1-L5 layers maintain proper separation and boundaries\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock')],
+      level=0),
+    Import(
+      names=[
+        alias(name='importlib')]),
+    Import(
+      names=[
+        alias(name='inspect')]),
+    ClassDef(
+      name='TestCrossLayerPurity',
+      body=[
+        Expr(
+          value=Constant(value='Test cross-layer purity contracts')),
+        FunctionDef(
+          name='test_l1_no_lower_layer_imports_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test L1 does not import from L2, L3, L4, L5')),
+            Assign(
+              targets=[
+                Name(id='l1_modules', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='agentic_core.l1_planning.planners.strategy_planner'),
+                  Constant(value='agentic_core.l1_planning.planners.message_planner'),
+                  Constant(value='agentic_core.l1_planning.planners.research_planner'),
+                  Constant(value='agentic_core.l1_planning.planners.refinement_planner'),
+                  Constant(value='agentic_core.l1_planning.planners.safety_planner')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='forbidden_imports', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='from agentic_core.l2_execution'),
+                  Constant(value='from agentic_core.l3_orchestration'),
+                  Constant(value='from agentic_core.l4_memory'),
+                  Constant(value='from agentic_core.l5_safety')],
+                ctx=Load())),
+            For(
+              target=Name(id='module_name', ctx=Store()),
+              iter=Name(id='l1_modules', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='module', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='importlib', ctx=Load()),
+                          attr='import_module',
+                          ctx=Load()),
+                        args=[
+                          Name(id='module_name', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='source_file', ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='module', ctx=Load()),
+                          Constant(value='__file__'),
+                          Constant(value='')])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='source_file', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='source_file', ctx=Load()),
+                              attr='endswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='.py')])]),
+                      body=[
+                        With(
+                          items=[
+                            withitem(
+                              context_expr=Call(
+                                func=Name(id='open', ctx=Load()),
+                                args=[
+                                  Name(id='source_file', ctx=Load()),
+                                  Constant(value='r')]),
+                              optional_vars=Name(id='f', ctx=Store()))],
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='source_code', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='f', ctx=Load()),
+                                  attr='read',
+                                  ctx=Load())))]),
+                        For(
+                          target=Name(id='forbidden', ctx=Store()),
+                          iter=Name(id='forbidden_imports', ctx=Load()),
+                          body=[
+                            Assert(
+                              test=Compare(
+                                left=Name(id='forbidden', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Name(id='source_code', ctx=Load())]),
+                              msg=JoinedStr(
+                                values=[
+                                  Constant(value='L1 purity violation in '),
+                                  FormattedValue(
+                                    value=Name(id='module_name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': '),
+                                  FormattedValue(
+                                    value=Name(id='forbidden', ctx=Load()),
+                                    conversion=-1)]))])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ImportError', ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_l2_no_lower_layer_imports_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test L2 does not import from L3, L4, L5')),
+            Assign(
+              targets=[
+                Name(id='l2_modules', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='agentic_core.l2_execution.executors.company_research_executor'),
+                  Constant(value='agentic_core.l2_execution.executors.contact_research_executor'),
+                  Constant(value='agentic_core.l2_execution.executors.message_generation_executor')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='forbidden_imports', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='from agentic_core.l3_orchestration'),
+                  Constant(value='from agentic_core.l4_memory'),
+                  Constant(value='from agentic_core.l5_safety')],
+                ctx=Load())),
+            For(
+              target=Name(id='module_name', ctx=Store()),
+              iter=Name(id='l2_modules', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='module', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='importlib', ctx=Load()),
+                          attr='import_module',
+                          ctx=Load()),
+                        args=[
+                          Name(id='module_name', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='source_file', ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='module', ctx=Load()),
+                          Constant(value='__file__'),
+                          Constant(value='')])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='source_file', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='source_file', ctx=Load()),
+                              attr='endswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='.py')])]),
+                      body=[
+                        With(
+                          items=[
+                            withitem(
+                              context_expr=Call(
+                                func=Name(id='open', ctx=Load()),
+                                args=[
+                                  Name(id='source_file', ctx=Load()),
+                                  Constant(value='r')]),
+                              optional_vars=Name(id='f', ctx=Store()))],
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='source_code', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='f', ctx=Load()),
+                                  attr='read',
+                                  ctx=Load())))]),
+                        For(
+                          target=Name(id='forbidden', ctx=Store()),
+                          iter=Name(id='forbidden_imports', ctx=Load()),
+                          body=[
+                            Assert(
+                              test=Compare(
+                                left=Name(id='forbidden', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Name(id='source_code', ctx=Load())]),
+                              msg=JoinedStr(
+                                values=[
+                                  Constant(value='L2 purity violation in '),
+                                  FormattedValue(
+                                    value=Name(id='module_name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': '),
+                                  FormattedValue(
+                                    value=Name(id='forbidden', ctx=Load()),
+                                    conversion=-1)]))])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ImportError', ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_l3_no_lower_layer_imports_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test L3 does not import from L4, L5')),
+            Assign(
+              targets=[
+                Name(id='l3_modules', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='agentic_core.l3_orchestration.engines.resume_engine_dag'),
+                  Constant(value='agentic_core.l3_orchestration.engines.outreach_engine_dag'),
+                  Constant(value='agentic_core.l3_orchestration.framework.dag_executor')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='forbidden_imports', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='from agentic_core.l4_memory'),
+                  Constant(value='from agentic_core.l5_safety')],
+                ctx=Load())),
+            For(
+              target=Name(id='module_name', ctx=Store()),
+              iter=Name(id='l3_modules', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='module', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='importlib', ctx=Load()),
+                          attr='import_module',
+                          ctx=Load()),
+                        args=[
+                          Name(id='module_name', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='source_file', ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='module', ctx=Load()),
+                          Constant(value='__file__'),
+                          Constant(value='')])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='source_file', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='source_file', ctx=Load()),
+                              attr='endswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='.py')])]),
+                      body=[
+                        With(
+                          items=[
+                            withitem(
+                              context_expr=Call(
+                                func=Name(id='open', ctx=Load()),
+                                args=[
+                                  Name(id='source_file', ctx=Load()),
+                                  Constant(value='r')]),
+                              optional_vars=Name(id='f', ctx=Store()))],
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='source_code', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='f', ctx=Load()),
+                                  attr='read',
+                                  ctx=Load())))]),
+                        For(
+                          target=Name(id='forbidden', ctx=Store()),
+                          iter=Name(id='forbidden_imports', ctx=Load()),
+                          body=[
+                            Assert(
+                              test=Compare(
+                                left=Name(id='forbidden', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Name(id='source_code', ctx=Load())]),
+                              msg=JoinedStr(
+                                values=[
+                                  Constant(value='L3 purity violation in '),
+                                  FormattedValue(
+                                    value=Name(id='module_name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': '),
+                                  FormattedValue(
+                                    value=Name(id='forbidden', ctx=Load()),
+                                    conversion=-1)]))])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ImportError', ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_l4_no_business_logic_imports_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test L4 does not import business logic from L1, L2, L3')),
+            Assign(
+              targets=[
+                Name(id='l4_modules', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='agentic_core.l4_memory.providers.provider_registry'),
+                  Constant(value='agentic_core.l4_memory.temporal.temporal_store'),
+                  Constant(value='agentic_core.l4_memory.mappings.data_mapper')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='forbidden_imports', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='from agentic_core.l1_planning.planners'),
+                  Constant(value='from agentic_core.l2_execution.executors'),
+                  Constant(value='from agentic_core.l3_orchestration.engines')],
+                ctx=Load())),
+            For(
+              target=Name(id='module_name', ctx=Store()),
+              iter=Name(id='l4_modules', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='module', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='importlib', ctx=Load()),
+                          attr='import_module',
+                          ctx=Load()),
+                        args=[
+                          Name(id='module_name', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='source_file', ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='module', ctx=Load()),
+                          Constant(value='__file__'),
+                          Constant(value='')])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='source_file', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='source_file', ctx=Load()),
+                              attr='endswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='.py')])]),
+                      body=[
+                        With(
+                          items=[
+                            withitem(
+                              context_expr=Call(
+                                func=Name(id='open', ctx=Load()),
+                                args=[
+                                  Name(id='source_file', ctx=Load()),
+                                  Constant(value='r')]),
+                              optional_vars=Name(id='f', ctx=Store()))],
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='source_code', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='f', ctx=Load()),
+                                  attr='read',
+                                  ctx=Load())))]),
+                        For(
+                          target=Name(id='forbidden', ctx=Store()),
+                          iter=Name(id='forbidden_imports', ctx=Load()),
+                          body=[
+                            Assert(
+                              test=Compare(
+                                left=Name(id='forbidden', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Name(id='source_code', ctx=Load())]),
+                              msg=JoinedStr(
+                                values=[
+                                  Constant(value='L4 purity violation in '),
+                                  FormattedValue(
+                                    value=Name(id='module_name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': '),
+                                  FormattedValue(
+                                    value=Name(id='forbidden', ctx=Load()),
+                                    conversion=-1)]))])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ImportError', ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_l5_no_business_logic_imports_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test L5 does not import business logic from L1, L2, L3, L4')),
+            Assign(
+              targets=[
+                Name(id='l5_modules', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='agentic_core.l5_safety.policies.policy_engine'),
+                  Constant(value='agentic_core.l5_safety.filters.content_filter'),
+                  Constant(value='agentic_core.l5_safety.validators.safety_validator')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='forbidden_imports', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='from agentic_core.l1_planning.planners'),
+                  Constant(value='from agentic_core.l2_execution.executors'),
+                  Constant(value='from agentic_core.l3_orchestration.engines'),
+                  Constant(value='from agentic_core.l4_memory.providers')],
+                ctx=Load())),
+            For(
+              target=Name(id='module_name', ctx=Store()),
+              iter=Name(id='l5_modules', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='module', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='importlib', ctx=Load()),
+                          attr='import_module',
+                          ctx=Load()),
+                        args=[
+                          Name(id='module_name', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='source_file', ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='module', ctx=Load()),
+                          Constant(value='__file__'),
+                          Constant(value='')])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='source_file', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='source_file', ctx=Load()),
+                              attr='endswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='.py')])]),
+                      body=[
+                        With(
+                          items=[
+                            withitem(
+                              context_expr=Call(
+                                func=Name(id='open', ctx=Load()),
+                                args=[
+                                  Name(id='source_file', ctx=Load()),
+                                  Constant(value='r')]),
+                              optional_vars=Name(id='f', ctx=Store()))],
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='source_code', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='f', ctx=Load()),
+                                  attr='read',
+                                  ctx=Load())))]),
+                        For(
+                          target=Name(id='forbidden', ctx=Store()),
+                          iter=Name(id='forbidden_imports', ctx=Load()),
+                          body=[
+                            Assert(
+                              test=Compare(
+                                left=Name(id='forbidden', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Name(id='source_code', ctx=Load())]),
+                              msg=JoinedStr(
+                                values=[
+                                  Constant(value='L5 purity violation in '),
+                                  FormattedValue(
+                                    value=Name(id='module_name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': '),
+                                  FormattedValue(
+                                    value=Name(id='forbidden', ctx=Load()),
+                                    conversion=-1)]))])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ImportError', ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_layer_boundary_interfaces_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that layers communicate through proper interfaces')),
+            Assign(
+              targets=[
+                Name(id='layer_interfaces', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='L1'),
+                  Constant(value='L2'),
+                  Constant(value='L3'),
+                  Constant(value='L4'),
+                  Constant(value='L5')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='plan'),
+                      Constant(value='validate_input'),
+                      Constant(value='get_schema')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='execute'),
+                      Constant(value='validate_input'),
+                      Constant(value='get_timeout')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='execute'),
+                      Constant(value='validate_dag'),
+                      Constant(value='get_nodes')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='store_event'),
+                      Constant(value='get_events'),
+                      Constant(value='query')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='evaluate_content'),
+                      Constant(value='validate'),
+                      Constant(value='filter_content')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='test_files', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='tests/l1/unit/test_strategy_planner.py'),
+                  Constant(value='tests/l2/unit/test_company_research_executor.py'),
+                  Constant(value='tests/l3/orchestration/test_resume_engine_dag.py'),
+                  Constant(value='tests/l4/memory/test_temporal_memory.py'),
+                  Constant(value='tests/l5/safety/test_policy_engine.py')],
+                ctx=Load())),
+            For(
+              target=Name(id='test_file', ctx=Store()),
+              iter=Name(id='test_files', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    With(
+                      items=[
+                        withitem(
+                          context_expr=Call(
+                            func=Name(id='open', ctx=Load()),
+                            args=[
+                              Name(id='test_file', ctx=Load()),
+                              Constant(value='r')]),
+                          optional_vars=Name(id='f', ctx=Store()))],
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='test_code', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='f', ctx=Load()),
+                              attr='read',
+                              ctx=Load())))]),
+                    Assert(
+                      test=Compare(
+                        left=Constant(value='private_method'),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='test_code', ctx=Load())])),
+                    Assert(
+                      test=Compare(
+                        left=Constant(value='_internal_'),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='test_code', ctx=Load())])),
+                    Assert(
+                      test=Compare(
+                        left=Constant(value='__secret__'),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='test_code', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='FileNotFoundError', ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_no_circular_dependencies_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that there are no circular dependencies between layers')),
+            Assign(
+              targets=[
+                Name(id='layer_dependencies', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='layers', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='l1_planning'),
+                  Constant(value='l2_execution'),
+                  Constant(value='l3_orchestration'),
+                  Constant(value='l4_memory'),
+                  Constant(value='l5_safety')],
+                ctx=Load())),
+            For(
+              target=Name(id='layer', ctx=Store()),
+              iter=Name(id='layers', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='dependencies', ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load()))),
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='module_path', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='agentic_core.'),
+                          FormattedValue(
+                            value=Name(id='layer', ctx=Load()),
+                            conversion=-1)])),
+                    Assign(
+                      targets=[
+                        Name(id='module', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='importlib', ctx=Load()),
+                          attr='import_module',
+                          ctx=Load()),
+                        args=[
+                          Name(id='module_path', ctx=Load())])),
+                    For(
+                      target=Name(id='submodule_name', ctx=Store()),
+                      iter=List(
+                        elts=[
+                          Constant(value='planners'),
+                          Constant(value='executors'),
+                          Constant(value='engines'),
+                          Constant(value='providers'),
+                          Constant(value='policies')],
+                        ctx=Load()),
+                      body=[
+                        Try(
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='submodule_path', ctx=Store())],
+                              value=JoinedStr(
+                                values=[
+                                  Constant(value='agentic_core.'),
+                                  FormattedValue(
+                                    value=Name(id='layer', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='.'),
+                                  FormattedValue(
+                                    value=Name(id='submodule_name', ctx=Load()),
+                                    conversion=-1)])),
+                            Assign(
+                              targets=[
+                                Name(id='submodule', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='importlib', ctx=Load()),
+                                  attr='import_module',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='submodule_path', ctx=Load())])),
+                            Assign(
+                              targets=[
+                                Name(id='source_file', ctx=Store())],
+                              value=Call(
+                                func=Name(id='getattr', ctx=Load()),
+                                args=[
+                                  Name(id='submodule', ctx=Load()),
+                                  Constant(value='__file__'),
+                                  Constant(value='')])),
+                            If(
+                              test=BoolOp(
+                                op=And(),
+                                values=[
+                                  Name(id='source_file', ctx=Load()),
+                                  Call(
+                                    func=Attribute(
+                                      value=Name(id='source_file', ctx=Load()),
+                                      attr='endswith',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='.py')])]),
+                              body=[
+                                With(
+                                  items=[
+                                    withitem(
+                                      context_expr=Call(
+                                        func=Name(id='open', ctx=Load()),
+                                        args=[
+                                          Name(id='source_file', ctx=Load()),
+                                          Constant(value='r')]),
+                                      optional_vars=Name(id='f', ctx=Store()))],
+                                  body=[
+                                    Assign(
+                                      targets=[
+                                        Name(id='source_code', ctx=Store())],
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Name(id='f', ctx=Load()),
+                                          attr='read',
+                                          ctx=Load())))]),
+                                For(
+                                  target=Name(id='other_layer', ctx=Store()),
+                                  iter=Name(id='layers', ctx=Load()),
+                                  body=[
+                                    If(
+                                      test=Compare(
+                                        left=Name(id='other_layer', ctx=Load()),
+                                        ops=[
+                                          NotEq()],
+                                        comparators=[
+                                          Name(id='layer', ctx=Load())]),
+                                      body=[
+                                        If(
+                                          test=Compare(
+                                            left=JoinedStr(
+                                              values=[
+                                                Constant(value='from agentic_core.'),
+                                                FormattedValue(
+                                                  value=Name(id='other_layer', ctx=Load()),
+                                                  conversion=-1)]),
+                                            ops=[
+                                              In()],
+                                            comparators=[
+                                              Name(id='source_code', ctx=Load())]),
+                                          body=[
+                                            Expr(
+                                              value=Call(
+                                                func=Attribute(
+                                                  value=Name(id='dependencies', ctx=Load()),
+                                                  attr='add',
+                                                  ctx=Load()),
+                                                args=[
+                                                  Name(id='other_layer', ctx=Load())]))])])])])],
+                          handlers=[
+                            ExceptHandler(
+                              type=Name(id='ImportError', ctx=Load()),
+                              body=[
+                                Continue()])])]),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='layer_dependencies', ctx=Load()),
+                          slice=Name(id='layer', ctx=Load()),
+                          ctx=Store())],
+                      value=Name(id='dependencies', ctx=Load()))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ImportError', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='layer_dependencies', ctx=Load()),
+                              slice=Name(id='layer', ctx=Load()),
+                              ctx=Store())],
+                          value=Call(
+                            func=Name(id='set', ctx=Load())))])])]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='layer', ctx=Store()),
+                  Name(id='deps', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='layer_dependencies', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                For(
+                  target=Name(id='dep', ctx=Store()),
+                  iter=Name(id='deps', ctx=Load()),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='layer', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='layer_dependencies', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Name(id='dep', ctx=Load()),
+                              Call(
+                                func=Name(id='set', ctx=Load()))])]),
+                      body=[
+                        Assert(
+                          test=Constant(value=False),
+                          msg=JoinedStr(
+                            values=[
+                              Constant(value='Circular dependency detected: '),
+                              FormattedValue(
+                                value=Name(id='layer', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' <-> '),
+                              FormattedValue(
+                                value=Name(id='dep', ctx=Load()),
+                                conversion=-1)]))])])])]),
+        FunctionDef(
+          name='test_layer_isolation_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that layers can be instantiated and used in isolation')),
+            Try(
+              body=[
+                ImportFrom(
+                  module='agentic_core.l1_planning.planners.strategy_planner',
+                  names=[
+                    alias(name='StrategyPlanner')],
+                  level=0),
+                Assert(
+                  test=Compare(
+                    left=Name(id='StrategyPlanner', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Try(
+              body=[
+                ImportFrom(
+                  module='agentic_core.l2_execution.executors.company_research_executor',
+                  names=[
+                    alias(name='CompanyResearchExecutor')],
+                  level=0),
+                Assert(
+                  test=Compare(
+                    left=Name(id='CompanyResearchExecutor', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Try(
+              body=[
+                ImportFrom(
+                  module='agentic_core.l3_orchestration.engines.resume_engine_dag',
+                  names=[
+                    alias(name='ResumeEngineDAG')],
+                  level=0),
+                Assert(
+                  test=Compare(
+                    left=Name(id='ResumeEngineDAG', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Try(
+              body=[
+                ImportFrom(
+                  module='agentic_core.l4_memory.temporal.temporal_store',
+                  names=[
+                    alias(name='TemporalStore')],
+                  level=0),
+                Assert(
+                  test=Compare(
+                    left=Name(id='TemporalStore', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Try(
+              body=[
+                ImportFrom(
+                  module='agentic_core.l5_safety.policies.policy_engine',
+                  names=[
+                    alias(name='PolicyEngine')],
+                  level=0),
+                Assert(
+                  test=Compare(
+                    left=Name(id='PolicyEngine', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Pass()])])]),
+        FunctionDef(
+          name='test_data_flow_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that data flows properly between layers without contamination')),
+            Assign(
+              targets=[
+                Name(id='clean_input', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='user_profile'),
+                  Constant(value='target')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='name'),
+                      Constant(value='skills')],
+                    values=[
+                      Constant(value='John'),
+                      List(
+                        elts=[
+                          Constant(value='Python')],
+                        ctx=Load())]),
+                  Constant(value='Software Engineer')])),
+            Assign(
+              targets=[
+                Name(id='processed_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='clean_input', ctx=Load()),
+                  attr='copy',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='l1_metadata'),
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='strategy_applied')],
+                values=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='user_profile'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='clean_input', ctx=Load()),
+                    slice=Constant(value='user_profile'),
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='l2_metadata'),
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='execution_completed')],
+                values=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='user_profile'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='clean_input', ctx=Load()),
+                    slice=Constant(value='user_profile'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='l1_metadata'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Dict(
+                    keys=[
+                      Constant(value='strategy_applied')],
+                    values=[
+                      Constant(value=True)])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='l3_metadata'),
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='dag_executed')],
+                values=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='user_profile'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='clean_input', ctx=Load()),
+                    slice=Constant(value='user_profile'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='processed_data', ctx=Load()),
+                  slice=Constant(value='user_profile'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='clean_input', ctx=Load()),
+                    slice=Constant(value='user_profile'),
+                    ctx=Load())]))])])])

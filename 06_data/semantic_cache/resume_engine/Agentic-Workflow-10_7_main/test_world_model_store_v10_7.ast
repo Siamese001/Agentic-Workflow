@@ -1,0 +1,1148 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7.models',
+      names=[
+        alias(name='StrategyPlan')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7.services',
+      names=[
+        alias(name='WorldModelStore')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.components.strategy',
+      names=[
+        alias(name='QueryComplexityClassifier'),
+        alias(name='ToTStrategistAgent')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.components.rag',
+      names=[
+        alias(name='RAG_SearchAgent')],
+      level=0),
+    ClassDef(
+      name='_DummyRedis',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='set_calls',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='get_calls',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='storage',
+                  ctx=Store())],
+              value=Dict())]),
+        FunctionDef(
+          name='setex',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='key'),
+              arg(arg='ttl'),
+              arg(arg='value')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='set_calls',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Tuple(
+                    elts=[
+                      Name(id='key', ctx=Load()),
+                      Name(id='ttl', ctx=Load()),
+                      Name(id='value', ctx=Load())],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='storage',
+                    ctx=Load()),
+                  slice=Name(id='key', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='value', ctx=Load()))]),
+        FunctionDef(
+          name='get',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='key')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='get_calls',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='storage',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())]))])]),
+    FunctionDef(
+      name='_config',
+      args=arguments(
+        args=[
+          arg(arg='enabled'),
+          arg(arg='key_prefix'),
+          arg(arg='max_history')],
+        defaults=[
+          Constant(value=True),
+          Constant(value='wm'),
+          Constant(value=5)]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='world_model_config',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Name(id='enabled', ctx=Load())),
+                    keyword(
+                      arg='key_prefix',
+                      value=Name(id='key_prefix', ctx=Load())),
+                    keyword(
+                      arg='max_strategy_history',
+                      value=Name(id='max_history', ctx=Load()))]))]))]),
+    FunctionDef(
+      name='test_world_model_disabled_noop',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='redis', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyRedis', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='WorldModelStore', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_config', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enabled',
+                    value=Constant(value=False))]),
+              Name(id='redis', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='set_json',
+              ctx=Load()),
+            args=[
+              Constant(value='sample'),
+              Dict(
+                keys=[
+                  Constant(value='a')],
+                values=[
+                  Constant(value=1)])])),
+        Assign(
+          targets=[
+            Name(id='data', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='get_json',
+              ctx=Load()),
+            args=[
+              Constant(value='sample')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='redis', ctx=Load()),
+              attr='set_calls',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='redis', ctx=Load()),
+              attr='get_calls',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Name(id='data', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Dict()]))]),
+    FunctionDef(
+      name='test_world_model_company_knowledge_roundtrip',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='redis', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyRedis', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='WorldModelStore', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_config', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enabled',
+                    value=Constant(value=True))]),
+              Name(id='redis', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='update_company_knowledge',
+              ctx=Load()),
+            args=[
+              Constant(value='Acme'),
+              Dict(
+                keys=[
+                  Constant(value='score')],
+                values=[
+                  Constant(value=1)])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='update_company_knowledge',
+              ctx=Load()),
+            args=[
+              Constant(value='Acme'),
+              Dict(
+                keys=[
+                  Constant(value='notes')],
+                values=[
+                  Constant(value='Updated')])])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='get_company_knowledge',
+              ctx=Load()),
+            args=[
+              Constant(value='Acme')])),
+        Assert(
+          test=Compare(
+            left=Name(id='result', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Dict(
+                keys=[
+                  Constant(value='score'),
+                  Constant(value='notes')],
+                values=[
+                  Constant(value=1),
+                  Constant(value='Updated')])]))]),
+    FunctionDef(
+      name='test_world_model_strategy_history_bounded',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='redis', ctx=Store())],
+          value=Call(
+            func=Name(id='_DummyRedis', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='WorldModelStore', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_config', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enabled',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='max_history',
+                    value=Constant(value=3))]),
+              Name(id='redis', ctx=Load())])),
+        For(
+          target=Name(id='i', ctx=Store()),
+          iter=Call(
+            func=Name(id='range', ctx=Load()),
+            args=[
+              Constant(value=5)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='append_strategy_outcome',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='idx')],
+                    values=[
+                      Name(id='i', ctx=Load())])]))]),
+        Assign(
+          targets=[
+            Name(id='history', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='get_strategy_history',
+              ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Subscript(
+                  value=Name(id='history', ctx=Load()),
+                  slice=Constant(value='history'),
+                  ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=3)])),
+        Assert(
+          test=Compare(
+            left=ListComp(
+              elt=Subscript(
+                value=Name(id='entry', ctx=Load()),
+                slice=Constant(value='idx'),
+                ctx=Load()),
+              generators=[
+                comprehension(
+                  target=Name(id='entry', ctx=Store()),
+                  iter=Subscript(
+                    value=Name(id='history', ctx=Load()),
+                    slice=Constant(value='history'),
+                    ctx=Load()),
+                  is_async=0)]),
+            ops=[
+              Eq()],
+            comparators=[
+              List(
+                elts=[
+                  Constant(value=2),
+                  Constant(value=3),
+                  Constant(value=4)],
+                ctx=Load())]))]),
+    ClassDef(
+      name='_RecordingStore',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='payloads',
+                  ctx=Store())],
+              value=List(ctx=Load()))]),
+        FunctionDef(
+          name='enabled',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Constant(value=True))]),
+        FunctionDef(
+          name='append_strategy_outcome',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='payload')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='payloads',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='payload', ctx=Load())]))]),
+        FunctionDef(
+          name='set_json',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='key'),
+              arg(arg='value')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='payloads',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='key'),
+                      Constant(value='value')],
+                    values=[
+                      Name(id='key', ctx=Load()),
+                      Name(id='value', ctx=Load())])]))])]),
+    ClassDef(
+      name='_StubValidator',
+      body=[
+        FunctionDef(
+          name='validate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='content'),
+              arg(arg='schema')]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load()),
+                  Name(id='str', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Name(id='content', ctx=Load()))]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Call(
+                    func=Name(id='SimpleNamespace', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        value=Name(id='data', ctx=Load()))]),
+                  Constant(value=None)],
+                ctx=Load()))])]),
+    ClassDef(
+      name='_StubBudgetManager',
+      body=[
+        AsyncFunctionDef(
+          name='prune',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='text')],
+            vararg=arg(arg='_')),
+          body=[
+            Return(
+              value=Name(id='text', ctx=Load()))])]),
+    ClassDef(
+      name='_StubMetrics',
+      body=[
+        FunctionDef(
+          name='get_average_latency',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwarg=arg(arg='_')),
+          body=[
+            Return(
+              value=Constant(value=0))]),
+        FunctionDef(
+          name='record',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            vararg=arg(arg='_'),
+            kwarg=arg(arg='__')),
+          body=[
+            Return(
+              value=Constant(value=None))])]),
+    ClassDef(
+      name='_StubPolicyAutoTuner',
+      body=[
+        FunctionDef(
+          name='enabled',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Constant(value=False))])]),
+    ClassDef(
+      name='_StubContext',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='world_model_store')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleNamespace', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model_config',
+                    value=Call(
+                      func=Name(id='SimpleNamespace', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='strategy_model_simple',
+                          value=Call(
+                            func=Name(id='SimpleNamespace', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='provider',
+                                value=Constant(value='stub')),
+                              keyword(
+                                arg='model_name',
+                                value=Constant(value='stub')),
+                              keyword(
+                                arg='temperature',
+                                value=Constant(value=0.5))])),
+                        keyword(
+                          arg='strategy_model',
+                          value=Call(
+                            func=Name(id='SimpleNamespace', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='provider',
+                                value=Constant(value='stub')),
+                              keyword(
+                                arg='model_name',
+                                value=Constant(value='stub')),
+                              keyword(
+                                arg='temperature',
+                                value=Constant(value=0.5))]))])),
+                  keyword(
+                    arg='meta_loop_config',
+                    value=Call(
+                      func=Name(id='SimpleNamespace', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='feedback_log_path',
+                          value=Constant(value='/tmp/meta_feedback.jsonl'))])),
+                  keyword(
+                    arg='agent_stacks',
+                    value=Call(
+                      func=Name(id='SimpleNamespace', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='strategy_tot_branching_factor',
+                          value=Constant(value=1))]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='prompt_manager',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleNamespace', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='goal_state',
+                    value=Constant(value='goal')),
+                  keyword(
+                    arg='top_failures',
+                    value=Constant(value='fail')),
+                  keyword(
+                    arg='get_template',
+                    value=Lambda(
+                      args=arguments(
+                        vararg=arg(arg='_')),
+                      body=Constant(value='template')))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='response_validator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_StubValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context_budget_manager',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_StubBudgetManager', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metrics_collector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_StubMetrics', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='self_correction_manager',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='policy_auto_tuner',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_StubPolicyAutoTuner', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='tuning_profile',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleNamespace', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='temperature',
+                    value=Constant(value=0.5))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='world_model_store',
+                  ctx=Store())],
+              value=Name(id='world_model_store', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workflow_id',
+                  ctx=Store())],
+              value=Constant(value='wf'))]),
+        FunctionDef(
+          name='ensure_mcp_clients',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(value=Dict())]),
+        FunctionDef(
+          name='is_mcp_enabled',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Constant(value=False))])]),
+    ClassDef(
+      name='_StubLLMClient',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='payload')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='goal_state',
+                  ctx=Store())],
+              value=Constant(value='goal')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='top_failures',
+                  ctx=Store())],
+              value=Constant(value='fail')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_payload',
+                  ctx=Store())],
+              value=Name(id='payload', ctx=Load()))]),
+        AsyncFunctionDef(
+          name='chat_completion_async',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwarg=arg(arg='_')),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='content')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_payload',
+                        ctx=Load())])]))])]),
+    AsyncFunctionDef(
+      name='test_strategy_stack_updates_world_model_store',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='_RecordingStore', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='_StubContext', ctx=Load()),
+            args=[
+              Name(id='store', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='QueryComplexityClassifier', ctx=Load()),
+            args=[
+              Name(id='context', ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='get_model_client',
+              ctx=Store())],
+          value=Lambda(
+            args=arguments(
+              vararg=arg(arg='_')),
+            body=Call(
+              func=Name(id='_StubLLMClient', ctx=Load()),
+              args=[
+                Dict(
+                  keys=[
+                    Constant(value='complexity'),
+                    Constant(value='reason')],
+                  values=[
+                    Constant(value='simple'),
+                    Constant(value='ok')])]))),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              args=[
+                Constant(value='Build systems'),
+                Constant(value='workflow-123')]))),
+        Assert(
+          test=Compare(
+            left=Name(id='result', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='simple')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='payloads',
+                  ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load()),
+              slice=Constant(value='workflow_id'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='workflow-123')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='payloads',
+                  ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load()),
+              slice=Constant(value='complexity'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='simple')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_tot_strategist_records_world_model_outcomes',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='_RecordingStore', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='_StubContext', ctx=Load()),
+            args=[
+              Name(id='store', ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='context', ctx=Load()),
+                  attr='config',
+                  ctx=Load()),
+                attr='agent_stacks',
+                ctx=Load()),
+              attr='strategy_tot_branching_factor',
+              ctx=Store())],
+          value=Constant(value=1)),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='ToTStrategistAgent', ctx=Load()),
+            args=[
+              Name(id='context', ctx=Load())])),
+        AsyncFunctionDef(
+          name='fake_generate_branches',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            vararg=arg(arg='_')),
+          body=[
+            Assign(
+              targets=[
+                Name(id='strategy', ctx=Store())],
+              value=Call(
+                func=Name(id='StrategyPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='strategy_name',
+                    value=Constant(value='Plan A')),
+                  keyword(
+                    arg='focus_areas',
+                    value=List(
+                      elts=[
+                        Constant(value='focus')],
+                      ctx=Load())),
+                  keyword(
+                    arg='key_achievements_to_highlight',
+                    value=List(
+                      elts=[
+                        Constant(value='achievement')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tone',
+                    value=Constant(value='bold'))])),
+            Return(
+              value=List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='branch_id'),
+                      Constant(value='strategy')],
+                    values=[
+                      Constant(value='branch_0'),
+                      Name(id='strategy', ctx=Load())])],
+                ctx=Load()))]),
+        AsyncFunctionDef(
+          name='fake_format_prompt',
+          args=arguments(
+            vararg=arg(arg='_args'),
+            kwarg=arg(arg='_kwargs')),
+          body=[
+            Return(
+              value=Constant(value='prompt'))]),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='get_model_client',
+              ctx=Store())],
+          value=Lambda(
+            args=arguments(
+              vararg=arg(arg='_')),
+            body=Call(
+              func=Name(id='_StubLLMClient', ctx=Load()),
+              args=[
+                Dict(
+                  keys=[
+                    Constant(value='best_branch_id'),
+                    Constant(value='reason')],
+                  values=[
+                    Constant(value='branch_0'),
+                    Constant(value='clear')])]))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='ToTStrategistAgent', ctx=Load()),
+              Constant(value='_generate_branches'),
+              Name(id='fake_generate_branches', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Constant(value='agent_stacks_v10_8.components.strategy._format_prompt_with_defaults'),
+              Name(id='fake_format_prompt', ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='log_feedback',
+              ctx=Store())],
+          value=Lambda(
+            args=arguments(
+              vararg=arg(arg='_'),
+              kwarg=arg(arg='__')),
+            body=Constant(value=None))),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              args=[
+                Dict(
+                  keys=[
+                    Constant(value='job_description')],
+                  values=[
+                    Constant(value='')]),
+                Constant(value='wf-1')]))),
+        Assert(
+          test=Compare(
+            left=Constant(value='strategy_plan'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='result', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='payloads',
+                  ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load()),
+              slice=Constant(value='strategy_name'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='Plan A')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='payloads',
+                  ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load()),
+              slice=Constant(value='tone'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='bold')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_rag_stack_records_world_model_runs',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='_RecordingStore', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='world_model_store',
+                value=Name(id='store', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Name(id='context', ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='RAG_SearchAgent', ctx=Load()),
+              attr='_record_world_model_rag_run',
+              ctx=Load()),
+            args=[
+              Name(id='agent', ctx=Load()),
+              Constant(value='wf-5'),
+              Constant(value='query'),
+              List(
+                elts=[
+                  Constant(value=1),
+                  Constant(value=2),
+                  Constant(value=3)],
+                ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='store', ctx=Load()),
+                    attr='payloads',
+                    ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                slice=Constant(value='key'),
+                ctx=Load()),
+              attr='endswith',
+              ctx=Load()),
+            args=[
+              Constant(value='wf-5')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='store', ctx=Load()),
+                    attr='payloads',
+                    ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                slice=Constant(value='value'),
+                ctx=Load()),
+              slice=Constant(value='num_results'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=3)]))])])

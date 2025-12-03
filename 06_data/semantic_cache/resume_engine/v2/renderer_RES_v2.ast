@@ -1,0 +1,3536 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='copy')]),
+    Import(
+      names=[
+        alias(name='functools')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Tuple'),
+        alias(name='Union'),
+        alias(name='TYPE_CHECKING')],
+      level=0),
+    ImportFrom(
+      module='models_RES',
+      names=[
+        alias(name='ResumeSection'),
+        alias(name='ImmutableStagingBuffer'),
+        alias(name='ThematicAnalysis'),
+        alias(name='ValidationResult'),
+        alias(name='ValidationSeverity')],
+      level=0),
+    ImportFrom(
+      module='config_RES_v2',
+      names=[
+        alias(name='AppConfig'),
+        alias(name='DATA_DIR'),
+        alias(name='CONFIG')],
+      level=0),
+    ImportFrom(
+      module='utils_RES_v2',
+      names=[
+        alias(name='text_utils'),
+        alias(name='sanitize_filename')],
+      level=0),
+    ImportFrom(
+      module='validator_RES_v2',
+      names=[
+        alias(name='AppTrackerQAValidator')],
+      level=0),
+    If(
+      test=Name(id='TYPE_CHECKING', ctx=Load()),
+      body=[
+        ImportFrom(
+          module='workflow_RES_v2',
+          names=[
+            alias(name='WorkflowOrchestrator')],
+          level=0)]),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='FileRenderer',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='master_resume',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='orchestrator',
+                annotation=Constant(value='WorkflowOrchestrator')),
+              arg(
+                arg='company_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='job_title',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Name(id='AppConfig', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_resume',
+                  ctx=Store())],
+              value=Name(id='master_resume', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='orchestrator',
+                  ctx=Store())],
+              value=Name(id='orchestrator', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='company_name',
+                  ctx=Store())],
+              value=Name(id='company_name', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='job_title',
+                  ctx=Store())],
+              value=Name(id='job_title', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Name(id='config', ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_initialize_render_dispatch',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())]))]),
+        FunctionDef(
+          name='_safe_company_name',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='name', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='[^\\w\\s-]'),
+                  Constant(value=''),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='company_name',
+                    ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='sub',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='[-\\s]+'),
+                      Constant(value='_'),
+                      Name(id='name', ctx=Load())]),
+                  attr='strip',
+                  ctx=Load()),
+                args=[
+                  Constant(value='_')]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='functools', ctx=Load()),
+              attr='cached_property',
+              ctx=Load())],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_safe_job_title',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='title', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='[^\\w\\s-]'),
+                  Constant(value=''),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='job_title',
+                    ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='sub',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='[-\\s]+'),
+                      Constant(value='_'),
+                      Name(id='title', ctx=Load())]),
+                  attr='strip',
+                  ctx=Load()),
+                args=[
+                  Constant(value='_')]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='functools', ctx=Load()),
+              attr='cached_property',
+              ctx=Load())],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_strip_fences',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='artifact_name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='stripped_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text_utils', ctx=Load()),
+                  attr='strip_markdown_fences',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='stripped_content', ctx=Load())]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  ⚠️ Removed markdown fences ``` from final '),
+                          FormattedValue(
+                            value=Name(id='artifact_name', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' content.')])]))]),
+            Return(
+              value=Name(id='stripped_content', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='render',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='company_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='job_title',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='thematic_analysis',
+                annotation=Name(id='ThematicAnalysis', ctx=Load())),
+              arg(
+                arg='job_description',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='jd_url',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value='')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Render all output files (Resume, Skills, Cover Letter, QA Report, App Tracker).\n        Uses K0-K11 Enum scheme. Includes fence stripping for relevant artifacts.\n        Returns a tuple of (file_paths, (validation_results, file_contents)).\n        ')),
+            Assign(
+              targets=[
+                Name(id='file_paths', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='file_contents', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='validation_results', ctx=Store())],
+              value=List(ctx=Load())),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='path', ctx=Store()),
+                        Name(id='content', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_render_resume_artifact',
+                      ctx=Load()),
+                    args=[
+                      Name(id='staging_buffer', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_paths', ctx=Load()),
+                      slice=Constant(value='resume_md'),
+                      ctx=Store())],
+                  value=Name(id='path', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_contents', ctx=Load()),
+                      slice=Constant(value='resume_md'),
+                      ctx=Store())],
+                  value=Name(id='content', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Constant(value='RENDER_RESUME_MD')),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='INFO',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=Constant(value='Resume MD rendered successfully.'))])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Error rendering Resume MD: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])],
+                        keywords=[
+                          keyword(
+                            arg='exc_info',
+                            value=Constant(value=True))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validation_results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='ValidationResult', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='rule_id',
+                                value=Constant(value='RENDER_RESUME_MD')),
+                              keyword(
+                                arg='passed',
+                                value=Constant(value=False)),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='ValidationSeverity', ctx=Load()),
+                                  attr='CRITICAL',
+                                  ctx=Load())),
+                              keyword(
+                                arg='message',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Failed to render Resume MD: '),
+                                    FormattedValue(
+                                      value=Name(id='e', ctx=Load()),
+                                      conversion=-1)]))])])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='file_contents', ctx=Load()),
+                          slice=Constant(value='resume_md'),
+                          ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='[ERROR: Resume Rendering Failed: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=']')]))])]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='path', ctx=Store()),
+                        Name(id='content', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_render_skills_artifact',
+                      ctx=Load()),
+                    args=[
+                      Name(id='staging_buffer', ctx=Load()),
+                      Name(id='job_description', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_paths', ctx=Load()),
+                      slice=Constant(value='skills'),
+                      ctx=Store())],
+                  value=Name(id='path', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_contents', ctx=Load()),
+                      slice=Constant(value='skills'),
+                      ctx=Store())],
+                  value=Name(id='content', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Constant(value='RENDER_SKILLS')),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='INFO',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=Constant(value='Skills TXT rendered successfully.'))])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Error rendering Skills TXT: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])],
+                        keywords=[
+                          keyword(
+                            arg='exc_info',
+                            value=Constant(value=True))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validation_results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='ValidationResult', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='rule_id',
+                                value=Constant(value='RENDER_SKILLS')),
+                              keyword(
+                                arg='passed',
+                                value=Constant(value=False)),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='ValidationSeverity', ctx=Load()),
+                                  attr='CRITICAL',
+                                  ctx=Load())),
+                              keyword(
+                                arg='message',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Failed to render Skills TXT: '),
+                                    FormattedValue(
+                                      value=Name(id='e', ctx=Load()),
+                                      conversion=-1)]))])])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='file_contents', ctx=Load()),
+                          slice=Constant(value='skills'),
+                          ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='[ERROR: Skills Rendering Failed: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=']')]))])]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='path', ctx=Store()),
+                        Name(id='content', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_render_cover_letter_artifact',
+                      ctx=Load()),
+                    args=[
+                      Name(id='staging_buffer', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_paths', ctx=Load()),
+                      slice=Constant(value='cover_letter'),
+                      ctx=Store())],
+                  value=Name(id='path', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_contents', ctx=Load()),
+                      slice=Constant(value='cover_letter'),
+                      ctx=Store())],
+                  value=Name(id='content', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Constant(value='RENDER_COVER_LETTER')),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='INFO',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=Constant(value='Cover Letter TXT rendered successfully.'))])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Error rendering Cover Letter TXT: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])],
+                        keywords=[
+                          keyword(
+                            arg='exc_info',
+                            value=Constant(value=True))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validation_results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='ValidationResult', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='rule_id',
+                                value=Constant(value='RENDER_COVER_LETTER')),
+                              keyword(
+                                arg='passed',
+                                value=Constant(value=False)),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='ValidationSeverity', ctx=Load()),
+                                  attr='CRITICAL',
+                                  ctx=Load())),
+                              keyword(
+                                arg='message',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Failed to render Cover Letter TXT: '),
+                                    FormattedValue(
+                                      value=Name(id='e', ctx=Load()),
+                                      conversion=-1)]))])])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='file_contents', ctx=Load()),
+                          slice=Constant(value='cover_letter'),
+                          ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='[ERROR: Cover Letter Rendering Failed: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=']')]))])]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='path', ctx=Store()),
+                        Name(id='content_placeholder', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_render_qa_report_artifact',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_paths', ctx=Load()),
+                      slice=Constant(value='qa_report'),
+                      ctx=Store())],
+                  value=Name(id='path', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_contents', ctx=Load()),
+                      slice=Constant(value='qa_report'),
+                      ctx=Store())],
+                  value=Name(id='content_placeholder', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Constant(value='RENDER_QA_PATH')),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='INFO',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=Constant(value='QA Report path generated.'))])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Error generating QA Report path: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])],
+                        keywords=[
+                          keyword(
+                            arg='exc_info',
+                            value=Constant(value=True))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validation_results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='ValidationResult', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='rule_id',
+                                value=Constant(value='RENDER_QA_PATH')),
+                              keyword(
+                                arg='passed',
+                                value=Constant(value=False)),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='ValidationSeverity', ctx=Load()),
+                                  attr='CRITICAL',
+                                  ctx=Load())),
+                              keyword(
+                                arg='message',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Failed to generate QA Report path: '),
+                                    FormattedValue(
+                                      value=Name(id='e', ctx=Load()),
+                                      conversion=-1)]))])]))])]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='path', ctx=Store()),
+                        Name(id='content', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_render_app_tracker_artifact',
+                      ctx=Load()),
+                    args=[
+                      Name(id='file_paths', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='jd_url',
+                        value=Name(id='jd_url', ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_paths', ctx=Load()),
+                      slice=Constant(value='app_tracker'),
+                      ctx=Store())],
+                  value=Name(id='path', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='file_contents', ctx=Load()),
+                      slice=Constant(value='app_tracker'),
+                      ctx=Store())],
+                  value=Name(id='content', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Constant(value='RENDER_APP_TRACKER')),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='INFO',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=Constant(value='App Tracker JSON rendered successfully (validation moved to QA_Auditor).'))])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Error rendering App Tracker JSON: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])],
+                        keywords=[
+                          keyword(
+                            arg='exc_info',
+                            value=Constant(value=True))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validation_results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='ValidationResult', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='rule_id',
+                                value=Constant(value='RENDER_APP_TRACKER')),
+                              keyword(
+                                arg='passed',
+                                value=Constant(value=False)),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='ValidationSeverity', ctx=Load()),
+                                  attr='CRITICAL',
+                                  ctx=Load())),
+                              keyword(
+                                arg='message',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Failed to render App Tracker JSON: '),
+                                    FormattedValue(
+                                      value=Name(id='e', ctx=Load()),
+                                      conversion=-1)]))])])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='file_contents', ctx=Load()),
+                          slice=Constant(value='app_tracker'),
+                          ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='[ERROR: App Tracker Rendering Failed: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=']')]))])]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='file_paths', ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Name(id='validation_results', ctx=Load()),
+                      Name(id='file_contents', ctx=Load())],
+                    ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Subscript(
+                        value=Name(id='List', ctx=Load()),
+                        slice=Name(id='ValidationResult', ctx=Load()),
+                        ctx=Load()),
+                      Subscript(
+                        value=Name(id='Dict', ctx=Load()),
+                        slice=Tuple(
+                          elts=[
+                            Name(id='str', ctx=Load()),
+                            Name(id='str', ctx=Load())],
+                          ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_render_resume_artifact',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='raw_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_render_resume_markdown',
+                  ctx=Load()),
+                args=[
+                  Name(id='staging_buffer', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='final_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_strip_fences',
+                  ctx=Load()),
+                args=[
+                  Name(id='raw_content', ctx=Load()),
+                  Constant(value='Resume MD')])),
+            Assign(
+              targets=[
+                Name(id='candidate_name', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='master_resume',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='owner'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='name'),
+                      Constant(value='Candidate')]),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value=' '),
+                  Constant(value='_')])),
+            Assign(
+              targets=[
+                Name(id='base_filename', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='candidate_name', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_Resume_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_job_title',
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Name(id='path', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='base_filename', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.md')])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='path', ctx=Load()),
+                  Name(id='final_content', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_render_skills_artifact',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='job_description',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='raw_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_render_skills',
+                  ctx=Load()),
+                args=[
+                  Name(id='staging_buffer', ctx=Load()),
+                  Name(id='job_description', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='final_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_strip_fences',
+                  ctx=Load()),
+                args=[
+                  Name(id='raw_content', ctx=Load()),
+                  Constant(value='Skills TXT')])),
+            Assign(
+              targets=[
+                Name(id='path', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='Skills_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_job_title',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.txt')])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='path', ctx=Load()),
+                  Name(id='final_content', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_render_cover_letter_artifact',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='raw_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='staging_buffer', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K11_COVER_LETTER',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='final_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_strip_fences',
+                  ctx=Load()),
+                args=[
+                  Name(id='raw_content', ctx=Load()),
+                  Constant(value='Cover Letter TXT')])),
+            Assign(
+              targets=[
+                Name(id='path', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='CoverLetter_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_job_title',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.txt')])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='path', ctx=Load()),
+                  Name(id='final_content', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_render_qa_report_artifact',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='path', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='QA_Report_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_job_title',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.md')])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='path', ctx=Load()),
+                  Constant(value='[QA Report Content Placeholder - Generated in HOP-8]')],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_render_app_tracker_artifact',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='file_paths',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='jd_url',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='app_tracker_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_render_app_tracker',
+                  ctx=Load()),
+                args=[
+                  Name(id='file_paths', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='jd_url',
+                    value=Name(id='jd_url', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='app_tracker_data', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='indent',
+                    value=Constant(value=2))])),
+            Assign(
+              targets=[
+                Name(id='path', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='AppTracker_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_job_title',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.json')])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='path', ctx=Load()),
+                  Name(id='content', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='RESUME_RENDER_CONFIG', ctx=Store())],
+          value=List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='source'),
+                  Constant(value='render_method')],
+                values=[
+                  Constant(value='simple'),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K0_NAME',
+                    ctx=Load()),
+                  Constant(value='_render_name')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='source'),
+                  Constant(value='render_method')],
+                values=[
+                  Constant(value='simple'),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K0_HEADLINE',
+                    ctx=Load()),
+                  Constant(value='_render_headline')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='source'),
+                  Constant(value='render_method')],
+                values=[
+                  Constant(value='simple'),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K0_CONTACT',
+                    ctx=Load()),
+                  Constant(value='_render_contact')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='header'),
+                  Constant(value='## EXECUTIVE SUMMARY')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='source'),
+                  Constant(value='render_method')],
+                values=[
+                  Constant(value='simple'),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K1_EXECUTIVE_SUMMARY',
+                    ctx=Load()),
+                  Constant(value='_render_paragraph')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='header'),
+                  Constant(value='## PROFESSIONAL EXPERIENCE')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='master_index'),
+                  Constant(value='overview_source'),
+                  Constant(value='bullets_source')],
+                values=[
+                  Constant(value='experience'),
+                  Constant(value=0),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K2_UNIFY_OVERVIEW',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K2_UNIFY_BULLETS',
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='master_index'),
+                  Constant(value='overview_source'),
+                  Constant(value='bullets_source')],
+                values=[
+                  Constant(value='experience'),
+                  Constant(value=1),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K3_IBM_OVERVIEW',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K3_IBM_BULLETS',
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='master_index'),
+                  Constant(value='narrative_source')],
+                values=[
+                  Constant(value='experience_narrative'),
+                  Constant(value=2),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K4_TRADERSENSE_NARRATIVE',
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='master_index'),
+                  Constant(value='narrative_source')],
+                values=[
+                  Constant(value='experience_narrative'),
+                  Constant(value=3),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K5_EY_NARRATIVE',
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='master_index'),
+                  Constant(value='narrative_source')],
+                values=[
+                  Constant(value='experience_narrative'),
+                  Constant(value=4),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K6_EARLY_CAREER_NARRATIVE',
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='header'),
+                  Constant(value='## EDUCATION')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='source')],
+                values=[
+                  Constant(value='education'),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K7_EDUCATION',
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='header'),
+                  Constant(value='## CERTIFICATIONS & CREDENTIALS')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='source')],
+                values=[
+                  Constant(value='certifications'),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K8_CERTIFICATIONS',
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='header'),
+                  Constant(value='## STRATEGIC & TECHNICAL COMPETENCIES')]),
+              Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='source')],
+                values=[
+                  Constant(value='competencies'),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K9_COMPETENCIES',
+                    ctx=Load())])],
+            ctx=Load())),
+        FunctionDef(
+          name='_initialize_render_dispatch',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_RENDER_DISPATCH',
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='header'),
+                  Constant(value='simple'),
+                  Constant(value='experience'),
+                  Constant(value='experience_narrative'),
+                  Constant(value='education'),
+                  Constant(value='certifications'),
+                  Constant(value='competencies'),
+                  Constant(value='list')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_header',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_simple',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_experience',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_experience_narrative',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_list',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_list',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_list',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_handle_render_list',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='_handle_render_header',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='text'),
+                  Constant(value='')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_handle_render_simple',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='staging_buffer', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Subscript(
+                      value=Name(id='config', ctx=Load()),
+                      slice=Constant(value='source'),
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load())])),
+            If(
+              test=Name(id='content', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='render_method', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      Subscript(
+                        value=Name(id='config', ctx=Load()),
+                        slice=Constant(value='render_method'),
+                        ctx=Load())])),
+                Return(
+                  value=Call(
+                    func=Name(id='render_method', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())]))]),
+            Return(
+              value=Constant(value=''))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_handle_render_experience',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='master_experience', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='master_resume',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='professional_experience'),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='master_index', ctx=Store())],
+              value=Subscript(
+                value=Name(id='config', ctx=Load()),
+                slice=Constant(value='master_index'),
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Constant(value=0),
+                ops=[
+                  LtE(),
+                  Lt()],
+                comparators=[
+                  Name(id='master_index', ctx=Load()),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='master_experience', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='master_exp', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='master_experience', ctx=Load()),
+                    slice=Name(id='master_index', ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='overview', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='staging_buffer', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='config', ctx=Load()),
+                          slice=Constant(value='overview_source'),
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='bullets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='staging_buffer', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='config', ctx=Load()),
+                          slice=Constant(value='bullets_source'),
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())])),
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_render_experience_section_std',
+                      ctx=Load()),
+                    args=[
+                      Name(id='master_exp', ctx=Load()),
+                      Name(id='overview', ctx=Load()),
+                      Name(id='bullets', ctx=Load())]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Master experience index '),
+                          FormattedValue(
+                            value=Name(id='master_index', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' out of bounds. Max index: '),
+                          FormattedValue(
+                            value=BinOp(
+                              left=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='master_experience', ctx=Load())]),
+                              op=Sub(),
+                              right=Constant(value=1)),
+                            conversion=-1),
+                          Constant(value='.')])])),
+                Return(
+                  value=Constant(value=''))])],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_handle_render_experience_narrative',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='master_experience', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='master_resume',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='professional_experience'),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='master_index', ctx=Store())],
+              value=Subscript(
+                value=Name(id='config', ctx=Load()),
+                slice=Constant(value='master_index'),
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Constant(value=0),
+                ops=[
+                  LtE(),
+                  Lt()],
+                comparators=[
+                  Name(id='master_index', ctx=Load()),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='master_experience', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='master_exp', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='master_experience', ctx=Load()),
+                    slice=Name(id='master_index', ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='narrative', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='staging_buffer', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='config', ctx=Load()),
+                          slice=Constant(value='narrative_source'),
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())])),
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_render_experience_section_narrative',
+                      ctx=Load()),
+                    args=[
+                      Name(id='master_exp', ctx=Load()),
+                      Name(id='narrative', ctx=Load())]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Master experience index '),
+                          FormattedValue(
+                            value=Name(id='master_index', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' out of bounds. Max index: '),
+                          FormattedValue(
+                            value=BinOp(
+                              left=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='master_experience', ctx=Load())]),
+                              op=Sub(),
+                              right=Constant(value=1)),
+                            conversion=-1),
+                          Constant(value='.')])])),
+                Return(
+                  value=Constant(value=''))])],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_handle_render_list',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='staging_buffer', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Subscript(
+                      value=Name(id='config', ctx=Load()),
+                      slice=Constant(value='source'),
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='content', ctx=Load()),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load()),
+                      Name(id='list', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='item_prefix', ctx=Store())],
+                  value=Constant(value='* ')),
+                If(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='config', ctx=Load()),
+                      slice=Constant(value='source'),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ResumeSection', ctx=Load()),
+                        attr='K7_EDUCATION',
+                        ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_render_list_section',
+                          ctx=Load()),
+                        args=[
+                          Name(id='content', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='item_prefix',
+                            value=Constant(value=''))]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Subscript(
+                          value=Name(id='config', ctx=Load()),
+                          slice=Constant(value='source'),
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='ResumeSection', ctx=Load()),
+                            attr='K8_CERTIFICATIONS',
+                            ctx=Load())]),
+                      body=[
+                        Return(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_render_list_section',
+                              ctx=Load()),
+                            args=[
+                              Name(id='content', ctx=Load())],
+                            keywords=[
+                              keyword(
+                                arg='item_prefix',
+                                value=Constant(value='* '))]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Subscript(
+                              value=Name(id='config', ctx=Load()),
+                              slice=Constant(value='source'),
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='ResumeSection', ctx=Load()),
+                                attr='K9_COMPETENCIES',
+                                ctx=Load())]),
+                          body=[
+                            Return(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_render_list_section',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='content', ctx=Load())],
+                                keywords=[
+                                  keyword(
+                                    arg='item_prefix',
+                                    value=Constant(value=''))]))],
+                          orelse=[
+                            Return(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_render_list_section',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='content', ctx=Load())],
+                                keywords=[
+                                  keyword(
+                                    arg='item_prefix',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='config', ctx=Load()),
+                                        attr='get',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value='item_prefix'),
+                                        Constant(value='* ')]))]))])])])],
+              orelse=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='content', ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='warning',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Content for list section '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='config', ctx=Load()),
+                                    slice=Constant(value='source'),
+                                    ctx=Load()),
+                                  attr='name',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' is missing or empty.')])])),
+                    Return(
+                      value=Constant(value=''))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='warning',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Expected list content for section '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='config', ctx=Load()),
+                                    slice=Constant(value='source'),
+                                    ctx=Load()),
+                                  attr='name',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=', got '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='type', ctx=Load()),
+                                  args=[
+                                    Name(id='content', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value='. Rendering as string.')])])),
+                    Return(
+                      value=BinOp(
+                        left=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='content', ctx=Load())]),
+                        op=Add(),
+                        right=Constant(value='\n')))])])],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_name',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='# '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='content', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())),
+                    conversion=-1),
+                  Constant(value='\n')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_headline',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='content', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())),
+                    conversion=-1),
+                  Constant(value='\n')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_contact',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='content', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())),
+                    conversion=-1),
+                  Constant(value='\n')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_paragraph',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='content', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())),
+                    conversion=-1),
+                  Constant(value='\n')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_experience_section_std',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='master_exp',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='overview',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='bullets',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Subscript(
+                      value=Name(id='Union', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Dict', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_render_experience_header',
+                  ctx=Load()),
+                args=[
+                  Name(id='master_exp', ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='overview', ctx=Load()),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='overview', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='overview', ctx=Load()),
+                      attr='strip',
+                      ctx=Load()))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='\n'),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='overview', ctx=Load()),
+                                attr='strip',
+                                ctx=Load())),
+                            conversion=-1)])]))]),
+            Assign(
+              targets=[
+                Name(id='bullet_lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='bullets_list', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='bullets', ctx=Load()),
+                    Name(id='list', ctx=Load())]),
+                body=Name(id='bullets', ctx=Load()),
+                orelse=List(ctx=Load()))),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Name(id='bullets_list', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='text', ctx=Store())],
+                  value=Constant(value='')),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='bullet', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='text', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='bullet', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='text'),
+                              Constant(value='')]),
+                          attr='strip',
+                          ctx=Load())))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='bullet', ctx=Load()),
+                          Name(id='str', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='text', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='bullet', ctx=Load()),
+                              attr='strip',
+                              ctx=Load())))])]),
+                If(
+                  test=Name(id='text', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='bullet_lines', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='* '),
+                              FormattedValue(
+                                value=Name(id='text', ctx=Load()),
+                                conversion=-1)])]))])]),
+            If(
+              test=Name(id='bullet_lines', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='\n'),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Constant(value='\n'),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Name(id='bullet_lines', ctx=Load())]))]))]),
+            Return(
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Constant(value='\n'),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Name(id='lines', ctx=Load())]),
+                op=Add(),
+                right=Constant(value='\n')))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_experience_section_narrative',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='master_exp',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='narrative',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_render_experience_header',
+                  ctx=Load()),
+                args=[
+                  Name(id='master_exp', ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='narrative', ctx=Load()),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='narrative', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='narrative', ctx=Load()),
+                      attr='strip',
+                      ctx=Load()))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='\n'),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='narrative', ctx=Load()),
+                                attr='strip',
+                                ctx=Load())),
+                            conversion=-1)])]))]),
+            Assign(
+              targets=[
+                Name(id='master_highlights', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='master_exp', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='highlights'),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='highlight_lines', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='master_highlights', ctx=Load()),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='master_highlights', ctx=Load()),
+                      Name(id='list', ctx=Load())])]),
+              body=[
+                For(
+                  target=Name(id='hl', ctx=Store()),
+                  iter=Name(id='master_highlights', ctx=Load()),
+                  body=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='hl', ctx=Load()),
+                              Name(id='str', ctx=Load())]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='hl', ctx=Load()),
+                              attr='strip',
+                              ctx=Load()))]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='highlight_lines', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='* '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='hl', ctx=Load()),
+                                        attr='strip',
+                                        ctx=Load())),
+                                    conversion=-1)])]))])])]),
+            If(
+              test=Name(id='highlight_lines', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='prefix', ctx=Store())],
+                  value=IfExp(
+                    test=BoolOp(
+                      op=And(),
+                      values=[
+                        Name(id='narrative', ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='narrative', ctx=Load()),
+                            attr='strip',
+                            ctx=Load()))]),
+                    body=Constant(value='\n'),
+                    orelse=Constant(value=''))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='prefix', ctx=Load()),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Constant(value='\n'),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Name(id='highlight_lines', ctx=Load())]))]))]),
+            Return(
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Constant(value='\n'),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Name(id='lines', ctx=Load())]),
+                op=Add(),
+                right=Constant(value='\n')))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_experience_header',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='master_exp',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='header_lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='company', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='master_exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='location', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='master_exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='location'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='line1_parts', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='part', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='part', ctx=Store()),
+                    iter=List(
+                      elts=[
+                        Name(id='company', ctx=Load()),
+                        Name(id='location', ctx=Load())],
+                      ctx=Load()),
+                    ifs=[
+                      Name(id='part', ctx=Load())],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='title', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='master_exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='title'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='start', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='master_exp', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='dates'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='start'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='end', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='master_exp', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='dates'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='end'),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='date_str', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' – '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='filter', ctx=Load()),
+                    args=[
+                      Constant(value=None),
+                      List(
+                        elts=[
+                          Name(id='start', ctx=Load()),
+                          Name(id='end', ctx=Load())],
+                        ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='line2_parts', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='part', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='part', ctx=Store()),
+                    iter=List(
+                      elts=[
+                        Name(id='title', ctx=Load()),
+                        Name(id='date_str', ctx=Load())],
+                      ctx=Load()),
+                    ifs=[
+                      Name(id='part', ctx=Load())],
+                    is_async=0)])),
+            If(
+              test=Name(id='line1_parts', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='header_lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='**'),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value=' | '),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Name(id='line1_parts', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value='**')])]))]),
+            If(
+              test=Name(id='line2_parts', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='header_lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='**'),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value=' | '),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Name(id='line2_parts', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value='**')])]))]),
+            Return(
+              value=Name(id='header_lines', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_render_list_section',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content_list',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Union', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Dict', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='item_prefix',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='content_list', ctx=Load()),
+                    Name(id='list', ctx=Load())])),
+              body=[
+                Return(
+                  value=Constant(value=''))]),
+            For(
+              target=Name(id='item', ctx=Store()),
+              iter=Name(id='content_list', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='text_to_render', ctx=Store())],
+                  value=Constant(value='')),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='item', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='text_to_render', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='item', ctx=Load()),
+                          attr='strip',
+                          ctx=Load())))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='item', ctx=Load()),
+                          Name(id='dict', ctx=Load())]),
+                      body=[
+                        If(
+                          test=BoolOp(
+                            op=And(),
+                            values=[
+                              Compare(
+                                left=Constant(value='degree'),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='item', ctx=Load())]),
+                              Compare(
+                                left=Constant(value='institution'),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='item', ctx=Load())])]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='degree', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='item', ctx=Load()),
+                                      attr='get',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='degree'),
+                                      Constant(value='')]),
+                                  attr='strip',
+                                  ctx=Load()))),
+                            Assign(
+                              targets=[
+                                Name(id='institution', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='item', ctx=Load()),
+                                      attr='get',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='institution'),
+                                      Constant(value='')]),
+                                  attr='strip',
+                                  ctx=Load()))),
+                            Assign(
+                              targets=[
+                                Name(id='parts', ctx=Store())],
+                              value=ListComp(
+                                elt=Name(id='p', ctx=Load()),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='p', ctx=Store()),
+                                    iter=List(
+                                      elts=[
+                                        Name(id='degree', ctx=Load()),
+                                        Name(id='institution', ctx=Load())],
+                                      ctx=Load()),
+                                    ifs=[
+                                      Name(id='p', ctx=Load())],
+                                    is_async=0)])),
+                            Assign(
+                              targets=[
+                                Name(id='text_to_render', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Constant(value=', '),
+                                  attr='join',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='parts', ctx=Load())])),
+                            Assign(
+                              targets=[
+                                Name(id='notes', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='item', ctx=Load()),
+                                      attr='get',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='notes'),
+                                      Constant(value='')]),
+                                  attr='strip',
+                                  ctx=Load()))),
+                            If(
+                              test=Name(id='notes', ctx=Load()),
+                              body=[
+                                AugAssign(
+                                  target=Name(id='text_to_render', ctx=Store()),
+                                  op=Add(),
+                                  value=JoinedStr(
+                                    values=[
+                                      Constant(value=' ('),
+                                      FormattedValue(
+                                        value=Name(id='notes', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=')')]))])],
+                          orelse=[
+                            Assign(
+                              targets=[
+                                Name(id='text_to_render', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='item', ctx=Load()),
+                                      attr='get',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='text'),
+                                      Call(
+                                        func=Name(id='str', ctx=Load()),
+                                        args=[
+                                          Name(id='item', ctx=Load())])]),
+                                  attr='strip',
+                                  ctx=Load())))])])]),
+                If(
+                  test=Name(id='text_to_render', ctx=Load()),
+                  body=[
+                    If(
+                      test=BoolOp(
+                        op=Or(),
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='text_to_render', ctx=Load()),
+                              attr='startswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='*')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='text_to_render', ctx=Load()),
+                              attr='startswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='**')])]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='lines', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='text_to_render', ctx=Load())]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='lines', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  FormattedValue(
+                                    value=Name(id='item_prefix', ctx=Load()),
+                                    conversion=-1),
+                                  FormattedValue(
+                                    value=Name(id='text_to_render', ctx=Load()),
+                                    conversion=-1)])]))])])]),
+            Return(
+              value=IfExp(
+                test=Name(id='lines', ctx=Load()),
+                body=BinOp(
+                  left=Call(
+                    func=Attribute(
+                      value=Constant(value='\n'),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Name(id='lines', ctx=Load())]),
+                  op=Add(),
+                  right=Constant(value='\n')),
+                orelse=Constant(value='')))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_skills',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='job_description',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='skills_list', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='staging_buffer', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K10_SKILLS',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='output_lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='valid_skills', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='malformed', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='isinstance', ctx=Load()),
+                      args=[
+                        Name(id='skills_list', ctx=Load()),
+                        Name(id='list', ctx=Load())])),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='skills_list', ctx=Load()))]),
+              body=[
+                Return(
+                  value=Constant(value='• Error: K.10_Skills list not found or invalid.'))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='skills_list', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='skills_list', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load()),
+                      attr='startswith',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Error:')])]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Constant(value='\n\n'),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Name(id='skills_list', ctx=Load())]))]),
+            For(
+              target=Name(id='skill', ctx=Store()),
+              iter=Name(id='skills_list', ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='skill', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='cleaned', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='skill', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='wc', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='text_utils', ctx=Load()),
+                          attr='count_words_ms_word_style',
+                          ctx=Load()),
+                        args=[
+                          Name(id='cleaned', ctx=Load())])),
+                    If(
+                      test=Compare(
+                        left=Constant(value=1),
+                        ops=[
+                          LtE(),
+                          LtE()],
+                        comparators=[
+                          Name(id='wc', ctx=Load()),
+                          Constant(value=3)]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='valid_skills', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='• '),
+                                  FormattedValue(
+                                    value=Name(id='cleaned', ctx=Load()),
+                                    conversion=-1)])]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='malformed', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='• '),
+                                  FormattedValue(
+                                    value=Name(id='cleaned', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' [Warning: Malformed - '),
+                                  FormattedValue(
+                                    value=Name(id='wc', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' words (expected 1-3)]')])]))])],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='malformed', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='• '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        Name(id='skill', ctx=Load())]),
+                                    attr='strip',
+                                    ctx=Load())),
+                                conversion=-1),
+                              Constant(value=' [Warning: Non-string skill item found]')])]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='output_lines', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='valid_skills', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='output_lines', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='malformed', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='output_lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_resume_markdown',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Renders the resume to markdown format using the K0-K11 schema.\n        Uses the RESUME_RENDER_CONFIG to determine the order and type of sections.\n        ')),
+            Assign(
+              targets=[
+                Name(id='sections', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='section_config', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='RESUME_RENDER_CONFIG',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='section_type', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='section_config', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='type')])),
+                Assign(
+                  targets=[
+                    Name(id='render_handler', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_RENDER_DISPATCH',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section_type', ctx=Load())])),
+                If(
+                  test=Name(id='render_handler', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='section_content', ctx=Store())],
+                      value=Call(
+                        func=Name(id='render_handler', ctx=Load()),
+                        args=[
+                          Name(id='section_config', ctx=Load()),
+                          Name(id='staging_buffer', ctx=Load())])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='section_content', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='section_content', ctx=Load()),
+                              attr='strip',
+                              ctx=Load()))]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='sections', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='section_content', ctx=Load())]))])],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='warning',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Unknown section type: '),
+                              FormattedValue(
+                                value=Name(id='section_type', ctx=Load()),
+                                conversion=-1)])]))])]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='sections', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_render_app_tracker',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='file_paths',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='jd_url',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='app_tracker_schema', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='validator',
+                  ctx=Load()),
+                attr='app_tracker_schema',
+                ctx=Load())),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='app_tracker_schema', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='App tracker schema not found in config.constraints.app_tracker_schema')])),
+                Assign(
+                  targets=[
+                    Name(id='app_tracker_schema', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='tracker', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='copy', ctx=Load()),
+                  attr='deepcopy',
+                  ctx=Load()),
+                args=[
+                  Name(id='app_tracker_schema', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='candidate_name', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='master_resume',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='owner'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='name'),
+                      Constant(value='Candidate')]),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value=' '),
+                  Constant(value='_')])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='tracker', ctx=Load()),
+                  slice=Constant(value='Company'),
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='company_name',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='tracker', ctx=Load()),
+                  slice=Constant(value='Job Title'),
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='job_title',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='tracker', ctx=Load()),
+                  slice=Constant(value='JD URL'),
+                  ctx=Store())],
+              value=Name(id='jd_url', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='tracker', ctx=Load()),
+                  slice=Constant(value='Application Date'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())),
+                  attr='strftime',
+                  ctx=Load()),
+                args=[
+                  Constant(value='%m/%d/%Y')])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='tracker', ctx=Load()),
+                  slice=Constant(value='Base Resume'),
+                  ctx=Store())],
+              value=Constant(value='')),
+            Assign(
+              targets=[
+                Name(id='versioned_resume_filename', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='candidate_name', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_Resume_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_safe_job_title',
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='tracker', ctx=Load()),
+                  slice=Constant(value='Versioned Resume'),
+                  ctx=Store())],
+              value=Name(id='versioned_resume_filename', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='tracker', ctx=Load()),
+                  slice=Constant(value='Pipeline Status'),
+                  ctx=Store())],
+              value=Constant(value='Applied')),
+            If(
+              test=Name(id='app_tracker_schema', ctx=Load()),
+              body=[
+                For(
+                  target=Name(id='key', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='app_tracker_schema', ctx=Load()),
+                      attr='keys',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='key', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='tracker', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='tracker', ctx=Load()),
+                              slice=Name(id='key', ctx=Load()),
+                              ctx=Store())],
+                          value=Constant(value=''))])])]),
+            Return(
+              value=Name(id='tracker', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load()))])])

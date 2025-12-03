@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\n\nfrom pydantic import BaseModel, Field\n\nfrom core.models.models import ReasoningMode\n\n\nclass LLMProfile(BaseModel):\n    \"\"\"LLM configuration profile used by execution profiles.\n\n    This model is intentionally minimal and mirrors the knobs already\n    present in ExecutionProfileSpec: reasoning_mode, model_tier,\n    max_cost_usd, max_latency_ms.\n    \"\"\"\n\n    reasoning_mode: ReasoningMode = ReasoningMode.COT\n    model_tier: str = Field(default=\"balanced\", description=\"Model tier hint, e.g. 'cheap', 'balanced', 'premium'.\")\n    max_cost_usd: float = Field(default=0.10, ge=0.0)\n    max_latency_ms: int = Field(default=3000, ge=0)\n\n\n\n",
+  "full_hash": "ab2335c1c58ee1fa2a57babe0ae6ea5d87cc67aab2541edae1c6e93beb7c4e5a",
+  "generated_at": 1764728347.9118414,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\safety-guard-layer\\rank-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\llm_profile.py"
+}

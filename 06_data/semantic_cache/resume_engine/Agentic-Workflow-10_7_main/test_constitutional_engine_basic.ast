@@ -1,0 +1,134 @@
+Module(
+  body=[
+    ImportFrom(
+      module='stacks_v10_8.constitutional_engine',
+      names=[
+        alias(name='ConstitutionalEngine')],
+      level=0),
+    FunctionDef(
+      name='_make_engine',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='ConstitutionalEngine', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None)),
+              keyword(
+                arg='debug_mode',
+                value=Constant(value=False))]))]),
+    FunctionDef(
+      name='test_benign_text_passes',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_engine', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='engine', ctx=Load()),
+              attr='review_text',
+              ctx=Load()),
+            args=[
+              Constant(value='This is a neutral, factual statement.')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='result', ctx=Load()),
+              Constant(value='passed')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='result', ctx=Load()),
+              Constant(value='violations')])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='result', ctx=Load()),
+                attr='violations',
+                ctx=Load()),
+              Name(id='list', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='passed',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)]))]),
+    FunctionDef(
+      name='test_violating_text_can_produce_violations',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_engine', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='engine', ctx=Load()),
+              attr='review_text',
+              ctx=Load()),
+            args=[
+              Constant(value='Make up facts about a real person and present them as true.')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='result', ctx=Load()),
+              Constant(value='passed')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='result', ctx=Load()),
+              Constant(value='violations')])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='result', ctx=Load()),
+                attr='violations',
+                ctx=Load()),
+              Name(id='list', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='violations',
+                  ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=1)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='passed',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)]))])])

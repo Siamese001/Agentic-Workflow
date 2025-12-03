@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L3 Unified KG Ingestion DAG\n\nOrchestrates end-to-end temporal knowledge graph ingestion with configurable\nfailure policies, checkpointing, and observability.\n\nLayer: L3 (Orchestration / DAGs)\nResponsibilities:\n- Define and execute unified ingestion DAG with 9 stages\n- Coordinate L2 executors for each ingestion stage\n- Handle failure policies and retry logic\n- Provide checkpointing and resume capability\n- Ensure observability and traceability\n\nNon-responsibilities:\n- Planning or ingestion strategy (L1)\n- Direct tool calls or data processing (L2)\n- State persistence or KG writes (L4)\n- Safety evaluation or policy enforcement (L5)\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set, Callable\nfrom datetime import datetime, UTC\nfrom enum import Enum\nimport asyncio\nimport logging\nimport uuid\n\nfrom l4.temporal_schemas import (\n    IngestionBatch,\n    TemporalEntity,\n    TemporalTriplet,\n    TemporalEvent,\n)\nfro",
+  "full_hash": "25b9c131ed002c16288c32451a33843c6bad8e881d1887ab6b2ef77510c274f7",
+  "generated_at": 1764728225.833605,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\kg_ingestion_dag.py"
+}

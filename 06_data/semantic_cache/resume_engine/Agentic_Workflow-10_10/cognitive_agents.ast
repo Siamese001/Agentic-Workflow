@@ -1,0 +1,2044 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nUnified Cognitive Agents (v10_10 · Phase 3 — FINAL)\n===================================================\n\nThis module implements ALL LLM-based cognition for the v10_10 workflow.\n\nL2 is the only layer allowed to call these agents.\n\nAgents (L2 cognition only):\n    • StrategyLLMAgent            – strategy reasoning\n    • DraftingGuild              – resume drafting\n    • SemanticQAAgent            – QA reasoning + RAG reasoning\n    • ConstitutionalSafetyAgent  – safety / policy review\n    • HYDEQueryAgent             – HYDE synthetic query generation\n    • QACouncilAgent             – QA council aggregation\n\nDesign constraints:\n    • Only this module may invoke LLMs.\n    • No planning (L1), orchestration (L3), state mutation (L4),\n      or safety policy enforcement (L5).\n    • All calls use PromptInstance + ACL from prompt_builder.\n    • All model selection goes through RoutingPolicy.\n    • All LLM calls go through runtime_utils.invoke_model.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Sequence')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='StrategyResult'),
+        alias(name='StrategyBranch'),
+        alias(name='RAGResult'),
+        alias(name='DraftingResult'),
+        alias(name='DraftSection'),
+        alias(name='QAResult'),
+        alias(name='QAFinding'),
+        alias(name='SafetyResult'),
+        alias(name='SafetyFinding'),
+        alias(name='Evidence'),
+        alias(name='RAGPlan'),
+        alias(name='CouncilVote')],
+      level=0),
+    ImportFrom(
+      module='routing',
+      names=[
+        alias(name='RoutingPolicy')],
+      level=0),
+    ImportFrom(
+      module='runtime_utils',
+      names=[
+        alias(name='invoke_model'),
+        alias(name='SandboxConfig')],
+      level=0),
+    ImportFrom(
+      module='observability',
+      names=[
+        alias(name='record_event'),
+        alias(name='record_exception')],
+      level=0),
+    ImportFrom(
+      module='meta_profile',
+      names=[
+        alias(name='MetaProfileSnapshot')],
+      level=0),
+    ImportFrom(
+      module='prompt_builder',
+      names=[
+        alias(name='PromptInstance'),
+        alias(name='build_strategy_prompt'),
+        alias(name='build_drafting_prompt'),
+        alias(name='build_rag_prompt'),
+        alias(name='build_qa_prompt'),
+        alias(name='build_safety_prompt'),
+        alias(name='build_hyde_prompt')],
+      level=0),
+    ClassDef(
+      name='_PromptContext',
+      body=[
+        Expr(
+          value=Constant(value='\n    Lightweight context object passed to prompt_builder.\n\n    We intentionally avoid depending on models.ExecutionContext here;\n    prompt_builder only needs job, resume, config, which we expose\n    directly.\n    ')),
+        AnnAssign(
+          target=Name(id='job', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resume', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='config', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='LLMBaseAgent',
+      body=[
+        Expr(
+          value=Constant(value='\n    Base class for all L2 cognitive agents.\n\n    This class centralizes:\n        • RoutingPolicy-based model selection.\n        • SandboxConfig usage.\n        • invoke_model() calls.\n        • Basic observability events.\n\n    This class must remain **L2-only** and must not perform:\n        • planning (L1),\n        • orchestration / retries (L3),\n        • state mutation (L4),\n        • safety policy enforcement (L5).\n    ')),
+        AnnAssign(
+          target=Name(id='routing_policy', ctx=Store()),
+          annotation=Name(id='RoutingPolicy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sandbox', ctx=Store()),
+          annotation=Name(id='SandboxConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='meta_profile', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='MetaProfileSnapshot', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='routing_policy',
+                annotation=Name(id='RoutingPolicy', ctx=Load())),
+              arg(
+                arg='sandbox',
+                annotation=Name(id='SandboxConfig', ctx=Load())),
+              arg(
+                arg='meta_profile',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='MetaProfileSnapshot', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='routing_policy',
+                  ctx=Store())],
+              value=Name(id='routing_policy', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='sandbox',
+                  ctx=Store())],
+              value=Name(id='sandbox', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_profile',
+                  ctx=Store())],
+              value=Name(id='meta_profile', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_call_llm',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='PromptInstance', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Execute a single LLM call for the given prompt instance.\n        ')),
+            AnnAssign(
+              target=Name(id='complexity', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='prompt', ctx=Load()),
+                    attr='variables',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='plan')])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='plan', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='plan', ctx=Load()),
+                      Constant(value='complexity')])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='complexity', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='plan', ctx=Load()),
+                      Constant(value='complexity'),
+                      Constant(value=None)]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='model', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='routing_policy',
+                        ctx=Load()),
+                      attr='select_model',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='task',
+                        value=Attribute(
+                          value=Name(id='prompt', ctx=Load()),
+                          attr='prompt_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='complexity',
+                        value=Name(id='complexity', ctx=Load())),
+                      keyword(
+                        arg='meta_profile',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='meta_profile',
+                          ctx=Load()))]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_exception', ctx=Load()),
+                        args=[
+                          Constant(value='routing_policy_error'),
+                          Name(id='exc', ctx=Load())])),
+                    Raise()])]),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='llm_call_start'),
+                  Dict(
+                    keys=[
+                      Constant(value='prompt_id'),
+                      Constant(value='model'),
+                      Constant(value='layer'),
+                      Constant(value='agent')],
+                    values=[
+                      Attribute(
+                        value=Name(id='prompt', ctx=Load()),
+                        attr='prompt_id',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='model', ctx=Load()),
+                          Constant(value='name'),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='model', ctx=Load())])]),
+                      Attribute(
+                        value=Name(id='prompt', ctx=Load()),
+                        attr='layer',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='prompt', ctx=Load()),
+                        attr='agent',
+                        ctx=Load())])])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='raw', ctx=Store())],
+                  value=Call(
+                    func=Name(id='invoke_model', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='model',
+                        value=Name(id='model', ctx=Load())),
+                      keyword(
+                        arg='prompt',
+                        value=Name(id='prompt', ctx=Load())),
+                      keyword(
+                        arg='sandbox',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='sandbox',
+                          ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Name(id='record_event', ctx=Load()),
+                    args=[
+                      Constant(value='llm_call_success'),
+                      Dict(
+                        keys=[
+                          Constant(value='prompt_id'),
+                          Constant(value='model'),
+                          Constant(value='layer'),
+                          Constant(value='agent')],
+                        values=[
+                          Attribute(
+                            value=Name(id='prompt', ctx=Load()),
+                            attr='prompt_id',
+                            ctx=Load()),
+                          Call(
+                            func=Name(id='getattr', ctx=Load()),
+                            args=[
+                              Name(id='model', ctx=Load()),
+                              Constant(value='name'),
+                              Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Name(id='model', ctx=Load())])]),
+                          Attribute(
+                            value=Name(id='prompt', ctx=Load()),
+                            attr='layer',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='prompt', ctx=Load()),
+                            attr='agent',
+                            ctx=Load())])])),
+                Return(
+                  value=Name(id='raw', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_exception', ctx=Load()),
+                        args=[
+                          Constant(value='llm_call_failure'),
+                          Name(id='exc', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_event', ctx=Load()),
+                        args=[
+                          Constant(value='llm_call_failure_event'),
+                          Dict(
+                            keys=[
+                              Constant(value='prompt_id'),
+                              Constant(value='model'),
+                              Constant(value='layer'),
+                              Constant(value='agent')],
+                            values=[
+                              Attribute(
+                                value=Name(id='prompt', ctx=Load()),
+                                attr='prompt_id',
+                                ctx=Load()),
+                              Call(
+                                func=Name(id='getattr', ctx=Load()),
+                                args=[
+                                  Name(id='model', ctx=Load()),
+                                  Constant(value='name'),
+                                  Call(
+                                    func=Name(id='str', ctx=Load()),
+                                    args=[
+                                      Name(id='model', ctx=Load())])]),
+                              Attribute(
+                                value=Name(id='prompt', ctx=Load()),
+                                attr='layer',
+                                ctx=Load()),
+                              Attribute(
+                                value=Name(id='prompt', ctx=Load()),
+                                attr='agent',
+                                ctx=Load())])])),
+                    Raise()])])],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='StrategyLLMAgent',
+      bases=[
+        Name(id='LLMBaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Strategy agent responsible for high-level reasoning.\n\n    Outputs:\n        • StrategyResult\n        • StrategyBranch list (internally)\n    ')),
+        AsyncFunctionDef(
+          name='run_strategy',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='strategy_plan',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='job',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='resume',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='_PromptContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Name(id='job', ctx=Load())),
+                  keyword(
+                    arg='resume',
+                    value=Name(id='resume', ctx=Load())),
+                  keyword(
+                    arg='config',
+                    value=Name(id='config', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='build_strategy_prompt', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='plan',
+                    value=Name(id='strategy_plan', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='ctx', ctx=Load())),
+                  keyword(
+                    arg='layer',
+                    value=Constant(value='L2')),
+                  keyword(
+                    arg='agent',
+                    value=Constant(value='strategy')),
+                  keyword(
+                    arg='model_tier',
+                    value=Constant(value='balanced'))])),
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_call_llm',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='raw', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Name(id='branches', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='StrategyBranch', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='text', ctx=Load())])),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='data', ctx=Load()),
+                      Name(id='list', ctx=Load())]),
+                  body=[
+                    For(
+                      target=Name(id='item', ctx=Store()),
+                      iter=Name(id='data', ctx=Load()),
+                      body=[
+                        Try(
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='branches', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Name(id='StrategyBranch', ctx=Load()),
+                                    keywords=[
+                                      keyword(
+                                        arg='id',
+                                        value=Call(
+                                          func=Name(id='str', ctx=Load()),
+                                          args=[
+                                            BoolOp(
+                                              op=Or(),
+                                              values=[
+                                                Call(
+                                                  func=Attribute(
+                                                    value=Name(id='item', ctx=Load()),
+                                                    attr='get',
+                                                    ctx=Load()),
+                                                  args=[
+                                                    Constant(value='id')]),
+                                                Call(
+                                                  func=Name(id='len', ctx=Load()),
+                                                  args=[
+                                                    Name(id='branches', ctx=Load())])])])),
+                                      keyword(
+                                        arg='description',
+                                        value=Call(
+                                          func=Name(id='str', ctx=Load()),
+                                          args=[
+                                            BoolOp(
+                                              op=Or(),
+                                              values=[
+                                                Call(
+                                                  func=Attribute(
+                                                    value=Name(id='item', ctx=Load()),
+                                                    attr='get',
+                                                    ctx=Load()),
+                                                  args=[
+                                                    Constant(value='description')]),
+                                                Constant(value='')])])),
+                                      keyword(
+                                        arg='weight',
+                                        value=Call(
+                                          func=Name(id='float', ctx=Load()),
+                                          args=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='weight'),
+                                                Constant(value=1.0)])]))])]))],
+                          handlers=[
+                            ExceptHandler(
+                              type=Name(id='Exception', ctx=Load()),
+                              body=[
+                                Continue()])])])],
+                  orelse=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          Constant(value='Strategy output must be a JSON list')]))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='branches', ctx=Store())],
+                      value=List(
+                        elts=[
+                          Call(
+                            func=Name(id='StrategyBranch', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='id',
+                                value=Constant(value='default')),
+                              keyword(
+                                arg='description',
+                                value=BoolOp(
+                                  op=Or(),
+                                  values=[
+                                    Name(id='text', ctx=Load()),
+                                    Constant(value='Default strategy branch')])),
+                              keyword(
+                                arg='weight',
+                                value=Constant(value=1.0))])],
+                        ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='StrategyResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='branches',
+                    value=Name(id='branches', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='strategy_completed'),
+                  Dict(
+                    keys=[
+                      Constant(value='num_branches'),
+                      Constant(value='text_len')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='branches', ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='text', ctx=Load())])])])),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Name(id='StrategyResult', ctx=Load()))]),
+    ClassDef(
+      name='DraftingGuild',
+      bases=[
+        Name(id='LLMBaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Drafting agent that turns strategy + evidence into resume content.\n\n    Phase 3 implementation:\n        • Uses a single drafting prompt envelope per call.\n        • Emits a DraftingResult with at least one DraftSection.\n        • Parsing is robust to both JSON and free-form text output.\n    ')),
+        AsyncFunctionDef(
+          name='run_drafting',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='drafting_plan',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='job',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='resume',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='strategy_result',
+                annotation=Name(id='StrategyResult', ctx=Load())),
+              arg(
+                arg='rag_result',
+                annotation=Name(id='RAGResult', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='_PromptContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Name(id='job', ctx=Load())),
+                  keyword(
+                    arg='resume',
+                    value=Name(id='resume', ctx=Load())),
+                  keyword(
+                    arg='config',
+                    value=Name(id='config', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='build_drafting_prompt', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='plan',
+                    value=Name(id='drafting_plan', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='ctx', ctx=Load())),
+                  keyword(
+                    arg='strategy',
+                    value=Name(id='strategy_result', ctx=Load())),
+                  keyword(
+                    arg='rag',
+                    value=Name(id='rag_result', ctx=Load())),
+                  keyword(
+                    arg='layer',
+                    value=Constant(value='L2')),
+                  keyword(
+                    arg='agent',
+                    value=Constant(value='drafting')),
+                  keyword(
+                    arg='model_tier',
+                    value=Constant(value='balanced'))])),
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_call_llm',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='raw', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Name(id='sections', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='DraftSection', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='text', ctx=Load())])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='isinstance', ctx=Load()),
+                      args=[
+                        Name(id='data', ctx=Load()),
+                        Name(id='list', ctx=Load())])),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          Constant(value='Drafting output must be a JSON list')]))]),
+                For(
+                  target=Name(id='item', ctx=Store()),
+                  iter=Name(id='data', ctx=Load()),
+                  body=[
+                    Try(
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='sections', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='DraftSection', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='id',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='id')]),
+                                            Call(
+                                              func=Name(id='len', ctx=Load()),
+                                              args=[
+                                                Name(id='sections', ctx=Load())])])])),
+                                  keyword(
+                                    arg='title',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='title')]),
+                                            Constant(value='')])])),
+                                  keyword(
+                                    arg='body',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='body')]),
+                                            Constant(value='')])])),
+                                  keyword(
+                                    arg='metadata',
+                                    value=Call(
+                                      func=Name(id='dict', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='metadata')]),
+                                            Dict()])]))])]))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          body=[
+                            Continue()])])])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='sections', ctx=Store())],
+                      value=List(
+                        elts=[
+                          Call(
+                            func=Name(id='DraftSection', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='id',
+                                value=Constant(value='full')),
+                              keyword(
+                                arg='title',
+                                value=Constant(value='Auto-generated Resume')),
+                              keyword(
+                                arg='body',
+                                value=Name(id='text', ctx=Load())),
+                              keyword(arg='metadata', value=Dict())])],
+                        ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='DraftingResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='sections',
+                    value=Name(id='sections', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='drafting_completed'),
+                  Dict(
+                    keys=[
+                      Constant(value='num_sections'),
+                      Constant(value='text_len')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='sections', ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='text', ctx=Load())])])])),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Name(id='DraftingResult', ctx=Load()))]),
+    ClassDef(
+      name='SemanticQAAgent',
+      bases=[
+        Name(id='LLMBaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    QA agent that evaluates drafted content and performs RAG reasoning.\n\n    Outputs:\n        • QAResult with structured QAFinding items.\n        • RAG reasoning text for Phase-3 reasoning stage.\n    ')),
+        AsyncFunctionDef(
+          name='run_qa',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='qa_plan',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='draft',
+                annotation=Name(id='DraftingResult', ctx=Load())),
+              arg(
+                arg='rag',
+                annotation=Name(id='RAGResult', ctx=Load())),
+              arg(
+                arg='job',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='resume',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Run QA over drafted resume + retrieval evidence.\n        ')),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='_PromptContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Name(id='job', ctx=Load())),
+                  keyword(
+                    arg='resume',
+                    value=Name(id='resume', ctx=Load())),
+                  keyword(
+                    arg='config',
+                    value=Name(id='config', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='build_qa_prompt', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='plan',
+                    value=Name(id='qa_plan', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='ctx', ctx=Load())),
+                  keyword(
+                    arg='draft',
+                    value=Name(id='draft', ctx=Load())),
+                  keyword(
+                    arg='rag',
+                    value=Name(id='rag', ctx=Load())),
+                  keyword(
+                    arg='layer',
+                    value=Constant(value='L2')),
+                  keyword(
+                    arg='agent',
+                    value=Constant(value='qa')),
+                  keyword(
+                    arg='model_tier',
+                    value=Constant(value='balanced'))])),
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_call_llm',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='raw', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='findings', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_parse_qa_output',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load()),
+                  Name(id='qa_plan', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='QAResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='findings',
+                    value=Name(id='findings', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='qa_completed'),
+                  Dict(
+                    keys=[
+                      Constant(value='num_findings'),
+                      Constant(value='text_len')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='findings', ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='text', ctx=Load())])])])),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Name(id='QAResult', ctx=Load())),
+        AsyncFunctionDef(
+          name='run_rag_reasoning',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='PromptInstance', ctx=Load())),
+              arg(
+                arg='evidence',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='Evidence', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='job',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='resume',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Phase-3 RAG reasoning.\n\n        L2 passes a pre-built RAG prompt; this method simply calls the LLM\n        and returns the reasoning text. L2 turns this into a synthetic\n        Evidence item.\n        ')),
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_call_llm',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='raw', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='rag_reasoning_completed'),
+                  Dict(
+                    keys=[
+                      Constant(value='prompt_id'),
+                      Constant(value='evidence_count'),
+                      Constant(value='text_len')],
+                    values=[
+                      Attribute(
+                        value=Name(id='prompt', ctx=Load()),
+                        attr='prompt_id',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='list', ctx=Load()),
+                            args=[
+                              BoolOp(
+                                op=Or(),
+                                values=[
+                                  Name(id='evidence', ctx=Load()),
+                                  List(ctx=Load())])])]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='text', ctx=Load())])])])),
+            Return(
+              value=Name(id='text', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_parse_qa_output',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='raw',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='qa_plan',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Parse QA output into QAFinding items.\n\n        If JSON parsing fails, we fall back to a single generic finding.\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='raw', ctx=Load())),
+              body=[
+                Return(
+                  value=List(
+                    elts=[
+                      Call(
+                        func=Name(id='QAFinding', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='id',
+                            value=Constant(value='generic')),
+                          keyword(
+                            arg='category',
+                            value=Constant(value='qa')),
+                          keyword(
+                            arg='severity',
+                            value=Constant(value='high')),
+                          keyword(
+                            arg='message',
+                            value=Constant(value='No QA output produced')),
+                          keyword(arg='metadata', value=Dict())])],
+                    ctx=Load()))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='raw', ctx=Load())])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='isinstance', ctx=Load()),
+                      args=[
+                        Name(id='data', ctx=Load()),
+                        Name(id='list', ctx=Load())])),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          Constant(value='QA output must be a JSON list')]))]),
+                AnnAssign(
+                  target=Name(id='findings', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='QAFinding', ctx=Load()),
+                    ctx=Load()),
+                  value=List(ctx=Load()),
+                  simple=1),
+                For(
+                  target=Name(id='item', ctx=Store()),
+                  iter=Name(id='data', ctx=Load()),
+                  body=[
+                    Try(
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='findings', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='QAFinding', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='id',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='id')]),
+                                            Call(
+                                              func=Name(id='len', ctx=Load()),
+                                              args=[
+                                                Name(id='findings', ctx=Load())])])])),
+                                  keyword(
+                                    arg='category',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='category')]),
+                                            Constant(value='qa')])])),
+                                  keyword(
+                                    arg='severity',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='severity')]),
+                                            Constant(value='medium')])])),
+                                  keyword(
+                                    arg='message',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='message')]),
+                                            Constant(value='')])])),
+                                  keyword(
+                                    arg='metadata',
+                                    value=Call(
+                                      func=Name(id='dict', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='metadata')]),
+                                            Dict()])]))])]))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          body=[
+                            Continue()])])]),
+                If(
+                  test=Name(id='findings', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Name(id='findings', ctx=Load()))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_event', ctx=Load()),
+                        args=[
+                          Constant(value='qa_malformed_json'),
+                          Dict()]))])]),
+            Return(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='QAFinding', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='generic')),
+                      keyword(
+                        arg='category',
+                        value=Constant(value='qa')),
+                      keyword(
+                        arg='severity',
+                        value=Constant(value='medium')),
+                      keyword(
+                        arg='message',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='raw', ctx=Load()),
+                            attr='strip',
+                            ctx=Load()))),
+                      keyword(arg='metadata', value=Dict())])],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='QAFinding', ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='ConstitutionalSafetyAgent',
+      bases=[
+        Name(id='LLMBaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Safety agent that performs a constitutional safety pass.\n\n    This agent does *not* enforce policy; it only produces SafetyResult\n    findings for L5 to interpret and enforce.\n    ')),
+        AsyncFunctionDef(
+          name='run_safety',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='safety_plan',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='draft',
+                annotation=Name(id='DraftingResult', ctx=Load())),
+              arg(
+                arg='rag',
+                annotation=Name(id='RAGResult', ctx=Load())),
+              arg(
+                arg='qa_result',
+                annotation=Name(id='QAResult', ctx=Load())),
+              arg(
+                arg='job',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='resume',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Run the constitutional safety review over all available evidence.\n        ')),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='_PromptContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Name(id='job', ctx=Load())),
+                  keyword(
+                    arg='resume',
+                    value=Name(id='resume', ctx=Load())),
+                  keyword(
+                    arg='config',
+                    value=Name(id='config', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='build_safety_prompt', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='plan',
+                    value=Name(id='safety_plan', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='ctx', ctx=Load())),
+                  keyword(
+                    arg='draft',
+                    value=Name(id='draft', ctx=Load())),
+                  keyword(
+                    arg='rag',
+                    value=Name(id='rag', ctx=Load())),
+                  keyword(
+                    arg='qa',
+                    value=Name(id='qa_result', ctx=Load())),
+                  keyword(
+                    arg='layer',
+                    value=Constant(value='L2')),
+                  keyword(
+                    arg='agent',
+                    value=Constant(value='safety')),
+                  keyword(
+                    arg='model_tier',
+                    value=Constant(value='balanced'))])),
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_call_llm',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='raw', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='findings', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_parse_safety_output',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load()),
+                  Name(id='safety_plan', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='findings',
+                    value=Name(id='findings', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='safety_completed'),
+                  Dict(
+                    keys=[
+                      Constant(value='num_findings'),
+                      Constant(value='num_high_severity')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='findings', ctx=Load())]),
+                      Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Constant(value=1),
+                            generators=[
+                              comprehension(
+                                target=Name(id='f', ctx=Store()),
+                                iter=Name(id='findings', ctx=Load()),
+                                ifs=[
+                                  Compare(
+                                    left=Call(
+                                      func=Attribute(
+                                        value=Attribute(
+                                          value=Name(id='f', ctx=Load()),
+                                          attr='severity',
+                                          ctx=Load()),
+                                        attr='lower',
+                                        ctx=Load())),
+                                    ops=[
+                                      Eq()],
+                                    comparators=[
+                                      Constant(value='high')])],
+                                is_async=0)])])])])),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Name(id='SafetyResult', ctx=Load())),
+        FunctionDef(
+          name='_parse_safety_output',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='raw',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='safety_plan',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Parse safety output into SafetyFinding items.\n\n        If JSON parsing fails, we fall back to conservative "blocked" findings.\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='raw', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='checks', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='safety_plan', ctx=Load()),
+                          Constant(value='checks'),
+                          List(ctx=Load())]),
+                      List(ctx=Load())])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='checks', ctx=Load())),
+                  body=[
+                    Return(
+                      value=List(
+                        elts=[
+                          Call(
+                            func=Name(id='SafetyFinding', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='check_id',
+                                value=Constant(value='generic')),
+                              keyword(
+                                arg='category',
+                                value=Constant(value='safety')),
+                              keyword(
+                                arg='severity',
+                                value=Constant(value='high')),
+                              keyword(
+                                arg='message',
+                                value=Constant(value='No safety output produced')),
+                              keyword(arg='details', value=Dict())])],
+                        ctx=Load()))]),
+                Return(
+                  value=ListComp(
+                    elt=Call(
+                      func=Name(id='SafetyFinding', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='check_id',
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='chk', ctx=Load())])),
+                        keyword(
+                          arg='category',
+                          value=Constant(value='safety')),
+                        keyword(
+                          arg='severity',
+                          value=Constant(value='high')),
+                        keyword(
+                          arg='message',
+                          value=Constant(value='No safety output produced')),
+                        keyword(arg='details', value=Dict())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='chk', ctx=Store()),
+                        iter=Name(id='checks', ctx=Load()),
+                        is_async=0)]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='raw', ctx=Load())])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='isinstance', ctx=Load()),
+                      args=[
+                        Name(id='data', ctx=Load()),
+                        Name(id='list', ctx=Load())])),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          Constant(value='Safety output must be a JSON list')]))]),
+                AnnAssign(
+                  target=Name(id='findings', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='SafetyFinding', ctx=Load()),
+                    ctx=Load()),
+                  value=List(ctx=Load()),
+                  simple=1),
+                Assign(
+                  targets=[
+                    Name(id='checks', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='safety_plan', ctx=Load()),
+                          Constant(value='checks'),
+                          List(ctx=Load())]),
+                      List(ctx=Load())])),
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='idx', ctx=Store()),
+                      Name(id='item', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Name(id='enumerate', ctx=Load()),
+                    args=[
+                      Name(id='data', ctx=Load())]),
+                  body=[
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='check_id', ctx=Store())],
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              BoolOp(
+                                op=Or(),
+                                values=[
+                                  Call(
+                                    func=Attribute(
+                                      value=Name(id='item', ctx=Load()),
+                                      attr='get',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='check_id')]),
+                                  IfExp(
+                                    test=Compare(
+                                      left=Name(id='idx', ctx=Load()),
+                                      ops=[
+                                        Lt()],
+                                      comparators=[
+                                        Call(
+                                          func=Name(id='len', ctx=Load()),
+                                          args=[
+                                            Name(id='checks', ctx=Load())])]),
+                                    body=Subscript(
+                                      value=Name(id='checks', ctx=Load()),
+                                      slice=Name(id='idx', ctx=Load()),
+                                      ctx=Load()),
+                                    orelse=Name(id='idx', ctx=Load()))])])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='findings', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='SafetyFinding', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='check_id',
+                                    value=Name(id='check_id', ctx=Load())),
+                                  keyword(
+                                    arg='category',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='category')]),
+                                            Constant(value='safety')])])),
+                                  keyword(
+                                    arg='severity',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='severity')]),
+                                            Constant(value='medium')])])),
+                                  keyword(
+                                    arg='message',
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='message')]),
+                                            Constant(value='')])])),
+                                  keyword(
+                                    arg='details',
+                                    value=Call(
+                                      func=Name(id='dict', ctx=Load()),
+                                      args=[
+                                        BoolOp(
+                                          op=Or(),
+                                          values=[
+                                            Call(
+                                              func=Attribute(
+                                                value=Name(id='item', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='details')]),
+                                            Dict()])]))])]))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          body=[
+                            Continue()])])]),
+                If(
+                  test=Name(id='findings', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Name(id='findings', ctx=Load()))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_event', ctx=Load()),
+                        args=[
+                          Constant(value='safety_malformed_json'),
+                          Dict()]))])]),
+            Return(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='SafetyFinding', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='check_id',
+                        value=Constant(value='generic')),
+                      keyword(
+                        arg='category',
+                        value=Constant(value='safety')),
+                      keyword(
+                        arg='severity',
+                        value=Constant(value='high')),
+                      keyword(
+                        arg='message',
+                        value=Constant(value='Malformed safety JSON output')),
+                      keyword(arg='details', value=Dict())])],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SafetyFinding', ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='HYDEQueryAgent',
+      bases=[
+        Name(id='LLMBaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    HYDE (Hypothetical Document) query generator.\n\n    This agent generates an idealized answer for use as a dense retrieval proxy.\n    L2 decides when to call it based on the RAGPlan and config flags.\n    ')),
+        AsyncFunctionDef(
+          name='run_hyde_query',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rag_plan',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='build_hyde_prompt', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='plan',
+                    value=Name(id='rag_plan', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='ctx', ctx=Load())),
+                  keyword(
+                    arg='layer',
+                    value=Constant(value='L2')),
+                  keyword(
+                    arg='agent',
+                    value=Constant(value='rag')),
+                  keyword(
+                    arg='model_tier',
+                    value=Constant(value='balanced'))])),
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_call_llm',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='raw', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='hyde_query_completed'),
+                  Dict(
+                    keys=[
+                      Constant(value='prompt_id'),
+                      Constant(value='text_len')],
+                    values=[
+                      Attribute(
+                        value=Name(id='prompt', ctx=Load()),
+                        attr='prompt_id',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='text', ctx=Load())])])])),
+            Return(
+              value=Name(id='text', ctx=Load()))],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='QACouncilAgent',
+      bases=[
+        Name(id='LLMBaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    QA-council aggregation agent.\n\n    This agent consumes a PromptInstance specifically designed for council\n    aggregation and returns a typed CouncilVote object.\n\n    NOTE:\n        The concrete prompt template is defined in prompt_builder; this class\n        only executes the prompt and interprets the JSON response.\n    ')),
+        AsyncFunctionDef(
+          name='run_council',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='PromptInstance', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_call_llm',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='raw', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='text', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_event', ctx=Load()),
+                    args=[
+                      Constant(value='qa_council_empty_output'),
+                      Dict()])),
+                Return(
+                  value=Call(
+                    func=Name(id='CouncilVote', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='members',
+                        value=Constant(value=0)),
+                      keyword(
+                        arg='selected_id',
+                        value=Constant(value=None)),
+                      keyword(arg='scores', value=Dict()),
+                      keyword(
+                        arg='ties',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='reason',
+                        value=Constant(value='empty_output'))]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='text', ctx=Load())])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='isinstance', ctx=Load()),
+                      args=[
+                        Name(id='data', ctx=Load()),
+                        Name(id='dict', ctx=Load())])),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          Constant(value='Council output must be a JSON object')]))]),
+                Assign(
+                  targets=[
+                    Name(id='vote', ctx=Store())],
+                  value=Call(
+                    func=Name(id='CouncilVote', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        value=Name(id='data', ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Name(id='record_event', ctx=Load()),
+                    args=[
+                      Constant(value='qa_council_completed'),
+                      Dict(
+                        keys=[
+                          Constant(value='members'),
+                          Constant(value='selected_id'),
+                          Constant(value='num_scores')],
+                        values=[
+                          Attribute(
+                            value=Name(id='vote', ctx=Load()),
+                            attr='members',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='vote', ctx=Load()),
+                            attr='selected_id',
+                            ctx=Load()),
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='vote', ctx=Load()),
+                                attr='scores',
+                                ctx=Load())])])])),
+                Return(
+                  value=Name(id='vote', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_event', ctx=Load()),
+                        args=[
+                          Constant(value='qa_council_malformed_json'),
+                          Dict(
+                            keys=[
+                              Constant(value='raw_len')],
+                            values=[
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='text', ctx=Load())])])])),
+                    Return(
+                      value=Call(
+                        func=Name(id='CouncilVote', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='members',
+                            value=Constant(value=0)),
+                          keyword(
+                            arg='selected_id',
+                            value=Constant(value=None)),
+                          keyword(arg='scores', value=Dict()),
+                          keyword(
+                            arg='ties',
+                            value=List(ctx=Load())),
+                          keyword(
+                            arg='reason',
+                            value=Constant(value='malformed_or_unparseable'))]))])])],
+          returns=Name(id='CouncilVote', ctx=Load()))])])

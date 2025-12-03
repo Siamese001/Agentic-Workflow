@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\expand-phase\\convert-runtime-content\\semantic\\adjust-scores\\apply_runtime_weights.py",
+    "rel_path": "apply_runtime_weights.py",
+    "root_name": "runtime",
+    "file_hash": "aa8f0941e6d56a96a92a981bff0ff55a522b2b2741d2a4a2cf6784fc9adb9c58",
+    "file_size": 6687,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.3608356
+}

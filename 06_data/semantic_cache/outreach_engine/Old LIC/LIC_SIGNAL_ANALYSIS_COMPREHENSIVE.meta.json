@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_SIGNAL_ANALYSIS_COMPREHENSIVE.md",
+    "rel_path": "LIC_SIGNAL_ANALYSIS_COMPREHENSIVE.md",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "e38c9b26210e8d3309a699d078685aa4e210c474fbb3654f9b8d44d5f87ecb22",
+    "file_size": 68830,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728339.6384711
+}

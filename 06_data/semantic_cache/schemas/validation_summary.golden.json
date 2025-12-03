@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"total_keys\": 40,\n  \"pass_count\": 37,\n  \"fail_count\": 0,\n  \"not_testable_count\": 3,\n  \"pass_rate\": \"92.5%\",\n  \"max_depth\": 5,\n  \"single_child_count\": 241,\n  \"domains_count\": 12,\n  \"layers_count\": 5,\n  \"phases_count\": 4\n}",
+  "full_hash": "55fbe5e76bc8b583adbc62aad7777b8f802ba0bf543eecd36b3ba365297154a6",
+  "generated_at": 1764728346.3070185,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\validation_tools\\validation_summary.json"
+}

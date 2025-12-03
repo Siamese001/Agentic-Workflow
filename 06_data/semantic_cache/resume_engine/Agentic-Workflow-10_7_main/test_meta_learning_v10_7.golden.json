@@ -1,0 +1,6 @@
+{
+  "golden_content": "import json\nfrom types import SimpleNamespace\n\nimport json\n\nimport pytest\n\nfrom core_v10_7 import ConfigV10_7\nfrom run_learning_v10_7 import (\n    AsyncToolCritiqueAgent,\n    AsyncToolGeneratorAgent,\n    HotReloadRuleManager,\n    _read_log_tail,\n    run_meta_learning,\n)\n\n\nclass StubLLMClient:\n    def __init__(self, payload: dict):\n        self.payload = payload\n\n    async def chat_completion_async(self, *_, **__):\n        return {\"content\": json.dumps(self.payload)}\n\n\n@pytest.mark.asyncio\nasync def test_meta_learning_exits_when_disabled(caplog):\n    config = ConfigV10_7(\"master_config_v10_7.json\")\n    config.meta_loop_config.enable_meta_learning = False\n    caplog.set_level(\"INFO\")\n\n    await run_meta_learning(config)\n\n    assert any(\"Meta-learning disabled\" in rec.message for rec in caplog.records)\n\n\ndef test_meta_learning_reads_logs_and_writes_rules(tmp_path):\n    log_path = tmp_path / \"feedback.log\"\n    log_path.write_text(json.dumps({\"event\": \"failure\"}) + \"\\n\")\n    tail, count = _",
+  "full_hash": "dcace8f4ecbbd5132a9b4e2d367063c7a7dfb8f9e8c4f3bb1eaa27c62d59cc5f",
+  "generated_at": 1764728230.6557431,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\meta\\test_meta_learning_v10_7.py"
+}

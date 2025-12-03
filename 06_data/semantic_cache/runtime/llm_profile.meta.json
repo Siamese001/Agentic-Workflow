@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\safety-guard-layer\\rank-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\llm_profile.py",
+    "rel_path": "llm_profile.py",
+    "root_name": "runtime",
+    "file_hash": "ab2335c1c58ee1fa2a57babe0ae6ea5d87cc67aab2541edae1c6e93beb7c4e5a",
+    "file_size": 695,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.9133847
+}

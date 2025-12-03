@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.3\n====================================================\n\nCHANGELOG v11.3:\n---------------\nPriority 1: Constraint Failure Classification & Adaptive Temperature Retry\n- Added ConstraintFailureType enum (MECHANICAL, CREATIVE, SEMANTIC, CONFLICT)\n- Added ConstraintFailureClassifier for intelligent failure analysis\n- Enhanced progressive temperature with adaptive retry strategies\n- Section-specific temperature optimization based on failure patterns\n\nPriority 2: Ground Truth Recalculation Framework\n- Enhanced ImmutableStagingBuffer with deterministic metric validation\n- Never trust LLM-generated metadata; recalculate all metrics independently\n- Cryptographic checksums for data integrity verification\n- Eliminated silent data contamination vectors\n\nPriority 3: Progressive Section Locking During Multi-Attempt Generation\n- Added locked_sections tracking in GenerationContext\n- Locks sections that pass validation at specific temperatures\n- Only",
+  "full_hash": "2c7e52cb74bc056ebb3c6bb25317ed698fbd35163fe5ef5779e2ba9236b3738a",
+  "generated_at": 1764728338.9332023,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_3.py"
+}

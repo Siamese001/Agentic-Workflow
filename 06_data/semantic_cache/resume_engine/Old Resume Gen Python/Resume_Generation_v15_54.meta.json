@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v15_54.py",
+    "rel_path": "Resume_Generation_v15_54.py",
+    "root_name": "resume_engine/Old Resume Gen Python",
+    "file_hash": "1d7c35dc4a5fb688423a982e3f5087f397b376022c1079b780f20f3f5ebefbec",
+    "file_size": 423030,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728296.5417974
+}

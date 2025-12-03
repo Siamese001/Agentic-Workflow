@@ -1,0 +1,1486 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nHop 6: Gate Decision - HIGH-SIGNAL OVERWRITE\n\nThis is a risk-aware, dynamic decision engine.\n1. It differentiates between deterministic (e.g., placeholder) and\n   quality-based (e.g., thematic alignment) failures.\n2. It reads the HOP-0 RAG signal quality (via HOP-5 results) to\n   dynamically adjust its risk tolerance.\n3. It outputs a "PROCEED_WITH_REVIEW" state for low-confidence runs.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='argparse')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='project_root', ctx=Store())],
+      value=Attribute(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parent',
+          ctx=Load()),
+        attr='parent',
+        ctx=Load())),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Name(id='project_root', ctx=Load())])])),
+    ImportFrom(
+      module='helpers',
+      names=[
+        alias(name='setup_workflow_logging'),
+        alias(name='HopExecutionError'),
+        alias(name='default_serializer'),
+        alias(name='ValidationResult'),
+        alias(name='ValidationSeverity'),
+        alias(name='GateDecision')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='DETERMINISTIC_HALT_RULES', ctx=Store())],
+      value=Set(
+        elts=[
+          Constant(value='PLACEHOLDER_DETECTED'),
+          Constant(value='ENGINE_FAILURE')])),
+    Assign(
+      targets=[
+        Name(id='DEFAULT_THRESHOLDS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='risk_score_threshold'),
+          Constant(value='low_signal_threshold'),
+          Constant(value='low_signal_risk_adjustment')],
+        values=[
+          Constant(value=15),
+          Constant(value=0.6),
+          Constant(value=10)])),
+    Assign(
+      targets=[
+        Name(id='RISK_WEIGHTS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Attribute(
+            value=Name(id='ValidationSeverity', ctx=Load()),
+            attr='CRITICAL',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='ValidationSeverity', ctx=Load()),
+            attr='HIGH',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='ValidationSeverity', ctx=Load()),
+            attr='MEDIUM',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='ValidationSeverity', ctx=Load()),
+            attr='LOW',
+            ctx=Load())],
+        values=[
+          Constant(value=1000),
+          Constant(value=10),
+          Constant(value=3),
+          Constant(value=1)])),
+    ClassDef(
+      name='RiskAwareGate',
+      body=[
+        Expr(
+          value=Constant(value='Evaluates validation results using a dynamic, risk-based model.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='validation_results',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='ValidationResult', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='validation_results',
+                  ctx=Store())],
+              value=Name(id='validation_results', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='thresholds_config', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='validation_thresholds'),
+                  Name(id='DEFAULT_THRESHOLDS', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='base_risk_threshold',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='thresholds_config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='risk_score_threshold'),
+                  Constant(value=15)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='low_signal_threshold',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='thresholds_config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='low_signal_threshold'),
+                  Constant(value=0.6)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='low_signal_adjustment',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='thresholds_config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='low_signal_risk_adjustment'),
+                  Constant(value=10)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='input_rag_signal',
+                  ctx=Store())],
+              value=Constant(value=1.0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='deterministic_halt_found',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='deterministic_reason',
+                  ctx=Store())],
+              value=Constant(value='')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='total_risk_score',
+                  ctx=Store())],
+              value=Constant(value=0)),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='failures_by_severity',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='ValidationSeverity', ctx=Load()),
+                    Name(id='List', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=DictComp(
+                key=Name(id='s', ctx=Load()),
+                value=List(ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='s', ctx=Store()),
+                    iter=Name(id='ValidationSeverity', ctx=Load()),
+                    is_async=0)]),
+              simple=0)]),
+        FunctionDef(
+          name='_analyze_results',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='First pass: categorize failures and find input signal quality.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Analyzing validation results...')])),
+            For(
+              target=Name(id='vr', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='validation_results',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='vr', ctx=Load()),
+                      attr='rule_id',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='INPUT_SIGNAL_QUALITY')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='input_rag_signal',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='vr', ctx=Load()),
+                            attr='details',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='signal_quality'),
+                          Constant(value=1.0)])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Detected HOP-0 RAG Signal Quality: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='input_rag_signal',
+                                  ctx=Load()),
+                                conversion=-1,
+                                format_spec=JoinedStr(
+                                  values=[
+                                    Constant(value='.2f')]))])])),
+                    Continue()]),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='vr', ctx=Load()),
+                      attr='passed',
+                      ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='failures_by_severity',
+                              ctx=Load()),
+                            slice=Attribute(
+                              value=Name(id='vr', ctx=Load()),
+                              attr='severity',
+                              ctx=Load()),
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='vr', ctx=Load())])),
+                    If(
+                      test=Call(
+                        func=Name(id='any', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Compare(
+                              left=Name(id='rule_name', ctx=Load()),
+                              ops=[
+                                In()],
+                              comparators=[
+                                Attribute(
+                                  value=Name(id='vr', ctx=Load()),
+                                  attr='rule_id',
+                                  ctx=Load())]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='rule_name', ctx=Store()),
+                                iter=Name(id='DETERMINISTIC_HALT_RULES', ctx=Load()),
+                                is_async=0)])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='deterministic_halt_found',
+                              ctx=Store())],
+                          value=Constant(value=True)),
+                        Assign(
+                          targets=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='deterministic_reason',
+                              ctx=Store())],
+                          value=JoinedStr(
+                            values=[
+                              Constant(value='Deterministic HALT on rule: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='vr', ctx=Load()),
+                                  attr='rule_id',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' ('),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='vr', ctx=Load()),
+                                  attr='message',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=')')])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='logger',
+                                ctx=Load()),
+                              attr='critical',
+                              ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='deterministic_reason',
+                                ctx=Load())]))]),
+                    AugAssign(
+                      target=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='total_risk_score',
+                        ctx=Store()),
+                      op=Add(),
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='RISK_WEIGHTS', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='vr', ctx=Load()),
+                            attr='severity',
+                            ctx=Load()),
+                          Constant(value=0)]))])])]),
+        FunctionDef(
+          name='evaluate_decision',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Runs the full evaluation logic.\n        Returns the final decision and a metadata dictionary.\n        ')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_analyze_results',
+                  ctx=Load()))),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='deterministic_halt_found',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='decision', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='GateDecision', ctx=Load()),
+                    attr='HALT',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_build_metadata',
+                      ctx=Load()),
+                    args=[
+                      Name(id='decision', ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='deterministic_reason',
+                        ctx=Load())])),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='decision', ctx=Load()),
+                      Name(id='metadata', ctx=Load())],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='adjusted_risk_threshold', ctx=Store())],
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='base_risk_threshold',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='adjustment_reason', ctx=Store())],
+              value=Constant(value='Base threshold.')),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='input_rag_signal',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='low_signal_threshold',
+                    ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='adjusted_risk_threshold', ctx=Store()),
+                  op=Add(),
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='low_signal_adjustment',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='adjustment_reason', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='Input RAG signal ('),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='input_rag_signal',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value=') is below threshold ('),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='low_signal_threshold',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='). Risk tolerance increased to '),
+                      FormattedValue(
+                        value=Name(id='adjusted_risk_threshold', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='.')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Name(id='adjustment_reason', ctx=Load())]))]),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='total_risk_score',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Name(id='adjusted_risk_threshold', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='decision', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='GateDecision', ctx=Load()),
+                    attr='HALT',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='reason', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='Quality HALT: Risk score '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='total_risk_score',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' exceeds adjusted threshold '),
+                      FormattedValue(
+                        value=Name(id='adjusted_risk_threshold', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='.')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Name(id='reason', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_build_metadata',
+                      ctx=Load()),
+                    args=[
+                      Name(id='decision', ctx=Load()),
+                      Name(id='reason', ctx=Load())])),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='decision', ctx=Load()),
+                      Name(id='metadata', ctx=Load())],
+                    ctx=Load()))]),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='input_rag_signal',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='low_signal_threshold',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='decision', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='GateDecision', ctx=Load()),
+                    attr='PROCEED_WITH_REVIEW',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='reason', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='Proceeding, but manual review recommended due to low input RAG signal ('),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='input_rag_signal',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value=').')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Name(id='reason', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_build_metadata',
+                      ctx=Load()),
+                    args=[
+                      Name(id='decision', ctx=Load()),
+                      Name(id='reason', ctx=Load())])),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='decision', ctx=Load()),
+                      Name(id='metadata', ctx=Load())],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=Attribute(
+                value=Name(id='GateDecision', ctx=Load()),
+                attr='PROCEED',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='reason', ctx=Store())],
+              value=Constant(value='All validation checks passed within risk tolerance.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Name(id='reason', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='metadata', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_metadata',
+                  ctx=Load()),
+                args=[
+                  Name(id='decision', ctx=Load()),
+                  Name(id='reason', ctx=Load())])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='decision', ctx=Load()),
+                  Name(id='metadata', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='GateDecision', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_build_metadata',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='decision',
+                annotation=Name(id='GateDecision', ctx=Load())),
+              arg(
+                arg='reason',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Helper to assemble the final output metadata block.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='decision'),
+                  Constant(value='reason'),
+                  Constant(value='input_rag_signal'),
+                  Constant(value='total_risk_score'),
+                  Constant(value='base_risk_threshold'),
+                  Constant(value='adjusted_risk_threshold'),
+                  Constant(value='summary')],
+                values=[
+                  Attribute(
+                    value=Name(id='decision', ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Name(id='reason', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='input_rag_signal',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='total_risk_score',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='base_risk_threshold',
+                    ctx=Load()),
+                  IfExp(
+                    test=Compare(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='input_rag_signal',
+                        ctx=Load()),
+                      ops=[
+                        Lt()],
+                      comparators=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='low_signal_threshold',
+                          ctx=Load())]),
+                    body=BinOp(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='base_risk_threshold',
+                        ctx=Load()),
+                      op=Add(),
+                      right=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='low_signal_adjustment',
+                        ctx=Load())),
+                    orelse=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='base_risk_threshold',
+                      ctx=Load())),
+                  Dict(
+                    keys=[
+                      Constant(value='total_validations'),
+                      Constant(value='failed_validations'),
+                      Constant(value='critical_failures'),
+                      Constant(value='high_failures'),
+                      Constant(value='medium_failures')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='validation_results',
+                            ctx=Load())]),
+                      Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='v', ctx=Load())]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='v', ctx=Store()),
+                                iter=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='failures_by_severity',
+                                      ctx=Load()),
+                                    attr='values',
+                                    ctx=Load())),
+                                is_async=0)])]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='failures_by_severity',
+                              ctx=Load()),
+                            slice=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='CRITICAL',
+                              ctx=Load()),
+                            ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='failures_by_severity',
+                              ctx=Load()),
+                            slice=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='HIGH',
+                              ctx=Load()),
+                            ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='failures_by_severity',
+                              ctx=Load()),
+                            slice=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='MEDIUM',
+                              ctx=Load()),
+                            ctx=Load())])])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='run_hop_6',
+      args=arguments(
+        args=[
+          arg(
+            arg='args',
+            annotation=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='Namespace',
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Executes the HOP-6 gate decision logic.')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='logger', ctx=Store()),
+                Name(id='_', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Name(id='setup_workflow_logging', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='workflow_id',
+                ctx=Load())],
+            keywords=[
+              keyword(
+                arg='log_file_dir',
+                value=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='run_dir',
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='--- Starting HOP-6: Risk-Aware Gate Decision [v-HighSignal] ---')])),
+        Assign(
+          targets=[
+            Name(id='start_time', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='datetime', ctx=Load()),
+              attr='now',
+              ctx=Load()))),
+        Try(
+          body=[
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='input_path_validation_results',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='validation_data', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Name(id='validation_results', ctx=Store())],
+                  value=ListComp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='ValidationResult', ctx=Load()),
+                        attr='from_dict',
+                        ctx=Load()),
+                      args=[
+                        Name(id='vr_dict', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='vr_dict', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='validation_data', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='validation_results'),
+                            List(ctx=Load())]),
+                        is_async=0)])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Loaded '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='validation_results', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=' validation results from '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='args', ctx=Load()),
+                              attr='input_path_validation_results',
+                              ctx=Load()),
+                            conversion=-1)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load validation results: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Dict()),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Loaded mock config. Using default thresholds.')])),
+            Assign(
+              targets=[
+                Name(id='gate', ctx=Store())],
+              value=Call(
+                func=Name(id='RiskAwareGate', ctx=Load()),
+                args=[
+                  Name(id='validation_results', ctx=Load()),
+                  Name(id='config', ctx=Load())])),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='decision', ctx=Store()),
+                    Name(id='metadata', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='gate', ctx=Load()),
+                  attr='evaluate_decision',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Gate decision: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='decision', ctx=Load()),
+                          attr='value',
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Assign(
+              targets=[
+                Name(id='output_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='gate_decision'),
+                  Constant(value='decision_metadata')],
+                values=[
+                  Attribute(
+                    value=Name(id='decision', ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Name(id='metadata', ctx=Load())])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='output_path_gate_decision',
+                        ctx=Load())])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='output_path', ctx=Load()),
+                          Constant(value='w')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Name(id='output_data', ctx=Load()),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='default',
+                            value=Name(id='default_serializer', ctx=Load()))]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Successfully wrote gate decision to '),
+                          FormattedValue(
+                            value=Name(id='output_path', ctx=Load()),
+                            conversion=-1)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to write output JSON: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='duration', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())),
+                    op=Sub(),
+                    right=Name(id='start_time', ctx=Load())),
+                  attr='total_seconds',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='--- HOP-6 Finished Successfully ('),
+                      FormattedValue(
+                        value=Name(id='duration', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='s) ---')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='API Calls Made: 0')])),
+            If(
+              test=Compare(
+                left=Name(id='decision', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='GateDecision', ctx=Load()),
+                    attr='HALT',
+                    ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Exiting with code 1 due to HALT decision: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='metadata', ctx=Load()),
+                              slice=Constant(value='reason'),
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='exit', ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='HopExecutionError', ctx=Load()),
+              name='he',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='HOP-6 HALTED: '),
+                          FormattedValue(
+                            value=Name(id='he', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=False))])),
+                Assign(
+                  targets=[
+                    Name(id='duration', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        op=Sub(),
+                        right=Name(id='start_time', ctx=Load())),
+                      attr='total_seconds',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='--- HOP-6 Finished with HALT ('),
+                          FormattedValue(
+                            value=Name(id='duration', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value='s) ---')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='API Calls Made: 0')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='exit', ctx=Load()),
+                    args=[
+                      Constant(value=1)]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='HOP-6 FAILED with unexpected error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=True))])),
+                Assign(
+                  targets=[
+                    Name(id='duration', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        op=Sub(),
+                        right=Name(id='start_time', ctx=Load())),
+                      attr='total_seconds',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='--- HOP-6 Finished with FAILURE ('),
+                          FormattedValue(
+                            value=Name(id='duration', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value='s) ---')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='API Calls Made: 0')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='exit', ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='HOP-6: Risk-Aware Gate Decision [v-HighSignal]'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--workflow-id')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Unique ID for the workflow run'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--run-dir')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Directory for the workflow run artifacts'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--config-path')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to the config file snapshot'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--input-path-validation-results')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to the validation results JSON'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--output-path-gate-decision')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to write the gate decision JSON'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='run_hop_6', ctx=Load()),
+            args=[
+              Name(id='args', ctx=Load())]))])])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__policy__test_policy_stack_basic.py",
+    "rel_path": "test_flat__policy__test_policy_stack_basic.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "9b400ea3a85b915f018f1f0a9a626bc8f9b234ff80c8366f2294aa9d5b2df4ba",
+    "file_size": 2768,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.1615412
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Deterministic Level-1 planner for the drafting stack.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core_v10_7 import BaseAgent, DraftPlan\n\nfrom .planning_utils import (\n    collect_sections,\n    describe_experience,\n    extract_job_profile,\n    extract_resume_profile,\n    missing_requirements,\n)\n\n\nclass DraftPlanningStack(BaseAgent):\n    \"\"\"Creates a low-latency drafting plan using only state inspection.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        super().__init__(context, debug_mode)\n\n    async def run_async(\n        self, state: Dict[str, Any], workflow_id: Optional[str] = None\n    ) -> Dict[str, Any]:\n        plan = self._build_plan(state)\n        return {\"draft\": {\"plan\": plan.model_dump()}}\n\n    def _build_plan(self, state: Dict[str, Any]) -> DraftPlan:\n        job_profile = extract_job_profile(state)\n        resume_profile = extract_resume_profile(state)\n        experiences = resume_profile[\"",
+  "full_hash": "3884704b5ad9547fa76c7329baa9a6db3baab3db66d80ba8d4d026f3b9684cc7",
+  "generated_at": 1764728230.209228,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\draft_planning.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL2 safety execution for resume compliance and protection workflows.\n\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass SafetyExecutor:\n    \"\"\"\n    Executes resume safety validation with optimal model selection.\n\n    Protects user data and ensures compliance for reliable resume\n    processing workflows and job alignment.\n    \"\"\"\n    \n    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\n        self.routing_policy = routing_policy\n        self.sandbox = sandbox\n        self.meta_profile = meta_profile\n    \n    def execute_safety(self, prompt: str) -",
+  "full_hash": "10ca7257f0569bb34e3e6f0a437316ce24a74e58ecf82e3a03461e6b35b97856",
+  "generated_at": 1764728225.0446446,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\safety_executor.py"
+}

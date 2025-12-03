@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 54,
+  "generated_at": 1764728342.5782056,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\exec-layer\\validate-phase\\check-schema-structure\\policy\\check-safety\\enforce_execution_contracts.py"
+}

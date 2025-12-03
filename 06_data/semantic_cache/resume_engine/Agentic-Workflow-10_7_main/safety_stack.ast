@@ -1,0 +1,501 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Safety stack shim for v10.8.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.components.safety',
+      names=[
+        alias(name='BiasDetectorAgent'),
+        alias(name='ConstitutionalReviewerAgent'),
+        alias(name='PIISanitizerAgent'),
+        alias(name='PromptInjectionDetectorAgent')],
+      level=0),
+    ClassDef(
+      name='SafetyStackV10_8',
+      body=[
+        Expr(
+          value=Constant(value='Wrapper that exposes safety-only capabilities.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Store())],
+              value=Name(id='context', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='debug_mode',
+                  ctx=Store())],
+              value=Name(id='debug_mode', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_pii_sanitizer',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='PIISanitizerAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_bias_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='BiasDetectorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_prompt_injection_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='PromptInjectionDetectorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_constitutional_reviewer',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='ConstitutionalReviewerAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='sanitize_resume',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='resume',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Run the legacy PII sanitizer.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_pii_sanitizer',
+                    ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Name(id='resume', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='detect_bias',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Expr(
+              value=Constant(value='Run the local bias detector.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_bias_detector',
+                    ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load()),
+                  Name(id='workflow_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='detect_prompt_injection_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='user_input',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Delegate to the v10.7 prompt injection detector.')),
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_prompt_injection_detector',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='user_input', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())])))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='run_constitutional_review_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='final_draft',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Delegate final constitutional review without changing behavior.')),
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_constitutional_reviewer',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='final_draft', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())])))],
+          returns=Name(id='Any', ctx=Load())),
+        AsyncFunctionDef(
+          name='constitutional_review_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Extract the final resume payload using the legacy fallback chain.')),
+            Assign(
+              targets=[
+                Name(id='artifacts_bucket', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='artifacts'),
+                  Dict()])),
+            AnnAssign(
+              target=Name(id='final_resume', ctx=Store()),
+              annotation=Name(id='Any', ctx=Load()),
+              value=Constant(value=None),
+              simple=1),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='artifacts_bucket', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='inner', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='artifacts_bucket', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='artifacts'),
+                      Dict()])),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='inner', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='final_resume', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='inner', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='final_resume')]))])]),
+            If(
+              test=Compare(
+                left=Name(id='final_resume', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='draft_state', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='draft'),
+                      Dict()])),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='draft_state', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='final_resume', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='draft_state', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='final_draft')])),
+                    If(
+                      test=Compare(
+                        left=Name(id='final_resume', ctx=Load()),
+                        ops=[
+                          Is()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='sections', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='draft_state', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='sections'),
+                              Dict()])),
+                        If(
+                          test=Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='sections', ctx=Load()),
+                              Name(id='dict', ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='summary', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='sections', ctx=Load()),
+                                  attr='get',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='summary'),
+                                  Dict()])),
+                            If(
+                              test=Call(
+                                func=Name(id='isinstance', ctx=Load()),
+                                args=[
+                                  Name(id='summary', ctx=Load()),
+                                  Name(id='dict', ctx=Load())]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='final_resume', ctx=Store())],
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='summary', ctx=Load()),
+                                      attr='get',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='draft')]))])])])])]),
+            If(
+              test=Compare(
+                left=Name(id='final_resume', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='final_resume', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='state', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='resume'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='master_resume'),
+                      Dict()]))]),
+            Assign(
+              targets=[
+                Name(id='draft_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='final_resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='run_constitutional_review_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='draft_text', ctx=Load()),
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='state', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='metadata'),
+                                Dict()]),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='workflow_id'),
+                            Constant(value='')])])]))),
+            Assign(
+              targets=[
+                Name(id='payload', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='result', ctx=Load()),
+                    Constant(value='model_dump')]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='model_dump',
+                    ctx=Load())),
+                orelse=Name(id='result', ctx=Load()))),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='qa')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='constitutional_review')],
+                    values=[
+                      Name(id='payload', ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))])])

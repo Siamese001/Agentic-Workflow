@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Workflow context, states, and helpers for v10.7.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport logging\nimport os\nfrom dataclasses import asdict, dataclass, field\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any, Dict, List, Optional\n\nfrom chromadb.utils import embedding_functions\nfrom mcp import get_tool\n\ntry:  # pragma: no cover - optional runtime deps\n    from redis import Redis as RedisType\n    from chromadb import Client as ChromaClientType\nexcept ImportError:  # pragma: no cover - fallback types\n    RedisType = Any\n    ChromaClientType = Any\n\nfrom .clients import AnthropicAsyncClient, GeminiAsyncClient, OpenAIAsyncClient\nfrom .config import ConfigV10_7\nfrom .constants import canonical_model_name\nfrom .exceptions import MCPClientInitializationError\nfrom .mcp import MCPClientSpec, MCPClientStub, instantiate_mcp_client, parse_mcp_client_specs\nfrom .models import (\n    ConstitutionalReviewResult,\n    EphemeralState,\n    GeneratedPrompts,\n  ",
+  "full_hash": "191d57fdcc928e8c7bed7a8ede73cf055b41f73a5a900d70bd16618f4f326b3b",
+  "generated_at": 1764728229.5359797,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\context.py"
+}

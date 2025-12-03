@@ -1,0 +1,497 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='PromptTemplateManager')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7.services',
+      names=[
+        alias(name='_format_prompt_with_defaults')],
+      level=0),
+    ClassDef(
+      name='NoopBudgetManager',
+      body=[
+        AsyncFunctionDef(
+          name='prune',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='document',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=BinOp(
+                  left=Name(id='int', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='document', ctx=Load()),
+                  Constant(value='')]))],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='StubLLMClient',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_content',
+                  ctx=Store())],
+              value=Name(id='content', ctx=Load()))]),
+        AsyncFunctionDef(
+          name='chat_completion_async',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            vararg=arg(arg='_'),
+            kwarg=arg(arg='__')),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='content')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_content',
+                    ctx=Load())]))])]),
+    ClassDef(
+      name='PruningBudgetManager',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='marker',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='AGENTIC')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='marker',
+                  ctx=Store())],
+              value=Name(id='marker', ctx=Load()))]),
+        AsyncFunctionDef(
+          name='prune',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='document',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=BinOp(
+                  left=Name(id='int', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='document', ctx=Load()),
+                  Constant(value='')])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='text', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=50)]),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='compressed\n\n[... DOCUMENT PRUNED ('),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='marker',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=') ...]')]))]),
+            Return(
+              value=Name(id='text', ctx=Load()))],
+          returns=Name(id='str', ctx=Load()))]),
+    AsyncFunctionDef(
+      name='test_prompt_injects_goal_and_failures_header',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptTemplateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='feedback_reader',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='get_failures',
+                      value=Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='max_entries')],
+                          defaults=[
+                            Constant(value=100)]),
+                        body=List(ctx=Load())))]))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='top_failures',
+              ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='PromptAgent::alignment')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='get_template',
+              ctx=Load()),
+            args=[
+              Constant(value='review_draft_strategy')])),
+        Assign(
+          targets=[
+            Name(id='formatted', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+              args=[
+                Name(id='template', ctx=Load()),
+                Dict(
+                  keys=[
+                    Constant(value='master_resume'),
+                    Constant(value='draft_text'),
+                    Constant(value='job_description'),
+                    Constant(value='strategy')],
+                  values=[
+                    Constant(value='resume text'),
+                    Constant(value='draft'),
+                    Constant(value='job'),
+                    Dict(
+                      keys=[
+                        Constant(value='tone')],
+                      values=[
+                        Constant(value='executive')])]),
+                Call(
+                  func=Name(id='NoopBudgetManager', ctx=Load())),
+                Attribute(
+                  value=Name(id='manager', ctx=Load()),
+                  attr='goal_state',
+                  ctx=Load()),
+                Attribute(
+                  value=Name(id='manager', ctx=Load()),
+                  attr='top_failures',
+                  ctx=Load())]))),
+        Assert(
+          test=Compare(
+            left=Constant(value='GLOBAL_GOAL:'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='formatted', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='BEWARE:'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='formatted', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='executive'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='formatted', ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_prompt_prunes_long_inputs',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='template_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptTemplateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='feedback_reader',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='get_failures',
+                      value=Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='max_entries')],
+                          defaults=[
+                            Constant(value=100)]),
+                        body=List(ctx=Load())))]))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='template_manager', ctx=Load()),
+              attr='top_failures',
+              ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='Stack::failure')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='template_manager', ctx=Load()),
+              attr='get_template',
+              ctx=Load()),
+            args=[
+              Constant(value='validate_claims')])),
+        Assign(
+          targets=[
+            Name(id='huge_text', ctx=Store())],
+          value=BinOp(
+            left=Constant(value='Long '),
+            op=Mult(),
+            right=Constant(value=1000))),
+        Assign(
+          targets=[
+            Name(id='formatted', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+              args=[
+                Name(id='template', ctx=Load()),
+                Dict(
+                  keys=[
+                    Constant(value='master_resume'),
+                    Constant(value='draft_text'),
+                    Constant(value='job_description'),
+                    Constant(value='strategy')],
+                  values=[
+                    Name(id='huge_text', ctx=Load()),
+                    Name(id='huge_text', ctx=Load()),
+                    Name(id='huge_text', ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='tone')],
+                      values=[
+                        Constant(value='analytical')])]),
+                Call(
+                  func=Name(id='PruningBudgetManager', ctx=Load())),
+                Attribute(
+                  value=Name(id='template_manager', ctx=Load()),
+                  attr='goal_state',
+                  ctx=Load()),
+                Attribute(
+                  value=Name(id='template_manager', ctx=Load()),
+                  attr='top_failures',
+                  ctx=Load())]))),
+        Assert(
+          test=Compare(
+            left=Constant(value='DOCUMENT PRUNED'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='formatted', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='formatted', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='huge_text', ctx=Load())])]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_template_fallback_error_message',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptTemplateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='feedback_reader',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='get_failures',
+                      value=Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='max_entries')],
+                          defaults=[
+                            Constant(value=100)]),
+                        body=List(ctx=Load())))]))])),
+        Assign(
+          targets=[
+            Name(id='missing_prompt', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='get_template',
+              ctx=Load()),
+            args=[
+              Constant(value='nonexistent_tool_name')])),
+        Assert(
+          test=Compare(
+            left=Constant(value='ERROR: PROMPT NOT FOUND'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='missing_prompt', ctx=Load())]))]),
+    AsyncFunctionDef(
+      name='test_prompt_handles_missing_optional_fields',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptTemplateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='feedback_reader',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='get_failures',
+                      value=Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='max_entries')],
+                          defaults=[
+                            Constant(value=100)]),
+                        body=List(ctx=Load())))]))])),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='get_template',
+              ctx=Load()),
+            args=[
+              Constant(value='prompt_engineer')])),
+        Assign(
+          targets=[
+            Name(id='formatted', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+              args=[
+                Name(id='template', ctx=Load()),
+                Dict(
+                  keys=[
+                    Constant(value='strategy')],
+                  values=[
+                    Dict()]),
+                Call(
+                  func=Name(id='NoopBudgetManager', ctx=Load())),
+                Attribute(
+                  value=Name(id='manager', ctx=Load()),
+                  attr='goal_state',
+                  ctx=Load()),
+                Attribute(
+                  value=Name(id='manager', ctx=Load()),
+                  attr='top_failures',
+                  ctx=Load())]))),
+        Assert(
+          test=Compare(
+            left=Constant(value='unknown'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='formatted', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='Default style'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='formatted', ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

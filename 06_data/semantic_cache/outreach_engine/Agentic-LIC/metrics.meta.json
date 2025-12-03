@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\qa\\metrics.py",
+    "rel_path": "metrics.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "b2ca9f17042182544b7147a64b959e538cd43483c8260473cca308f917628500",
+    "file_size": 2806,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.5627706
+}

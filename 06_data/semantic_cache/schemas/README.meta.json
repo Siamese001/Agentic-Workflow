@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\06_data\\semantic_cache\\README.md",
+    "rel_path": "README.md",
+    "root_name": "schemas",
+    "file_hash": "07ef6fd827877e280eb5a1db076b9d501fee3b2965c839fd5cf30e848e0aac6e",
+    "file_size": 8708,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 4
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.1640494
+}

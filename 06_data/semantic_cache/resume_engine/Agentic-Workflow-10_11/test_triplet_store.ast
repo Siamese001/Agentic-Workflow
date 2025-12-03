@@ -1,0 +1,1582 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Tests for Temporal KG Components - Triplets, Entities, Multi-hop Retrieval\n\nThis module tests the new KG components:\n- L4 TripletStore and EntityRegistry\n- L2 Triplet Extraction and KG Retrieval Executors\n- L1 KG Retrieval Planner\n- L3 KG-First Retrieval Orchestration\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    ImportFrom(
+      module='l4.triplet_store',
+      names=[
+        alias(name='TripletStore'),
+        alias(name='Triplet'),
+        alias(name='TripletQuery'),
+        alias(name='TemporalType'),
+        alias(name='TripletStatus'),
+        alias(name='create_triplet'),
+        alias(name='PREDICATES')],
+      level=0),
+    ImportFrom(
+      module='l4.entity_resolution',
+      names=[
+        alias(name='EntityRegistry'),
+        alias(name='EntityType'),
+        alias(name='CanonicalEntity'),
+        alias(name='EntityMention'),
+        alias(name='create_entity'),
+        alias(name='create_mention')],
+      level=0),
+    ImportFrom(
+      module='l1.kg_retrieval_planning',
+      names=[
+        alias(name='KGRetrievalPlanner'),
+        alias(name='KGQueryPlan'),
+        alias(name='QueryType'),
+        alias(name='HopDirection'),
+        alias(name='plan_entity_retrieval')],
+      level=0),
+    ImportFrom(
+      module='l2.kg_retrieval_executor',
+      names=[
+        alias(name='KGRetrievalExecutor'),
+        alias(name='KGRetrievalResult'),
+        alias(name='execute_entity_query')],
+      level=0),
+    ImportFrom(
+      module='l2.triplet_extraction_executor',
+      names=[
+        alias(name='TripletExtractionExecutor'),
+        alias(name='ExtractionPlan'),
+        alias(name='create_extraction_plan')],
+      level=0),
+    ImportFrom(
+      module='l2.invalidation_executor',
+      names=[
+        alias(name='InvalidationExecutor'),
+        alias(name='InvalidationPlan'),
+        alias(name='InvalidationReason'),
+        alias(name='create_invalidation_plan')],
+      level=0),
+    ImportFrom(
+      module='orchestration.kg_retrieval_orchestration',
+      names=[
+        alias(name='KGFirstRetrievalOrchestrator'),
+        alias(name='HybridRetrievalContext'),
+        alias(name='create_hybrid_context')],
+      level=0),
+    ClassDef(
+      name='TestTripletStore',
+      body=[
+        Expr(
+          value=Constant(value='Test L4 TripletStore functionality.')),
+        FunctionDef(
+          name='test_create_triplet',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test triplet creation.')),
+            Assign(
+              targets=[
+                Name(id='triplet', ctx=Store())],
+              value=Call(
+                func=Name(id='create_triplet', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='subject',
+                    value=Constant(value='user_123')),
+                  keyword(
+                    arg='predicate',
+                    value=Constant(value='has_skill')),
+                  keyword(
+                    arg='obj',
+                    value=Constant(value='Python')),
+                  keyword(
+                    arg='confidence',
+                    value=Constant(value=0.9))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='triplet', ctx=Load()),
+                  attr='subject',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='user_123')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='triplet', ctx=Load()),
+                  attr='predicate',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='has_skill')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='triplet', ctx=Load()),
+                  attr='object',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Python')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='triplet', ctx=Load()),
+                  attr='confidence',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.9)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='triplet', ctx=Load()),
+                  attr='status',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='TripletStatus', ctx=Load()),
+                    attr='ACTIVE',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_triplet_store_add_and_query',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test adding and querying triplets.')),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='t1', ctx=Store())],
+              value=Call(
+                func=Name(id='create_triplet', ctx=Load()),
+                args=[
+                  Constant(value='user_1'),
+                  Constant(value='has_skill'),
+                  Constant(value='Python')])),
+            Assign(
+              targets=[
+                Name(id='t2', ctx=Store())],
+              value=Call(
+                func=Name(id='create_triplet', ctx=Load()),
+                args=[
+                  Constant(value='user_1'),
+                  Constant(value='has_skill'),
+                  Constant(value='JavaScript')])),
+            Assign(
+              targets=[
+                Name(id='t3', ctx=Store())],
+              value=Call(
+                func=Name(id='create_triplet', ctx=Load()),
+                args=[
+                  Constant(value='user_1'),
+                  Constant(value='worked_at'),
+                  Constant(value='Google')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplets',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Name(id='t1', ctx=Load()),
+                      Name(id='t2', ctx=Load()),
+                      Name(id='t3', ctx=Load())],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletQuery', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='subject',
+                    value=Constant(value='user_1'))])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='query',
+                  ctx=Load()),
+                args=[
+                  Name(id='query', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)]))]),
+        FunctionDef(
+          name='test_triplet_store_predicate_filter',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test querying with predicate filter.')),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='user_1'),
+                      Constant(value='has_skill'),
+                      Constant(value='Python')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='user_1'),
+                      Constant(value='worked_at'),
+                      Constant(value='Google')])])),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletQuery', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='subject',
+                    value=Constant(value='user_1')),
+                  keyword(
+                    arg='predicate',
+                    value=Constant(value='has_skill'))])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='query',
+                  ctx=Load()),
+                args=[
+                  Name(id='query', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='object',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Python')]))]),
+        FunctionDef(
+          name='test_triplet_invalidation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test triplet invalidation.')),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='triplet', ctx=Store())],
+              value=Call(
+                func=Name(id='create_triplet', ctx=Load()),
+                args=[
+                  Constant(value='user_1'),
+                  Constant(value='has_skill'),
+                  Constant(value='Python')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Name(id='triplet', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='invalidate_triplet',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='triplet', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  Constant(value='outdated')])),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletQuery', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='subject',
+                    value=Constant(value='user_1'))])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='query',
+                  ctx=Load()),
+                args=[
+                  Name(id='query', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Name(id='query_all', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletQuery', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='subject',
+                    value=Constant(value='user_1')),
+                  keyword(
+                    arg='include_invalidated',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='results_all', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='query',
+                  ctx=Load()),
+                args=[
+                  Name(id='query_all', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results_all', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))])]),
+    ClassDef(
+      name='TestEntityResolution',
+      body=[
+        Expr(
+          value=Constant(value='Test L4 EntityRegistry functionality.')),
+        FunctionDef(
+          name='test_entity_creation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test entity creation.')),
+            Assign(
+              targets=[
+                Name(id='entity', ctx=Store())],
+              value=Call(
+                func=Name(id='create_entity', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Constant(value='Python')),
+                  keyword(
+                    arg='entity_type',
+                    value=Attribute(
+                      value=Name(id='EntityType', ctx=Load()),
+                      attr='SKILL',
+                      ctx=Load())),
+                  keyword(
+                    arg='aliases',
+                    value=List(
+                      elts=[
+                        Constant(value='python'),
+                        Constant(value='Python 3')],
+                      ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='entity', ctx=Load()),
+                  attr='canonical_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Python')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='entity', ctx=Load()),
+                  attr='entity_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='EntityType', ctx=Load()),
+                    attr='SKILL',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='python'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='entity', ctx=Load()),
+                    attr='aliases',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_entity_resolution',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test resolving entity mentions.')),
+            Assign(
+              targets=[
+                Name(id='registry', ctx=Store())],
+              value=Call(
+                func=Name(id='EntityRegistry', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='mention', ctx=Store())],
+              value=Call(
+                func=Name(id='create_mention', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='text',
+                    value=Constant(value='python')),
+                  keyword(
+                    arg='entity_type',
+                    value=Attribute(
+                      value=Name(id='EntityType', ctx=Load()),
+                      attr='SKILL',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='registry', ctx=Load()),
+                  attr='resolve',
+                  ctx=Load()),
+                args=[
+                  Name(id='mention', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='resolved_entity',
+                  ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='resolved_entity',
+                    ctx=Load()),
+                  attr='canonical_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Python')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='confidence',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0.9)]))]),
+        FunctionDef(
+          name='test_entity_fuzzy_matching',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test fuzzy entity matching.')),
+            Assign(
+              targets=[
+                Name(id='registry', ctx=Store())],
+              value=Call(
+                func=Name(id='EntityRegistry', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='entity', ctx=Store())],
+              value=Call(
+                func=Name(id='create_entity', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Constant(value='Amazon Web Services')),
+                  keyword(
+                    arg='entity_type',
+                    value=Attribute(
+                      value=Name(id='EntityType', ctx=Load()),
+                      attr='SKILL',
+                      ctx=Load())),
+                  keyword(
+                    arg='aliases',
+                    value=List(
+                      elts=[
+                        Constant(value='AWS'),
+                        Constant(value='amazon web services')],
+                      ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='registry', ctx=Load()),
+                  attr='register_entity',
+                  ctx=Load()),
+                args=[
+                  Name(id='entity', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='mention', ctx=Store())],
+              value=Call(
+                func=Name(id='create_mention', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='text',
+                    value=Constant(value='AWS')),
+                  keyword(
+                    arg='entity_type',
+                    value=Attribute(
+                      value=Name(id='EntityType', ctx=Load()),
+                      attr='SKILL',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='registry', ctx=Load()),
+                  attr='resolve',
+                  ctx=Load()),
+                args=[
+                  Name(id='mention', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='resolved_entity',
+                  ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]))])]),
+    ClassDef(
+      name='TestKGRetrievalPlanning',
+      body=[
+        Expr(
+          value=Constant(value='Test L1 KG Retrieval Planner.')),
+        FunctionDef(
+          name='test_plan_entity_retrieval',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test planning entity fact retrieval.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='plan_entity_retrieval', ctx=Load()),
+                args=[
+                  Constant(value='user_123')],
+                keywords=[
+                  keyword(
+                    arg='predicates',
+                    value=List(
+                      elts=[
+                        Constant(value='has_skill')],
+                      ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='query_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='QueryType', ctx=Load()),
+                    attr='ENTITY_FACTS',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='user_123'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='start_entities',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_plan_neighborhood_query',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test planning multi-hop neighborhood query.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan_query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='NEIGHBORHOOD',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='user_123')],
+                      ctx=Load())),
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=2))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='query_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='QueryType', ctx=Load()),
+                    attr='NEIGHBORHOOD',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='max_hops',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)]))]),
+        FunctionDef(
+          name='test_plan_with_template',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test planning with predefined template.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan_query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='NEIGHBORHOOD',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='user_123')],
+                      ctx=Load())),
+                  keyword(
+                    arg='template_name',
+                    value=Constant(value='similar_skills'))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='direction',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='HopDirection', ctx=Load()),
+                    attr='OUTGOING',
+                    ctx=Load())]))])]),
+    ClassDef(
+      name='TestKGRetrievalExecutor',
+      body=[
+        Expr(
+          value=Constant(value='Test L2 KG Retrieval Executor.')),
+        FunctionDef(
+          name='test_execute_entity_query',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test executing entity fact query.')),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='user_1'),
+                      Constant(value='has_skill'),
+                      Constant(value='Python')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='user_1'),
+                      Constant(value='has_skill'),
+                      Constant(value='AWS')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='user_1'),
+                      Constant(value='worked_at'),
+                      Constant(value='Google')])])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='execute_entity_query', ctx=Load()),
+                args=[
+                  Name(id='store', ctx=Load()),
+                  Constant(value='user_1')])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load()),
+                  Name(id='KGRetrievalResult', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_triplets',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='user_1'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='entities',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_execute_multi_hop',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test multi-hop neighborhood query.')),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='user_1'),
+                      Constant(value='has_skill'),
+                      Constant(value='Python')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='job_1'),
+                      Constant(value='requires_skill'),
+                      Constant(value='Python')])])),
+            ImportFrom(
+              module='l2.kg_retrieval_executor',
+              names=[
+                alias(name='execute_multi_hop_query')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='execute_multi_hop_query', ctx=Load()),
+                args=[
+                  Name(id='store', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='start_entity',
+                    value=Constant(value='user_1')),
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=2))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_triplets',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=1)]))])]),
+    ClassDef(
+      name='TestTripletExtraction',
+      body=[
+        Expr(
+          value=Constant(value='Test L2 Triplet Extraction Executor.')),
+        FunctionDef(
+          name='test_extract_skills',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test skill extraction from text.')),
+            Assign(
+              targets=[
+                Name(id='executor', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletExtractionExecutor', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='create_extraction_plan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='source_text',
+                    value=Constant(value='Experienced Python developer with expertise in AWS and Docker')),
+                  keyword(
+                    arg='source_id',
+                    value=Constant(value='doc_001')),
+                  keyword(
+                    arg='user_id',
+                    value=Constant(value='user_123'))])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='executor', ctx=Load()),
+                  attr='execute',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_extracted',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Name(id='skills', ctx=Store())],
+              value=ListComp(
+                elt=Attribute(
+                  value=Name(id='t', ctx=Load()),
+                  attr='object',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='t', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='triplets',
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='t', ctx=Load()),
+                          attr='predicate',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='has_skill')])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='skills', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_extract_experience',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test experience extraction from text.')),
+            Assign(
+              targets=[
+                Name(id='executor', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletExtractionExecutor', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='create_extraction_plan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='source_text',
+                    value=Constant(value='Worked at Google as Senior Engineer from 2020 to present')),
+                  keyword(
+                    arg='source_id',
+                    value=Constant(value='doc_002')),
+                  keyword(
+                    arg='user_id',
+                    value=Constant(value='user_123'))])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='executor', ctx=Load()),
+                  attr='execute',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='companies', ctx=Store())],
+              value=ListComp(
+                elt=Attribute(
+                  value=Name(id='t', ctx=Load()),
+                  attr='object',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='t', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='triplets',
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='t', ctx=Load()),
+                          attr='predicate',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='worked_at')])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_extracted',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0)]))])]),
+    ClassDef(
+      name='TestInvalidationExecutor',
+      body=[
+        Expr(
+          value=Constant(value='Test L2 Invalidation Executor.')),
+        FunctionDef(
+          name='test_invalidation_by_age',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test invalidation of old facts.')),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='triplet', ctx=Store())],
+              value=Call(
+                func=Name(id='create_triplet', ctx=Load()),
+                args=[
+                  Constant(value='user_1'),
+                  Constant(value='has_skill'),
+                  Constant(value='COBOL')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Name(id='triplet', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='executor', ctx=Store())],
+              value=Call(
+                func=Name(id='InvalidationExecutor', ctx=Load()),
+                args=[
+                  Name(id='store', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='create_invalidation_plan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='target_subject',
+                    value=Constant(value='user_1')),
+                  keyword(
+                    arg='max_age_days',
+                    value=Constant(value=0))])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='executor', ctx=Load()),
+                  attr='execute',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0)]))])]),
+    ClassDef(
+      name='TestKGOrchestration',
+      body=[
+        Expr(
+          value=Constant(value='Test L3 KG-First Retrieval Orchestration.')),
+        FunctionDef(
+          name='test_build_retrieval_dag',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test building a retrieval DAG.')),
+            Assign(
+              targets=[
+                Name(id='orchestrator', ctx=Store())],
+              value=Call(
+                func=Name(id='KGFirstRetrievalOrchestrator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Call(
+                func=Name(id='create_hybrid_context', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query',
+                    value=Constant(value='Python developer')),
+                  keyword(
+                    arg='user_id',
+                    value=Constant(value='user_123')),
+                  keyword(
+                    arg='kg_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='user_123')],
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='dag', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='orchestrator', ctx=Load()),
+                  attr='build_dag',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='kg_query'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='dag', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='vector_search'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='dag', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='fusion'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='dag', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='filtering'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='dag', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_dag_execution_order',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test DAG topological sort.')),
+            Assign(
+              targets=[
+                Name(id='orchestrator', ctx=Store())],
+              value=Call(
+                func=Name(id='KGFirstRetrievalOrchestrator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Call(
+                func=Name(id='create_hybrid_context', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query',
+                    value=Constant(value='test'))])),
+            Assign(
+              targets=[
+                Name(id='dag', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='orchestrator', ctx=Load()),
+                  attr='build_dag',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='order', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='dag', ctx=Load()),
+                  attr='get_execution_order',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='fusion_idx', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='order', ctx=Load()),
+                  attr='index',
+                  ctx=Load()),
+                args=[
+                  Constant(value='fusion')])),
+            Assign(
+              targets=[
+                Name(id='kg_idx', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='order', ctx=Load()),
+                  attr='index',
+                  ctx=Load()),
+                args=[
+                  Constant(value='kg_query')])),
+            Assign(
+              targets=[
+                Name(id='vector_idx', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='order', ctx=Load()),
+                  attr='index',
+                  ctx=Load()),
+                args=[
+                  Constant(value='vector_search')])),
+            Assert(
+              test=Compare(
+                left=Name(id='fusion_idx', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Name(id='kg_idx', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='fusion_idx', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Name(id='vector_idx', ctx=Load())]))])]),
+    ClassDef(
+      name='TestLayerBoundaries',
+      body=[
+        Expr(
+          value=Constant(value='Test that components respect layer boundaries.')),
+        FunctionDef(
+          name='test_l4_no_execution_logic',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value="Verify L4 components don't contain execution logic.")),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='triplet', ctx=Store())],
+              value=Call(
+                func=Name(id='create_triplet', ctx=Load()),
+                args=[
+                  Constant(value='s'),
+                  Constant(value='p'),
+                  Constant(value='o')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Name(id='triplet', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='query',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='TripletQuery', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='subject',
+                        value=Constant(value='s'))])])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_l1_pure_planning',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify L1 planner produces plans without execution.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan_query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='ENTITY_FACTS',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='entity_1')],
+                      ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='KGQueryPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='start_entities',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='entity_1')],
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_l2_executes_plans',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify L2 executor uses plans from L1.')),
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='TripletStore', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='add_triplet',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='create_triplet', ctx=Load()),
+                    args=[
+                      Constant(value='e1'),
+                      Constant(value='rel'),
+                      Constant(value='e2')])])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='plan_entity_retrieval', ctx=Load()),
+                args=[
+                  Constant(value='e1')])),
+            Assign(
+              targets=[
+                Name(id='executor', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalExecutor', ctx=Load()),
+                args=[
+                  Name(id='store', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='executor', ctx=Load()),
+                  attr='execute',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load()),
+                  Name(id='KGRetrievalResult', ctx=Load())]))])])])

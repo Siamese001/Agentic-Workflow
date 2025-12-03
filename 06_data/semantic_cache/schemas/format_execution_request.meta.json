@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\exec-layer\\act-phase\\use-schema-tools\\utility\\prepare-information\\format_execution_request.py",
+    "rel_path": "format_execution_request.py",
+    "root_name": "schemas",
+    "file_hash": "ad73ef4595944ea4e96e617bb79a340958772572aed3fe1e1fabf3c5f50ae82c",
+    "file_size": 1269,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.5217428
+}

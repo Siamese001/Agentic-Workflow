@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\test_semantic_cache_safety.py",
+    "rel_path": "test_semantic_cache_safety.py",
+    "root_name": "tests",
+    "file_hash": "7e7f6a61efe16a51bf837d16e4d3940e2bd465361c005a57f1c0f19ea17d8e5b",
+    "file_size": 20197,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728355.1933074
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/simulation.py\n\"\"\"\nPhase-3 Simulation Harness (v10_10) \u2014 Batch D (Testing & Simulation)\n====================================================================\n\nThis module provides a meta-level simulation system for the v10_10 stack.\n\nIt focuses on:\n\n  \u2022 Exercising the Phase-3 knobs across multiple scenarios:\n        - HYDE enabled vs disabled\n        - RRF strategies\n        - QA council size\n        - Correction-loop depth\n        - Telemetry routing modes\n\n  \u2022 Using the real entrypoints:\n        - main_v10_10.run_workflow (single-job)\n        - run_batch_v10_10.run_batch (optional batch helper)\n\n  \u2022 Producing deterministic, machine-verifiable artefacts:\n        - Per-scenario summaries\n        - Outcome statistics (success/failure, corrections, council behaviour)\n        - Telemetry/event counts\n        - Optional golden evaluation reports (via golden_eval)\n\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom dataclasses import dataclass\nfrom itertools import prod",
+  "full_hash": "5e92ad8d7710a6a0bd33e22c74e36f4ad2ea7281573497efc11bf4a715337bc8",
+  "generated_at": 1764728228.091352,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\simulation.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nDAG executor for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides async execution engine for comprehensive r\u00e9sum\u00e9 enhancement directed acyclic graphs.\n\"\"\"\n\nfrom typing import Any, Dict, Iterable, Optional, Set, List\n\nfrom .dag_models import Graph\n\n\nclass DAGExecutor:\n    \"\"\"\n    Executes directed acyclic graphs for r\u00e9sum\u00e9 processing workflows.\n\n    Orchestrates node execution with proper dependency resolution for r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n    def __init__(self, graph: Graph) -> None:\n        self._graph = graph\n\n    async def run(\n        self,\n        start_nodes: Optional[Iterable[str]] = None,\n        ctx: Optional[Dict[str, Any]] = None,\n    ) -> Dict[str, Any]:\n        \"\"\"\n        Executes r\u00e9sum\u00e9 processing DAG with proper dependency resolution.\n\n        Ensures comprehensive workflow orchestration for r\u00e9sum\u00e9 improvement operations.\n        \"\"\"\n        if ctx is None:\n            ctx = {}\n\n        if start_nodes is None:\n            remaining: Set[str] = set(self._graph.n",
+  "full_hash": "090d5972eb2b9a080bc63d11105b20ffb11ed91db3740f4d870733c5ad81fc0b",
+  "generated_at": 1764728224.1866589,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag\\dag_executor.py"
+}

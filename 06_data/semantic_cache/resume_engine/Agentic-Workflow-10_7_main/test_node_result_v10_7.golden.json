@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\n\nfrom core_v10_7.models import NodeResult, NodeStatus\nfrom agent_orchestration_v10_7 import node_success, node_error\n\n\ndef test_node_status_values():\n    values = {status.value for status in NodeStatus}\n    assert values == {\n        \"success\",\n        \"retriable_error\",\n        \"fatal_error\",\n        \"blocked\",\n    }\n\n\ndef test_node_result_serialization_round_trip():\n    result = NodeResult(\n        node=\"example\",\n        status=NodeStatus.SUCCESS,\n        error_kind=None,\n        error_message=None,\n        payload={\"foo\": \"bar\"},\n    )\n    serialized = result.model_dump()\n    assert serialized[\"node\"] == \"example\"\n    assert serialized[\"status\"] == NodeStatus.SUCCESS.value\n    assert serialized[\"payload\"] == {\"foo\": \"bar\"}\n\n    deserialized = NodeResult.model_validate(serialized)\n    assert deserialized == result\n\n\ndef test_node_success_helper_builds_successful_result():\n    payload = {\"state\": {\"foo\": \"bar\"}}\n    result = node_success(\"test_node\", payload)\n\n    asser",
+  "full_hash": "95c716b0dd25c564fde3145a384256a3b5f3e89faec265e36f0c34e09104b80f",
+  "generated_at": 1764728230.4914308,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\core\\test_node_result_v10_7.py"
+}

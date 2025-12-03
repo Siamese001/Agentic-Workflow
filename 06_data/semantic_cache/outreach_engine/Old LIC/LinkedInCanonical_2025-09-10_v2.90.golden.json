@@ -1,0 +1,6 @@
+{
+  "golden_content": "```markdown\n# LinkedInCanonical \u2014 2025-09-10 v2.90 (FULL, ZLO-Consolidated)\n\n**Lineage:** v2.73 -> v2.75 -> v2.80 -> v2.81 -> v2.82 -> v2.83 -> v2.84 -> v2.84a -> v2.85 -> v2.86 -> v2.87 -> v2.88 -> **v2.90**\n\n**ZLO Method:** Versioned Zero-Loss Overwrite (Steps 1\u20135). v2.90 is an additive, zero-regression overwrite of v2.88. It clarifies and hardens archetype routing precedence for CXO-level tokens, strengthens the operator confirmation prompt, and tightens DRQ engagement prompts for C-Level. All v2.88 hardenings remain intact.\n```\n\n```markdown\n## SCOPE & GUARANTEES (v2.90)\n\n- **Scope:** Resolve misrouting when CXO tokens co-exist with Executive tokens by enforcing explicit **CXO precedence**; add operator-facing confirmations and DRQ engagement prompts that block if not affirmed.\n- **Zero-loss invariants preserved:**  \n  Header order and formatting; single fenced message body; signature format; AI FILTER v8 gating; C-Level DRQ/Evidence Pack rules; Short (NEW) CharCounter v2.1.1; no em",
+  "full_hash": "e095fdb587e44cca20bcca46779772c167123a3753973be104189b6e2b778a59",
+  "generated_at": 1764728340.7121687,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical_2025-09-10_v2.90.md"
+}

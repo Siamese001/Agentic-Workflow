@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v6.7_diff.txt",
+    "rel_path": "LIC_10-03-2025_v6.7_diff.txt",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "7d53169527f71010ef1b7059fc2e07047ef33ce079a287aad733225956aae6c5",
+    "file_size": 3319,
+    "is_eligible": true,
+    "file_type": ".txt",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728333.3808298
+}

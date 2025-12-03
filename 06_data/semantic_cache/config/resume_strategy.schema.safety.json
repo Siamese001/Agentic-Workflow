@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 141,
+  "generated_at": 1764728349.23929,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\router-microagent-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\resume_strategy.schema.json"
+}

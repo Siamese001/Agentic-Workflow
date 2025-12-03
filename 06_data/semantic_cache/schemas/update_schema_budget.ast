@@ -1,0 +1,182 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema budget management and updates.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Union')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='BudgetType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema budget management types.')),
+        Assign(
+          targets=[
+            Name(id='COMPUTATIONAL', ctx=Store())],
+          value=Constant(value='computational')),
+        Assign(
+          targets=[
+            Name(id='FINANCIAL', ctx=Store())],
+          value=Constant(value='financial')),
+        Assign(
+          targets=[
+            Name(id='TEMPORAL', ctx=Store())],
+          value=Constant(value='temporal')),
+        Assign(
+          targets=[
+            Name(id='RESOURCE', ctx=Store())],
+          value=Constant(value='resource'))]),
+    ClassDef(
+      name='UpdateFrequency',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Budget update frequency.')),
+        Assign(
+          targets=[
+            Name(id='IMMEDIATE', ctx=Store())],
+          value=Constant(value='immediate')),
+        Assign(
+          targets=[
+            Name(id='HOURLY', ctx=Store())],
+          value=Constant(value='hourly')),
+        Assign(
+          targets=[
+            Name(id='DAILY', ctx=Store())],
+          value=Constant(value='daily')),
+        Assign(
+          targets=[
+            Name(id='WEEKLY', ctx=Store())],
+          value=Constant(value='weekly'))]),
+    ClassDef(
+      name='BudgetAllocation',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual budget allocation.')),
+        AnnAssign(
+          target=Name(id='allocation_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='budget_type', ctx=Store()),
+          annotation=Name(id='BudgetType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='allocated_amount', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Union', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='int', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='used_amount', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Union', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='int', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='remaining_amount', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Union', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='int', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='BudgetUpdate',
+      body=[
+        Expr(
+          value=Constant(value='Schema for budget update configuration.')),
+        AnnAssign(
+          target=Name(id='update_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='update_frequency', ctx=Store()),
+          annotation=Name(id='UpdateFrequency', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='allocations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='BudgetAllocation', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='auto_adjust', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='BudgetUpdateResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for budget update results.')),
+        AnnAssign(
+          target=Name(id='result_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='update', ctx=Store()),
+          annotation=Name(id='BudgetUpdate', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='updated_allocations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='BudgetAllocation', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='savings_achieved', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Union', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='int', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='update_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

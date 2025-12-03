@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - apply_runtime_weights\nImplements L1 Cognitive Planning Layer for apply runtime weights operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ApplyRuntimeWeightsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ApplyRuntimeWeightsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ApplyRuntimeWeightsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n   ",
+  "full_hash": "aa8f0941e6d56a96a92a981bff0ff55a522b2b2741d2a4a2cf6784fc9adb9c58",
+  "generated_at": 1764728347.359065,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\expand-phase\\convert-runtime-content\\semantic\\adjust-scores\\apply_runtime_weights.py"
+}

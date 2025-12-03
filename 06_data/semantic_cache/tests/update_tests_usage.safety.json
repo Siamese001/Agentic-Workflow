@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": true,
+  "line_count": 307,
+  "generated_at": 1764728355.031394,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\safe-layer\\safety-phase\\manage-tests-costs\\general\\update-memory\\update_tests_usage.py"
+}

@@ -1,0 +1,196 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nVector search planning for resume evidence retrieval and semantic matching.\n\nCreates structured plans to support comprehensive resume improvement\nthrough semantic search and job alignment.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ClassDef(
+      name='VectorSearchPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines vector search structure for resume evidence gathering.\n\n    Ensures systematic retrieval of relevant data for comprehensive\n    resume enhancement and job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='query_text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='namespace', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='top_k', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=5),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata_filters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='VectorUpsertPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Structures vector storage planning for resume data.\n\n    Guides efficient storage of resume improvement evidence\n    for future retrieval and job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='namespace', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='plan_vector_search',
+      args=arguments(
+        args=[
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='namespace',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='top_k',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='metadata_filters',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value='default'),
+          Constant(value=5),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates vector search plan for resume evidence retrieval.\n\n    Structures semantic search approach to find relevant data\n    for resume improvement and job alignment.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='VectorSearchPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query_text',
+                value=Name(id='query', ctx=Load())),
+              keyword(
+                arg='namespace',
+                value=Name(id='namespace', ctx=Load())),
+              keyword(
+                arg='top_k',
+                value=Name(id='top_k', ctx=Load())),
+              keyword(
+                arg='metadata_filters',
+                value=BoolOp(
+                  op=Or(),
+                  values=[
+                    Name(id='metadata_filters', ctx=Load()),
+                    Dict()]))]))],
+      returns=Name(id='VectorSearchPlan', ctx=Load())),
+    FunctionDef(
+      name='plan_vector_upsert',
+      args=arguments(
+        args=[
+          arg(
+            arg='id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='text',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='namespace',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='metadata',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value='default'),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Plans vector storage for resume improvement data.\n\n    Structures approach to efficiently store resume evidence\n    for future retrieval and job alignment.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='metadata', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='metadata', ctx=Store())],
+              value=Dict())]),
+        Return(
+          value=Call(
+            func=Name(id='VectorUpsertPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Name(id='id', ctx=Load())),
+              keyword(
+                arg='text',
+                value=Name(id='text', ctx=Load())),
+              keyword(
+                arg='namespace',
+                value=Name(id='namespace', ctx=Load())),
+              keyword(
+                arg='metadata',
+                value=Name(id='metadata', ctx=Load()))]))],
+      returns=Name(id='VectorUpsertPlan', ctx=Load()))])

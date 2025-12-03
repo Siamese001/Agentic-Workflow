@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\hil.py",
+    "rel_path": "hil.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "8afeaa9c6cb7a0cdb0c0c876b726841218488a67556521f28ece1814e3073920",
+    "file_size": 16003,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.82276
+}

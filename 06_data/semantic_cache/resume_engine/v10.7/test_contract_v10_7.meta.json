@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_contract_v10_7.py",
+    "rel_path": "test_contract_v10_7.py",
+    "root_name": "resume_engine/v10.7",
+    "file_hash": "53912f08a15d1f1c7a47f036d6215a5ed2e57eab299c82d7f54083077552d4b5",
+    "file_size": 797,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728329.8796456
+}

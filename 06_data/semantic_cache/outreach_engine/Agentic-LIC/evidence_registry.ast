@@ -1,0 +1,287 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Registry for retrieval evidence artifacts.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='uuid')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ClassDef(
+      name='EvidenceRecord',
+      body=[
+        AnnAssign(
+          target=Name(id='artifact_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='scope', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='company_id', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='str', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source_url', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='summary', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='anchor_date', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='used_in_section', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='EvidenceRegistry',
+      body=[
+        Expr(
+          value=Constant(value='Track evidence artifacts referenced in outreach drafts.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_records',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='EvidenceRecord', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='upsert',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='scope',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='company_id',
+                annotation=BinOp(
+                  left=Name(id='str', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None))),
+              arg(
+                arg='source_url',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='summary',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='anchor_date',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='confidence',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='used_in_section',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='artifact_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='record_id', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='artifact_id', ctx=Load()),
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='uuid', ctx=Load()),
+                          attr='uuid4',
+                          ctx=Load()))])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_records',
+                    ctx=Load()),
+                  slice=Name(id='record_id', ctx=Load()),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='EvidenceRecord', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='artifact_id',
+                    value=Name(id='record_id', ctx=Load())),
+                  keyword(
+                    arg='scope',
+                    value=Name(id='scope', ctx=Load())),
+                  keyword(
+                    arg='company_id',
+                    value=Name(id='company_id', ctx=Load())),
+                  keyword(
+                    arg='source_url',
+                    value=Name(id='source_url', ctx=Load())),
+                  keyword(
+                    arg='summary',
+                    value=Name(id='summary', ctx=Load())),
+                  keyword(
+                    arg='anchor_date',
+                    value=Name(id='anchor_date', ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Name(id='confidence', ctx=Load())),
+                  keyword(
+                    arg='used_in_section',
+                    value=Name(id='used_in_section', ctx=Load()))])),
+            Return(
+              value=Name(id='record_id', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='get',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='artifact_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_records',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='artifact_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='EvidenceRecord', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='list',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='scope',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='values', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_records',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load()))),
+            If(
+              test=Compare(
+                left=Name(id='scope', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Name(id='values', ctx=Load())]))]),
+            Return(
+              value=ListComp(
+                elt=Name(id='record', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='record', ctx=Store()),
+                    iter=Name(id='values', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='record', ctx=Load()),
+                          attr='scope',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Name(id='scope', ctx=Load())])],
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='EvidenceRecord', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='__contains__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='artifact_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='artifact_id', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_records',
+                    ctx=Load())]))],
+          returns=Name(id='bool', ctx=Load()))])])

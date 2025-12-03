@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Release SLO checks for the full outreach pipeline.\"\"\"\nfrom __future__ import annotations\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack, StackInputs\n\n\ndef test_release_path_meets_slos_and_is_deterministic():\n    stack = OutreachStack(ReasoningToggles())\n    inputs = StackInputs(prompt=\"Checking in\", company_id=\"ACME\", contact_id=\"C1\")\n\n    drafts = []\n    for _ in range(3):\n        outcome = stack.run(inputs)\n        drafts.append(outcome[\"draft\"])\n        assert outcome[\"verdict\"].passed\n\n    metrics = stack.validator.metrics\n    assert metrics.pass_rate() >= 0.85\n    assert metrics.latency_p95() <= 3000\n    assert metrics.token_drift() <= 0.10\n    assert len(set(drafts[-2:])) == 1\n",
+  "full_hash": "78c6db7f6bacaaee8228cc26e3898ddc71b1ba0690016a04a8fdb86dce200962",
+  "generated_at": 1764728330.9638474,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_release_slos.py"
+}

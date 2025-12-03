@@ -1,0 +1,93 @@
+Module(
+  body=[
+    ImportFrom(
+      module='eval.golden_state.models',
+      names=[
+        alias(name='JudgeVerdict')],
+      level=0),
+    ImportFrom(
+      module='eval.golden_state.scorer',
+      names=[
+        alias(name='aggregate_scores')],
+      level=0),
+    FunctionDef(
+      name='test_aggregate_scores_basic',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='verdicts', ctx=Store())],
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='JudgeVerdict', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='score',
+                    value=Constant(value=1.0)),
+                  keyword(
+                    arg='rating',
+                    value=Constant(value='pass')),
+                  keyword(
+                    arg='explanation',
+                    value=Constant(value=''))]),
+              Call(
+                func=Name(id='JudgeVerdict', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='score',
+                    value=Constant(value=0.0)),
+                  keyword(
+                    arg='rating',
+                    value=Constant(value='fail')),
+                  keyword(
+                    arg='explanation',
+                    value=Constant(value=''))])],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='agg', ctx=Store())],
+          value=Call(
+            func=Name(id='aggregate_scores', ctx=Load()),
+            args=[
+              Name(id='verdicts', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='agg', ctx=Load()),
+              slice=Constant(value='avg_score'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=0.5)])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='agg', ctx=Load()),
+              slice=Constant(value='pass_count'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='agg', ctx=Load()),
+              slice=Constant(value='fail_count'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='agg', ctx=Load()),
+              slice=Constant(value='total'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=2.0)]))])])

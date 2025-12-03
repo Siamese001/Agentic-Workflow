@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\check-config-rules\\semantic\\adjust-scores\\evaluate_config_compliance.py",
+    "rel_path": "evaluate_config_compliance.py",
+    "root_name": "config",
+    "file_hash": "7a8e7cce1844324804960826a4cfd066e81e895a39520bad9449753d73aaf52c",
+    "file_size": 11452,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.3680005
+}

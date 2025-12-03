@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 480,
+  "generated_at": 1764728345.4839022,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\cross_validator.py"
+}

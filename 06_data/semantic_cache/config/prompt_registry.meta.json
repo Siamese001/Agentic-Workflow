@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\prompt_registry.yaml",
+    "rel_path": "prompt_registry.yaml",
+    "root_name": "config",
+    "file_hash": "f7fd4a1788470a075af9d0388ad730ec39ee06fb80b771ec1a7535788b891c45",
+    "file_size": 8188,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.1154375
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\safe-layer\\safety-phase\\manage-observability-costs\\general\\update-memory\\track_observability_cost.py",
+    "rel_path": "track_observability_cost.py",
+    "root_name": "observability",
+    "file_hash": "dc61b2849a6c4f994bc0009503e4de00383d3eb2db887b7a32e0878a5b4345e1",
+    "file_size": 11404,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.5481308
+}

@@ -1,0 +1,939 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nV10.8 Consolidated Module: Correction Validation\nMerged from 4 source files\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='self_correction',
+      names=[
+        alias(name='SelfCorrectionSurface'),
+        alias(name='should_retry')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ClassDef(
+      name='SelfCorrectionSurface',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='RAG_RETRY', ctx=Store())],
+          value=Constant(value='rag_retry')),
+        Assign(
+          targets=[
+            Name(id='DRAFT_RETRY', ctx=Store())],
+          value=Constant(value='draft_retry')),
+        Assign(
+          targets=[
+            Name(id='QA_RECHECK', ctx=Store())],
+          value=Constant(value='qa_recheck')),
+        Assign(
+          targets=[
+            Name(id='STRATEGY_REPLAN', ctx=Store())],
+          value=Constant(value='strategy_replan'))]),
+    FunctionDef(
+      name='all_surfaces',
+      args=arguments(),
+      body=[
+        Return(
+          value=DictComp(
+            key=Attribute(
+              value=Name(id='s', ctx=Load()),
+              attr='name',
+              ctx=Load()),
+            value=Attribute(
+              value=Name(id='s', ctx=Load()),
+              attr='value',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='s', ctx=Store()),
+                iter=Name(id='SelfCorrectionSurface', ctx=Load()),
+                is_async=0)]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='str', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='should_retry',
+      args=arguments(
+        args=[
+          arg(
+            arg='surface',
+            annotation=Name(id='SelfCorrectionSurface', ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='last_result',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic stub to indicate whether a local retry is warranted.\n\n    For v10.8, logic must be simple:\n      - If surface is QA_RECHECK and last_result contains "qa_report"\n        with any finding.status == "pending" → return True.\n      - Else return False.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='surface', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                attr='QA_RECHECK',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='last_result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_report'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='findings', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='report', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='findings'),
+                  List(ctx=Load())])),
+            For(
+              target=Name(id='f', ctx=Store()),
+              iter=Name(id='findings', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='status')]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='pending')]),
+                  body=[
+                    Return(
+                      value=Constant(value=True))])])]),
+        Return(
+          value=Constant(value=False))],
+      returns=Name(id='bool', ctx=Load())),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    FunctionDef(
+      name='evaluate_correction',
+      args=arguments(
+        args=[
+          arg(
+            arg='surface',
+            annotation=Name(id='SelfCorrectionSurface', ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='last_patch',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic metadata-only correction recommendation generator.\n    ')),
+        Assign(
+          targets=[
+            Name(id='needs_retry', ctx=Store())],
+          value=Call(
+            func=Name(id='bool', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='should_retry', ctx=Load()),
+                args=[
+                  Name(id='surface', ctx=Load()),
+                  Name(id='state', ctx=Load()),
+                  Name(id='last_patch', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='rec', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='surface'),
+              Constant(value='needs_retry'),
+              Constant(value='needs_replan'),
+              Constant(value='reason')],
+            values=[
+              Attribute(
+                value=Name(id='surface', ctx=Load()),
+                attr='value',
+                ctx=Load()),
+              Name(id='needs_retry', ctx=Load()),
+              Constant(value=False),
+              Constant(value='default_accept')])),
+        If(
+          test=Compare(
+            left=Name(id='surface', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                attr='QA_RECHECK',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='rec', ctx=Load()),
+                  slice=Constant(value='reason'),
+                  ctx=Store())],
+              value=IfExp(
+                test=Name(id='needs_retry', ctx=Load()),
+                body=Constant(value='qa_pending'),
+                orelse=Constant(value='qa_stable')))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Name(id='surface', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='RAG_RETRY',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='DRAFT_RETRY',
+                        ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='rec', ctx=Load()),
+                      slice=Constant(value='needs_retry'),
+                      ctx=Store())],
+                  value=Constant(value=True)),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='rec', ctx=Load()),
+                      slice=Constant(value='reason'),
+                      ctx=Store())],
+                  value=Constant(value='local_retry_suggested'))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='surface', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='STRATEGY_REPLAN',
+                        ctx=Load())]),
+                  body=[
+                    If(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Call(
+                          func=Attribute(
+                            value=Name(id='state', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='messages')])),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='rec', ctx=Load()),
+                              slice=Constant(value='needs_replan'),
+                              ctx=Store())],
+                          value=Constant(value=True)),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='rec', ctx=Load()),
+                              slice=Constant(value='reason'),
+                              ctx=Store())],
+                          value=Constant(value='no_messages_replan'))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='rec', ctx=Load()),
+                              slice=Constant(value='reason'),
+                              ctx=Store())],
+                          value=Constant(value='strategy_stable'))])])])]),
+        Return(
+          value=Name(id='rec', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='CORRECTION_JOURNAL', ctx=Store())],
+      value=List(ctx=Load())),
+    FunctionDef(
+      name='record_correction_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='surface',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='recommendation',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='CORRECTION_JOURNAL', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='surface'),
+                  Constant(value='recommendation'),
+                  Constant(value='plan_objective'),
+                  Constant(value='mode')],
+                values=[
+                  Name(id='surface', ctx=Load()),
+                  Name(id='recommendation', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='objective')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='mode')])])]))]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ClassDef(
+      name='ArbitrationEngine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic stub arbitration engine.\n\n    evaluate(state, qa_report, safety_patch) -> Dict[str,str]\n    returns one of: accept, retry, replan, escalate\n    ')),
+        FunctionDef(
+          name='evaluate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='qa_report',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='safety_patch',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='sg', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='safety_patch', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='safety_gateway'),
+                  Dict()])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='sg', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='status')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='blocked')]),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='action'),
+                      Constant(value='reason'),
+                      Constant(value='surface_hint')],
+                    values=[
+                      Constant(value='escalate'),
+                      Constant(value='safety_blocked'),
+                      Constant(value='strategy_replan')]))]),
+            Assign(
+              targets=[
+                Name(id='findings', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='qa_report', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='findings'),
+                  List(ctx=Load())])),
+            For(
+              target=Name(id='f', ctx=Store()),
+              iter=Name(id='findings', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='status')]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='pending')]),
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='action'),
+                          Constant(value='reason'),
+                          Constant(value='surface_hint')],
+                        values=[
+                          Constant(value='retry'),
+                          Constant(value='qa_pending'),
+                          Constant(value='qa_recheck')]))])]),
+            Assign(
+              targets=[
+                Name(id='messages', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='messages'),
+                  List(ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='messages', ctx=Load())),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='action'),
+                      Constant(value='reason'),
+                      Constant(value='surface_hint')],
+                    values=[
+                      Constant(value='replan'),
+                      Constant(value='no_messages'),
+                      Constant(value='strategy_replan')]))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='action'),
+                  Constant(value='reason'),
+                  Constant(value='surface_hint')],
+                values=[
+                  Constant(value='accept'),
+                  Constant(value='default_accept'),
+                  Constant(value='qa_recheck')]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    Assign(
+      targets=[
+        Name(id='CORRECTION_JOURNAL', ctx=Store())],
+      value=List(ctx=Load())),
+    FunctionDef(
+      name='record_correction_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='surface',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='recommendation',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='CORRECTION_JOURNAL', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='surface'),
+                  Constant(value='recommendation'),
+                  Constant(value='plan_objective'),
+                  Constant(value='mode')],
+                values=[
+                  Name(id='surface', ctx=Load()),
+                  Name(id='recommendation', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='objective')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='mode')])])]))]),
+    FunctionDef(
+      name='evaluate_correction',
+      args=arguments(
+        args=[
+          arg(
+            arg='surface',
+            annotation=Name(id='SelfCorrectionSurface', ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='last_patch',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic metadata-only correction recommendation generator.\n    ')),
+        Assign(
+          targets=[
+            Name(id='needs_retry', ctx=Store())],
+          value=Call(
+            func=Name(id='bool', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='should_retry', ctx=Load()),
+                args=[
+                  Name(id='surface', ctx=Load()),
+                  Name(id='state', ctx=Load()),
+                  Name(id='last_patch', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='rec', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='surface'),
+              Constant(value='needs_retry'),
+              Constant(value='needs_replan'),
+              Constant(value='reason')],
+            values=[
+              Attribute(
+                value=Name(id='surface', ctx=Load()),
+                attr='value',
+                ctx=Load()),
+              Name(id='needs_retry', ctx=Load()),
+              Constant(value=False),
+              Constant(value='default_accept')])),
+        If(
+          test=Compare(
+            left=Name(id='surface', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                attr='QA_RECHECK',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='rec', ctx=Load()),
+                  slice=Constant(value='reason'),
+                  ctx=Store())],
+              value=IfExp(
+                test=Name(id='needs_retry', ctx=Load()),
+                body=Constant(value='qa_pending'),
+                orelse=Constant(value='qa_stable')))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Name(id='surface', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='RAG_RETRY',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='DRAFT_RETRY',
+                        ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='rec', ctx=Load()),
+                      slice=Constant(value='needs_retry'),
+                      ctx=Store())],
+                  value=Constant(value=True)),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='rec', ctx=Load()),
+                      slice=Constant(value='reason'),
+                      ctx=Store())],
+                  value=Constant(value='local_retry_suggested'))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='surface', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='STRATEGY_REPLAN',
+                        ctx=Load())]),
+                  body=[
+                    If(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Call(
+                          func=Attribute(
+                            value=Name(id='state', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='messages')])),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='rec', ctx=Load()),
+                              slice=Constant(value='needs_replan'),
+                              ctx=Store())],
+                          value=Constant(value=True)),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='rec', ctx=Load()),
+                              slice=Constant(value='reason'),
+                              ctx=Store())],
+                          value=Constant(value='no_messages_replan'))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='rec', ctx=Load()),
+                              slice=Constant(value='reason'),
+                              ctx=Store())],
+                          value=Constant(value='strategy_stable'))])])])]),
+        Return(
+          value=Name(id='rec', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='SelfCorrectionSurface',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='RAG_RETRY', ctx=Store())],
+          value=Constant(value='rag_retry')),
+        Assign(
+          targets=[
+            Name(id='DRAFT_RETRY', ctx=Store())],
+          value=Constant(value='draft_retry')),
+        Assign(
+          targets=[
+            Name(id='QA_RECHECK', ctx=Store())],
+          value=Constant(value='qa_recheck')),
+        Assign(
+          targets=[
+            Name(id='STRATEGY_REPLAN', ctx=Store())],
+          value=Constant(value='strategy_replan'))]),
+    FunctionDef(
+      name='all_surfaces',
+      args=arguments(),
+      body=[
+        Return(
+          value=DictComp(
+            key=Attribute(
+              value=Name(id='s', ctx=Load()),
+              attr='name',
+              ctx=Load()),
+            value=Attribute(
+              value=Name(id='s', ctx=Load()),
+              attr='value',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='s', ctx=Store()),
+                iter=Name(id='SelfCorrectionSurface', ctx=Load()),
+                is_async=0)]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='str', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='should_retry',
+      args=arguments(
+        args=[
+          arg(
+            arg='surface',
+            annotation=Name(id='SelfCorrectionSurface', ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='last_result',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic stub to indicate whether a local retry is warranted.\n\n    For v10.8, logic must be simple:\n      - If surface is QA_RECHECK and last_result contains "qa_report"\n        with any finding.status == "pending" → return True.\n      - Else return False.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='surface', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                attr='QA_RECHECK',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='last_result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_report'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='findings', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='report', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='findings'),
+                  List(ctx=Load())])),
+            For(
+              target=Name(id='f', ctx=Store()),
+              iter=Name(id='findings', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='status')]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='pending')]),
+                  body=[
+                    Return(
+                      value=Constant(value=True))])])]),
+        Return(
+          value=Constant(value=False))],
+      returns=Name(id='bool', ctx=Load()))])

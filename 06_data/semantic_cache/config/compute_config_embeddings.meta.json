@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\expand-phase\\convert-config-content\\embedding\\compare-meaning\\compute_config_embeddings.py",
+    "rel_path": "compute_config_embeddings.py",
+    "root_name": "config",
+    "file_hash": "261690309b871c3c514690c1944749f7239eb7b8fb71711a620b0ffac48ad7d8",
+    "file_size": 6790,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728348.8361077
+}

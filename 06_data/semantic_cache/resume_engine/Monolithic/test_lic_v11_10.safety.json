@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 930,
+  "generated_at": 1764728233.256453,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Monolithic\\test_lic_v11_10.py"
+}

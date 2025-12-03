@@ -1,0 +1,6 @@
+{
+  "golden_content": "from stacks_v10_8.policy_stack import PolicyStack\n\n\nclass DummyOutput(dict):\n    \"\"\"Simple mapping to mimic stack outputs.\"\"\"\n\n    def __init__(self, text: str):\n        super().__init__(text=text)\n        self.text = text\n\n\ndef _make_stack():\n    return PolicyStack(context=None, debug_mode=False)\n\n\ndef test_benign_output_allowed():\n    stack = _make_stack()\n    decision = stack.guard_output(DummyOutput(\"Generic help text.\"))\n\n    assert hasattr(decision, \"allowed\")\n    assert hasattr(decision, \"reason\")\n    assert decision.allowed is True\n\n\ndef test_disallowed_output_blocked_when_rule_exists():\n    stack = _make_stack()\n    output = DummyOutput(\"This mentions a forbidden_topic that should be blocked.\")\n\n    decision = stack.guard_output(output)\n\n    assert hasattr(decision, \"allowed\")\n    assert hasattr(decision, \"reason\")\n    assert decision.allowed is False\n    assert decision.reason is not None\n",
+  "full_hash": "70910d71e1ac8bb922aaab4195732b7fd45911429e2e0fbd787c845d52092006",
+  "generated_at": 1764728231.529162,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\policy\\test_policy_stack_basic.py"
+}

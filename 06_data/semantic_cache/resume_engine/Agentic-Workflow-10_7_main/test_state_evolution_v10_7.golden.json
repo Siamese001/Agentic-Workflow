@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\nimport copy\n\n\n# ----------------------------------------------------------------------\n# Helper: remove volatile fields (timestamps, uuids, cost tokens)\n# ----------------------------------------------------------------------\nVOLATILE_KEYS = {\"timestamp\", \"uuid\", \"usage\", \"cost\", \"trace_id\"}\n\n\ndef _sanitize_state(state: dict):\n    \"\"\"\n    Removes volatile fields that are allowed to differ run-run.\n    Ensures stable comparison for deterministic state evolution tests.\n    \"\"\"\n    if not isinstance(state, dict):\n        return state\n\n    clean = {}\n    for k, v in state.items():\n        if k in VOLATILE_KEYS:\n            continue\n        if isinstance(v, dict):\n            clean[k] = _sanitize_state(v)\n        else:\n            clean[k] = v\n    return clean\n\n\n# ----------------------------------------------------------------------\n# 1. State must monotonically grow (no loss of upstream keys)\n# ----------------------------------------",
+  "full_hash": "65cead06c95a1021b7e4b90170fe98ab5c400493956c2bbf2dd507a26d357b79",
+  "generated_at": 1764728230.7807996,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\state\\test_state_evolution_v10_7.py"
+}

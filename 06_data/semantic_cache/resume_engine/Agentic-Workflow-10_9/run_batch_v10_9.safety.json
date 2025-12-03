@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 325,
+  "generated_at": 1764728228.8165288,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\run_batch_v10_9.py"
+}

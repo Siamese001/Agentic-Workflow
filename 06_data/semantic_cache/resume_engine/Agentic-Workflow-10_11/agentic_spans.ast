@@ -1,0 +1,87 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='runtime.observability.spans',
+      names=[
+        alias(name='start_span'),
+        alias(name='end_span')],
+      level=0),
+    FunctionDef(
+      name='start_agent_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='meta',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Start an agent-level span and return its span identifier.\n\n    This is a thin convenience wrapper over the core spans module so that\n    higher layers have a semantic home for agent-centric tracing.\n    ')),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='meta', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Name(id='meta', ctx=Load()),
+            orelse=Dict(
+              keys=[
+                Constant(value='meta')],
+              values=[
+                Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='meta', ctx=Load())])]))),
+        Assign(
+          targets=[
+            Name(id='span_id', ctx=Store())],
+          value=Call(
+            func=Name(id='start_span', ctx=Load()),
+            args=[
+              Name(id='name', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load()))])),
+        Return(
+          value=Name(id='span_id', ctx=Load()))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='end_agent_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='span_id',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='End a previously-started agent span.\n\n    The span identifier is passed straight through to the spans module.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='end_span', ctx=Load()),
+            args=[
+              Name(id='span_id', ctx=Load())]))],
+      returns=Constant(value=None))])

@@ -1,0 +1,2618 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest suite for semantic cache AST extraction and validation\n\nTests AST extraction, signature generation, and validation components\nfor both Resume Engine (RG) and Outreach Engine (LIC) semantic processing.\n')),
+    Import(
+      names=[
+        alias(name='ast')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Import(
+      names=[
+        alias(name='tempfile')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='project_root', ctx=Store())],
+      value=Attribute(
+        value=Attribute(
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Name(id='__file__', ctx=Load())]),
+          attr='parent',
+          ctx=Load()),
+        attr='parent',
+        ctx=Load())),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='schemas'))])])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='runtime'))])])),
+    ImportFrom(
+      module='semantic_lineage',
+      names=[
+        alias(name='EngineType'),
+        alias(name='ResponsibilityLevel'),
+        alias(name='FileExtension'),
+        alias(name='FileSignature'),
+        alias(name='ASTNode'),
+        alias(name='ASTSignature'),
+        alias(name='SemanticCacheEntry'),
+        alias(name='SemanticLineageValidator')],
+      level=0),
+    ImportFrom(
+      module='semantic_scanner',
+      names=[
+        alias(name='ASTExtractor')],
+      level=0),
+    ClassDef(
+      name='TestASTExtractor',
+      body=[
+        Expr(
+          value=Constant(value='Test AST extraction functionality')),
+        FunctionDef(
+          name='test_extract_simple_function_signature',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test extraction of simple function signature')),
+            Assign(
+              targets=[
+                Name(id='python_code', ctx=Store())],
+              value=Constant(value='\ndef hello_world():\n    """Simple hello function"""\n    print("Hello, World!")\n    return "done"\n')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='NamedTemporaryFile',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='mode',
+                        value=Constant(value='w')),
+                      keyword(
+                        arg='suffix',
+                        value=Constant(value='.py')),
+                      keyword(
+                        arg='delete',
+                        value=Constant(value=False))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      Name(id='python_code', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='name',
+                        ctx=Load())]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='temp_path', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='python_code', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))])),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Attribute(
+                          value=Name(id='FileExtension', ctx=Load()),
+                          attr='PYTHON',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_signature', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ASTExtractor', ctx=Load()),
+                      attr='extract_ast_signature',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load()),
+                      Name(id='file_signature', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='ast_signature', ctx=Load()),
+                      attr='signature',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='file_signature', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='ast_signature', ctx=Load()),
+                          attr='function_signatures',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='hello_world'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='function_signatures',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='ast_signature', ctx=Load()),
+                          attr='root_nodes',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)])),
+                Assign(
+                  targets=[
+                    Name(id='func_node', ctx=Store())],
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='ast_signature', ctx=Load()),
+                      attr='root_nodes',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load())),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='func_node', ctx=Load()),
+                      attr='node_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='function')])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='func_node', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='hello_world')])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='func_node', ctx=Load()),
+                      attr='docstring',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='Simple hello function')])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='func_node', ctx=Load()),
+                      attr='responsibility_level',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L5_UTILITY',
+                        ctx=Load())]))],
+              finalbody=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='temp_path', ctx=Load()),
+                      attr='unlink',
+                      ctx=Load())))])]),
+        FunctionDef(
+          name='test_extract_class_signature',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test extraction of class signature')),
+            Assign(
+              targets=[
+                Name(id='python_code', ctx=Store())],
+              value=Constant(value='\nclass DataProcessor:\n    """Processes data efficiently"""\n    \n    def __init__(self, config):\n        self.config = config\n    \n    def process(self, data):\n        return self.transform(data)\n    \n    def transform(self, data):\n        return data.upper()\n')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='NamedTemporaryFile',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='mode',
+                        value=Constant(value='w')),
+                      keyword(
+                        arg='suffix',
+                        value=Constant(value='.py')),
+                      keyword(
+                        arg='delete',
+                        value=Constant(value=False))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      Name(id='python_code', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='name',
+                        ctx=Load())]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='temp_path', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='python_code', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))])),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Attribute(
+                          value=Name(id='FileExtension', ctx=Load()),
+                          attr='PYTHON',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_signature', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ASTExtractor', ctx=Load()),
+                      attr='extract_ast_signature',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load()),
+                      Name(id='file_signature', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='ast_signature', ctx=Load()),
+                          attr='class_signatures',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='DataProcessor'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='class_signatures',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='ast_signature', ctx=Load()),
+                          attr='function_signatures',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=3)])),
+                Assign(
+                  targets=[
+                    Name(id='class_node', ctx=Store())],
+                  value=Constant(value=None)),
+                For(
+                  target=Name(id='node', ctx=Store()),
+                  iter=Attribute(
+                    value=Name(id='ast_signature', ctx=Load()),
+                    attr='root_nodes',
+                    ctx=Load()),
+                  body=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='node', ctx=Load()),
+                              attr='node_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='class')]),
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='node', ctx=Load()),
+                              attr='name',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='DataProcessor')])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='class_node', ctx=Store())],
+                          value=Name(id='node', ctx=Load())),
+                        Break()])]),
+                Assert(
+                  test=Compare(
+                    left=Name(id='class_node', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='class_node', ctx=Load()),
+                      attr='docstring',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='Processes data efficiently')])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='class_node', ctx=Load()),
+                      attr='responsibility_level',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L2_COMPONENT',
+                        ctx=Load())]))],
+              finalbody=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='temp_path', ctx=Load()),
+                      attr='unlink',
+                      ctx=Load())))])]),
+        FunctionDef(
+          name='test_extract_import_graph',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test extraction of import graph')),
+            Assign(
+              targets=[
+                Name(id='python_code', ctx=Store())],
+              value=Constant(value='\nimport os\nimport sys\nfrom pathlib import Path\nfrom typing import Dict, List\nimport requests\nfrom collections import defaultdict\n\ndef main():\n    path = Path("/tmp")\n    return os.listdir(path)\n')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='NamedTemporaryFile',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='mode',
+                        value=Constant(value='w')),
+                      keyword(
+                        arg='suffix',
+                        value=Constant(value='.py')),
+                      keyword(
+                        arg='delete',
+                        value=Constant(value=False))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      Name(id='python_code', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='name',
+                        ctx=Load())]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='temp_path', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='python_code', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))])),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Attribute(
+                          value=Name(id='FileExtension', ctx=Load()),
+                          attr='PYTHON',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_signature', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ASTExtractor', ctx=Load()),
+                      attr='extract_ast_signature',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load()),
+                      Name(id='file_signature', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='os'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='import_graph',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='sys'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='import_graph',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='pathlib'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='import_graph',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='typing'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='import_graph',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='requests'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='import_graph',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='collections'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='import_graph',
+                        ctx=Load())]))],
+              finalbody=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='temp_path', ctx=Load()),
+                      attr='unlink',
+                      ctx=Load())))])]),
+        FunctionDef(
+          name='test_calculate_complexity_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test complexity calculation')),
+            Assign(
+              targets=[
+                Name(id='python_code', ctx=Store())],
+              value=Constant(value='\ndef complex_function(data):\n    if data:\n        for item in data:\n            if item > 0:\n                try:\n                    result = process_item(item)\n                    if result:\n                        return result\n                except Exception:\n                    pass\n    return None\n\ndef process_item(item):\n    return item * 2\n')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='NamedTemporaryFile',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='mode',
+                        value=Constant(value='w')),
+                      keyword(
+                        arg='suffix',
+                        value=Constant(value='.py')),
+                      keyword(
+                        arg='delete',
+                        value=Constant(value=False))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      Name(id='python_code', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='name',
+                        ctx=Load())]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='temp_path', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='python_code', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))])),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Attribute(
+                          value=Name(id='FileExtension', ctx=Load()),
+                          attr='PYTHON',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_signature', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ASTExtractor', ctx=Load()),
+                      attr='extract_ast_signature',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load()),
+                      Name(id='file_signature', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='complexity', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='ast_signature', ctx=Load()),
+                    attr='complexity_metrics',
+                    ctx=Load())),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='cyclomatic_complexity'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='complexity', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='cognitive_complexity'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='complexity', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='complexity', ctx=Load()),
+                      slice=Constant(value='cyclomatic_complexity'),
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=1)]))],
+              finalbody=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='temp_path', ctx=Load()),
+                      attr='unlink',
+                      ctx=Load())))])]),
+        FunctionDef(
+          name='test_responsibility_level_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test responsibility level detection')),
+            Assign(
+              targets=[
+                Name(id='test_cases', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='core_engine'),
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L1_CORE',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='MainComponent'),
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L1_CORE',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='data_service'),
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L2_COMPONENT',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='api_handler'),
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L3_INTERFACE',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='data_processor_impl'),
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L4_IMPLEMENTATION',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='helper_function'),
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L5_UTILITY',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='random_name'),
+                      Attribute(
+                        value=Name(id='ResponsibilityLevel', ctx=Load()),
+                        attr='L5_UTILITY',
+                        ctx=Load())],
+                    ctx=Load())],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='python_template', ctx=Store())],
+              value=Constant(value='\ndef {}():\n    pass\n')),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='func_name', ctx=Store()),
+                  Name(id='expected_level', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='test_cases', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='python_code', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='python_template', ctx=Load()),
+                      attr='format',
+                      ctx=Load()),
+                    args=[
+                      Name(id='func_name', ctx=Load())])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Attribute(
+                          value=Name(id='tempfile', ctx=Load()),
+                          attr='NamedTemporaryFile',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='mode',
+                            value=Constant(value='w')),
+                          keyword(
+                            arg='suffix',
+                            value=Constant(value='.py')),
+                          keyword(
+                            arg='delete',
+                            value=Constant(value=False))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='f', ctx=Load()),
+                          attr='write',
+                          ctx=Load()),
+                        args=[
+                          Name(id='python_code', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='temp_path', ctx=Store())],
+                      value=Call(
+                        func=Name(id='Path', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='f', ctx=Load()),
+                            attr='name',
+                            ctx=Load())]))]),
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='file_signature', ctx=Store())],
+                      value=Call(
+                        func=Name(id='FileSignature', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='file_path',
+                            value=Name(id='temp_path', ctx=Load())),
+                          keyword(
+                            arg='file_hash',
+                            value=Constant(value='test_hash')),
+                          keyword(
+                            arg='size_bytes',
+                            value=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Call(
+                                  func=Attribute(
+                                    value=Name(id='python_code', ctx=Load()),
+                                    attr='encode',
+                                    ctx=Load()))])),
+                          keyword(
+                            arg='last_modified',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load()))),
+                          keyword(
+                            arg='engine',
+                            value=Attribute(
+                              value=Name(id='EngineType', ctx=Load()),
+                              attr='RESUME_ENGINE',
+                              ctx=Load())),
+                          keyword(
+                            arg='archive_version',
+                            value=Constant(value='test_version')),
+                          keyword(
+                            arg='file_extension',
+                            value=Attribute(
+                              value=Name(id='FileExtension', ctx=Load()),
+                              attr='PYTHON',
+                              ctx=Load()))])),
+                    Assign(
+                      targets=[
+                        Name(id='ast_signature', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='ASTExtractor', ctx=Load()),
+                          attr='extract_ast_signature',
+                          ctx=Load()),
+                        args=[
+                          Name(id='temp_path', ctx=Load()),
+                          Name(id='file_signature', ctx=Load())])),
+                    If(
+                      test=Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='root_nodes',
+                        ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='func_node', ctx=Store())],
+                          value=Subscript(
+                            value=Attribute(
+                              value=Name(id='ast_signature', ctx=Load()),
+                              attr='root_nodes',
+                              ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load())),
+                        Assert(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='func_node', ctx=Load()),
+                              attr='responsibility_level',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Name(id='expected_level', ctx=Load())]),
+                          msg=JoinedStr(
+                            values=[
+                              Constant(value='Failed for '),
+                              FormattedValue(
+                                value=Name(id='func_name', ctx=Load()),
+                                conversion=-1)]))])],
+                  finalbody=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='temp_path', ctx=Load()),
+                          attr='unlink',
+                          ctx=Load())))])])]),
+        FunctionDef(
+          name='test_handle_syntax_error',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test handling of syntax errors')),
+            Assign(
+              targets=[
+                Name(id='invalid_python', ctx=Store())],
+              value=Constant(value='\ndef broken_function(\n    # Missing closing parenthesis\n    print("This will cause syntax error")\n')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='NamedTemporaryFile',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='mode',
+                        value=Constant(value='w')),
+                      keyword(
+                        arg='suffix',
+                        value=Constant(value='.py')),
+                      keyword(
+                        arg='delete',
+                        value=Constant(value=False))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      Name(id='invalid_python', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='name',
+                        ctx=Load())]))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='temp_path', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='invalid_python', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))])),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Attribute(
+                          value=Name(id='FileExtension', ctx=Load()),
+                          attr='PYTHON',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_signature', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ASTExtractor', ctx=Load()),
+                      attr='extract_ast_signature',
+                      ctx=Load()),
+                    args=[
+                      Name(id='temp_path', ctx=Load()),
+                      Name(id='file_signature', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='ast_signature', ctx=Load()),
+                      attr='signature',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='file_signature', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='ast_signature', ctx=Load()),
+                          attr='root_nodes',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='error'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='complexity_metrics',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='ast_signature', ctx=Load()),
+                        attr='complexity_metrics',
+                        ctx=Load()),
+                      slice=Constant(value='error'),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='syntax_error')]))],
+              finalbody=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='temp_path', ctx=Load()),
+                      attr='unlink',
+                      ctx=Load())))])])]),
+    ClassDef(
+      name='TestASTSignatureValidation',
+      body=[
+        Expr(
+          value=Constant(value='Test AST signature validation')),
+        FunctionDef(
+          name='test_valid_ast_signature',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of valid AST signature')),
+            Assign(
+              targets=[
+                Name(id='file_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='FileSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/path.py')])),
+                  keyword(
+                    arg='file_hash',
+                    value=BinOp(
+                      left=Constant(value='a'),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='size_bytes',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='last_modified',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='test_version')),
+                  keyword(
+                    arg='file_extension',
+                    value=Attribute(
+                      value=Name(id='FileExtension', ctx=Load()),
+                      attr='PYTHON',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='ast_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='ASTSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='root_nodes',
+                    value=List(
+                      elts=[
+                        Call(
+                          func=Name(id='ASTNode', ctx=Load()),
+                          keywords=[
+                            keyword(
+                              arg='node_type',
+                              value=Constant(value='function')),
+                            keyword(
+                              arg='name',
+                              value=Constant(value='test_func')),
+                            keyword(
+                              arg='line_number',
+                              value=Constant(value=1)),
+                            keyword(
+                              arg='docstring',
+                              value=Constant(value='Test function')),
+                            keyword(
+                              arg='imports',
+                              value=List(ctx=Load())),
+                            keyword(
+                              arg='dependencies',
+                              value=List(ctx=Load())),
+                            keyword(
+                              arg='responsibility_level',
+                              value=Attribute(
+                                value=Name(id='ResponsibilityLevel', ctx=Load()),
+                                attr='L5_UTILITY',
+                                ctx=Load())),
+                            keyword(
+                              arg='children',
+                              value=List(ctx=Load()))])],
+                      ctx=Load())),
+                  keyword(
+                    arg='import_graph',
+                    value=Dict(
+                      keys=[
+                        Constant(value='os')],
+                      values=[
+                        List(
+                          elts=[
+                            Constant(value='line_1')],
+                          ctx=Load())])),
+                  keyword(
+                    arg='function_signatures',
+                    value=Dict(
+                      keys=[
+                        Constant(value='test_func')],
+                      values=[
+                        Constant(value='test_func()')])),
+                  keyword(arg='class_signatures', value=Dict()),
+                  keyword(
+                    arg='complexity_metrics',
+                    value=Dict(
+                      keys=[
+                        Constant(value='cyclomatic_complexity')],
+                      values=[
+                        Constant(value=1)]))])),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='ToolUsageSignature'),
+                alias(name='SafetySignature'),
+                alias(name='GoldenProjection'),
+                alias(name='IntegritySignals')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='tool_usage', ctx=Store())],
+              value=Call(
+                func=Name(id='ToolUsageSignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='safety', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetySignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='golden', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenProjection', ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='integrity', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='a'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='b'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='c'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  Constant(value='v1.0'),
+                  List(ctx=Load()),
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='cache_entry', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticCacheEntry', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='ast_signature',
+                    value=Name(id='ast_signature', ctx=Load())),
+                  keyword(
+                    arg='embedding',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='tool_usage',
+                    value=Name(id='tool_usage', ctx=Load())),
+                  keyword(
+                    arg='safety',
+                    value=Name(id='safety', ctx=Load())),
+                  keyword(
+                    arg='semantic_diff',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='golden_projection',
+                    value=Name(id='golden', ctx=Load())),
+                  keyword(
+                    arg='integrity',
+                    value=Name(id='integrity', ctx=Load())),
+                  keyword(
+                    arg='processing_timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='cache_entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_invalid_ast_signature_missing_hash',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of AST signature with missing hash')),
+            Assign(
+              targets=[
+                Name(id='file_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='FileSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/path.py')])),
+                  keyword(
+                    arg='file_hash',
+                    value=Constant(value='')),
+                  keyword(
+                    arg='size_bytes',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='last_modified',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='test_version')),
+                  keyword(
+                    arg='file_extension',
+                    value=Attribute(
+                      value=Name(id='FileExtension', ctx=Load()),
+                      attr='PYTHON',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='ast_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='ASTSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='root_nodes',
+                    value=List(ctx=Load())),
+                  keyword(arg='import_graph', value=Dict()),
+                  keyword(arg='function_signatures', value=Dict()),
+                  keyword(arg='class_signatures', value=Dict()),
+                  keyword(arg='complexity_metrics', value=Dict())])),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='ToolUsageSignature'),
+                alias(name='SafetySignature'),
+                alias(name='GoldenProjection'),
+                alias(name='IntegritySignals')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='tool_usage', ctx=Store())],
+              value=Call(
+                func=Name(id='ToolUsageSignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='safety', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetySignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='golden', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenProjection', ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='integrity', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='a'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='b'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='c'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  Constant(value='v1.0'),
+                  List(ctx=Load()),
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='cache_entry', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticCacheEntry', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='ast_signature',
+                    value=Name(id='ast_signature', ctx=Load())),
+                  keyword(
+                    arg='embedding',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='tool_usage',
+                    value=Name(id='tool_usage', ctx=Load())),
+                  keyword(
+                    arg='safety',
+                    value=Name(id='safety', ctx=Load())),
+                  keyword(
+                    arg='semantic_diff',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='golden_projection',
+                    value=Name(id='golden', ctx=Load())),
+                  keyword(
+                    arg='integrity',
+                    value=Name(id='integrity', ctx=Load())),
+                  keyword(
+                    arg='processing_timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='cache_entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='hash'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))])]),
+    ClassDef(
+      name='TestFileSignatureValidation',
+      body=[
+        Expr(
+          value=Constant(value='Test file signature validation')),
+        FunctionDef(
+          name='test_valid_file_signature',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of valid file signature')),
+            Assign(
+              targets=[
+                Name(id='file_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='FileSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/path.py')])),
+                  keyword(
+                    arg='file_hash',
+                    value=BinOp(
+                      left=Constant(value='a'),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='size_bytes',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='last_modified',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='test_version')),
+                  keyword(
+                    arg='file_extension',
+                    value=Attribute(
+                      value=Name(id='FileExtension', ctx=Load()),
+                      attr='PYTHON',
+                      ctx=Load()))])),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='ToolUsageSignature'),
+                alias(name='SafetySignature'),
+                alias(name='GoldenProjection'),
+                alias(name='IntegritySignals'),
+                alias(name='ASTSignature')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='ast_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='ASTSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='root_nodes',
+                    value=List(
+                      elts=[
+                        Constant(value='class_def'),
+                        Constant(value='function_def')],
+                      ctx=Load())),
+                  keyword(arg='import_graph', value=Dict()),
+                  keyword(arg='function_signatures', value=Dict()),
+                  keyword(arg='class_signatures', value=Dict()),
+                  keyword(arg='complexity_metrics', value=Dict())])),
+            Assign(
+              targets=[
+                Name(id='tool_usage', ctx=Store())],
+              value=Call(
+                func=Name(id='ToolUsageSignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='safety', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetySignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='golden', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenProjection', ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='integrity', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='a'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='b'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='c'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  Constant(value='v1.0'),
+                  List(ctx=Load()),
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='cache_entry', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticCacheEntry', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='ast_signature',
+                    value=Name(id='ast_signature', ctx=Load())),
+                  keyword(
+                    arg='embedding',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='tool_usage',
+                    value=Name(id='tool_usage', ctx=Load())),
+                  keyword(
+                    arg='safety',
+                    value=Name(id='safety', ctx=Load())),
+                  keyword(
+                    arg='semantic_diff',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='golden_projection',
+                    value=Name(id='golden', ctx=Load())),
+                  keyword(
+                    arg='integrity',
+                    value=Name(id='integrity', ctx=Load())),
+                  keyword(
+                    arg='processing_timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='cache_entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_invalid_file_signature_hash',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of file signature with invalid hash')),
+            Assign(
+              targets=[
+                Name(id='file_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='FileSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/path.py')])),
+                  keyword(
+                    arg='file_hash',
+                    value=Constant(value='short_hash')),
+                  keyword(
+                    arg='size_bytes',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='last_modified',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='test_version')),
+                  keyword(
+                    arg='file_extension',
+                    value=Attribute(
+                      value=Name(id='FileExtension', ctx=Load()),
+                      attr='PYTHON',
+                      ctx=Load()))])),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='ToolUsageSignature'),
+                alias(name='SafetySignature'),
+                alias(name='GoldenProjection'),
+                alias(name='IntegritySignals'),
+                alias(name='ASTSignature')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='ast_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='ASTSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='root_nodes',
+                    value=List(ctx=Load())),
+                  keyword(arg='import_graph', value=Dict()),
+                  keyword(arg='function_signatures', value=Dict()),
+                  keyword(arg='class_signatures', value=Dict()),
+                  keyword(arg='complexity_metrics', value=Dict())])),
+            Assign(
+              targets=[
+                Name(id='tool_usage', ctx=Store())],
+              value=Call(
+                func=Name(id='ToolUsageSignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='safety', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetySignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='golden', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenProjection', ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='integrity', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='a'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='b'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='c'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  Constant(value='v1.0'),
+                  List(ctx=Load()),
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='cache_entry', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticCacheEntry', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='ast_signature',
+                    value=Name(id='ast_signature', ctx=Load())),
+                  keyword(
+                    arg='embedding',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='tool_usage',
+                    value=Name(id='tool_usage', ctx=Load())),
+                  keyword(
+                    arg='safety',
+                    value=Name(id='safety', ctx=Load())),
+                  keyword(
+                    arg='semantic_diff',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='golden_projection',
+                    value=Name(id='golden', ctx=Load())),
+                  keyword(
+                    arg='integrity',
+                    value=Name(id='integrity', ctx=Load())),
+                  keyword(
+                    arg='processing_timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='cache_entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='hash'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_invalid_file_extension',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of file signature with invalid extension')),
+            Assign(
+              targets=[
+                Name(id='file_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='FileSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/path.xyz')])),
+                  keyword(
+                    arg='file_hash',
+                    value=BinOp(
+                      left=Constant(value='a'),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='size_bytes',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='last_modified',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='test_version')),
+                  keyword(
+                    arg='file_extension',
+                    value=Attribute(
+                      value=Name(id='FileExtension', ctx=Load()),
+                      attr='PYTHON',
+                      ctx=Load()))])),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='ToolUsageSignature'),
+                alias(name='SafetySignature'),
+                alias(name='GoldenProjection'),
+                alias(name='IntegritySignals'),
+                alias(name='ASTSignature')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='ast_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='ASTSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='root_nodes',
+                    value=List(ctx=Load())),
+                  keyword(arg='import_graph', value=Dict()),
+                  keyword(arg='function_signatures', value=Dict()),
+                  keyword(arg='class_signatures', value=Dict()),
+                  keyword(arg='complexity_metrics', value=Dict())])),
+            Assign(
+              targets=[
+                Name(id='tool_usage', ctx=Store())],
+              value=Call(
+                func=Name(id='ToolUsageSignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='safety', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetySignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='golden', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenProjection', ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='integrity', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='a'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='b'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='c'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  Constant(value='v1.0'),
+                  List(ctx=Load()),
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='cache_entry', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticCacheEntry', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='ast_signature',
+                    value=Name(id='ast_signature', ctx=Load())),
+                  keyword(
+                    arg='embedding',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='tool_usage',
+                    value=Name(id='tool_usage', ctx=Load())),
+                  keyword(
+                    arg='safety',
+                    value=Name(id='safety', ctx=Load())),
+                  keyword(
+                    arg='semantic_diff',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='golden_projection',
+                    value=Name(id='golden', ctx=Load())),
+                  keyword(
+                    arg='integrity',
+                    value=Name(id='integrity', ctx=Load())),
+                  keyword(
+                    arg='processing_timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='cache_entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))])]),
+    ClassDef(
+      name='TestEngineTypeDetection',
+      body=[
+        Expr(
+          value=Constant(value='Test engine type detection from paths')),
+        FunctionDef(
+          name='test_resume_engine_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test detection of resume engine paths')),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='determine_engine_from_path')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='test_paths', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/Git/Resume Engine Archive/v10.7/main.py')]),
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/Git/Resume Engine Archive/Agentic-Workflow-10_11/core.py')]),
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/Git/Resume Engine Archive/v2/data.py')])],
+                ctx=Load())),
+            For(
+              target=Name(id='test_path', ctx=Store()),
+              iter=Name(id='test_paths', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='engine', ctx=Store())],
+                  value=Call(
+                    func=Name(id='determine_engine_from_path', ctx=Load()),
+                    args=[
+                      Name(id='test_path', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='engine', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='EngineType', ctx=Load()),
+                        attr='RESUME_ENGINE',
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_outreach_engine_detection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test detection of outreach engine paths')),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='determine_engine_from_path')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='test_paths', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/Git/Reachout Engine Archive/Agentic-LIC/main.py')]),
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/Git/Reachout Engine Archive/Monolithic/core.py')]),
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/Git/Reachout Engine Archive/Agentic LIC/data.py')])],
+                ctx=Load())),
+            For(
+              target=Name(id='test_path', ctx=Store()),
+              iter=Name(id='test_paths', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='engine', ctx=Store())],
+                  value=Call(
+                    func=Name(id='determine_engine_from_path', ctx=Load()),
+                    args=[
+                      Name(id='test_path', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='engine', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='EngineType', ctx=Load()),
+                        attr='OUTREACH_ENGINE',
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_invalid_engine_path',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test handling of invalid engine paths')),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='determine_engine_from_path')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='test_paths', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/Git/Other Archive/v10.7/main.py')]),
+                  Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Constant(value='C:/random/path/core.py')])],
+                ctx=Load())),
+            For(
+              target=Name(id='test_path', ctx=Store()),
+              iter=Name(id='test_paths', ctx=Load()),
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='raises',
+                          ctx=Load()),
+                        args=[
+                          Name(id='ValueError', ctx=Load())]))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='determine_engine_from_path', ctx=Load()),
+                        args=[
+                          Name(id='test_path', ctx=Load())]))])])])]),
+    ClassDef(
+      name='TestFileExtensionValidation',
+      body=[
+        Expr(
+          value=Constant(value='Test file extension validation')),
+        FunctionDef(
+          name='test_valid_extensions',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of supported file extensions')),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='validate_file_extension')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='test_cases', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='test.py'),
+                      Attribute(
+                        value=Name(id='FileExtension', ctx=Load()),
+                        attr='PYTHON',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='test.json'),
+                      Attribute(
+                        value=Name(id='FileExtension', ctx=Load()),
+                        attr='JSON',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='test.md'),
+                      Attribute(
+                        value=Name(id='FileExtension', ctx=Load()),
+                        attr='MARKDOWN',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='test.txt'),
+                      Attribute(
+                        value=Name(id='FileExtension', ctx=Load()),
+                        attr='TEXT',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='test.yaml'),
+                      Attribute(
+                        value=Name(id='FileExtension', ctx=Load()),
+                        attr='YAML',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='test.cfg'),
+                      Attribute(
+                        value=Name(id='FileExtension', ctx=Load()),
+                        attr='CONFIG',
+                        ctx=Load())],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='filename', ctx=Store()),
+                  Name(id='expected_ext', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='test_cases', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='validate_file_extension', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='Path', ctx=Load()),
+                        args=[
+                          Name(id='filename', ctx=Load())])])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='result', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='expected_ext', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_invalid_extensions',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of unsupported file extensions')),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='validate_file_extension')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='invalid_files', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='test.exe'),
+                  Constant(value='test.dll'),
+                  Constant(value='test.jpg'),
+                  Constant(value='test.mp4'),
+                  Constant(value='test.zip')],
+                ctx=Load())),
+            For(
+              target=Name(id='filename', ctx=Store()),
+              iter=Name(id='invalid_files', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='validate_file_extension', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='Path', ctx=Load()),
+                        args=[
+                          Name(id='filename', ctx=Load())])])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='result', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='main',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='__file__', ctx=Load()),
+                  Constant(value='-v')],
+                ctx=Load())]))])])

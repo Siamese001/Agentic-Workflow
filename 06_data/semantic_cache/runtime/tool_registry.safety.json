@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 121,
+  "generated_at": 1764728347.9233057,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\safety-guard-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\tool_registry.py"
+}

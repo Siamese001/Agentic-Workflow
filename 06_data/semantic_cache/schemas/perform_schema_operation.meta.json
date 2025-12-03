@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\exec-layer\\act-phase\\use-schema-tools\\general\\use-a-tool\\perform_schema_operation.py",
+    "rel_path": "perform_schema_operation.py",
+    "root_name": "schemas",
+    "file_hash": "fdf9f45979a74c006da5d3887bcaaa16ac316a0849f0e1dcdbd96414be0e2c3b",
+    "file_size": 1397,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.5121045
+}

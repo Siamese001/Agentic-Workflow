@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import Dict\n\n\ndef build_ephemeral_rootfs() -> Dict[str, object]:\n    \"\"\"Return a deterministic description of an ephemeral rootfs.\n\n    This does not perform any real filesystem mutation; instead it\n    returns a structure that can be inspected in tests.\n    \"\"\"\n\n    return {\n        \"tmpfs\": True,\n        \"restricted_paths\": [\"/\", \"/etc\", \"/var\", \"/home\"],\n        \"writable_paths\": [\"/tmp\", \"/sandbox\"],\n    }\n\n\n\n",
+  "full_hash": "667d0fc5092936f7976c57289e1d3bd724faccef109d25ad50b278ac15cdfe8f",
+  "generated_at": 1764728346.8515246,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\executor-microagent-layer\\aggregate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\fs_template.py"
+}

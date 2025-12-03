@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\stress\\long_context\\test_long_context.py",
+    "rel_path": "test_long_context.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "0fa343ee7f0ac9e61f2b7436eb676b71add37b693fe58aa4eab4abe6c3299473",
+    "file_size": 338,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.628594
+}

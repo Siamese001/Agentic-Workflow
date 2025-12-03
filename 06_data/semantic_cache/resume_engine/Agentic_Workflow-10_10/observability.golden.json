@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: observability.py\n\"\"\"\nObservability / Telemetry Layer (v10_10 \u00b7 Phase 3)\n==================================================\n\nThis module provides:\n    \u2022 Structured spans (start_span / end_span)\n    \u2022 Structured events (emit_node_event, emit_telemetry_event)\n    \u2022 Typed retrieval + ranking events:\n          \u2013 RetrievalAttemptEvent\n          \u2013 RetrievalSuccessEvent\n          \u2013 RetrievalFailureEvent\n          \u2013 RankingEvent\n    \u2022 Cost snapshot emission\n    \u2022 Deterministic logging for DAG orchestration (L3)\n    \u2022 Zero external I/O (collects events; callers decide persistence)\n\nDesign constraints:\n    \u2022 No LLM calls.\n    \u2022 No state mutation outside in-memory telemetry buffers.\n    \u2022 No routing / planning decisions.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport time\nimport uuid\nfrom typing import Any, Dict, Optional, List\n\nfrom models import (\n    TelemetryEvent,\n    RetrievalAttemptEvent,\n    RetrievalSuccessEvent,\n    RetrievalFailureEvent,\n    RankingEvent,\n    CostSnapshot,\n)\n\n\n",
+  "full_hash": "eafd9dd11fec0319ef48a45047f6b8493015781eb09e62a49150518ffdd7248d",
+  "generated_at": 1764728228.3530548,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\observability.py"
+}

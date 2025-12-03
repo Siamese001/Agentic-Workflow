@@ -1,0 +1,85 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='ConfigV10_7')],
+      level=0),
+    FunctionDef(
+      name='test_config_provides_nested_sections',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load()))]),
+      body=[
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='logging_config',
+                ctx=Load()),
+              attr='log_level',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='INFO')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='agent_stacks',
+                ctx=Load()),
+              attr='enable_constitutional_review',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='agent_stacks',
+                ctx=Load()),
+              attr='conductor_max_steps',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=10)]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_config_missing_section_raises_attribute_error',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load()))]),
+      body=[
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='AttributeError', ctx=Load())]))],
+          body=[
+            Assign(
+              targets=[
+                Name(id='_', ctx=Store())],
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='this_section_does_not_exist',
+                ctx=Load()))])],
+      returns=Constant(value=None))])

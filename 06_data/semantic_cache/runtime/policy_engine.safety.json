@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 46,
+  "generated_at": 1764728346.676832,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\budget-manager-layer\\expand-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\policy_engine.py"
+}

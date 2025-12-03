@@ -1,0 +1,2793 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nPhase 7 Stress Testing - Concurrent JD Processing\n\nTests system behavior under concurrent job description processing loads.\nFocuses on performance, resource usage, thread safety, and scalability limits.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='threading')]),
+    Import(
+      names=[
+        alias(name='time')]),
+    Import(
+      names=[
+        alias(name='random')]),
+    ImportFrom(
+      module='concurrent.futures',
+      names=[
+        alias(name='ThreadPoolExecutor'),
+        alias(name='as_completed')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock'),
+        alias(name='patch'),
+        alias(name='AsyncMock')],
+      level=0),
+    ImportFrom(
+      module='tests.observability.test_telemetry_collection',
+      names=[
+        alias(name='TelemetryCollector'),
+        alias(name='ExecutionMetrics'),
+        alias(name='MetricType')],
+      level=0),
+    ClassDef(
+      name='JDProcessingTask',
+      body=[
+        Expr(
+          value=Constant(value='Represents a job description processing task for stress testing.')),
+        AnnAssign(
+          target=Name(id='task_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job_title', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job_description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resume_content', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='priority', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_processing_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True)),
+            keyword(
+              arg='slots',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='StressTestResult',
+      body=[
+        Expr(
+          value=Constant(value='Results from a stress test execution.')),
+        AnnAssign(
+          target=Name(id='total_tasks', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='completed_tasks', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='failed_tasks', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='average_processing_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='peak_memory_usage', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='peak_cpu_usage', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='concurrent_workers', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_execution_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True)),
+            keyword(
+              arg='slots',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='MockJDProcessor',
+      body=[
+        Expr(
+          value=Constant(value='Mock JD processor for stress testing with realistic performance characteristics.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='base_processing_time',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='variance',
+                annotation=Name(id='float', ctx=Load()))],
+            defaults=[
+              Constant(value=0.1),
+              Constant(value=0.05)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='base_processing_time',
+                  ctx=Store())],
+              value=Name(id='base_processing_time', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='variance',
+                  ctx=Store())],
+              value=Name(id='variance', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='processed_count',
+                  ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='error_rate',
+                  ctx=Store())],
+              value=Constant(value=0.02))]),
+        AsyncFunctionDef(
+          name='process_job_description',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='task',
+                annotation=Name(id='JDProcessingTask', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Mock JD processing with realistic timing and occasional errors.')),
+            Assign(
+              targets=[
+                Name(id='processing_time', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='base_processing_time',
+                  ctx=Load()),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Name(id='random', ctx=Load()),
+                    attr='uniform',
+                    ctx=Load()),
+                  args=[
+                    UnaryOp(
+                      op=USub(),
+                      operand=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='variance',
+                        ctx=Load())),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='variance',
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='processing_time', ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=0.01),
+                  Name(id='processing_time', ctx=Load())])),
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='sleep',
+                    ctx=Load()),
+                  args=[
+                    Name(id='processing_time', ctx=Load())]))),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='random', ctx=Load()),
+                    attr='random',
+                    ctx=Load())),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='error_rate',
+                    ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='Exception', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Processing error for task '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='task', ctx=Load()),
+                              attr='task_id',
+                              ctx=Load()),
+                            conversion=-1)])]))]),
+            AugAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='processed_count',
+                ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='task_id'),
+                  Constant(value='match_score'),
+                  Constant(value='skill_gaps'),
+                  Constant(value='recommendations'),
+                  Constant(value='processing_time')],
+                values=[
+                  Attribute(
+                    value=Name(id='task', ctx=Load()),
+                    attr='task_id',
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='random', ctx=Load()),
+                      attr='uniform',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0.3),
+                      Constant(value=0.95)]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='random', ctx=Load()),
+                      attr='sample',
+                      ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='AWS'),
+                          Constant(value='Docker'),
+                          Constant(value='Kubernetes'),
+                          Constant(value='ML')],
+                        ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='k',
+                        value=Constant(value=2))]),
+                  ListComp(
+                    elt=JoinedStr(
+                      values=[
+                        Constant(value='Consider adding '),
+                        FormattedValue(
+                          value=Name(id='skill', ctx=Load()),
+                          conversion=-1),
+                        Constant(value=' certification')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='skill', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='random', ctx=Load()),
+                            attr='sample',
+                            ctx=Load()),
+                          args=[
+                            List(
+                              elts=[
+                                Constant(value='AWS'),
+                                Constant(value='Azure'),
+                                Constant(value='GCP')],
+                              ctx=Load())],
+                          keywords=[
+                            keyword(
+                              arg='k',
+                              value=Constant(value=1))]),
+                        is_async=0)]),
+                  Name(id='processing_time', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='TestConcurrentJDProcessing',
+      body=[
+        Expr(
+          value=Constant(value='Test concurrent job description processing under various load conditions.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Setup fresh processor and telemetry for each stress test.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='processor',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='MockJDProcessor', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='telemetry',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='TelemetryCollector', ctx=Load())))]),
+        FunctionDef(
+          name='generate_test_tasks',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='count',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate realistic JD processing tasks for stress testing.')),
+            Assign(
+              targets=[
+                Name(id='job_titles', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Senior Software Engineer'),
+                  Constant(value='Data Scientist'),
+                  Constant(value='DevOps Engineer'),
+                  Constant(value='Machine Learning Engineer'),
+                  Constant(value='Full Stack Developer'),
+                  Constant(value='Backend Engineer'),
+                  Constant(value='Frontend Developer'),
+                  Constant(value='Cloud Architect'),
+                  Constant(value='Security Engineer'),
+                  Constant(value='QA Engineer')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='job_descriptions', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='We are looking for an experienced professional with strong technical skills...'),
+                  Constant(value='Join our team and work on cutting-edge projects with modern technologies...'),
+                  Constant(value='Seeking a talented individual to help drive our technical initiatives...'),
+                  Constant(value='Looking for someone passionate about technology and innovation...'),
+                  Constant(value='We need a skilled professional to join our growing engineering team...')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='resume_content', ctx=Store())],
+              value=Constant(value='Experienced professional with 5+ years in technology...')),
+            Assign(
+              targets=[
+                Name(id='tasks', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='i', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='count', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='task', ctx=Store())],
+                  value=Call(
+                    func=Name(id='JDProcessingTask', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='task_id',
+                        value=JoinedStr(
+                          values=[
+                            Constant(value='task_'),
+                            FormattedValue(
+                              value=BinOp(
+                                left=Name(id='i', ctx=Load()),
+                                op=Add(),
+                                right=Constant(value=1)),
+                              conversion=-1,
+                              format_spec=JoinedStr(
+                                values=[
+                                  Constant(value='04d')]))])),
+                      keyword(
+                        arg='job_title',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='random', ctx=Load()),
+                            attr='choice',
+                            ctx=Load()),
+                          args=[
+                            Name(id='job_titles', ctx=Load())])),
+                      keyword(
+                        arg='job_description',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='random', ctx=Load()),
+                            attr='choice',
+                            ctx=Load()),
+                          args=[
+                            Name(id='job_descriptions', ctx=Load())])),
+                      keyword(
+                        arg='resume_content',
+                        value=Name(id='resume_content', ctx=Load())),
+                      keyword(
+                        arg='priority',
+                        value=Subscript(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='random', ctx=Load()),
+                              attr='choices',
+                              ctx=Load()),
+                            args=[
+                              List(
+                                elts=[
+                                  Constant(value=1),
+                                  Constant(value=2),
+                                  Constant(value=3)],
+                                ctx=Load())],
+                            keywords=[
+                              keyword(
+                                arg='weights',
+                                value=List(
+                                  elts=[
+                                    Constant(value=0.2),
+                                    Constant(value=0.6),
+                                    Constant(value=0.2)],
+                                  ctx=Load()))]),
+                          slice=Constant(value=0),
+                          ctx=Load())),
+                      keyword(
+                        arg='expected_processing_time',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='random', ctx=Load()),
+                            attr='uniform',
+                            ctx=Load()),
+                          args=[
+                            Constant(value=0.05),
+                            Constant(value=0.3)]))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='tasks', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='task', ctx=Load())]))]),
+            Return(
+              value=Name(id='tasks', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDProcessingTask', ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='process_tasks_concurrent',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tasks',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='JDProcessingTask', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_workers',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Process tasks concurrently and collect stress metrics.')),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='initial_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='completed_tasks', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='failed_tasks', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='semaphore', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='Semaphore',
+                  ctx=Load()),
+                args=[
+                  Name(id='max_workers', ctx=Load())])),
+            AsyncFunctionDef(
+              name='process_single_task',
+              args=arguments(
+                args=[
+                  arg(
+                    arg='task',
+                    annotation=Name(id='JDProcessingTask', ctx=Load()))]),
+              body=[
+                AsyncWith(
+                  items=[
+                    withitem(
+                      context_expr=Name(id='semaphore', ctx=Load()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='task_start', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='time', ctx=Load()),
+                          attr='time',
+                          ctx=Load()))),
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='result', ctx=Store())],
+                          value=Await(
+                            value=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='processor',
+                                  ctx=Load()),
+                                attr='process_job_description',
+                                ctx=Load()),
+                              args=[
+                                Name(id='task', ctx=Load())]))),
+                        Assign(
+                          targets=[
+                            Name(id='task_end', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='time', ctx=Load()),
+                              attr='time',
+                              ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Name(id='exec_metrics', ctx=Store())],
+                          value=Call(
+                            func=Name(id='ExecutionMetrics', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='test_name',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='jd_process_'),
+                                    FormattedValue(
+                                      value=Attribute(
+                                        value=Name(id='task', ctx=Load()),
+                                        attr='task_id',
+                                        ctx=Load()),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='test_type',
+                                value=Constant(value='stress')),
+                              keyword(
+                                arg='execution_time',
+                                value=BinOp(
+                                  left=Name(id='task_end', ctx=Load()),
+                                  op=Sub(),
+                                  right=Name(id='task_start', ctx=Load()))),
+                              keyword(
+                                arg='success',
+                                value=Constant(value=True)),
+                              keyword(
+                                arg='memory_usage',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='random', ctx=Load()),
+                                    attr='uniform',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value=50),
+                                    Constant(value=150)])),
+                              keyword(
+                                arg='cpu_usage',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='random', ctx=Load()),
+                                    attr='uniform',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value=0.1),
+                                    Constant(value=0.8)]))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='telemetry',
+                                ctx=Load()),
+                              attr='record_test_execution',
+                              ctx=Load()),
+                            args=[
+                              Name(id='exec_metrics', ctx=Load())])),
+                        Return(
+                          value=Name(id='result', ctx=Load()))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          name='e',
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='task_end', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='time', ctx=Load()),
+                                  attr='time',
+                                  ctx=Load()))),
+                            Assign(
+                              targets=[
+                                Name(id='exec_metrics', ctx=Store())],
+                              value=Call(
+                                func=Name(id='ExecutionMetrics', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='test_name',
+                                    value=JoinedStr(
+                                      values=[
+                                        Constant(value='jd_process_'),
+                                        FormattedValue(
+                                          value=Attribute(
+                                            value=Name(id='task', ctx=Load()),
+                                            attr='task_id',
+                                            ctx=Load()),
+                                          conversion=-1)])),
+                                  keyword(
+                                    arg='test_type',
+                                    value=Constant(value='stress')),
+                                  keyword(
+                                    arg='execution_time',
+                                    value=BinOp(
+                                      left=Name(id='task_end', ctx=Load()),
+                                      op=Sub(),
+                                      right=Name(id='task_start', ctx=Load()))),
+                                  keyword(
+                                    arg='success',
+                                    value=Constant(value=False)),
+                                  keyword(
+                                    arg='memory_usage',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='random', ctx=Load()),
+                                        attr='uniform',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value=50),
+                                        Constant(value=150)])),
+                                  keyword(
+                                    arg='cpu_usage',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='random', ctx=Load()),
+                                        attr='uniform',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value=0.1),
+                                        Constant(value=0.8)]))])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='telemetry',
+                                    ctx=Load()),
+                                  attr='record_test_execution',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='exec_metrics', ctx=Load())])),
+                            Return(
+                              value=Constant(value=None))])])])],
+              returns=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='gather',
+                    ctx=Load()),
+                  args=[
+                    Starred(
+                      value=ListComp(
+                        elt=Call(
+                          func=Name(id='process_single_task', ctx=Load()),
+                          args=[
+                            Name(id='task', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='task', ctx=Store()),
+                            iter=Name(id='tasks', ctx=Load()),
+                            is_async=0)]),
+                      ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='return_exceptions',
+                      value=Constant(value=True))]))),
+            For(
+              target=Name(id='result', ctx=Store()),
+              iter=Name(id='results', ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='result', ctx=Load()),
+                      Name(id='Exception', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='failed_tasks', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='result', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='result', ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='completed_tasks', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='result', ctx=Load())]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='failed_tasks', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Constant(value=None)]))])])]),
+            Assign(
+              targets=[
+                Name(id='end_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='final_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Return(
+              value=Call(
+                func=Name(id='StressTestResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='total_tasks',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='tasks', ctx=Load())])),
+                  keyword(
+                    arg='completed_tasks',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='completed_tasks', ctx=Load())])),
+                  keyword(
+                    arg='failed_tasks',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='failed_tasks', ctx=Load())])),
+                  keyword(
+                    arg='average_processing_time',
+                    value=Attribute(
+                      value=Name(id='final_metrics', ctx=Load()),
+                      attr='average_execution_time',
+                      ctx=Load())),
+                  keyword(
+                    arg='peak_memory_usage',
+                    value=Attribute(
+                      value=Name(id='final_metrics', ctx=Load()),
+                      attr='memory_peak',
+                      ctx=Load())),
+                  keyword(
+                    arg='peak_cpu_usage',
+                    value=Attribute(
+                      value=Name(id='final_metrics', ctx=Load()),
+                      attr='cpu_peak',
+                      ctx=Load())),
+                  keyword(
+                    arg='concurrent_workers',
+                    value=Name(id='max_workers', ctx=Load())),
+                  keyword(
+                    arg='total_execution_time',
+                    value=BinOp(
+                      left=Name(id='end_time', ctx=Load()),
+                      op=Sub(),
+                      right=Name(id='start_time', ctx=Load())))]))],
+          returns=Name(id='StressTestResult', ctx=Load())),
+        AsyncFunctionDef(
+          name='test_light_load_concurrent_processing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test concurrent processing under light load (10 tasks, 3 workers).')),
+            Assign(
+              targets=[
+                Name(id='tasks', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='generate_test_tasks',
+                  ctx=Load()),
+                args=[
+                  Constant(value=10)])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='process_tasks_concurrent',
+                    ctx=Load()),
+                  args=[
+                    Name(id='tasks', ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='max_workers',
+                      value=Constant(value=3))]))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_tasks',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=10)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='completed_tasks',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=8)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='failed_tasks',
+                  ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='concurrent_workers',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_execution_time',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=5.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='average_processing_time',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0.01)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='peak_memory_usage',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='peak_cpu_usage',
+                    ctx=Load()),
+                  Constant(value=2.0)])),
+            Assign(
+              targets=[
+                Name(id='telemetry_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='telemetry_data', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=10)]))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='stress',
+              ctx=Load()),
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='asyncio',
+              ctx=Load())]),
+        AsyncFunctionDef(
+          name='test_moderate_load_concurrent_processing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test concurrent processing under moderate load (25 tasks, 5 workers).')),
+            Assign(
+              targets=[
+                Name(id='tasks', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='generate_test_tasks',
+                  ctx=Load()),
+                args=[
+                  Constant(value=25)])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='process_tasks_concurrent',
+                    ctx=Load()),
+                  args=[
+                    Name(id='tasks', ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='max_workers',
+                      value=Constant(value=5))]))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_tasks',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=25)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='completed_tasks',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=20)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='failed_tasks',
+                  ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Constant(value=5)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='concurrent_workers',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_execution_time',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=8.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='average_processing_time',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0.01)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='peak_memory_usage',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='peak_cpu_usage',
+                    ctx=Load()),
+                  Constant(value=3.0)])),
+            Assign(
+              targets=[
+                Name(id='telemetry_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='telemetry_data', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=25)]))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='stress',
+              ctx=Load()),
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='asyncio',
+              ctx=Load())]),
+        AsyncFunctionDef(
+          name='test_heavy_load_concurrent_processing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test concurrent processing under heavy load (50 tasks, 10 workers).')),
+            Assign(
+              targets=[
+                Name(id='tasks', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='generate_test_tasks',
+                  ctx=Load()),
+                args=[
+                  Constant(value=50)])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='process_tasks_concurrent',
+                    ctx=Load()),
+                  args=[
+                    Name(id='tasks', ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='max_workers',
+                      value=Constant(value=10))]))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_tasks',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=50)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='completed_tasks',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=40)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='failed_tasks',
+                  ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Constant(value=10)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='concurrent_workers',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=10)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_execution_time',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=15.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='average_processing_time',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0.01)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='peak_memory_usage',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='peak_cpu_usage',
+                    ctx=Load()),
+                  Constant(value=5.0)])),
+            Assign(
+              targets=[
+                Name(id='telemetry_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='telemetry_data', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=50)])),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_tests_run',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=50)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='success_rate',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='error_count',
+                  ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Constant(value=10)]))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='stress',
+              ctx=Load()),
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='asyncio',
+              ctx=Load())]),
+        AsyncFunctionDef(
+          name='test_extreme_load_concurrent_processing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test concurrent processing under extreme load (100 tasks, 20 workers).')),
+            Assign(
+              targets=[
+                Name(id='tasks', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='generate_test_tasks',
+                  ctx=Load()),
+                args=[
+                  Constant(value=100)])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='process_tasks_concurrent',
+                    ctx=Load()),
+                  args=[
+                    Name(id='tasks', ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='max_workers',
+                      value=Constant(value=20))]))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_tasks',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=100)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='completed_tasks',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=75)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='failed_tasks',
+                  ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Constant(value=25)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='concurrent_workers',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=20)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='total_execution_time',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=30.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='average_processing_time',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0.01)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='peak_memory_usage',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='peak_cpu_usage',
+                    ctx=Load()),
+                  Constant(value=10.0)])),
+            Assign(
+              targets=[
+                Name(id='telemetry_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='telemetry_data', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=100)])),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_tests_run',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=100)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='success_rate',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.75)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='error_count',
+                  ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Constant(value=25)]))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='stress',
+              ctx=Load()),
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='asyncio',
+              ctx=Load())]),
+        FunctionDef(
+          name='test_thread_safety_under_concurrent_load',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test thread safety of telemetry collection under concurrent load.')),
+            FunctionDef(
+              name='worker_task',
+              args=arguments(
+                args=[
+                  arg(
+                    arg='worker_id',
+                    annotation=Name(id='int', ctx=Load())),
+                  arg(
+                    arg='task_count',
+                    annotation=Name(id='int', ctx=Load()))]),
+              body=[
+                Expr(
+                  value=Constant(value='Worker function for thread safety testing.')),
+                For(
+                  target=Name(id='i', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='range', ctx=Load()),
+                    args=[
+                      Name(id='task_count', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='time', ctx=Load()),
+                          attr='sleep',
+                          ctx=Load()),
+                        args=[
+                          Constant(value=0.001)])),
+                    Assign(
+                      targets=[
+                        Name(id='exec_metrics', ctx=Store())],
+                      value=Call(
+                        func=Name(id='ExecutionMetrics', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='test_name',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='thread_worker_'),
+                                FormattedValue(
+                                  value=Name(id='worker_id', ctx=Load()),
+                                  conversion=-1),
+                                Constant(value='_task_'),
+                                FormattedValue(
+                                  value=Name(id='i', ctx=Load()),
+                                  conversion=-1)])),
+                          keyword(
+                            arg='test_type',
+                            value=Constant(value='thread_safety')),
+                          keyword(
+                            arg='execution_time',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='random', ctx=Load()),
+                                attr='uniform',
+                                ctx=Load()),
+                              args=[
+                                Constant(value=0.001),
+                                Constant(value=0.01)])),
+                          keyword(
+                            arg='success',
+                            value=Compare(
+                              left=Call(
+                                func=Attribute(
+                                  value=Name(id='random', ctx=Load()),
+                                  attr='random',
+                                  ctx=Load())),
+                              ops=[
+                                Gt()],
+                              comparators=[
+                                Constant(value=0.1)])),
+                          keyword(
+                            arg='memory_usage',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='random', ctx=Load()),
+                                attr='uniform',
+                                ctx=Load()),
+                              args=[
+                                Constant(value=10),
+                                Constant(value=100)])),
+                          keyword(
+                            arg='cpu_usage',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='random', ctx=Load()),
+                                attr='uniform',
+                                ctx=Load()),
+                              args=[
+                                Constant(value=0.1),
+                                Constant(value=1.0)]))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='telemetry',
+                            ctx=Load()),
+                          attr='record_test_execution',
+                          ctx=Load()),
+                        args=[
+                          Name(id='exec_metrics', ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='num_workers', ctx=Store())],
+              value=Constant(value=10)),
+            Assign(
+              targets=[
+                Name(id='tasks_per_worker', ctx=Store())],
+              value=Constant(value=20)),
+            Assign(
+              targets=[
+                Name(id='threads', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            For(
+              target=Name(id='worker_id', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='num_workers', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='thread', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='threading', ctx=Load()),
+                      attr='Thread',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='target',
+                        value=Name(id='worker_task', ctx=Load())),
+                      keyword(
+                        arg='args',
+                        value=Tuple(
+                          elts=[
+                            Name(id='worker_id', ctx=Load()),
+                            Name(id='tasks_per_worker', ctx=Load())],
+                          ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='threads', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='thread', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='thread', ctx=Load()),
+                      attr='start',
+                      ctx=Load())))]),
+            For(
+              target=Name(id='thread', ctx=Store()),
+              iter=Name(id='threads', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='thread', ctx=Load()),
+                      attr='join',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='end_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='system_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='expected_total_tasks', ctx=Store())],
+              value=BinOp(
+                left=Name(id='num_workers', ctx=Load()),
+                op=Mult(),
+                right=Name(id='tasks_per_worker', ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='total_tests_run',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='expected_total_tasks', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='success_rate',
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='system_metrics', ctx=Load()),
+                  attr='error_count',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  BinOp(
+                    left=Name(id='expected_total_tasks', ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=0.2))])),
+            Assign(
+              targets=[
+                Name(id='telemetry_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='telemetry_data', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='expected_total_tasks', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=BinOp(
+                  left=Name(id='end_time', ctx=Load()),
+                  op=Sub(),
+                  right=Name(id='start_time', ctx=Load())),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=10.0)]))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='stress',
+              ctx=Load())]),
+        AsyncFunctionDef(
+          name='test_memory_leak_detection_under_stress',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test for memory leaks during sustained concurrent processing.')),
+            Assign(
+              targets=[
+                Name(id='initial_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='initial_memory', ctx=Store())],
+              value=Attribute(
+                value=Name(id='initial_metrics', ctx=Load()),
+                attr='memory_peak',
+                ctx=Load())),
+            For(
+              target=Name(id='batch', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Constant(value=5)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='tasks', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_test_tasks',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=20)])),
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='process_tasks_concurrent',
+                        ctx=Load()),
+                      args=[
+                        Name(id='tasks', ctx=Load())],
+                      keywords=[
+                        keyword(
+                          arg='max_workers',
+                          value=Constant(value=5))]))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='telemetry',
+                        ctx=Load()),
+                      attr='clear_metrics',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='final_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='final_metrics', ctx=Load()),
+                  attr='memory_peak',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Name(id='telemetry_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='export_metrics',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='telemetry_data', ctx=Load()),
+                      slice=Constant(value='test_metrics'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='stress',
+              ctx=Load())])]),
+    ClassDef(
+      name='TestPerformanceDegradation',
+      body=[
+        Expr(
+          value=Constant(value='Test performance degradation patterns under increasing load.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Setup for performance degradation tests.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='processor',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='MockJDProcessor', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='base_processing_time',
+                    value=Constant(value=0.05)),
+                  keyword(
+                    arg='variance',
+                    value=Constant(value=0.02))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='telemetry',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='TelemetryCollector', ctx=Load())))]),
+        FunctionDef(
+          name='generate_test_tasks',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='count',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate consistent tasks for performance analysis.')),
+            Assign(
+              targets=[
+                Name(id='tasks', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='i', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='count', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='task', ctx=Store())],
+                  value=Call(
+                    func=Name(id='JDProcessingTask', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='task_id',
+                        value=JoinedStr(
+                          values=[
+                            Constant(value='perf_task_'),
+                            FormattedValue(
+                              value=Name(id='i', ctx=Load()),
+                              conversion=-1,
+                              format_spec=JoinedStr(
+                                values=[
+                                  Constant(value='04d')]))])),
+                      keyword(
+                        arg='job_title',
+                        value=Constant(value='Software Engineer')),
+                      keyword(
+                        arg='job_description',
+                        value=Constant(value='Test description for performance analysis')),
+                      keyword(
+                        arg='resume_content',
+                        value=Constant(value='Test resume content')),
+                      keyword(
+                        arg='priority',
+                        value=Constant(value=2)),
+                      keyword(
+                        arg='expected_processing_time',
+                        value=Constant(value=0.1))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='tasks', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='task', ctx=Load())]))]),
+            Return(
+              value=Name(id='tasks', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='JDProcessingTask', ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='process_tasks_concurrent',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tasks',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='JDProcessingTask', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_workers',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Process tasks concurrently and collect stress metrics.')),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='initial_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='completed_tasks', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='failed_tasks', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='semaphore', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='Semaphore',
+                  ctx=Load()),
+                args=[
+                  Name(id='max_workers', ctx=Load())])),
+            AsyncFunctionDef(
+              name='process_single_task',
+              args=arguments(
+                args=[
+                  arg(
+                    arg='task',
+                    annotation=Name(id='JDProcessingTask', ctx=Load()))]),
+              body=[
+                AsyncWith(
+                  items=[
+                    withitem(
+                      context_expr=Name(id='semaphore', ctx=Load()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='task_start', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='time', ctx=Load()),
+                          attr='time',
+                          ctx=Load()))),
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='result', ctx=Store())],
+                          value=Await(
+                            value=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='processor',
+                                  ctx=Load()),
+                                attr='process_job_description',
+                                ctx=Load()),
+                              args=[
+                                Name(id='task', ctx=Load())]))),
+                        Assign(
+                          targets=[
+                            Name(id='task_end', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='time', ctx=Load()),
+                              attr='time',
+                              ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Name(id='exec_metrics', ctx=Store())],
+                          value=Call(
+                            func=Name(id='ExecutionMetrics', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='test_name',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='jd_process_'),
+                                    FormattedValue(
+                                      value=Attribute(
+                                        value=Name(id='task', ctx=Load()),
+                                        attr='task_id',
+                                        ctx=Load()),
+                                      conversion=-1)])),
+                              keyword(
+                                arg='test_type',
+                                value=Constant(value='stress')),
+                              keyword(
+                                arg='execution_time',
+                                value=BinOp(
+                                  left=Name(id='task_end', ctx=Load()),
+                                  op=Sub(),
+                                  right=Name(id='task_start', ctx=Load()))),
+                              keyword(
+                                arg='success',
+                                value=Constant(value=True)),
+                              keyword(
+                                arg='memory_usage',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='random', ctx=Load()),
+                                    attr='uniform',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value=50),
+                                    Constant(value=150)])),
+                              keyword(
+                                arg='cpu_usage',
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='random', ctx=Load()),
+                                    attr='uniform',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value=0.1),
+                                    Constant(value=0.8)]))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='telemetry',
+                                ctx=Load()),
+                              attr='record_test_execution',
+                              ctx=Load()),
+                            args=[
+                              Name(id='exec_metrics', ctx=Load())])),
+                        Return(
+                          value=Name(id='result', ctx=Load()))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          name='e',
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='task_end', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='time', ctx=Load()),
+                                  attr='time',
+                                  ctx=Load()))),
+                            Assign(
+                              targets=[
+                                Name(id='exec_metrics', ctx=Store())],
+                              value=Call(
+                                func=Name(id='ExecutionMetrics', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='test_name',
+                                    value=JoinedStr(
+                                      values=[
+                                        Constant(value='jd_process_'),
+                                        FormattedValue(
+                                          value=Attribute(
+                                            value=Name(id='task', ctx=Load()),
+                                            attr='task_id',
+                                            ctx=Load()),
+                                          conversion=-1)])),
+                                  keyword(
+                                    arg='test_type',
+                                    value=Constant(value='stress')),
+                                  keyword(
+                                    arg='execution_time',
+                                    value=BinOp(
+                                      left=Name(id='task_end', ctx=Load()),
+                                      op=Sub(),
+                                      right=Name(id='task_start', ctx=Load()))),
+                                  keyword(
+                                    arg='success',
+                                    value=Constant(value=False)),
+                                  keyword(
+                                    arg='memory_usage',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='random', ctx=Load()),
+                                        attr='uniform',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value=50),
+                                        Constant(value=150)])),
+                                  keyword(
+                                    arg='cpu_usage',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='random', ctx=Load()),
+                                        attr='uniform',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value=0.1),
+                                        Constant(value=0.8)]))])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='telemetry',
+                                    ctx=Load()),
+                                  attr='record_test_execution',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='exec_metrics', ctx=Load())])),
+                            Return(
+                              value=Constant(value=None))])])])],
+              returns=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='gather',
+                    ctx=Load()),
+                  args=[
+                    Starred(
+                      value=ListComp(
+                        elt=Call(
+                          func=Name(id='process_single_task', ctx=Load()),
+                          args=[
+                            Name(id='task', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='task', ctx=Store()),
+                            iter=Name(id='tasks', ctx=Load()),
+                            is_async=0)]),
+                      ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='return_exceptions',
+                      value=Constant(value=True))]))),
+            For(
+              target=Name(id='result', ctx=Store()),
+              iter=Name(id='results', ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='result', ctx=Load()),
+                      Name(id='Exception', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='failed_tasks', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='result', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='result', ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='completed_tasks', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='result', ctx=Load())]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='failed_tasks', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Constant(value=None)]))])])]),
+            Assign(
+              targets=[
+                Name(id='end_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='final_metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  attr='get_system_metrics',
+                  ctx=Load()))),
+            Return(
+              value=Call(
+                func=Name(id='StressTestResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='total_tasks',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='tasks', ctx=Load())])),
+                  keyword(
+                    arg='completed_tasks',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='completed_tasks', ctx=Load())])),
+                  keyword(
+                    arg='failed_tasks',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='failed_tasks', ctx=Load())])),
+                  keyword(
+                    arg='average_processing_time',
+                    value=Attribute(
+                      value=Name(id='final_metrics', ctx=Load()),
+                      attr='average_execution_time',
+                      ctx=Load())),
+                  keyword(
+                    arg='peak_memory_usage',
+                    value=Attribute(
+                      value=Name(id='final_metrics', ctx=Load()),
+                      attr='memory_peak',
+                      ctx=Load())),
+                  keyword(
+                    arg='peak_cpu_usage',
+                    value=Attribute(
+                      value=Name(id='final_metrics', ctx=Load()),
+                      attr='cpu_peak',
+                      ctx=Load())),
+                  keyword(
+                    arg='concurrent_workers',
+                    value=Name(id='max_workers', ctx=Load())),
+                  keyword(
+                    arg='total_execution_time',
+                    value=BinOp(
+                      left=Name(id='end_time', ctx=Load()),
+                      op=Sub(),
+                      right=Name(id='start_time', ctx=Load())))]))],
+          returns=Name(id='StressTestResult', ctx=Load())),
+        AsyncFunctionDef(
+          name='test_performance_degradation_analysis',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Analyze performance degradation as load increases.')),
+            Assign(
+              targets=[
+                Name(id='load_levels', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value=5),
+                      Constant(value=2)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value=10),
+                      Constant(value=3)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value=25),
+                      Constant(value=5)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value=50),
+                      Constant(value=10)],
+                    ctx=Load())],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='performance_results', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='task_count', ctx=Store()),
+                  Name(id='workers', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='load_levels', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='tasks', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='i', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='range', ctx=Load()),
+                    args=[
+                      Name(id='task_count', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='task', ctx=Store())],
+                      value=Call(
+                        func=Name(id='JDProcessingTask', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='task_id',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='perf_task_'),
+                                FormattedValue(
+                                  value=Name(id='i', ctx=Load()),
+                                  conversion=-1,
+                                  format_spec=JoinedStr(
+                                    values=[
+                                      Constant(value='04d')]))])),
+                          keyword(
+                            arg='job_title',
+                            value=Constant(value='Software Engineer')),
+                          keyword(
+                            arg='job_description',
+                            value=Constant(value='Test description for performance analysis')),
+                          keyword(
+                            arg='resume_content',
+                            value=Constant(value='Test resume content')),
+                          keyword(
+                            arg='priority',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='expected_processing_time',
+                            value=Constant(value=0.1))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='tasks', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='task', ctx=Load())]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='telemetry',
+                        ctx=Load()),
+                      attr='clear_metrics',
+                      ctx=Load()))),
+                ImportFrom(
+                  module='tests.stress.test_concurrent_jd_processing',
+                  names=[
+                    alias(name='StressTestResult')],
+                  level=0),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='process_tasks_concurrent',
+                        ctx=Load()),
+                      args=[
+                        Name(id='tasks', ctx=Load()),
+                        Name(id='workers', ctx=Load())]))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='performance_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='task_count'),
+                          Constant(value='workers'),
+                          Constant(value='avg_time_per_task'),
+                          Constant(value='success_rate'),
+                          Constant(value='peak_memory'),
+                          Constant(value='peak_cpu')],
+                        values=[
+                          Name(id='task_count', ctx=Load()),
+                          Name(id='workers', ctx=Load()),
+                          BinOp(
+                            left=Attribute(
+                              value=Name(id='result', ctx=Load()),
+                              attr='total_execution_time',
+                              ctx=Load()),
+                            op=Div(),
+                            right=Name(id='task_count', ctx=Load())),
+                          BinOp(
+                            left=Attribute(
+                              value=Name(id='result', ctx=Load()),
+                              attr='completed_tasks',
+                              ctx=Load()),
+                            op=Div(),
+                            right=Name(id='task_count', ctx=Load())),
+                          Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='peak_memory_usage',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='peak_cpu_usage',
+                            ctx=Load())])]))]),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='performance_results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=4)])),
+            Assign(
+              targets=[
+                Name(id='baseline_time', ctx=Store())],
+              value=Subscript(
+                value=Subscript(
+                  value=Name(id='performance_results', ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                slice=Constant(value='avg_time_per_task'),
+                ctx=Load())),
+            For(
+              target=Name(id='result', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='performance_results', ctx=Load()),
+                slice=Slice(
+                  lower=Constant(value=1)),
+                ctx=Load()),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='avg_time_per_task'),
+                      ctx=Load()),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      BinOp(
+                        left=Name(id='baseline_time', ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=3))]))]),
+            For(
+              target=Name(id='result', ctx=Store()),
+              iter=Name(id='performance_results', ctx=Load()),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='success_rate'),
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0.7)]))]),
+            Assign(
+              targets=[
+                Name(id='memory_usage', ctx=Store())],
+              value=ListComp(
+                elt=Subscript(
+                  value=Name(id='r', ctx=Load()),
+                  slice=Constant(value='peak_memory'),
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='performance_results', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='cpu_usage', ctx=Store())],
+              value=ListComp(
+                elt=Subscript(
+                  value=Name(id='r', ctx=Load()),
+                  slice=Constant(value='peak_cpu'),
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='performance_results', ctx=Load()),
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='memory_usage', ctx=Load()),
+                  slice=UnaryOp(
+                    op=USub(),
+                    operand=Constant(value=1)),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  BinOp(
+                    left=Subscript(
+                      value=Name(id='memory_usage', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=5))])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='cpu_usage', ctx=Load()),
+                  slice=UnaryOp(
+                    op=USub(),
+                    operand=Constant(value=1)),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  BinOp(
+                    left=Subscript(
+                      value=Name(id='cpu_usage', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=5))]))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='stress',
+              ctx=Load()),
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='asyncio',
+              ctx=Load())])])])

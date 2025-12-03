@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: utils.py\n# Description: General-purpose utilities for the LIC workflow.\n\n__version__ = \"11.10\"\n\nimport re\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Optional, Any, Callable, Tuple\nfrom collections import defaultdict\n\nfrom models import CircuitState, Archetype, CircuitBreakerOpenError\n\n# ============================================================================\n# NEW v11.6: CIRCUIT BREAKER (FEATURE 4.1)\n# ============================================================================\n\nclass CircuitBreaker:\n    \"\"\"\n    Circuit breaker for API calls - prevents cascade failures\n    FEATURE 4.1 from SUPREME_SPELL\n    \"\"\"\n    \n    def __init__(\n        self,\n        failure_threshold: int = 3,\n        timeout_seconds: int = 60\n    ):\n        self.failure_threshold = failure_threshold\n        self.timeout_seconds = timeout_seconds\n        self.failure_count = 0\n        self.last_failure_time: Optional[datetime] = None\n        self.state = CircuitState.CLOSE",
+  "full_hash": "c284be568d98e86e307619c23f81257473547251b57fe5e7c16eed41c7320121",
+  "generated_at": 1764728340.834152,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\utils.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Flattened test view\n\n`tests_flat/` is the production test surface. Every file in this directory is\nautomatically generated from the canonical sources in `tests/` by running\n`python tools/flatten_tests.py`. The generator embeds each source module\nverbatim so pytest can execute the flattened copies without mutating the\noriginal hierarchy.\n\nKey guarantees:\n- The canonical suite under `tests/` remains untouched and authoritative.\n- Each flattened file contains an embedded copy of its source plus a lightweight\n  execution shim so imports and fixtures work when pytest runs against\n  `tests_flat/`.\n- `tests_flat/manifest.json` records the source\u2192flat mapping and feeds\n  `tests/test_flat_equivalence_v10_7.py`, which enforces byte-for-byte parity.\n\nWorkflow reminders:\n- Do **not** edit files in `tests_flat/` by hand. Regenerate them with\n  `python tools/flatten_tests.py`.\n- Add new tests under `tests/` first; the manifest and flattened copies must be\n  refreshed afterward.\n- Pytest is configu",
+  "full_hash": "4eccc0e95f8e61ec7595bb2bae4277663def111a51b189513a9f6a06bf3d146d",
+  "generated_at": 1764728230.6975548,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\README.md"
+}

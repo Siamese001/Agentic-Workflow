@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Tests for draft simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.draft_sim import DraftSimulator\nfrom simulations.models import DraftSimRequest\n\n\n@pytest.mark.asyncio\nasync def test_draft_simulator_returns_result():\n    simulator = DraftSimulator()\n    request = DraftSimRequest(\n        simulation_id=\"sim-draft\",\n        payload={},\n        draft_sections={\"intro\": \"text\", \"body\": \"details\"},\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0.0 <= result.metrics[\"entropy\"] <= 1.0\n    assert 0.0 <= result.metrics[\"cohesion\"] <= 1.0\n    assert 0.0 <= result.metrics[\"rhythm_score\"] <= 1.0\n    assert \"section_preview\" in result.details\n\n\ndef test_draft_request_validation():\n    request = DraftSimRequest(\n        simulation_id=\"sim-draft-validate\",\n        payload={},\n        draft_sections={\"summary\": \"value\"},\n    )\n    assert \"summary\" in request.draft_sections\n",
+  "full_hash": "3775185c2e96f201d872210c79e4a766a0305a8b44b0c19e6998e0c385763e8b",
+  "generated_at": 1764728231.5517197,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\simulations\\test_draft_sim.py"
+}

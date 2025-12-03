@@ -1,0 +1,6 @@
+{
+  "golden_content": "--- LIC_10-03-2025_v6.8.json\n+++ LIC_10-03-2025_v6.9.json\n@@ -2,7 +2,7 @@\n   \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n   \"version\": \"LIC_10-01-2025_v4\",\n   \"metadata\": {\n-    \"version\": \"LIC_10-03-2025_v6.8\",\n+    \"version\": \"LIC_10-03-2025_v6.9\",\n     \"patches\": [\n       \"C001\",\n       \"C002\",\n@@ -19,7 +19,9 @@\n       \"C013\",\n       \"C014\",\n       \"C015\",\n-      \"C016\"\n+      \"C016\",\n+      \"C017\",\n+      \"C018\"\n     ],\n     \"changelog\": \"external://CHANGELOG.md\",\n     \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09\",\n@@ -3386,6 +3388,22 @@\n       \"ensures\": [\n         \"audit_trail evidence checked when RAG_Mode=ON\"\n       ]\n+    },\n+    \"flow_control_corrections\": {\n+      \"section_3_to_4\": {\n+        \"auto_proceed\": true,\n+        \"remove_prompt\": true\n+      },\n+      \"k1_pause_for_type_confirm\": true,\n+      \"k2_k7_flow\": {\n+        \"simplified_mode\": {\n+          \"no_pauses\": true,\n+          \"pause_on_validation_fail_only\": true\n+        },",
+  "full_hash": "beba2d664befdbb0a38e819fdbba6abc53c9299dcbb52532cf39fdb5bc487c89",
+  "generated_at": 1764728333.534893,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v6.9_diff.txt"
+}

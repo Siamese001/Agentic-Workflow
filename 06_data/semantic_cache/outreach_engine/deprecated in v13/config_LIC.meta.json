@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\config_LIC.py",
+    "rel_path": "config_LIC.py",
+    "root_name": "outreach_engine/deprecated in v13",
+    "file_hash": "5efb2966372ed514920a2d0a9d77d3a18f6609a67844da006907d8c6056277d0",
+    "file_size": 8253,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728340.996487
+}

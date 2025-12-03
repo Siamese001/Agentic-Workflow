@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nProtected-Path Loader and Expansion Engine for Agentic-Workflow\n\nImplements G6: Protected-path loader + expansion engine\n\nProvides runtime pattern loading, expansion logic, and cross-phase shared\nprotected-path definitions that all phases can reference for enforcement.\n\"\"\"\n\nimport re\nimport fnmatch\nimport sys\nimport yaml\nimport json\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Set, Optional, Union\nfrom dataclasses import dataclass\nfrom enum import Enum\n\n\nclass ProtectionLevel(Enum):\n    READ_ONLY = \"read_only\"\n    NO_DELETE = \"no_delete\"\n    NO_RENAME = \"no_rename\"\n    NO_MOVE = \"no_move\"\n    IMMUTABLE = \"immutable\"\n\n\n@dataclass\nclass ProtectedPath:\n    pattern: str\n    level: ProtectionLevel\n    description: str\n    phase_scope: List[str]  # Which phases this applies to\n    expanded_paths: List[str] = None  # Resolved concrete paths\n\n\nclass ProtectedPathEngine:\n    \"\"\"\n    Protected-path loader and expansion engine\n    \n    Loads protected pa",
+  "full_hash": "7c7fd6d48a7efd5547eb456e47085f92332e51bd35bda3974b9257358c530cb3",
+  "generated_at": 1764728345.7019553,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\protected_path_engine.py"
+}

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 38,
+  "generated_at": 1764728351.6593971,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\safety-guard-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\file_audit_store.py"
+}

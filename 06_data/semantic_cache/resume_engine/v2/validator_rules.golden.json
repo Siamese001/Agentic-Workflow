@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"forbidden_verbs\": [\n    \"spearheaded\",\n    \"leveraged\",\n    \"utilized\",\n    \"facilitated\",\n    \"orchestrated\",\n    \"championed\",\n    \"pioneered\",\n    \"revolutionized\",\n    \"transformed\",\n    \"enhanced\",\n    \"streamlined\",\n    \"synergized\",\n    \"enabled\",\n    \"empowered\",\n    \"drove\"\n  ],\n  \"required_sections\": [\n    \"K0_NAME\",\n    \"K0_CONTACT\",\n    \"K0_HEADLINE\",\n    \"K1_EXECUTIVE_SUMMARY\",\n    \"K2_UNIFY_BULLETS\",\n    \"K2_UNIFY_OVERVIEW\",\n    \"K3_IBM_BULLETS\",\n    \"K3_IBM_OVERVIEW\",\n    \"K4_TRADERSENSE_NARRATIVE\",\n    \"K5_EY_NARRATIVE\",\n    \"K6_EARLY_CAREER_NARRATIVE\",\n    \"K7_EDUCATION\",\n    \"K8_CERTIFICATIONS\",\n    \"K9_COMPETENCIES\",\n    \"K10_SKILLS\",\n    \"K11_COVER_LETTER\"\n  ],\n  \"bullet_word_count_sections_to_check\": [\n    \"K2_UNIFY_BULLETS\",\n    \"K3_IBM_BULLETS\",\n    \"K9_COMPETENCIES\"\n  ],\n  \"pipeline_status_enum\": [\n    \"Applied\",\n    \"Follow-Up\",\n    \"Interview\",\n    \"Rejected\",\n    \"Closed\",\n    \"Waiting\"\n  ]\n}\n",
+  "full_hash": "17c1b88288a2fb56ddb31507bdeef16a25afd4df48666c994cffbc004d047ed5",
+  "generated_at": 1764728327.410192,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\validator_rules.json"
+}

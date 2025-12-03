@@ -1,0 +1,178 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema context retrieval and extraction.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ContextType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of schema contexts.')),
+        Assign(
+          targets=[
+            Name(id='EXECUTION', ctx=Store())],
+          value=Constant(value='execution')),
+        Assign(
+          targets=[
+            Name(id='VALIDATION', ctx=Store())],
+          value=Constant(value='validation')),
+        Assign(
+          targets=[
+            Name(id='TRANSFORMATION', ctx=Store())],
+          value=Constant(value='transformation')),
+        Assign(
+          targets=[
+            Name(id='DOCUMENTATION', ctx=Store())],
+          value=Constant(value='documentation'))]),
+    ClassDef(
+      name='RetrievalMode',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Context retrieval modes.')),
+        Assign(
+          targets=[
+            Name(id='IMMEDIATE', ctx=Store())],
+          value=Constant(value='immediate')),
+        Assign(
+          targets=[
+            Name(id='LAZY', ctx=Store())],
+          value=Constant(value='lazy')),
+        Assign(
+          targets=[
+            Name(id='CACHED', ctx=Store())],
+          value=Constant(value='cached')),
+        Assign(
+          targets=[
+            Name(id='STREAMING', ctx=Store())],
+          value=Constant(value='streaming'))]),
+    ClassDef(
+      name='ContextQuery',
+      body=[
+        Expr(
+          value=Constant(value='Schema for context retrieval query.')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_type', ctx=Store()),
+          annotation=Name(id='ContextType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_mode', ctx=Store()),
+          annotation=Name(id='RetrievalMode', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parameters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ContextData',
+      body=[
+        AnnAssign(
+          target=Name(id='context_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_type', ctx=Store()),
+          annotation=Name(id='ContextType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        Expr(
+          value=Constant(value='Schema for retrieved context data.'))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ContextRetrievalResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for context retrieval results.')),
+        AnnAssign(
+          target=Name(id='retrieval_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query', ctx=Store()),
+          annotation=Name(id='ContextQuery', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_data', ctx=Store()),
+          annotation=Name(id='ContextData', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cache_hit', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

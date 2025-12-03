@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\observer-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\people.json",
+    "rel_path": "people.json",
+    "root_name": "data_source",
+    "file_hash": "ffaca6eacc7e5e87156dd5a30112e641b1922c79b918ec6c5aef28764b66e022",
+    "file_size": 21581,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.6635396
+}

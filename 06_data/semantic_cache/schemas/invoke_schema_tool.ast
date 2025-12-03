@@ -1,0 +1,180 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema tool invocation and execution.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ToolType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema tool invocation types.')),
+        Assign(
+          targets=[
+            Name(id='VALIDATION', ctx=Store())],
+          value=Constant(value='validation')),
+        Assign(
+          targets=[
+            Name(id='TRANSFORMATION', ctx=Store())],
+          value=Constant(value='transformation')),
+        Assign(
+          targets=[
+            Name(id='ANALYSIS', ctx=Store())],
+          value=Constant(value='analysis')),
+        Assign(
+          targets=[
+            Name(id='GENERATION', ctx=Store())],
+          value=Constant(value='generation'))]),
+    ClassDef(
+      name='InvocationMode',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Tool invocation modes.')),
+        Assign(
+          targets=[
+            Name(id='SYNCHRONOUS', ctx=Store())],
+          value=Constant(value='synchronous')),
+        Assign(
+          targets=[
+            Name(id='ASYNCHRONOUS', ctx=Store())],
+          value=Constant(value='asynchronous')),
+        Assign(
+          targets=[
+            Name(id='STREAMING', ctx=Store())],
+          value=Constant(value='streaming')),
+        Assign(
+          targets=[
+            Name(id='BATCH', ctx=Store())],
+          value=Constant(value='batch'))]),
+    ClassDef(
+      name='ToolInvocation',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual tool invocation.')),
+        AnnAssign(
+          target=Name(id='invocation_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tool_type', ctx=Store()),
+          annotation=Name(id='ToolType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tool_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parameters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='invocation_mode', ctx=Store()),
+          annotation=Name(id='InvocationMode', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timeout_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=30000),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ToolExecutionContext',
+      body=[
+        Expr(
+          value=Constant(value='Schema for tool execution context.')),
+        AnnAssign(
+          target=Name(id='context_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='invocations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ToolInvocation', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_environment', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ToolInvocationResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for tool invocation results.')),
+        AnnAssign(
+          target=Name(id='result_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Name(id='ToolExecutionContext', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_successful', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='outputs', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

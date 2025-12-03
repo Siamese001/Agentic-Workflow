@@ -1,0 +1,20 @@
+Module(
+  body=[
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='GateDecision',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='HALT', ctx=Store())],
+          value=Constant(value='HALT')),
+        Assign(
+          targets=[
+            Name(id='CONTINUE', ctx=Store())],
+          value=Constant(value='CONTINUE'))])])

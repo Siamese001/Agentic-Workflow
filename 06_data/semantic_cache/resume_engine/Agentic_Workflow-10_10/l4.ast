@@ -1,0 +1,416 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nState Adapter · L4 Mutation Layer (v10_10 · Phase 3)\n====================================================\n\nResponsibilities:\n    • Sole legal mutation surface for WorkflowState.\n    • Apply StateTransitionEvent → updated WorkflowState.\n    • Implement checkpoint + rollback hooks (G34–G36).\n    • Emit state-transition telemetry (G15).\n    • Must not:\n          – call LLMs,\n          – retrieve/rank,\n          – plan,\n          – enforce safety,\n          – orchestrate DAG.\n\nInputs:\n    • WorkflowState\n    • StateTransitionEvent  (typed, atomic)\n    • ExecutionContext      (read-only for telemetry/span)\n\nOutput:\n    • New WorkflowState (pure functional update)\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='replace')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='WorkflowState'),
+        alias(name='StateTransitionEvent'),
+        alias(name='ExecutionContext'),
+        alias(name='Checkpoint'),
+        alias(name='RollbackRequest'),
+        alias(name='RollbackResult')],
+      level=0),
+    ImportFrom(
+      module='observability',
+      names=[
+        alias(name='start_span'),
+        alias(name='end_span'),
+        alias(name='log_exception')],
+      level=0),
+    FunctionDef(
+      name='_apply_patch',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='WorkflowState', ctx=Load())),
+          arg(
+            arg='event',
+            annotation=Name(id='StateTransitionEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Core patch application.\n\n    Requirements:\n        • Deterministic, type-safe update.\n        • No side effects.\n        • No LLM calls.\n        • No orchestration.\n    ')),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='event', ctx=Load()),
+              Constant(value='patch'),
+              Constant(value=None)])),
+        If(
+          test=Compare(
+            left=Name(id='patch', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Name(id='state', ctx=Load()))]),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='patch', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='replace', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())],
+                keywords=[
+                  keyword(
+                    value=Name(id='patch', ctx=Load()))]))]),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='patch', ctx=Load()),
+              Constant(value='__dict__')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='replace', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())],
+                keywords=[
+                  keyword(
+                    value=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='__dict__',
+                      ctx=Load()))]))]),
+        Return(
+          value=Name(id='state', ctx=Load()))],
+      returns=Name(id='WorkflowState', ctx=Load())),
+    FunctionDef(
+      name='_make_checkpoint',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='WorkflowState', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Create a new immutable checkpoint snapshot of the WorkflowState.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='Checkpoint', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='snapshot',
+                value=Name(id='state', ctx=Load()))]))],
+      returns=Name(id='Checkpoint', ctx=Load())),
+    FunctionDef(
+      name='_apply_rollback',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='WorkflowState', ctx=Load())),
+          arg(
+            arg='request',
+            annotation=Name(id='RollbackRequest', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Roll back to the specified checkpoint, returning the new state and localized result.\n    ')),
+        Assign(
+          targets=[
+            Name(id='checkpoint', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='request', ctx=Load()),
+              Constant(value='checkpoint'),
+              Constant(value=None)])),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Name(id='checkpoint', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='checkpoint', ctx=Load()),
+                    Constant(value='snapshot'),
+                    Constant(value=None)]),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='RollbackResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='ok',
+                    value=Constant(value=False)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='invalid_checkpoint')),
+                  keyword(
+                    arg='state_after',
+                    value=Name(id='state', ctx=Load()))]))]),
+        AnnAssign(
+          target=Name(id='snapshot', ctx=Store()),
+          annotation=Name(id='WorkflowState', ctx=Load()),
+          value=Attribute(
+            value=Name(id='checkpoint', ctx=Load()),
+            attr='snapshot',
+            ctx=Load()),
+          simple=1),
+        Return(
+          value=Call(
+            func=Name(id='RollbackResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='ok',
+                value=Constant(value=True)),
+              keyword(
+                arg='reason',
+                value=Constant(value='rolled_back')),
+              keyword(
+                arg='state_after',
+                value=Name(id='snapshot', ctx=Load()))]))],
+      returns=Name(id='RollbackResult', ctx=Load())),
+    FunctionDef(
+      name='apply_state_transition',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='WorkflowState', ctx=Load())),
+          arg(
+            arg='event',
+            annotation=Name(id='StateTransitionEvent', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='ExecutionContext', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Apply a single typed StateTransitionEvent to the WorkflowState.\n\n    Emits L4-layer state-transition telemetry.\n    ')),
+        Assign(
+          targets=[
+            Name(id='span', ctx=Store())],
+          value=Call(
+            func=Name(id='start_span', ctx=Load()),
+            args=[
+              Constant(value='l4.apply_state_transition')],
+            keywords=[
+              keyword(
+                arg='ctx',
+                value=IfExp(
+                  test=Name(id='ctx', ctx=Load()),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='span_context',
+                      ctx=Load())),
+                  orelse=Constant(value=None)))])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='new_state', ctx=Store())],
+              value=Call(
+                func=Name(id='_apply_patch', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load()),
+                  Name(id='event', ctx=Load())])),
+            Return(
+              value=Name(id='new_state', ctx=Load()))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='exc',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='log_exception', ctx=Load()),
+                    args=[
+                      Constant(value='l4.state_transition_error'),
+                      Name(id='exc', ctx=Load())])),
+                Return(
+                  value=Name(id='state', ctx=Load()))])],
+          finalbody=[
+            Expr(
+              value=Call(
+                func=Name(id='end_span', ctx=Load()),
+                args=[
+                  Name(id='span', ctx=Load())]))])],
+      returns=Name(id='WorkflowState', ctx=Load())),
+    FunctionDef(
+      name='commit_checkpoint',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='WorkflowState', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='ExecutionContext', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Create a deterministic checkpoint (G34).\n\n    Does not mutate state; returns a new Checkpoint object.\n    ')),
+        Assign(
+          targets=[
+            Name(id='span', ctx=Store())],
+          value=Call(
+            func=Name(id='start_span', ctx=Load()),
+            args=[
+              Constant(value='l4.commit_checkpoint')],
+            keywords=[
+              keyword(
+                arg='ctx',
+                value=IfExp(
+                  test=Name(id='ctx', ctx=Load()),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='span_context',
+                      ctx=Load())),
+                  orelse=Constant(value=None)))])),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='_make_checkpoint', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='exc',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='log_exception', ctx=Load()),
+                    args=[
+                      Constant(value='l4.commit_checkpoint_error'),
+                      Name(id='exc', ctx=Load())])),
+                Return(
+                  value=Call(
+                    func=Name(id='_make_checkpoint', ctx=Load()),
+                    args=[
+                      Name(id='state', ctx=Load())]))])],
+          finalbody=[
+            Expr(
+              value=Call(
+                func=Name(id='end_span', ctx=Load()),
+                args=[
+                  Name(id='span', ctx=Load())]))])],
+      returns=Name(id='Checkpoint', ctx=Load())),
+    FunctionDef(
+      name='rollback_state',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='WorkflowState', ctx=Load())),
+          arg(
+            arg='request',
+            annotation=Name(id='RollbackRequest', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='ExecutionContext', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Apply rollback based on the provided RollbackRequest (G35–G36).\n\n    The returned RollbackResult includes:\n        • ok: bool\n        • reason: str\n        • state_after: WorkflowState\n    ')),
+        Assign(
+          targets=[
+            Name(id='span', ctx=Store())],
+          value=Call(
+            func=Name(id='start_span', ctx=Load()),
+            args=[
+              Constant(value='l4.rollback_state')],
+            keywords=[
+              keyword(
+                arg='ctx',
+                value=IfExp(
+                  test=Name(id='ctx', ctx=Load()),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='span_context',
+                      ctx=Load())),
+                  orelse=Constant(value=None)))])),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='_apply_rollback', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load()),
+                  Name(id='request', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='exc',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='log_exception', ctx=Load()),
+                    args=[
+                      Constant(value='l4.rollback_error'),
+                      Name(id='exc', ctx=Load())])),
+                Return(
+                  value=Call(
+                    func=Name(id='RollbackResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='ok',
+                        value=Constant(value=False)),
+                      keyword(
+                        arg='reason',
+                        value=Constant(value='rollback_exception')),
+                      keyword(
+                        arg='state_after',
+                        value=Name(id='state', ctx=Load()))]))])],
+          finalbody=[
+            Expr(
+              value=Call(
+                func=Name(id='end_span', ctx=Load()),
+                args=[
+                  Name(id='span', ctx=Load())]))])],
+      returns=Name(id='RollbackResult', ctx=Load()))])

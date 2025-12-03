@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.19 - JD INGESTION FIX\n================================================================================\nCRITICAL FIXES:\n\u2713 REMOVED all hardcoded mock JD analysis\n\u2713 ADDED proper JD parsing and ingestion in every hop\n\u2713 REMOVED mock content generation\n\u2713 ENSURED JD drives all retrieval and generation decisions\n\u2713 Master Resume = source data only (no generation logic)\n\u2713 Baseline Resume = word count reference only (no content mixing)\n\nVersion: 5.19-JD-FIXED\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nimport hashlib\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nfrom dataclasses import dataclass, field, asdict\nfrom pathlib import Path\n\n__version__ = \"5.19-JD-FIXED\"\n\n# ============================================================================\n# JD PARSER - NEW ADDITION\n# ============================================================================\n\nclass JDParser:\n    \"\"\"\n    Parse job description int",
+  "full_hash": "469316f61145cd0a52deca5a2be95a096921a46b8a296b7e6bc99e11b3ee68d7",
+  "generated_at": 1764728300.8948054,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_19_JD_FIXED.py"
+}

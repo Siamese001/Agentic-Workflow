@@ -1,0 +1,183 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='ModelAPIError'),
+        alias(name='WorkflowTimeoutError'),
+        alias(name='exponential_backoff_retry'),
+        alias(name='get_timeout_decorator')],
+      level=0),
+    AsyncFunctionDef(
+      name='test_node_timeout_raises_workflow_timeout_error',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='timeout', ctx=Store())],
+          value=Call(
+            func=Name(id='get_timeout_decorator', ctx=Load()),
+            args=[
+              Constant(value=0.01)])),
+        AsyncFunctionDef(
+          name='slow_node',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='sleep',
+                    ctx=Load()),
+                  args=[
+                    Constant(value=0.05)])))],
+          decorator_list=[
+            Name(id='timeout', ctx=Load())]),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='WorkflowTimeoutError', ctx=Load())]))],
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='slow_node', ctx=Load()))))])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_exponential_backoff_retry_logs_and_retries',
+      args=arguments(
+        args=[
+          arg(arg='caplog')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='attempts', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='count')],
+            values=[
+              Constant(value=0)])),
+        AsyncFunctionDef(
+          name='flaky_node',
+          args=arguments(),
+          body=[
+            AugAssign(
+              target=Subscript(
+                value=Name(id='attempts', ctx=Load()),
+                slice=Constant(value='count'),
+                ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='attempts', ctx=Load()),
+                  slice=Constant(value='count'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=3)]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ModelAPIError', ctx=Load()),
+                    args=[
+                      Constant(value='temporary failure')]))]),
+            Return(
+              value=Constant(value='ok'))],
+          decorator_list=[
+            Call(
+              func=Name(id='exponential_backoff_retry', ctx=Load()),
+              keywords=[
+                keyword(
+                  arg='max_retries',
+                  value=Constant(value=2)),
+                keyword(
+                  arg='initial_delay',
+                  value=Constant(value=0))])]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='caplog', ctx=Load()),
+              attr='set_level',
+              ctx=Load()),
+            args=[
+              Constant(value='WARNING')],
+            keywords=[
+              keyword(
+                arg='logger',
+                value=Constant(value='core_v10_7'))])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Name(id='flaky_node', ctx=Load())))),
+        Assert(
+          test=Compare(
+            left=Name(id='result', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='ok')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='attempts', ctx=Load()),
+              slice=Constant(value='count'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=3)])),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Constant(value='failed (Attempt'),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Attribute(
+                      value=Name(id='rec', ctx=Load()),
+                      attr='message',
+                      ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='rec', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='caplog', ctx=Load()),
+                      attr='records',
+                      ctx=Load()),
+                    is_async=0)])]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

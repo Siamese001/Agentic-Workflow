@@ -1,0 +1,2220 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nOutreach Validation Endpoint\nLEVEL 5 - API endpoint for validating outreach message quality and effectiveness\n')),
+    ImportFrom(
+      module='fastapi',
+      names=[
+        alias(name='APIRouter'),
+        alias(name='HTTPException')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='services.utils.scoring',
+      names=[
+        alias(name='OutreachScorer')],
+      level=3),
+    ImportFrom(
+      module='services.pipelines.validation_pipeline',
+      names=[
+        alias(name='ValidationPipeline')],
+      level=3),
+    Assign(
+      targets=[
+        Name(id='router', ctx=Store())],
+      value=Call(
+        func=Name(id='APIRouter', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='prefix',
+            value=Constant(value='/validate')),
+          keyword(
+            arg='tags',
+            value=List(
+              elts=[
+                Constant(value='outreach-validation')],
+              ctx=Load()))])),
+    Assign(
+      targets=[
+        Name(id='outreach_scorer', ctx=Store())],
+      value=Call(
+        func=Name(id='OutreachScorer', ctx=Load()))),
+    Assign(
+      targets=[
+        Name(id='validation_pipeline', ctx=Store())],
+      value=Call(
+        func=Name(id='ValidationPipeline', ctx=Load()))),
+    ClassDef(
+      name='OutreachValidationEndpoint',
+      body=[
+        Expr(
+          value=Constant(value='Handles outreach message validation requests')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='scorer',
+                  ctx=Store())],
+              value=Name(id='outreach_scorer', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='validator',
+                  ctx=Store())],
+              value=Name(id='validation_pipeline', ctx=Load()))]),
+        AsyncFunctionDef(
+          name='validate_outreach_message',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='request',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validate outreach message quality and effectiveness\n        \n        Args:\n            request: Validation request with outreach content and context\n            \n        Returns:\n            Comprehensive validation results with scores and recommendations\n        ')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='validation_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_validate_request',
+                        ctx=Load()),
+                      args=[
+                        Name(id='request', ctx=Load())]))),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Subscript(
+                      value=Name(id='validation_result', ctx=Load()),
+                      slice=Constant(value='valid'),
+                      ctx=Load())),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HTTPException', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='status_code',
+                            value=Constant(value=400)),
+                          keyword(
+                            arg='detail',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='Invalid request: '),
+                                FormattedValue(
+                                  value=Subscript(
+                                    value=Name(id='validation_result', ctx=Load()),
+                                    slice=Constant(value='error'),
+                                    ctx=Load()),
+                                  conversion=-1)]))]))]),
+                Assign(
+                  targets=[
+                    Name(id='outreach_content', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='request', ctx=Load()),
+                    slice=Constant(value='outreach_content'),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='context', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='request', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='context'),
+                      Dict()])),
+                Assign(
+                  targets=[
+                    Name(id='scoring_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_perform_scoring',
+                        ctx=Load()),
+                      args=[
+                        Name(id='outreach_content', ctx=Load()),
+                        Name(id='context', ctx=Load())]))),
+                Assign(
+                  targets=[
+                    Name(id='compliance_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_check_compliance',
+                        ctx=Load()),
+                      args=[
+                        Name(id='outreach_content', ctx=Load()),
+                        Name(id='context', ctx=Load())]))),
+                Assign(
+                  targets=[
+                    Name(id='effectiveness_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_assess_effectiveness',
+                        ctx=Load()),
+                      args=[
+                        Name(id='outreach_content', ctx=Load()),
+                        Name(id='context', ctx=Load())]))),
+                Assign(
+                  targets=[
+                    Name(id='overall_score', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_calculate_overall_score',
+                        ctx=Load()),
+                      args=[
+                        Name(id='scoring_result', ctx=Load()),
+                        Name(id='compliance_result', ctx=Load()),
+                        Name(id='effectiveness_result', ctx=Load())]))),
+                Assign(
+                  targets=[
+                    Name(id='recommendations', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_generate_recommendations',
+                        ctx=Load()),
+                      args=[
+                        Name(id='scoring_result', ctx=Load()),
+                        Name(id='compliance_result', ctx=Load()),
+                        Name(id='effectiveness_result', ctx=Load())]))),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='success'),
+                      Constant(value='validation_results'),
+                      Constant(value='metadata')],
+                    values=[
+                      Constant(value=True),
+                      Dict(
+                        keys=[
+                          Constant(value='overall_score'),
+                          Constant(value='grade'),
+                          Constant(value='scoring_metrics'),
+                          Constant(value='compliance_metrics'),
+                          Constant(value='effectiveness_metrics'),
+                          Constant(value='recommendations'),
+                          Constant(value='strengths'),
+                          Constant(value='improvement_areas')],
+                        values=[
+                          Name(id='overall_score', ctx=Load()),
+                          Await(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='_get_grade',
+                                ctx=Load()),
+                              args=[
+                                Name(id='overall_score', ctx=Load())])),
+                          Name(id='scoring_result', ctx=Load()),
+                          Name(id='compliance_result', ctx=Load()),
+                          Name(id='effectiveness_result', ctx=Load()),
+                          Name(id='recommendations', ctx=Load()),
+                          Await(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='_identify_strengths',
+                                ctx=Load()),
+                              args=[
+                                Name(id='scoring_result', ctx=Load()),
+                                Name(id='compliance_result', ctx=Load()),
+                                Name(id='effectiveness_result', ctx=Load())])),
+                          Await(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='_identify_improvement_areas',
+                                ctx=Load()),
+                              args=[
+                                Name(id='scoring_result', ctx=Load()),
+                                Name(id='compliance_result', ctx=Load()),
+                                Name(id='effectiveness_result', ctx=Load())]))]),
+                      Dict(
+                        keys=[
+                          Constant(value='validated_at'),
+                          Constant(value='message_type'),
+                          Constant(value='word_count')],
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='datetime', ctx=Load()),
+                                  attr='utcnow',
+                                  ctx=Load())),
+                              attr='isoformat',
+                              ctx=Load())),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='context', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='outreach_type'),
+                              Constant(value='unknown')]),
+                          Await(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='_count_words',
+                                ctx=Load()),
+                              args=[
+                                Name(id='outreach_content', ctx=Load())]))])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HTTPException', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='status_code',
+                            value=Constant(value=500)),
+                          keyword(
+                            arg='detail',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='Failed to validate outreach message: '),
+                                FormattedValue(
+                                  value=Call(
+                                    func=Name(id='str', ctx=Load()),
+                                    args=[
+                                      Name(id='e', ctx=Load())]),
+                                  conversion=-1)]))]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_validate_request',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='request',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate validation request')),
+            If(
+              test=Compare(
+                left=Constant(value='outreach_content'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='request', ctx=Load())]),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='valid'),
+                      Constant(value='error')],
+                    values=[
+                      Constant(value=False),
+                      Constant(value='Missing outreach_content field')]))]),
+            Assign(
+              targets=[
+                Name(id='outreach_content', ctx=Store())],
+              value=Subscript(
+                value=Name(id='request', ctx=Load()),
+                slice=Constant(value='outreach_content'),
+                ctx=Load())),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='outreach_content', ctx=Load()),
+                    Name(id='dict', ctx=Load())])),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='valid'),
+                      Constant(value='error')],
+                    values=[
+                      Constant(value=False),
+                      Constant(value='outreach_content must be a dictionary')]))]),
+            Assign(
+              targets=[
+                Name(id='required_fields', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='subject'),
+                  Constant(value='body'),
+                  Constant(value='call_to_action')],
+                ctx=Load())),
+            For(
+              target=Name(id='field', ctx=Store()),
+              iter=Name(id='required_fields', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='field', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='outreach_content', ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='valid'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=False),
+                          JoinedStr(
+                            values=[
+                              Constant(value='Missing required field in outreach_content: '),
+                              FormattedValue(
+                                value=Name(id='field', ctx=Load()),
+                                conversion=-1)])]))])]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='outreach_content', ctx=Load()),
+                          slice=Constant(value='body'),
+                          ctx=Load()),
+                        attr='strip',
+                        ctx=Load()))]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=50)]),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='valid'),
+                      Constant(value='error')],
+                    values=[
+                      Constant(value=False),
+                      Constant(value='Message body is too short (minimum 50 characters)')]))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='outreach_content', ctx=Load()),
+                          slice=Constant(value='body'),
+                          ctx=Load()),
+                        attr='strip',
+                        ctx=Load()))]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=1000)]),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='valid'),
+                      Constant(value='error')],
+                    values=[
+                      Constant(value=False),
+                      Constant(value='Message body is too long (maximum 1000 characters)')]))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='valid')],
+                values=[
+                  Constant(value=True)]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_perform_scoring',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='outreach_content',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Perform quality scoring on outreach content')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='scoring_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='scorer',
+                          ctx=Load()),
+                        attr='calculate_comprehensive_score',
+                        ctx=Load()),
+                      args=[
+                        Name(id='outreach_content', ctx=Load()),
+                        Name(id='context', ctx=Load())]))),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='content_quality'),
+                      Constant(value='personalization'),
+                      Constant(value='clarity'),
+                      Constant(value='professionalism'),
+                      Constant(value='engagement'),
+                      Constant(value='details')],
+                    values=[
+                      Attribute(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='scoring_result', ctx=Load()),
+                            slice=Constant(value='individual_scores'),
+                            ctx=Load()),
+                          slice=Constant(value='content_quality'),
+                          ctx=Load()),
+                        attr='score',
+                        ctx=Load()),
+                      Attribute(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='scoring_result', ctx=Load()),
+                            slice=Constant(value='individual_scores'),
+                            ctx=Load()),
+                          slice=Constant(value='personalization'),
+                          ctx=Load()),
+                        attr='score',
+                        ctx=Load()),
+                      Attribute(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='scoring_result', ctx=Load()),
+                            slice=Constant(value='individual_scores'),
+                            ctx=Load()),
+                          slice=Constant(value='clarity'),
+                          ctx=Load()),
+                        attr='score',
+                        ctx=Load()),
+                      Attribute(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='scoring_result', ctx=Load()),
+                            slice=Constant(value='individual_scores'),
+                            ctx=Load()),
+                          slice=Constant(value='professionalism'),
+                          ctx=Load()),
+                        attr='score',
+                        ctx=Load()),
+                      Attribute(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='scoring_result', ctx=Load()),
+                            slice=Constant(value='individual_scores'),
+                            ctx=Load()),
+                          slice=Constant(value='engagement'),
+                          ctx=Load()),
+                        attr='score',
+                        ctx=Load()),
+                      Name(id='scoring_result', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='content_quality'),
+                          Constant(value='personalization'),
+                          Constant(value='clarity'),
+                          Constant(value='professionalism'),
+                          Constant(value='engagement'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=0.7),
+                          Constant(value=0.7),
+                          Constant(value=0.7),
+                          Constant(value=0.7),
+                          Constant(value=0.7),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_check_compliance',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='outreach_content',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Check compliance with outreach best practices and regulations')),
+            Assign(
+              targets=[
+                Name(id='compliance_score', ctx=Store())],
+              value=Constant(value=1.0)),
+            Assign(
+              targets=[
+                Name(id='issues', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='subject', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='outreach_content', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='subject'),
+                  Constant(value='')])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='subject', ctx=Load())]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=10)]),
+              body=[
+                AugAssign(
+                  target=Name(id='compliance_score', ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=0.1)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='issues', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Subject line too short')]))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='subject', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=100)]),
+              body=[
+                AugAssign(
+                  target=Name(id='compliance_score', ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=0.1)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='issues', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Subject line too long')]))]),
+            Assign(
+              targets=[
+                Name(id='body', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='outreach_content', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='body'),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='spam_indicators', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='free'),
+                  Constant(value='guarantee'),
+                  Constant(value='click here'),
+                  Constant(value='act now'),
+                  Constant(value='limited time')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='found_spam', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='indicator', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='indicator', ctx=Store()),
+                    iter=Name(id='spam_indicators', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Name(id='indicator', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='body', ctx=Load())])],
+                    is_async=0)])),
+            If(
+              test=Name(id='found_spam', ctx=Load()),
+              body=[
+                AugAssign(
+                  target=Name(id='compliance_score', ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=0.2)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='issues', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Contains potential spam indicators: '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value=', '),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Name(id='found_spam', ctx=Load())]),
+                            conversion=-1)])]))]),
+            Assign(
+              targets=[
+                Name(id='cta', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='outreach_content', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='call_to_action'),
+                  Constant(value='')])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='cta', ctx=Load())),
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='cta', ctx=Load()),
+                            attr='strip',
+                            ctx=Load()))]),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Constant(value=10)])]),
+              body=[
+                AugAssign(
+                  target=Name(id='compliance_score', ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=0.15)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='issues', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Call-to-action is missing or too brief')]))]),
+            Assign(
+              targets=[
+                Name(id='recipient_name', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='recipient_profile'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='name'),
+                  Constant(value='')])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='recipient_name', ctx=Load()),
+                  Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='recipient_name', ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='body', ctx=Load())])]),
+              body=[
+                AugAssign(
+                  target=Name(id='compliance_score', ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=0.1)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='issues', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Message not personalized with recipient name')]))]),
+            Assign(
+              targets=[
+                Name(id='has_contact', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='info', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='body', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='info', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='@'),
+                            Constant(value='phone'),
+                            Constant(value='linkedin'),
+                            Constant(value='website')],
+                          ctx=Load()),
+                        is_async=0)])])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='has_contact', ctx=Load())),
+              body=[
+                AugAssign(
+                  target=Name(id='compliance_score', ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=0.1)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='issues', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Missing contact information')]))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='compliance_score'),
+                  Constant(value='issues_found'),
+                  Constant(value='spam_score'),
+                  Constant(value='personalization_score'),
+                  Constant(value='contact_info_present')],
+                values=[
+                  Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      Name(id='compliance_score', ctx=Load()),
+                      Constant(value=0.0)]),
+                  Name(id='issues', ctx=Load()),
+                  BinOp(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='found_spam', ctx=Load())]),
+                    op=Div(),
+                    right=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='spam_indicators', ctx=Load())])),
+                  IfExp(
+                    test=Compare(
+                      left=Call(
+                        func=Attribute(
+                          value=Name(id='recipient_name', ctx=Load()),
+                          attr='lower',
+                          ctx=Load())),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='body', ctx=Load())]),
+                    body=Constant(value=0.9),
+                    orelse=Constant(value=0.7)),
+                  Name(id='has_contact', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_assess_effectiveness',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='outreach_content',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Assess potential effectiveness of outreach message')),
+            Assign(
+              targets=[
+                Name(id='effectiveness_score', ctx=Store())],
+              value=Constant(value=0.8)),
+            Assign(
+              targets=[
+                Name(id='factors', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='subject', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='outreach_content', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='subject'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='subject_effectiveness', ctx=Store())],
+              value=Constant(value=0.8)),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='word', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='subject', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='word', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='question'),
+                            Constant(value='introduction'),
+                            Constant(value='opportunity')],
+                          ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                AugAssign(
+                  target=Name(id='subject_effectiveness', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            If(
+              test=Compare(
+                left=Constant(value='?'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='subject', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='subject_effectiveness', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='factors', ctx=Load()),
+                  slice=Constant(value='subject_effectiveness'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  Name(id='subject_effectiveness', ctx=Load()),
+                  Constant(value=1.0)])),
+            Assign(
+              targets=[
+                Name(id='body', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='outreach_content', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='body'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='sentences', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='body', ctx=Load()),
+                  attr='split',
+                  ctx=Load()),
+                args=[
+                  Constant(value='.')])),
+            If(
+              test=Compare(
+                left=Constant(value=3),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='sentences', ctx=Load())]),
+                  Constant(value=7)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='structure_score', ctx=Store())],
+                  value=Constant(value=1.0))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='structure_score', ctx=Store())],
+                  value=Constant(value=0.7))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='factors', ctx=Load()),
+                  slice=Constant(value='structure_score'),
+                  ctx=Store())],
+              value=Name(id='structure_score', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='cta', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='outreach_content', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='call_to_action'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='cta_effectiveness', ctx=Store())],
+              value=Constant(value=0.7)),
+            Assign(
+              targets=[
+                Name(id='action_words', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='schedule'),
+                  Constant(value='call'),
+                  Constant(value='meet'),
+                  Constant(value='discuss'),
+                  Constant(value='connect'),
+                  Constant(value='reply')],
+                ctx=Load())),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='word', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='cta', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='word', ctx=Store()),
+                        iter=Name(id='action_words', ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                AugAssign(
+                  target=Name(id='cta_effectiveness', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.2))]),
+            If(
+              test=Compare(
+                left=Constant(value='?'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='cta', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='cta_effectiveness', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='factors', ctx=Load()),
+                  slice=Constant(value='cta_effectiveness'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  Name(id='cta_effectiveness', ctx=Load()),
+                  Constant(value=1.0)])),
+            Assign(
+              targets=[
+                Name(id='recipient_profile', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='context', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='recipient_profile'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='personalization_score', ctx=Store())],
+              value=Constant(value=0.7)),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='recipient_profile', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company')]),
+                  Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='recipient_profile', ctx=Load()),
+                          slice=Constant(value='company'),
+                          ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='body', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))])]),
+              body=[
+                AugAssign(
+                  target=Name(id='personalization_score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='recipient_profile', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='role')]),
+                  Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='recipient_profile', ctx=Load()),
+                          slice=Constant(value='role'),
+                          ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='body', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))])]),
+              body=[
+                AugAssign(
+                  target=Name(id='personalization_score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='factors', ctx=Load()),
+                  slice=Constant(value='personalization_effectiveness'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  Name(id='personalization_score', ctx=Load()),
+                  Constant(value=1.0)])),
+            Assign(
+              targets=[
+                Name(id='effectiveness_score', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='sum', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='factors', ctx=Load()),
+                        attr='values',
+                        ctx=Load()))]),
+                op=Div(),
+                right=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='factors', ctx=Load())]))),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='effectiveness_score'),
+                  Constant(value='factors'),
+                  Constant(value='predicted_response_rate'),
+                  Constant(value='engagement_potential')],
+                values=[
+                  Name(id='effectiveness_score', ctx=Load()),
+                  Name(id='factors', ctx=Load()),
+                  Call(
+                    func=Name(id='min', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='effectiveness_score', ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.4)),
+                      Constant(value=0.5)]),
+                  Name(id='effectiveness_score', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_calculate_overall_score',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='scoring_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='compliance_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='effectiveness_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Calculate weighted overall validation score')),
+            Assign(
+              targets=[
+                Name(id='weights', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='scoring'),
+                  Constant(value='compliance'),
+                  Constant(value='effectiveness')],
+                values=[
+                  Constant(value=0.4),
+                  Constant(value=0.3),
+                  Constant(value=0.3)])),
+            Assign(
+              targets=[
+                Name(id='scoring_score', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='sum', ctx=Load()),
+                  args=[
+                    List(
+                      elts=[
+                        Subscript(
+                          value=Name(id='scoring_result', ctx=Load()),
+                          slice=Constant(value='content_quality'),
+                          ctx=Load()),
+                        Subscript(
+                          value=Name(id='scoring_result', ctx=Load()),
+                          slice=Constant(value='personalization'),
+                          ctx=Load()),
+                        Subscript(
+                          value=Name(id='scoring_result', ctx=Load()),
+                          slice=Constant(value='clarity'),
+                          ctx=Load()),
+                        Subscript(
+                          value=Name(id='scoring_result', ctx=Load()),
+                          slice=Constant(value='professionalism'),
+                          ctx=Load()),
+                        Subscript(
+                          value=Name(id='scoring_result', ctx=Load()),
+                          slice=Constant(value='engagement'),
+                          ctx=Load())],
+                      ctx=Load())]),
+                op=Div(),
+                right=Constant(value=5))),
+            Assign(
+              targets=[
+                Name(id='compliance_score', ctx=Store())],
+              value=Subscript(
+                value=Name(id='compliance_result', ctx=Load()),
+                slice=Constant(value='compliance_score'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='effectiveness_score', ctx=Store())],
+              value=Subscript(
+                value=Name(id='effectiveness_result', ctx=Load()),
+                slice=Constant(value='effectiveness_score'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='overall_score', ctx=Store())],
+              value=BinOp(
+                left=BinOp(
+                  left=BinOp(
+                    left=Name(id='scoring_score', ctx=Load()),
+                    op=Mult(),
+                    right=Subscript(
+                      value=Name(id='weights', ctx=Load()),
+                      slice=Constant(value='scoring'),
+                      ctx=Load())),
+                  op=Add(),
+                  right=BinOp(
+                    left=Name(id='compliance_score', ctx=Load()),
+                    op=Mult(),
+                    right=Subscript(
+                      value=Name(id='weights', ctx=Load()),
+                      slice=Constant(value='compliance'),
+                      ctx=Load()))),
+                op=Add(),
+                right=BinOp(
+                  left=Name(id='effectiveness_score', ctx=Load()),
+                  op=Mult(),
+                  right=Subscript(
+                    value=Name(id='weights', ctx=Load()),
+                    slice=Constant(value='effectiveness'),
+                    ctx=Load())))),
+            Return(
+              value=Call(
+                func=Name(id='round', ctx=Load()),
+                args=[
+                  Name(id='overall_score', ctx=Load()),
+                  Constant(value=2)]))],
+          returns=Name(id='float', ctx=Load())),
+        AsyncFunctionDef(
+          name='_generate_recommendations',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='scoring_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='compliance_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='effectiveness_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate improvement recommendations')),
+            Assign(
+              targets=[
+                Name(id='recommendations', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='scoring_result', ctx=Load()),
+                  slice=Constant(value='content_quality'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.8)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommendations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Improve content quality with more specific details')]))]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='scoring_result', ctx=Load()),
+                  slice=Constant(value='personalization'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.8)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommendations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Add more personalization based on recipient profile')]))]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='scoring_result', ctx=Load()),
+                  slice=Constant(value='clarity'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.8)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommendations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Improve message clarity and readability')]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='recommendations', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='compliance_result', ctx=Load()),
+                    slice=Constant(value='issues_found'),
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='factors', ctx=Store())],
+              value=Subscript(
+                value=Name(id='effectiveness_result', ctx=Load()),
+                slice=Constant(value='factors'),
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='factors', ctx=Load()),
+                  slice=Constant(value='subject_effectiveness'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.8)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommendations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Make subject line more engaging with questions or value propositions')]))]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='factors', ctx=Load()),
+                  slice=Constant(value='cta_effectiveness'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.8)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommendations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Strengthen call-to-action with clear next steps')]))]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='factors', ctx=Load()),
+                  slice=Constant(value='personalization_effectiveness'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.8)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommendations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value="Add more specific references to recipient's background")]))]),
+            Return(
+              value=Subscript(
+                value=Name(id='recommendations', ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=8)),
+                ctx=Load()))],
+          returns=Name(id='list', ctx=Load())),
+        AsyncFunctionDef(
+          name='_identify_strengths',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='scoring_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='compliance_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='effectiveness_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Identify message strengths')),
+            Assign(
+              targets=[
+                Name(id='strengths', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='metric', ctx=Store()),
+                  Name(id='score', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='scoring_result', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='metric', ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Constant(value='details')]),
+                      Compare(
+                        left=Name(id='score', ctx=Load()),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Constant(value=0.8)])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='strengths', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Strong '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='metric', ctx=Load()),
+                                    attr='replace',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='_'),
+                                    Constant(value=' ')]),
+                                conversion=-1)])]))])]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='compliance_result', ctx=Load()),
+                  slice=Constant(value='compliance_score'),
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.9)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='strengths', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Excellent compliance with best practices')]))]),
+            Assign(
+              targets=[
+                Name(id='factors', ctx=Store())],
+              value=Subscript(
+                value=Name(id='effectiveness_result', ctx=Load()),
+                slice=Constant(value='factors'),
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='factor', ctx=Store()),
+                  Name(id='score', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='factors', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='score', ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=0.8)]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='strengths', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Strong '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='factor', ctx=Load()),
+                                    attr='replace',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='_'),
+                                    Constant(value=' ')]),
+                                conversion=-1)])]))])]),
+            Return(
+              value=Name(id='strengths', ctx=Load()))],
+          returns=Name(id='list', ctx=Load())),
+        AsyncFunctionDef(
+          name='_identify_improvement_areas',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='scoring_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='compliance_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='effectiveness_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Identify areas needing improvement')),
+            Assign(
+              targets=[
+                Name(id='improvements', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='metric', ctx=Store()),
+                  Name(id='score', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='scoring_result', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='metric', ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Constant(value='details')]),
+                      Compare(
+                        left=Name(id='score', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Constant(value=0.7)])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='improvements', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Improve '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='metric', ctx=Load()),
+                                    attr='replace',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='_'),
+                                    Constant(value=' ')]),
+                                conversion=-1)])]))])]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='compliance_result', ctx=Load()),
+                  slice=Constant(value='compliance_score'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.7)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='improvements', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Address compliance issues')]))]),
+            Assign(
+              targets=[
+                Name(id='factors', ctx=Store())],
+              value=Subscript(
+                value=Name(id='effectiveness_result', ctx=Load()),
+                slice=Constant(value='factors'),
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='factor', ctx=Store()),
+                  Name(id='score', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='factors', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='score', ctx=Load()),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Constant(value=0.7)]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='improvements', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Enhance '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='factor', ctx=Load()),
+                                    attr='replace',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='_'),
+                                    Constant(value=' ')]),
+                                conversion=-1)])]))])]),
+            Return(
+              value=Name(id='improvements', ctx=Load()))],
+          returns=Name(id='list', ctx=Load())),
+        AsyncFunctionDef(
+          name='_get_grade',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='score',
+                annotation=Name(id='float', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get letter grade for validation score')),
+            If(
+              test=Compare(
+                left=Name(id='score', ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.9)]),
+              body=[
+                Return(
+                  value=Constant(value='A'))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='score', ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=0.8)]),
+                  body=[
+                    Return(
+                      value=Constant(value='B'))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='score', ctx=Load()),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Constant(value=0.7)]),
+                      body=[
+                        Return(
+                          value=Constant(value='C'))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='score', ctx=Load()),
+                            ops=[
+                              GtE()],
+                            comparators=[
+                              Constant(value=0.6)]),
+                          body=[
+                            Return(
+                              value=Constant(value='D'))],
+                          orelse=[
+                            Return(
+                              value=Constant(value='F'))])])])])],
+          returns=Name(id='str', ctx=Load())),
+        AsyncFunctionDef(
+          name='_count_words',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='outreach_content',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Count total words in outreach content')),
+            Assign(
+              targets=[
+                Name(id='total_words', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Name(id='field', ctx=Store()),
+              iter=List(
+                elts=[
+                  Constant(value='subject'),
+                  Constant(value='body'),
+                  Constant(value='call_to_action')],
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='outreach_content', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='field', ctx=Load()),
+                      Constant(value='')])),
+                AugAssign(
+                  target=Name(id='total_words', ctx=Store()),
+                  op=Add(),
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='content', ctx=Load()),
+                          attr='split',
+                          ctx=Load()))]))]),
+            Return(
+              value=Name(id='total_words', ctx=Load()))],
+          returns=Name(id='int', ctx=Load()))]),
+    Assign(
+      targets=[
+        Name(id='validation_endpoint', ctx=Store())],
+      value=Call(
+        func=Name(id='OutreachValidationEndpoint', ctx=Load()))),
+    AsyncFunctionDef(
+      name='validate_outreach_message',
+      args=arguments(
+        args=[
+          arg(
+            arg='request',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Validate outreach message quality and effectiveness')),
+        Return(
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='validation_endpoint', ctx=Load()),
+                attr='validate_outreach_message',
+                ctx=Load()),
+              args=[
+                Name(id='request', ctx=Load())])))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='router', ctx=Load()),
+            attr='post',
+            ctx=Load()),
+          args=[
+            Constant(value='/message')])]),
+    AsyncFunctionDef(
+      name='get_validation_metrics',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Get validation metrics and scoring criteria')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='scoring_criteria'),
+              Constant(value='compliance_checks'),
+              Constant(value='effectiveness_factors'),
+              Constant(value='grade_thresholds')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='content_quality'),
+                  Constant(value='personalization'),
+                  Constant(value='clarity'),
+                  Constant(value='professionalism'),
+                  Constant(value='engagement')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='weight'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value=0.2),
+                      Constant(value='Overall content quality and relevance')]),
+                  Dict(
+                    keys=[
+                      Constant(value='weight'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value=0.2),
+                      Constant(value='Degree of personalization for recipient')]),
+                  Dict(
+                    keys=[
+                      Constant(value='weight'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value=0.2),
+                      Constant(value='Message clarity and readability')]),
+                  Dict(
+                    keys=[
+                      Constant(value='weight'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value=0.2),
+                      Constant(value='Professional tone and language')]),
+                  Dict(
+                    keys=[
+                      Constant(value='weight'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value=0.2),
+                      Constant(value='Potential to engage recipient')])]),
+              List(
+                elts=[
+                  Constant(value='Subject line length and quality'),
+                  Constant(value='Spam indicator detection'),
+                  Constant(value='Call-to-action presence'),
+                  Constant(value='Personalization indicators'),
+                  Constant(value='Contact information inclusion')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Subject line effectiveness'),
+                  Constant(value='Message structure'),
+                  Constant(value='Call-to-action strength'),
+                  Constant(value='Personalization depth')],
+                ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='A'),
+                  Constant(value='B'),
+                  Constant(value='C'),
+                  Constant(value='D'),
+                  Constant(value='F')],
+                values=[
+                  Constant(value='90-100%'),
+                  Constant(value='80-89%'),
+                  Constant(value='70-79%'),
+                  Constant(value='60-69%'),
+                  Constant(value='Below 60%')])]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='router', ctx=Load()),
+            attr='get',
+            ctx=Load()),
+          args=[
+            Constant(value='/metrics')])]),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='router'),
+          Constant(value='OutreachValidationEndpoint')],
+        ctx=Load()))])

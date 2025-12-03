@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: registry.py\n\"\"\"\nRegistry Layer (v10_10 \u00b7 Phase 3)\n===================================\n\nThis module defines:\n    \u2022 RAG strategy registry\n    \u2022 RetrievalConfig factories\n    \u2022 Static mappings for BM25 / DENSE / HYBRID / HYDE / RRF\n\nResponsibilities:\n    \u2022 Provide read-only strategy definitions\n    \u2022 Produce RetrievalConfig objects for the RAG pipeline\n\nNon-Responsibilities:\n    \u2022 No retrieval\n    \u2022 No ranking\n    \u2022 No LLM calls\n    \u2022 No orchestration\n    \u2022 No state mutation\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict\n\nfrom models import RetrievalConfig\n\n\n# =============================================================================\n# RAG STRATEGY DEFINITIONS (PHASE 3)\n# =============================================================================\n\n# Each strategy defines:\n#   \u2022 retrieval_mode: \"bm25\" | \"dense\" | \"hybrid\"\n#   \u2022 use_hyde:       bool\n#   \u2022 use_rrf:        bool\n#   \u2022 top_k:          int\n\n\n@dataclass(frozen=True)",
+  "full_hash": "be9128d4e6da68afc098ad4b0bcccedd03007b12a7c5f4e35a6bf4c930bea6e2",
+  "generated_at": 1764728228.4064565,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\registry.py"
+}

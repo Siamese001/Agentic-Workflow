@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 55,
+  "generated_at": 1764728342.7968686,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\orc-layer\\act-phase\\use-schema-tools\\general\\use-a-tool\\dispatch_schema_tools.py"
+}

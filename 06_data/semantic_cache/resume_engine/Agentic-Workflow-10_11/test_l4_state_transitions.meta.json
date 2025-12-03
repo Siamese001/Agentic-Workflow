@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\integration\\state_transitions\\test_l4_state_transitions.py",
+    "rel_path": "test_l4_state_transitions.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "08815264e3074c46d41a1f99bb15b61d74f48e59005716a4716d53c7504b06a6",
+    "file_size": 772,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 4
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.0821586
+}

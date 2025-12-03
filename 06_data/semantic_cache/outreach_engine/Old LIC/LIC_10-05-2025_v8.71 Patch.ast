@@ -1,0 +1,422 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='INSTRUCTIONS_FOR_LLM'),
+          Constant(value='1_metadata'),
+          Constant(value='2_changes')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='NOTE')],
+            values=[
+              Constant(value='This is a consolidated patch file. It includes the strategic overhaul from P870 plus all subsequent configuration changes (word counts, terminology) from our discussion.')]),
+          Dict(
+            keys=[
+              Constant(value='patch_id'),
+              Constant(value='patch_name'),
+              Constant(value='version'),
+              Constant(value='date_created'),
+              Constant(value='author'),
+              Constant(value='severity'),
+              Constant(value='purpose'),
+              Constant(value='source_version'),
+              Constant(value='target_version'),
+              Constant(value='sections_modified')],
+            values=[
+              Constant(value='LIC-P-871'),
+              Constant(value='Phoenix v2 (Strategic Overhaul & Configuration Refinement)'),
+              Constant(value='2025-10-08_v1'),
+              Constant(value='2025-10-08'),
+              Constant(value='Gemini System Engineer (Editor)'),
+              Constant(value='CRITICAL'),
+              Constant(value="A major strategic and configuration overhaul of the LIC system. Implements new 'On Steroids' reasoning toggles, introduces type-specific word count ranges, corrects workflow logic, hardens validation, and standardizes terminology by replacing 'archetype' with 'type'."),
+              Constant(value='v8.61'),
+              Constant(value='v8.71'),
+              List(
+                elts=[
+                  Constant(value='metadata'),
+                  Constant(value='1.role'),
+                  Constant(value='2.task'),
+                  Constant(value='3.context'),
+                  Constant(value='4.reasoning'),
+                  Constant(value='6.validation')],
+                ctx=Load())]),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='find'),
+                  Constant(value='replace')],
+                values=[
+                  Constant(value='P871-001'),
+                  Constant(value='GLOBAL_REPLACE'),
+                  Constant(value="Standardizes terminology across the entire artifact by replacing all instances of 'archetype' with 'type'."),
+                  Constant(value="To improve clarity and consistency based on user feedback. All subsequent changes in this patch will use the new 'type' terminology."),
+                  Constant(value='archetype'),
+                  Constant(value='type')]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='target_paths'),
+                  Constant(value='new_constraints_block'),
+                  Constant(value='note')],
+                values=[
+                  Constant(value='P871-002'),
+                  Constant(value='3.context'),
+                  Constant(value='route_validator.route_specs'),
+                  Constant(value='CONFIG_OVERWRITE'),
+                  Constant(value='Replaces the generic length constraints for FOLLOW_UP and INMAIL_OUTREACH routes with a new, centralized `word_range_by_type` object.'),
+                  Constant(value='Implements new user-defined, type-specific message length requirements and centralizes them in a single configuration location.'),
+                  List(
+                    elts=[
+                      Constant(value='3.context.route_validator.route_specs.FOLLOW_UP.constraints'),
+                      Constant(value='3.context.route_validator.route_specs.INMAIL_OUTREACH.constraints')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='word_range_by_type'),
+                      Constant(value='k_nodes_enabled'),
+                      Constant(value='signature_format'),
+                      Constant(value='subject_line'),
+                      Constant(value='attachments'),
+                      Constant(value='meeting_dates')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='RECRUITER'),
+                          Constant(value='SENIOR_TA'),
+                          Constant(value='EXECUTIVE'),
+                          Constant(value='C_LEVEL')],
+                        values=[
+                          Constant(value='140-170'),
+                          Constant(value='150-190'),
+                          Constant(value='160-220'),
+                          Constant(value='190-230')]),
+                      List(
+                        elts=[
+                          Name(id='true', ctx=Load()),
+                          Name(id='true', ctx=Load()),
+                          Constant(value='full'),
+                          Name(id='true', ctx=Load()),
+                          Constant(value='full'),
+                          Constant(value='full'),
+                          Constant(value='full')],
+                        ctx=Load()),
+                      Constant(value='4-line'),
+                      Name(id='true', ctx=Load()),
+                      Name(id='true', ctx=Load()),
+                      Name(id='true', ctx=Load())]),
+                  Constant(value="[EDITOR CORRECTION] This block explicitly sets 'attachments' to 'true' to correct a bug in v8.61 where InMail attachments were incorrectly disabled.")]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='targets_to_remove')],
+                values=[
+                  Constant(value='P871-003'),
+                  Constant(value='CLEANUP'),
+                  Constant(value='Removes obsolete and conflicting message length specifications from other sections.'),
+                  Constant(value='Ensures that the `route_validator` is the single source of truth for message lengths, per user instruction.'),
+                  List(
+                    elts=[
+                      Constant(value='2.task.k_node_pipeline.K.3.formats.standard'),
+                      Constant(value='2.task.k_node_pipeline.K.3.formats.expanded'),
+                      Constant(value='4.reasoning.k_nodes.K.3.word_range')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='new_block')],
+                values=[
+                  Constant(value='P871-004'),
+                  Constant(value='2.task'),
+                  Constant(value='message_type_transitions'),
+                  Constant(value='LOGIC_OVERWRITE'),
+                  Constant(value='Replaces the flawed message transition logic with a new, corrected process.'),
+                  Constant(value='The previous logic incorrectly defined new lengths. The new logic correctly routes to standard templates for existing connections.'),
+                  Dict(
+                    keys=[
+                      Constant(value='SHORT_NEW_to_ANY_EXISTING')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='trigger'),
+                          Constant(value='action'),
+                          Constant(value='process')],
+                        values=[
+                          Constant(value='Connection accepted → follow-up'),
+                          Constant(value='Route to the standard message template for the target recipient type (e.g., EXECUTIVE, SENIOR_TA).'),
+                          List(
+                            elts=[
+                              Constant(value="1. Prepend the phrase 'Thanks for connecting.'"),
+                              Constant(value="2. Generate the message body according to the type's standard word count (from route_validator)."),
+                              Constant(value='3. Perform a continuity check against the original SHORT_NEW message to avoid redundancy.')],
+                            ctx=Load())])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='new_block')],
+                values=[
+                  Constant(value='P871-005'),
+                  Constant(value='4.reasoning'),
+                  Constant(value='type_parameter_sets'),
+                  Constant(value='DESTRUCTIVE_OVERWRITE'),
+                  Constant(value="Replaces the entire `type_parameter_sets` with the new, final, 'On Steroids' configurations for K.3 message generation."),
+                  Constant(value='Implements all final, approved settings for maximum quality and aligns each type with its strategic directives.'),
+                  Dict(
+                    keys=[
+                      Constant(value='C_LEVEL'),
+                      Constant(value='EXECUTIVE'),
+                      Constant(value='SENIOR_TA'),
+                      Constant(value='RECRUITER')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='K3')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='self_consistency'),
+                              Constant(value='cot_min_paths'),
+                              Constant(value='rag_hops'),
+                              Constant(value='rag_recency_weight'),
+                              Constant(value='anchor_temporal_window_days'),
+                              Constant(value='rag_retrievers'),
+                              Constant(value='rag_external')],
+                            values=[
+                              Constant(value=12),
+                              Constant(value=4),
+                              Constant(value=6),
+                              Constant(value=0.7),
+                              Constant(value=90),
+                              Constant(value=20),
+                              Constant(value='web_search (12), web_fetch (6)')])]),
+                      Dict(
+                        keys=[
+                          Constant(value='K3')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='self_consistency'),
+                              Constant(value='cot_min_paths'),
+                              Constant(value='rag_hops'),
+                              Constant(value='rag_recency_weight'),
+                              Constant(value='anchor_temporal_window_days'),
+                              Constant(value='rag_retrievers'),
+                              Constant(value='rag_external')],
+                            values=[
+                              Constant(value=8),
+                              Constant(value=10),
+                              Constant(value=5),
+                              Constant(value=0.4),
+                              Constant(value=90),
+                              Constant(value=16),
+                              Constant(value='web_search (8), web_fetch (4)')])]),
+                      Dict(
+                        keys=[
+                          Constant(value='K3')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='self_consistency'),
+                              Constant(value='cot_min_paths'),
+                              Constant(value='rag_hops'),
+                              Constant(value='rag_recency_weight'),
+                              Constant(value='anchor_temporal_window_days'),
+                              Constant(value='rag_retrievers'),
+                              Constant(value='rag_external')],
+                            values=[
+                              Constant(value=8),
+                              Constant(value=6),
+                              Constant(value=5),
+                              Constant(value=0.5),
+                              Constant(value=90),
+                              Constant(value=16),
+                              Constant(value='web_search (8), web_fetch (4)')])]),
+                      Dict(
+                        keys=[
+                          Constant(value='K3')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='self_consistency'),
+                              Constant(value='cot_min_paths'),
+                              Constant(value='rag_hops'),
+                              Constant(value='rag_recency_weight'),
+                              Constant(value='anchor_temporal_window_days'),
+                              Constant(value='rag_retrievers'),
+                              Constant(value='rag_external')],
+                            values=[
+                              Constant(value=5),
+                              Constant(value=4),
+                              Constant(value=3),
+                              Constant(value=0.5),
+                              Constant(value=60),
+                              Constant(value=12),
+                              Constant(value='web_search (5), web_fetch (2)')])])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='P871-006'),
+                  Constant(value='4.reasoning'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Introduces new strategic directive parameters to control high-level messaging strategy.'),
+                  Constant(value='Allows the system to select the correct approach (e.g., message format, RAG focus) for each type, addressing a key strategic gap.'),
+                  Dict(
+                    keys=[
+                      Constant(value='strategic_directives')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='message_format_template'),
+                          Constant(value='rag_focus_strategy'),
+                          Constant(value='cta_strategy')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value='ANALYST_LEVEL_PITCH'),
+                              Constant(value='OPERATIONAL_PITCH'),
+                              Constant(value='EXECUTIVE_CANDIDATE_PITCH'),
+                              Constant(value='SKILL_TO_ROLE_MAPPING')],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value='COMPANY_ONLY'),
+                              Constant(value='WEIGHTED (40/60 Co/Person)'),
+                              Constant(value='WEIGHTED (80/20 Co/Person)')],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value='TRANSACTIONAL_WITH_ESCALATION'),
+                              Constant(value='RELATIONAL_EXPLORATORY')],
+                            ctx=Load())])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='changes')],
+                values=[
+                  Constant(value='P871-007'),
+                  Constant(value='3.context'),
+                  Constant(value='WORKFLOW_FIX'),
+                  Constant(value='Corrects two workflow logic gaps: adds a mandatory context ingestion prompt and fixes routing for existing connections with no message history.'),
+                  Constant(value='Fixes a broken user experience where source files were not requested and corrects a routing flaw.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='module'),
+                          Constant(value='append_after'),
+                          Constant(value='new_step')],
+                        values=[
+                          Constant(value='execution_flow'),
+                          Constant(value='step_0'),
+                          Dict(
+                            keys=[
+                              Constant(value='step_0_5')],
+                            values=[
+                              Dict(
+                                keys=[
+                                  Constant(value='action'),
+                                  Constant(value='prompt'),
+                                  Constant(value='blocking')],
+                                values=[
+                                  Constant(value='context_ingestion_prompt'),
+                                  Constant(value='Please provide all necessary source files (e.g., resumes) before proceeding.'),
+                                  Name(id='true', ctx=Load())])])]),
+                      Dict(
+                        keys=[
+                          Constant(value='module'),
+                          Constant(value='append_to_end')],
+                        values=[
+                          Constant(value='routing_decision_tree'),
+                          Dict(
+                            keys=[
+                              Constant(value='existing_connection_logic')],
+                            values=[
+                              Dict(
+                                keys=[
+                                  Constant(value='trigger'),
+                                  Constant(value='then_action'),
+                                  Constant(value='else_behavior')],
+                                values=[
+                                  Constant(value='IF Connection = EXISTING AND Prior_Messages_Exist = NO'),
+                                  Constant(value='SET Route = INMAIL_OUTREACH'),
+                                  Constant(value='SET Route = FOLLOW_UP')])])])],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='rationale'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='P871-008'),
+                  Constant(value='6.validation'),
+                  Constant(value='qa_rules'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Adds three new critical QA validation rules for content phrasing and numerical formatting.'),
+                  Constant(value='Codifies user feedback on message polish to improve the quality of all final outputs.'),
+                  Dict(
+                    keys=[
+                      Constant(value='LIC-QA-101'),
+                      Constant(value='LIC-QA-102'),
+                      Constant(value='LIC-QA-103')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='severity'),
+                          Constant(value='check')],
+                        values=[
+                          Constant(value='CRITICAL'),
+                          Constant(value="Message must not contain phrases like 'At IBM' or 'At Unify'.")]),
+                      Dict(
+                        keys=[
+                          Constant(value='severity'),
+                          Constant(value='check')],
+                        values=[
+                          Constant(value='CRITICAL'),
+                          Constant(value='Numbers must be rendered as digits, not words.')]),
+                      Dict(
+                        keys=[
+                          Constant(value='severity'),
+                          Constant(value='check')],
+                        values=[
+                          Constant(value='CRITICAL'),
+                          Constant(value="The '%' symbol must be used instead of the word 'percent'.")])])])],
+            ctx=Load())]))])

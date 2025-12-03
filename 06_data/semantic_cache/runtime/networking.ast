@@ -1,0 +1,96 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    FunctionDef(
+      name='default_network_policy',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return the default network policy for sandboxed execution.\n\n    By default all outbound network access is disabled.\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='allow_network'),
+              Constant(value='allowlist')],
+            values=[
+              Constant(value=False),
+              List(ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='object', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='is_destination_allowed',
+      args=arguments(
+        args=[
+          arg(
+            arg='policy',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='object', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='host',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='policy', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='allow_network')])),
+          body=[
+            Return(
+              value=Constant(value=False))]),
+        AnnAssign(
+          target=Name(id='allowlist', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='policy', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='allowlist'),
+                      List(ctx=Load())]),
+                  List(ctx=Load())])]),
+          simple=1),
+        Return(
+          value=Compare(
+            left=Name(id='host', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='allowlist', ctx=Load())]))],
+      returns=Name(id='bool', ctx=Load()))])

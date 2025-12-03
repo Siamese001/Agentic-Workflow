@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - compute_scripts_score\nImplements L5 Safety/Policy Layer for compute scripts score operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ComputeScriptsScoreSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass ComputeScriptsScoreSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ComputeScriptsScoreSafetyResult:\n    \"\"\"L5 Safety result wit",
+  "full_hash": "e915c32d16a83952218dab1b4ec2d9bb90f4dbd634cf32fdcdad5ce65dd52684",
+  "generated_at": 1764728352.4783492,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\semantic\\adjust-scores\\compute_scripts_score.py"
+}

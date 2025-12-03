@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"metadata\": {\n    \"patch_id\": \"LIC-P023-SCOPE-FIX\",\n    \"patch_name\": \"Staging Buffer Scope Isolation Fix - CRITICAL\",\n    \"base_version\": \"v10.23\",\n    \"target_version\": \"v10.23.1\",\n    \"severity\": \"CRITICAL\",\n    \"created_date\": \"2025-10-15\",\n    \"author\": \"System (based on Job Workflow v1.6.3 fix)\",\n    \"status\": \"URGENT_DEPLOYMENT_REQUIRED\",\n    \"bug_reference\": \"Same bug as Job Workflow BUG-1.6.2-001\"\n  },\n\n  \"bug_analysis\": {\n    \"bug_id\": \"LIC-BUG-10.23-001\",\n    \"title\": \"QA Engine V2 can still access Artist metadata despite ignore_artist_metadata flags\",\n    \"severity\": \"CRITICAL\",\n    \"root_cause\": \"Validation functions have access to both Artist output AND staging_buffer in scope\",\n    \"evidence\": {\n      \"job_workflow_precedent\": \"v1.6.2 had identical issue - 'ignore' flags insufficient\",\n      \"job_workflow_symptom\": \"QA reported 129 words but actual text was 111 words\",\n      \"lic_vulnerability\": \"LIC v10.23 has same architecture flaw - no hard scope isolation\",\n     ",
+  "full_hash": "417826fff95891da7729480fd4f77e1e777d4e2efc31c9bbbc0896691ef9872e",
+  "generated_at": 1764728339.623638,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_SCOPE_ISOLATION_FIX_v10_23.json"
+}

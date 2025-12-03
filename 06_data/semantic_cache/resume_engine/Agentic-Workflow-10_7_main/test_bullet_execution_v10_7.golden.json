@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\n\nfrom stacks_v10_8.bullet_execution import BulletExecutionStack\n\n\n@pytest.mark.asyncio\nasync def test_generate_from_state_async_builds_expected_patch(workflow_context):\n    state = {\n        \"metadata\": {\"workflow_id\": \"wf-bullets\"},\n        \"prompts\": {\"prompts\": {\"bullet_generation_prompt\": \"Write impact bullets.\"}},\n        \"strategy\": {\n            \"strategy_plan\": {\n                \"strategy_name\": \"default\",\n                \"focus_areas\": [\"impact\"],\n                \"key_achievements_to_highlight\": [\"growth\"],\n                \"tone\": \"Bold\",\n            }\n        },\n        \"resume\": {\n            \"experience_bullets\": [\n                {\"id\": \"exp-1\", \"text\": \"Improved retention\"},\n                {\"id\": \"exp-2\", \"text\": \"Cut churn\"},\n            ]\n        },\n    }\n    stack = BulletExecutionStack(workflow_context)\n    captured = {}\n\n    async def fake_generate_async(prompt, experiences, strategy, workflow_id):\n        captured[\"prompt\"] = prompt\n        captured[\"",
+  "full_hash": "90f813f6632bd21f2dd36aba89d42dde99db6df187d2b70c7fa435aff7a96c78",
+  "generated_at": 1764728230.7261035,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\stacks\\test_bullet_execution_v10_7.py"
+}

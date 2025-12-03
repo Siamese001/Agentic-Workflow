@@ -1,0 +1,72 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel'),
+        alias(name='Field')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ReasoningMode')],
+      level=0),
+    ClassDef(
+      name='LLMProfile',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='LLM configuration profile used by execution profiles.\n\n    This model is intentionally minimal and mirrors the knobs already\n    present in ExecutionProfileSpec: reasoning_mode, model_tier,\n    max_cost_usd, max_latency_ms.\n    ')),
+        AnnAssign(
+          target=Name(id='reasoning_mode', ctx=Store()),
+          annotation=Name(id='ReasoningMode', ctx=Load()),
+          value=Attribute(
+            value=Name(id='ReasoningMode', ctx=Load()),
+            attr='COT',
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_tier', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default',
+                value=Constant(value='balanced')),
+              keyword(
+                arg='description',
+                value=Constant(value="Model tier hint, e.g. 'cheap', 'balanced', 'premium'."))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_cost_usd', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default',
+                value=Constant(value=0.1)),
+              keyword(
+                arg='ge',
+                value=Constant(value=0.0))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_latency_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default',
+                value=Constant(value=3000)),
+              keyword(
+                arg='ge',
+                value=Constant(value=0))]),
+          simple=1)])])

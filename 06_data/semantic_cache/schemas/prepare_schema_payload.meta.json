@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\plan-phase\\get-schema-info\\utility\\prepare-information\\prepare_schema_payload.py",
+    "rel_path": "prepare_schema_payload.py",
+    "root_name": "schemas",
+    "file_hash": "7758c101fcbf0210f43500663995b4adb33820980c4a5c1ba26a9eb7bac392f1",
+    "file_size": 1260,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.1568885
+}

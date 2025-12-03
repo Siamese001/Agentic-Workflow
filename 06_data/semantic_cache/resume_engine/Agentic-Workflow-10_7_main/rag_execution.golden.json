@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Pure action implementation of the v10.8 RAG execution stack.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport json\nfrom typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom agent_tools_v10_7 import BM25SearchTool, ChromaDBSearchTool, HyDETool\nfrom core_v10_7 import BaseAgent, PydanticSchemaError, RAGPlan, _format_prompt_with_defaults\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\n\n\nclass RAGExecutionStack(BaseAgent):\n    \"\"\"Runs deterministic hybrid retrieval using a pre-computed RAGPlan.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        super().__init__(context, debug_mode)\n        self.hyde_tool = HyDETool(context, debug_mode)\n        self.chroma_tool = ChromaDBSearchTool(context, debug_mode)\n        self.bm25_tool = BM25SearchTool(context, debug_mode)\n        self.chroma_client = context.chromadb_client\n        self.embedding_function = context.embedding_function\n        self.collection_name ",
+  "full_hash": "3c9bf8e25f814d82cb4a0874c25318fe74b6fb3f3a7b3bde818340af5a38975c",
+  "generated_at": 1764728230.2407901,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\rag_execution.py"
+}

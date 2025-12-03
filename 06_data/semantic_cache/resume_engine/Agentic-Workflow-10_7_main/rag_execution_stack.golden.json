@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Compatibility shim that re-exports the v10.8 RAG execution stack.\"\"\"\n\nfrom stacks_v10_8.rag_execution import RAGExecutionStack\n\n__all__ = [\"RAGExecutionStack\"]\n",
+  "full_hash": "f7f354ed3c17a2fcfddc68308aaf6251580a716be4a92fab5d9f342018edc27f",
+  "generated_at": 1764728229.9292798,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag_execution_stack.py"
+}

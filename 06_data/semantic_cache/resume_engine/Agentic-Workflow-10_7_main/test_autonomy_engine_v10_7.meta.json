@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\autonomy\\test_autonomy_engine_v10_7.py",
+    "rel_path": "test_autonomy_engine_v10_7.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "6c8723d0d4c6f96c7287bb77a16f7eb555f627132d0727d5bc03702bb7328787",
+    "file_size": 3777,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728230.4251285
+}

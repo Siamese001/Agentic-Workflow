@@ -1,0 +1,326 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='BaseAgent'),
+        alias(name='canonical_model_name')],
+      level=0),
+    ClassDef(
+      name='DummyRoutingAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Pass()]),
+    FunctionDef(
+      name='agent',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='workflow_context', ctx=Load()),
+              attr='workflow_id',
+              ctx=Store())],
+          value=Constant(value='wf-routing')),
+        Return(
+          value=Call(
+            func=Name(id='DummyRoutingAgent', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_complexity_routing_selects_simple_model_on_simple',
+      args=arguments(
+        args=[
+          arg(arg='agent')]),
+      body=[
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='context',
+                ctx=Load()),
+              attr='complexity',
+              ctx=Store())],
+          value=Constant(value='simple')),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='get_model_client',
+              ctx=Load()),
+            args=[
+              Constant(value='strategy_model')])),
+        Assign(
+          targets=[
+            Name(id='expected', ctx=Store())],
+          value=Call(
+            func=Name(id='canonical_model_name', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='agent', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='model_config',
+                    ctx=Load()),
+                  attr='strategy_model_simple',
+                  ctx=Load()),
+                attr='model_name',
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='model_name',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='expected', ctx=Load())]))]),
+    FunctionDef(
+      name='test_complexity_routing_selects_complex_model_on_complex',
+      args=arguments(
+        args=[
+          arg(arg='agent')]),
+      body=[
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='context',
+                ctx=Load()),
+              attr='complexity',
+              ctx=Store())],
+          value=Constant(value='complex')),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='get_model_client',
+              ctx=Load()),
+            args=[
+              Constant(value='strategy_model')])),
+        Assign(
+          targets=[
+            Name(id='expected', ctx=Store())],
+          value=Call(
+            func=Name(id='canonical_model_name', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='agent', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='model_config',
+                    ctx=Load()),
+                  attr='strategy_model_complex',
+                  ctx=Load()),
+                attr='model_name',
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='model_name',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='expected', ctx=Load())]))]),
+    FunctionDef(
+      name='test_latency_based_fallback_switch_to_simple',
+      args=arguments(
+        args=[
+          arg(arg='agent')]),
+      body=[
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='context',
+                ctx=Load()),
+              attr='complexity',
+              ctx=Store())],
+          value=Constant(value='complex')),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='agent', ctx=Load()),
+                  attr='config',
+                  ctx=Load()),
+                attr='performance_config',
+                ctx=Load()),
+              attr='max_complex_model_latency_ms',
+              ctx=Store())],
+          value=Constant(value=1)),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='metrics',
+                ctx=Load()),
+              attr='record',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='agent_name',
+                value=Attribute(
+                  value=Attribute(
+                    value=Name(id='agent', ctx=Load()),
+                    attr='__class__',
+                    ctx=Load()),
+                  attr='__name__',
+                  ctx=Load())),
+              keyword(
+                arg='task_name',
+                value=Constant(value='strategy_model_complex')),
+              keyword(
+                arg='duration_ms',
+                value=Constant(value=500)),
+              keyword(
+                arg='success',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='get_model_client',
+              ctx=Load()),
+            args=[
+              Constant(value='strategy_model')])),
+        Assign(
+          targets=[
+            Name(id='expected', ctx=Store())],
+          value=Call(
+            func=Name(id='canonical_model_name', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='agent', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='model_config',
+                    ctx=Load()),
+                  attr='strategy_model_simple',
+                  ctx=Load()),
+                attr='model_name',
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='model_name',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='expected', ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Subscript(
+                    value=Name(id='m', ctx=Load()),
+                    slice=Constant(value='task_name'),
+                    ctx=Load()),
+                  ops=[
+                    Eq()],
+                  comparators=[
+                    Constant(value='latency_fallback')]),
+                generators=[
+                  comprehension(
+                    target=Name(id='m', ctx=Store()),
+                    iter=Attribute(
+                      value=Attribute(
+                        value=Name(id='agent', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    is_async=0)])]))]),
+    FunctionDef(
+      name='test_missing_model_config_reverts_to_base_key',
+      args=arguments(
+        args=[
+          arg(arg='agent')]),
+      body=[
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='context',
+                ctx=Load()),
+              attr='complexity',
+              ctx=Store())],
+          value=Constant(value='complex')),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='get_model_client',
+              ctx=Load()),
+            args=[
+              Constant(value='qa_model')])),
+        Assign(
+          targets=[
+            Name(id='expected', ctx=Store())],
+          value=Call(
+            func=Name(id='canonical_model_name', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='agent', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='model_config',
+                    ctx=Load()),
+                  attr='qa_model',
+                  ctx=Load()),
+                attr='model_name',
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='model_name',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='expected', ctx=Load())]))])])

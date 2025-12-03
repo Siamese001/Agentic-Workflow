@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\n\"\"\"AIS repair / mitigation policies.\n\nPolicies consume FailureSignal-like inputs and propose coarse-grained\nrepair actions (retry, downgrade, replan, escalate).\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n\nfrom .failure_detector import FailureSignal\n\n\n@dataclass\nclass RepairAction:\n    \"\"\"Single AIS repair action recommendation.\"\"\"\n\n    kind: str  # e.g. \"retry\", \"downgrade\", \"replan\", \"escalate\"\n    reason: str\n    metadata: Dict[str, Any]\n\n\ndef propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:\n    \"\"\"Map FailureSignal list into a set of RepairAction recommendations.\"\"\"\n\n    actions: List[RepairAction] = []\n    for sig in signals or []:\n        if sig.severity == \"high\":\n            actions.append(\n                RepairAction(\n                    kind=\"escalate\",\n                    reason=f\"High-severity failure: {sig.code}\",\n                    metadata={\"signal\": sig},\n                )\n          ",
+  "full_hash": "99d35fda7b66bcc27d830617d1366cbee600e5814d2c42f0e8a96db23bcf2ffe",
+  "generated_at": 1764728224.0428956,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\repair_policies.py"
+}

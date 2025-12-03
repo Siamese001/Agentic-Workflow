@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"E2E check that value claims include evidence anchors.\"\"\"\nfrom __future__ import annotations\n\nfrom types import SimpleNamespace\n\nfrom src.lic_agentic.agents.k3_message_architect import MessageArchitect\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef extract_artifact_markers(draft: str) -> list[str]:\n    return [line for line in draft.splitlines() if line.startswith(\"[artifact_id:\")]\n\n\ndef test_value_claims_are_anchored():\n    toggles = ReasoningToggles()\n    architect = MessageArchitect(toggles)\n    sanitized = SimpleNamespace(prompt=\"Update on strategic wins\", company_id=\"ACME\", contact_id=\"C1\")\n\n    plan = architect._build_plan(\n        [\"ACME latest milestones\", \"ACME recent news\", \"C1 profile highlights\"], sanitized\n    )\n    plan.dedupe()\n    plan.budget(max_calls=6)\n    outcomes = plan.execute(architect.tool_registry, architect.content_store)\n    expected_markers = len(outcomes)\n\n    package = architect.compose(sanitized, route_decision=None)\n    markers = ",
+  "full_hash": "2113f0c1fb4f16abe9d9b45b1ea1bac35dd83f3db9001c1d4c1e465d8b44e12a",
+  "generated_at": 1764728330.972209,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_value_claim_evidence.py"
+}

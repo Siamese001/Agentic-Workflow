@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_19_JD_FIXED.py",
+    "rel_path": "Resume_Generation_v5_19_JD_FIXED.py",
+    "root_name": "resume_engine/Old Resume Gen Python",
+    "file_hash": "469316f61145cd0a52deca5a2be95a096921a46b8a296b7e6bc99e11b3ee68d7",
+    "file_size": 42820,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728300.8989735
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\manage-config-costs\\general\\update-memory\\track_config_cost.py",
+    "rel_path": "track_config_cost.py",
+    "root_name": "config",
+    "file_hash": "77e21de4282b868a676a7465b57c8adccc2ef09831d2d6fd0e37db4fe4f644d6",
+    "file_size": 11236,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.3965013
+}

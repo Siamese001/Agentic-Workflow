@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"version\": \"1.0\",\n  \"snapshot_id\": \"snapshot_001\",\n  \"workflow_id\": \"wf_001\",\n  \"timestamp\": 1700000000,\n  \"state\": {\n    \"phase\": \"drafting\",\n    \"completed_steps\": [\"analyze\", \"plan\"],\n    \"pending_steps\": [\"draft\", \"review\"],\n    \"context\": {\n      \"job_id\": \"job_001\",\n      \"resume_id\": \"resume_001\"\n    }\n  }\n}\n",
+  "full_hash": "17653a4882defe81ab11239c20ff2b7a1e26c851b71915ca0df97a088028fcbd",
+  "generated_at": 1764728226.694334,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\state_snapshots\\workflow_state_snapshot_001.json"
+}

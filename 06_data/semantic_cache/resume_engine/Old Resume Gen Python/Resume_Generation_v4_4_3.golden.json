@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v4.4.3 - RCA PATCHED VERSION\n======================================================\n\nCHANGES FROM v4.3:\n- Removed opening banner and optimization list\n- Removed \"Executing pipeline\" message\n- Removed OUTPUT 5 (Optimization Report)\n- Removed all trailing summaries and metadata displays\n- Outputs only 4 items: Resume, Word Table, Signal Calibration, QA Gates\n\nRCA PATCHES APPLIED (v4.4.3):\n\u2713 Executive Summary added to Output 1\n\u2713 All section intros included (Unify, IBM, TraderSense, EY, Early Career)\n\u2713 Unify/IBM ratio enforced at 1.1-1.3 range\n\u2713 Added % caps on Unify (35%) and IBM (30%) to prevent bloat\n\u2713 Output 2 table completely reformatted with baseline vs customized columns\n\u2713 All required rows in word count table with proper formatting\n\nVersion: 4.4.3-RCA-PATCHED\nDate: October 18, 2025\n\"\"\"\n\nimport re\nfrom typing import Dict, List, Tuple, Optional, Callable\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum\nimport ma",
+  "full_hash": "a6d2ba952ae0dba631665710ec9a463fd49ddf0bb0496968fb76cf41132e85b8",
+  "generated_at": 1764728296.953254,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_4_3.py"
+}

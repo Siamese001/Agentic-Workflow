@@ -1,0 +1,76 @@
+Module(
+  body=[
+    ImportFrom(
+      module='infra.sandbox.networking',
+      names=[
+        alias(name='default_network_policy'),
+        alias(name='is_destination_allowed')],
+      level=0),
+    FunctionDef(
+      name='test_default_network_policy_denies_all',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='policy', ctx=Store())],
+          value=Call(
+            func=Name(id='default_network_policy', ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='is_destination_allowed', ctx=Load()),
+              args=[
+                Name(id='policy', ctx=Load()),
+                Constant(value='example.com')]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)]))]),
+    FunctionDef(
+      name='test_allowlist_allows_specific_host',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='policy', ctx=Store())],
+          value=Call(
+            func=Name(id='default_network_policy', ctx=Load()))),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='policy', ctx=Load()),
+              slice=Constant(value='allow_network'),
+              ctx=Store())],
+          value=Constant(value=True)),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='policy', ctx=Load()),
+              slice=Constant(value='allowlist'),
+              ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='example.com')],
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='is_destination_allowed', ctx=Load()),
+              args=[
+                Name(id='policy', ctx=Load()),
+                Constant(value='example.com')]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='is_destination_allowed', ctx=Load()),
+              args=[
+                Name(id='policy', ctx=Load()),
+                Constant(value='other.com')]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)]))])])

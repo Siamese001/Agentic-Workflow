@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Phase B: Atomic Cognitive Agents Refactoring\n\n**Date**: 2025-11-24\n\n## Overview\n\nPhase B refactors all cognitive agents to be pure L1\u2192L2 shims following OpenAI agentic layering principles.\n\n## Files Modified\n\n### Root Level\n- `cognitive_agents.py` - Refactored all agents to delegate to L1/L2\n- `l2.py` - Updated imports from `l1` to `l1_planning`\n- `core/__init__.py` - Updated documentation\n- `core/cognitive_agents.py` - Created re-export wrapper\n\n### New Module\n- `l1_planning/` - Created as renamed/re-export of `l1/` module\n  - `__init__.py`\n  - `strategy_planning.py`\n  - `rag_planning.py`\n  - `qa_planning.py`\n  - `safety_planning.py`\n\n## Key Changes\n\n### Agent Atomicity\nAll agents now follow strict L1\u2192L2 delegation:\n\n1. **StrategyLLMAgent** \u2192 `l2._execute_strategy()`\n2. **DraftingGuild** \u2192 `l2._execute_drafting()`\n3. **SemanticQAAgent** \u2192 `l2._execute_qa()` + `l1_planning.plan_rag_reasoning()`\n4. **ConstitutionalSafetyAgent** \u2192 `l2._execute_safety()`\n5. **HYDEQueryAgent** \u2192 `l1_plan",
+  "full_hash": "09e7fb704d059b9ee801097ca8bbedfdd7450178c480ac9d2fbc6b0117a13129",
+  "generated_at": 1764728226.2486186,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\11-24-2025\\phase_b_atomic_agents\\README_PHASE_B.md"
+}

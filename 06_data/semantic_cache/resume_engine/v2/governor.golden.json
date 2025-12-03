@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: governor.py\n# Version: 17.01 (Patched) - V2 Agentic Architecture (Production Implementation)\n# Complete implementations of all v2 agents with zero placeholders\n\nimport logging\nimport json\nfrom typing import Dict, Any, Optional, List, Tuple\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom enum import Enum\n\n# Import models for type hints\ntry:\n    from models_RES import ResumeSection, ValidationResult, ThematicAnalysis\nexcept ImportError:\n    # Fallback for standalone testing\n    ResumeSection = Any\n    ValidationResult = Any\n    ThematicAnalysis = Any\n\n# Import temperature default from config (single source of truth)\ntry:\n    # --- REFACTOR: Standardized global config import ---\n    from config_RES_v2 import (\n        CONFIG, DATA_DIR, OUTPUT_DIR, \n        DEFAULT_GENERATION_TEMPERATURE,\n        DEFAULT_MAX_RETRIES # <-- IMPORTED\n    )\nexcept ImportError:\n    # Fallback if run standalone\n    DEFAULT_GENERATION_TEMPERATURE = 1.0\n    DEFAULT_MAX_RETRIES = 3 # ",
+  "full_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+  "generated_at": 1764728327.0769162,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\governor.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nMulti-agent coordination for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides coordination primitives for comprehensive r\u00e9sum\u00e9 enhancement agent interactions.\n\nLayer: Meta\nResponsibilities:\n- Graph patterns (pipeline, star-hub, council, committee) for r\u00e9sum\u00e9 processing\n- Deterministic delegation rules for r\u00e9sum\u00e9 enhancement workflows\n- Council voting for r\u00e9sum\u00e9 quality assessment\n- Agent message routing for r\u00e9sum\u00e9 improvement coordination\n- Pure advisory logic for r\u00e9sum\u00e9 processing optimization\n\nNon-responsibilities:\n- L1 planning\n- L2 execution\n- L3 orchestration\n- L4 state mutation\n- L5 safety/policy\n\"\"\"\n\n# FILE: multi_agent.py\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nfrom typing import Any, Dict, List\n\nfrom core.models.models import (  # type: ignore[attr-defined]\n    AgentMessage,\n    MultiAgentVote,\n    MultiAgentCouncilResult,\n)\n\n\n# NOTE: v10_10 does not carry the full AgentGraph/AgentNode definitions\n# from v10_9'",
+  "full_hash": "678711ee128a093c38bf9c2da423fec7f3bb4983213f70afb8fd82c7ce31d0da",
+  "generated_at": 1764728225.6173246,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\multi_agent.py"
+}

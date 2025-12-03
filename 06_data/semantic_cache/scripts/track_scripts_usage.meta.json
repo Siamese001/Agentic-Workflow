@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\track_scripts_usage.py",
+    "rel_path": "track_scripts_usage.py",
+    "root_name": "scripts",
+    "file_hash": "4cc3924abb68bc4bb03195bf1e498f87cc015b5417b44632edbee448c5dd350d",
+    "file_size": 11284,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.032884
+}

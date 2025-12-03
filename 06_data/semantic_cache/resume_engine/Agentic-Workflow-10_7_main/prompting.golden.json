@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Prompt engineering stack.\"\"\"\n\nimport json\nfrom typing import Any, Dict, Optional, Tuple\n\nfrom core_v10_7 import (\n    BaseAgent,\n    GeneratedPrompts,\n    StrategyPlan,\n    ValidationError,\n    track_metrics,\n    _format_prompt_with_defaults,\n)\n\n\nclass PromptEngineerAgent(BaseAgent):\n    \"\"\"LLM-driven prompt engineering that adapts to task complexity.\"\"\"\n\n    @track_metrics(\"run_prompt_engineer\")\n    async def run_async(\n        self,\n        strategy: StrategyPlan,\n        complexity: str,\n        workflow_id: str,\n        state: Optional[Dict[str, Any]] = None,\n    ) -> Dict[str, Any]:\n        state_ref = state if isinstance(state, dict) else None\n        autonomy = getattr(self.context, \"autonomy_engine\", None)\n        if autonomy and autonomy.enabled():\n            hints = autonomy.decide(workflow_id)\n            self.log_debug(f\"Autonomy hints: {hints}\")\n            if state_ref is not None:\n                state_ref.setdefault(\"autonomy_hints\", {}).update(hints)\n        adv = ",
+  "full_hash": "d5630a178eab54fa8ed9b8bc08721eb06b7d426fa56ee4fa8f6c65bcb652216a",
+  "generated_at": 1764728229.855456,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\prompting.py"
+}

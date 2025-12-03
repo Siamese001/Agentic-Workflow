@@ -1,0 +1,2073 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nPrompt Builder Layer (v10_10 · Phase 3)\n=======================================\n\nThis module builds PromptInstance objects for all major agents:\n\n    • Strategy reasoning\n    • Retrieval evidence / RAG reasoning\n    • HYDE query expansion\n    • Drafting\n    • QA\n    • Safety\n\nIt:\n\n    • Enforces prompt ACL metadata (layer / agent / model tier).\n    • Routes all prompt construction through the central prompt registry\n      defined in ``prompt_system_v10_10.py`` – no inline templates.\n    • Emits ``PromptInstance`` objects that L2 can hand off to\n      cognitive agents / LLM clients.\n\nDesign constraints:\n\n    • Pure L2: no LLM calls.\n    • Depends only on models + prompt_system for registry/ACL.\n    • No direct provider SDK or routing logic.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Sequence'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='ContextBudget'),
+        alias(name='DraftingPlan'),
+        alias(name='DraftingResult'),
+        alias(name='Evidence'),
+        alias(name='ExecutionContext'),
+        alias(name='QAPlan'),
+        alias(name='QAResult'),
+        alias(name='RAGPlan'),
+        alias(name='RAGResult'),
+        alias(name='SafetyPlan'),
+        alias(name='SafetyResult'),
+        alias(name='StrategyPlan'),
+        alias(name='StrategyResult'),
+        alias(name='WorkflowPlanBundle'),
+        alias(name='PromptDefinition'),
+        alias(name='PromptVersion')],
+      level=0),
+    ImportFrom(
+      module='prompt_system_v10_10',
+      names=[
+        alias(name='PROMPT_ACLS'),
+        alias(name='PROMPT_REGISTRY'),
+        alias(name='PromptACL'),
+        alias(name='get_prompt')],
+      level=0),
+    ClassDef(
+      name='PromptEnvelope',
+      body=[
+        Expr(
+          value=Constant(value='\n    Structured container for deterministic prompt assembly.\n\n    Sections map directly to the v10_8 envelope design, with explicit\n    naming so that downstream rendering and logging can reason about\n    each component separately.\n    ')),
+        AnnAssign(
+          target=Name(id='framing', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reasoning', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='instructions', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_signals', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='output_schema', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        FunctionDef(
+          name='to_sections',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Return an ordered mapping of envelope sections.\n\n        The order is semantic; callers that render a textual prompt\n        should iterate using SECTION_ORDER.\n        ')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='Framing'),
+                  Constant(value='Context'),
+                  Constant(value='Reasoning'),
+                  Constant(value='Instructions'),
+                  Constant(value='Safety Signals'),
+                  Constant(value='Output Schema')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='framing',
+                        ctx=Load()),
+                      attr='strip',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='context',
+                        ctx=Load()),
+                      attr='strip',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='reasoning',
+                        ctx=Load()),
+                      attr='strip',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='instructions',
+                        ctx=Load()),
+                      attr='strip',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='safety_signals',
+                        ctx=Load()),
+                      attr='strip',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='output_schema',
+                        ctx=Load()),
+                      attr='strip',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    AnnAssign(
+      target=Name(id='SECTION_ORDER', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Constant(value=Ellipsis)],
+          ctx=Load()),
+        ctx=Load()),
+      value=Tuple(
+        elts=[
+          Constant(value='Framing'),
+          Constant(value='Context'),
+          Constant(value='Reasoning'),
+          Constant(value='Instructions'),
+          Constant(value='Safety Signals'),
+          Constant(value='Output Schema')],
+        ctx=Load()),
+      simple=1),
+    ClassDef(
+      name='PromptInstance',
+      body=[
+        Expr(
+          value=Constant(value='\n    Concrete prompt ready for LLM invocation.\n    ')),
+        AnnAssign(
+          target=Name(id='prompt_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='definition', ctx=Store()),
+          annotation=Name(id='PromptDefinition', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='version', ctx=Store()),
+          annotation=Name(id='PromptVersion', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='role', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rendered', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='envelope', ctx=Store()),
+          annotation=Name(id='PromptEnvelope', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='variables', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='layer', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='agent', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_tier', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_budget_hints', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='_extract_acl_metadata',
+      args=arguments(
+        args=[
+          arg(
+            arg='defn',
+            annotation=Name(id='PromptDefinition', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Extract ACL metadata from a PromptDefinition.\n\n    Expected shape (stored in defn.metadata["acl"]):\n\n        {\n            "layers": ["L1", "L2", ...],\n            "agents": ["strategy", "rag", "drafting", "qa", "safety"],\n            "model_tiers": ["cheap", "balanced", "premium"],\n        }\n\n    All fields are optional; missing fields are treated as "no restriction".\n    ')),
+        Assign(
+          targets=[
+            Name(id='raw_acl', ctx=Store())],
+          value=Dict()),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='raw_acl', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='defn', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='acl'),
+                      Dict()]),
+                  Dict()]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='raw_acl', ctx=Store())],
+                  value=Dict())])]),
+        Assign(
+          targets=[
+            Name(id='layers', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='raw_acl', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='layers'),
+                  List(ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='agents', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='raw_acl', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='agents'),
+                  List(ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='tiers', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='raw_acl', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='model_tiers'),
+                  List(ctx=Load())])])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='layers'),
+              Constant(value='agents'),
+              Constant(value='model_tiers')],
+            values=[
+              Name(id='layers', ctx=Load()),
+              Name(id='agents', ctx=Load()),
+              Name(id='tiers', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_get_prompt_definition',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Retrieve a PromptDefinition from the central registry.\n\n    This is a thin wrapper around ``PROMPT_REGISTRY`` / ``get_prompt``\n    so that all lookups live in one place.\n    ')),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='get_prompt', ctx=Load()),
+                args=[
+                  Name(id='prompt_id', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='prompt_id', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='PROMPT_REGISTRY', ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='KeyError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Unknown prompt id: '),
+                              FormattedValue(
+                                value=Name(id='prompt_id', ctx=Load()),
+                                conversion=-1)])]))]),
+                Return(
+                  value=Subscript(
+                    value=Name(id='PROMPT_REGISTRY', ctx=Load()),
+                    slice=Name(id='prompt_id', ctx=Load()),
+                    ctx=Load()))])])],
+      returns=Name(id='PromptDefinition', ctx=Load())),
+    FunctionDef(
+      name='_check_prompt_acl',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Enforce both registry-level ACLs and per-prompt ACL metadata.\n\n    This function is intentionally side-effect free; it either returns\n    or raises PermissionError.\n    ')),
+        Assign(
+          targets=[
+            Name(id='acl_obj', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='PROMPT_ACLS', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load())])),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='acl_obj', ctx=Load()),
+              Name(id='PromptACL', ctx=Load())]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='acl_obj', ctx=Load()),
+                  attr='engine_can_use',
+                  ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='PermissionError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value="Engine is not allowed to use prompt '"),
+                          FormattedValue(
+                            value=Name(id='prompt_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="'")])]))])]),
+        Assign(
+          targets=[
+            Name(id='defn', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_definition', ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='acl_meta', ctx=Store())],
+          value=Call(
+            func=Name(id='_extract_acl_metadata', ctx=Load()),
+            args=[
+              Name(id='defn', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='allowed_layers', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='acl_meta', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='layers')]),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='allowed_agents', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='acl_meta', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='agents')]),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='allowed_tiers', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='acl_meta', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='model_tiers')]),
+              List(ctx=Load())])),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='allowed_layers', ctx=Load()),
+              Compare(
+                left=Name(id='layer', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='allowed_layers', ctx=Load())])]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='PermissionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Prompt '"),
+                      FormattedValue(
+                        value=Name(id='prompt_id', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' not allowed for layer '"),
+                      FormattedValue(
+                        value=Name(id='layer', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' (allowed: "),
+                      FormattedValue(
+                        value=Name(id='allowed_layers', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=')')])]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='allowed_agents', ctx=Load()),
+              Compare(
+                left=Name(id='agent', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='allowed_agents', ctx=Load())])]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='PermissionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Prompt '"),
+                      FormattedValue(
+                        value=Name(id='prompt_id', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' not allowed for agent '"),
+                      FormattedValue(
+                        value=Name(id='agent', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' (allowed: "),
+                      FormattedValue(
+                        value=Name(id='allowed_agents', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=')')])]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='allowed_tiers', ctx=Load()),
+              Compare(
+                left=Name(id='model_tier', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='allowed_tiers', ctx=Load())])]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='PermissionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Prompt '"),
+                      FormattedValue(
+                        value=Name(id='prompt_id', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' not allowed for model tier '"),
+                      FormattedValue(
+                        value=Name(id='model_tier', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' (allowed: "),
+                      FormattedValue(
+                        value=Name(id='allowed_tiers', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=')')])]))])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='_render_envelope_with_template',
+      args=arguments(
+        args=[
+          arg(
+            arg='defn',
+            annotation=Name(id='PromptDefinition', ctx=Load())),
+          arg(
+            arg='envelope',
+            annotation=Name(id='PromptEnvelope', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Merge a PromptEnvelope with the registry template into a final string.\n\n    Default templates follow the pattern:\n\n        "## CONTEXT\\n\\n## INSTRUCTIONS\\n\\n## OUTPUT_FORMAT\\n"\n\n    This helper injects the envelope contents into those anchors while\n    also adding the richer sections (Framing, Reasoning, Safety).\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Name(id='defn', ctx=Load()),
+                    attr='text',
+                    ctx=Load()),
+                  Constant(value='')]),
+              attr='strip',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='sections', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='envelope', ctx=Load()),
+              attr='to_sections',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='body', ctx=Store())],
+          value=Name(id='template', ctx=Load())),
+        If(
+          test=Compare(
+            left=Constant(value='## CONTEXT'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='body', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='body', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='body', ctx=Load()),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value='## CONTEXT'),
+                  IfExp(
+                    test=Subscript(
+                      value=Name(id='sections', ctx=Load()),
+                      slice=Constant(value='Context'),
+                      ctx=Load()),
+                    body=BinOp(
+                      left=Constant(value='## CONTEXT\n'),
+                      op=Add(),
+                      right=Subscript(
+                        value=Name(id='sections', ctx=Load()),
+                        slice=Constant(value='Context'),
+                        ctx=Load())),
+                    orelse=Constant(value='## CONTEXT'))]))]),
+        If(
+          test=Compare(
+            left=Constant(value='## INSTRUCTIONS'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='body', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='body', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='body', ctx=Load()),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value='## INSTRUCTIONS'),
+                  IfExp(
+                    test=Subscript(
+                      value=Name(id='sections', ctx=Load()),
+                      slice=Constant(value='Instructions'),
+                      ctx=Load()),
+                    body=BinOp(
+                      left=Constant(value='## INSTRUCTIONS\n'),
+                      op=Add(),
+                      right=Subscript(
+                        value=Name(id='sections', ctx=Load()),
+                        slice=Constant(value='Instructions'),
+                        ctx=Load())),
+                    orelse=Constant(value='## INSTRUCTIONS'))]))]),
+        If(
+          test=Compare(
+            left=Constant(value='## OUTPUT_FORMAT'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='body', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='body', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='body', ctx=Load()),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value='## OUTPUT_FORMAT'),
+                  IfExp(
+                    test=Subscript(
+                      value=Name(id='sections', ctx=Load()),
+                      slice=Constant(value='Output Schema'),
+                      ctx=Load()),
+                    body=BinOp(
+                      left=Constant(value='## OUTPUT_FORMAT\n'),
+                      op=Add(),
+                      right=Subscript(
+                        value=Name(id='sections', ctx=Load()),
+                        slice=Constant(value='Output Schema'),
+                        ctx=Load())),
+                    orelse=Constant(value='## OUTPUT_FORMAT'))]))]),
+        AnnAssign(
+          target=Name(id='prefix_parts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        If(
+          test=Subscript(
+            value=Name(id='sections', ctx=Load()),
+            slice=Constant(value='Framing'),
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prefix_parts', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='### FRAMING\n'),
+                    op=Add(),
+                    right=Subscript(
+                      value=Name(id='sections', ctx=Load()),
+                      slice=Constant(value='Framing'),
+                      ctx=Load()))]))]),
+        If(
+          test=Subscript(
+            value=Name(id='sections', ctx=Load()),
+            slice=Constant(value='Reasoning'),
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prefix_parts', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='### REASONING\n'),
+                    op=Add(),
+                    right=Subscript(
+                      value=Name(id='sections', ctx=Load()),
+                      slice=Constant(value='Reasoning'),
+                      ctx=Load()))]))]),
+        If(
+          test=Subscript(
+            value=Name(id='sections', ctx=Load()),
+            slice=Constant(value='Safety Signals'),
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prefix_parts', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='### SAFETY\n'),
+                    op=Add(),
+                    right=Subscript(
+                      value=Name(id='sections', ctx=Load()),
+                      slice=Constant(value='Safety Signals'),
+                      ctx=Load()))]))]),
+        If(
+          test=Name(id='prefix_parts', ctx=Load()),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='prefix_parts', ctx=Load()),
+                    op=Add(),
+                    right=List(
+                      elts=[
+                        Name(id='body', ctx=Load())],
+                      ctx=Load()))]))]),
+        Return(
+          value=Name(id='body', ctx=Load()))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_build_context_budget_hints_from_plan',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Extract context-budget hints from a plan object if it carries them.\n\n    This is intentionally shallow and structure-agnostic.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='plan', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(value=Dict())]),
+        Assign(
+          targets=[
+            Name(id='hints', ctx=Store())],
+          value=Dict()),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Constant(value='context_budget')]),
+              Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='context_budget',
+                    ctx=Load()),
+                  Name(id='ContextBudget', ctx=Load())])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cb', ctx=Store())],
+              value=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='context_budget',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='hints', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='total_tokens'),
+                  Constant(value='planning_tokens'),
+                  Constant(value='rag_tokens'),
+                  Constant(value='drafting_tokens'),
+                  Constant(value='qa_tokens'),
+                  Constant(value='safety_tokens')],
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cb', ctx=Load()),
+                      Constant(value='total_tokens'),
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cb', ctx=Load()),
+                      Constant(value='planning_tokens'),
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cb', ctx=Load()),
+                      Constant(value='rag_tokens'),
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cb', ctx=Load()),
+                      Constant(value='drafting_tokens'),
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cb', ctx=Load()),
+                      Constant(value='qa_tokens'),
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cb', ctx=Load()),
+                      Constant(value='safety_tokens'),
+                      Constant(value=None)])]))]),
+        Return(
+          value=DictComp(
+            key=Name(id='k', ctx=Load()),
+            value=Name(id='v', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Tuple(
+                  elts=[
+                    Name(id='k', ctx=Store()),
+                    Name(id='v', ctx=Store())],
+                  ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='hints', ctx=Load()),
+                    attr='items',
+                    ctx=Load())),
+                ifs=[
+                  Compare(
+                    left=Name(id='v', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])],
+                is_async=0)]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_make_prompt_instance',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='envelope',
+            annotation=Name(id='PromptEnvelope', ctx=Load())),
+          arg(
+            arg='variables',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          None,
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Core helper to build a PromptInstance with ACL enforcement.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_check_prompt_acl', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='defn', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_definition', ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='rendered', ctx=Store())],
+          value=Call(
+            func=Name(id='_render_envelope_with_template', ctx=Load()),
+            args=[
+              Name(id='defn', ctx=Load()),
+              Name(id='envelope', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='context_budget_hints', ctx=Store())],
+          value=Call(
+            func=Name(id='_build_context_budget_hints_from_plan', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='variables', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='plan')])])),
+        Assign(
+          targets=[
+            Name(id='role', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='defn', ctx=Load()),
+                  attr='metadata',
+                  ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='defn', ctx=Load()),
+                  attr='metadata',
+                  ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='role'),
+                Constant(value='system')]),
+            orelse=Constant(value='system'))),
+        Return(
+          value=Call(
+            func=Name(id='PromptInstance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='definition',
+                value=Name(id='defn', ctx=Load())),
+              keyword(
+                arg='version',
+                value=Attribute(
+                  value=Name(id='defn', ctx=Load()),
+                  attr='version',
+                  ctx=Load())),
+              keyword(
+                arg='role',
+                value=Name(id='role', ctx=Load())),
+              keyword(
+                arg='rendered',
+                value=Name(id='rendered', ctx=Load())),
+              keyword(
+                arg='envelope',
+                value=Name(id='envelope', ctx=Load())),
+              keyword(
+                arg='variables',
+                value=Name(id='variables', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load())),
+              keyword(
+                arg='context_budget_hints',
+                value=Name(id='context_budget_hints', ctx=Load()))]))],
+      returns=Name(id='PromptInstance', ctx=Load())),
+    FunctionDef(
+      name='_format_evidence',
+      args=arguments(
+        args=[
+          arg(
+            arg='evidence',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='Evidence', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        AnnAssign(
+          target=Name(id='parts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='idx', ctx=Store()),
+              Name(id='ev', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='evidence', ctx=Load()),
+                  List(ctx=Load())])],
+            keywords=[
+              keyword(
+                arg='start',
+                value=Constant(value=1))]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='parts', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='['),
+                      FormattedValue(
+                        value=Name(id='idx', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='] ('),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='ev', ctx=Load()),
+                          attr='source',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=') score='),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='ev', ctx=Load()),
+                          attr='score',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')])),
+                      Constant(value='\n'),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='ev', ctx=Load()),
+                          attr='text',
+                          ctx=Load()),
+                        conversion=-1)])]))]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='parts', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_summarize_job_and_resume',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Compact textual summary of the job + resume inputs for use in prompts.\n    ')),
+        Assign(
+          targets=[
+            Name(id='job', ctx=Store())],
+          value=Attribute(
+            value=Name(id='ctx', ctx=Load()),
+            attr='job',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Attribute(
+            value=Name(id='ctx', ctx=Load()),
+            attr='resume',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='job_lines', ctx=Store())],
+          value=BinOp(
+            left=List(
+              elts=[
+                JoinedStr(
+                  values=[
+                    Constant(value='Job Title: '),
+                    FormattedValue(
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='job', ctx=Load()),
+                          Constant(value='title'),
+                          Constant(value='')]),
+                      conversion=-1)]),
+                JoinedStr(
+                  values=[
+                    Constant(value='Role Type: '),
+                    FormattedValue(
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='job', ctx=Load()),
+                          Constant(value='role_type'),
+                          Constant(value='')]),
+                      conversion=-1)]),
+                JoinedStr(
+                  values=[
+                    Constant(value='Seniority: '),
+                    FormattedValue(
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='job', ctx=Load()),
+                          Constant(value='seniority'),
+                          Constant(value='')]),
+                      conversion=-1)]),
+                Constant(value=''),
+                Constant(value='Key Requirements:')],
+              ctx=Load()),
+            op=Add(),
+            right=ListComp(
+              elt=JoinedStr(
+                values=[
+                  Constant(value='- '),
+                  FormattedValue(
+                    value=Name(id='req', ctx=Load()),
+                    conversion=-1)]),
+              generators=[
+                comprehension(
+                  target=Name(id='req', ctx=Store()),
+                  iter=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='job', ctx=Load()),
+                          Constant(value='requirements'),
+                          List(ctx=Load())]),
+                      List(ctx=Load())]),
+                  is_async=0)]))),
+        Assign(
+          targets=[
+            Name(id='resume_lines', ctx=Store())],
+          value=BinOp(
+            left=List(
+              elts=[
+                JoinedStr(
+                  values=[
+                    Constant(value='Candidate: '),
+                    FormattedValue(
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='resume', ctx=Load()),
+                          Constant(value='name'),
+                          Constant(value='')]),
+                      conversion=-1)]),
+                JoinedStr(
+                  values=[
+                    Constant(value='Summary: '),
+                    FormattedValue(
+                      value=BoolOp(
+                        op=Or(),
+                        values=[
+                          Call(
+                            func=Name(id='getattr', ctx=Load()),
+                            args=[
+                              Name(id='resume', ctx=Load()),
+                              Constant(value='summary'),
+                              Constant(value='')]),
+                          Constant(value='N/A')]),
+                      conversion=-1)]),
+                Constant(value=''),
+                Constant(value='Skills:')],
+              ctx=Load()),
+            op=Add(),
+            right=ListComp(
+              elt=JoinedStr(
+                values=[
+                  Constant(value='- '),
+                  FormattedValue(
+                    value=Name(id='s', ctx=Load()),
+                    conversion=-1)]),
+              generators=[
+                comprehension(
+                  target=Name(id='s', ctx=Store()),
+                  iter=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='resume', ctx=Load()),
+                          Constant(value='skills'),
+                          List(ctx=Load())]),
+                      List(ctx=Load())]),
+                  is_async=0)]))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              BinOp(
+                left=BinOp(
+                  left=Name(id='job_lines', ctx=Load()),
+                  op=Add(),
+                  right=List(
+                    elts=[
+                      Constant(value=''),
+                      Constant(value='----'),
+                      Constant(value='')],
+                    ctx=Load())),
+                op=Add(),
+                right=Name(id='resume_lines', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_strategy_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Name(id='StrategyPlan', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='system.resume.planner'),
+          Constant(value='L2'),
+          Constant(value='strategy'),
+          Constant(value='balanced')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build a strategy planning prompt.\n    ')),
+        Assign(
+          targets=[
+            Name(id='envelope', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptEnvelope', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='framing',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value='You are the Strategy Planning agent (Layer {layer}). You design a plan to tailor the resume to the job.'),
+                    attr='format',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='layer',
+                      value=Name(id='layer', ctx=Load()))])),
+              keyword(
+                arg='context',
+                value=Call(
+                  func=Name(id='_summarize_job_and_resume', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load())])),
+              keyword(
+                arg='reasoning',
+                value=Constant(value='Propose several strategy branches and select the best one.')),
+              keyword(
+                arg='instructions',
+                value=Constant(value='Produce a small set of strategy branches and then select a single branch id as the chosen strategy.')),
+              keyword(
+                arg='safety_signals',
+                value=Constant(value='Avoid fabricating experience or skills.')),
+              keyword(
+                arg='output_schema',
+                value=Constant(value='Return structured branches with ids and rationales.'))])),
+        Assign(
+          targets=[
+            Name(id='variables', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='plan'),
+              Constant(value='job'),
+              Constant(value='resume'),
+              Constant(value='config')],
+            values=[
+              Name(id='plan', ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='config',
+                ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='_make_prompt_instance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load())),
+              keyword(
+                arg='envelope',
+                value=Name(id='envelope', ctx=Load())),
+              keyword(
+                arg='variables',
+                value=Name(id='variables', ctx=Load()))]))],
+      returns=Name(id='PromptInstance', ctx=Load())),
+    FunctionDef(
+      name='build_rag_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Name(id='RAGPlan', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='evidence',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='Evidence', ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='system.resume.drafter'),
+          Constant(value='L2'),
+          Constant(value='rag'),
+          Constant(value='balanced')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build a retrieval / evidence fusion prompt.\n\n    Used by the Phase-3 RAG reasoning stage between retrieval and drafting.\n    ')),
+        Assign(
+          targets=[
+            Name(id='envelope', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptEnvelope', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='framing',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value='You are the Retrieval & Evidence Fusion agent (Layer {layer}). You summarize and interpret retrieval results to support downstream drafting and QA.'),
+                    attr='format',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='layer',
+                      value=Name(id='layer', ctx=Load()))])),
+              keyword(
+                arg='context',
+                value=BinOp(
+                  left=BinOp(
+                    left=Call(
+                      func=Name(id='_summarize_job_and_resume', ctx=Load()),
+                      args=[
+                        Name(id='ctx', ctx=Load())]),
+                    op=Add(),
+                    right=Constant(value='\n\nRetrieved Evidence:\n')),
+                  op=Add(),
+                  right=Call(
+                    func=Name(id='_format_evidence', ctx=Load()),
+                    args=[
+                      Name(id='evidence', ctx=Load())]))),
+              keyword(
+                arg='reasoning',
+                value=Constant(value='Identify which evidence items are most relevant for tailoring the resume to this job. Highlight overlaps between job requirements and candidate experience.')),
+              keyword(
+                arg='instructions',
+                value=Constant(value='Analyze the evidence and produce a concise reasoning summary that captures the most important overlaps and gaps. Do not rewrite the resume; instead, describe what the drafting agent should focus on.')),
+              keyword(
+                arg='safety_signals',
+                value=Constant(value='Do not infer skills or experience not supported by evidence.')),
+              keyword(
+                arg='output_schema',
+                value=Constant(value='Return a short reasoning summary plus a bullet list of key evidence references (by index) the drafting agent should respect.'))])),
+        Assign(
+          targets=[
+            Name(id='variables', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='plan'),
+              Constant(value='job'),
+              Constant(value='resume'),
+              Constant(value='config'),
+              Constant(value='evidence')],
+            values=[
+              Name(id='plan', ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='config',
+                ctx=Load()),
+              Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='evidence', ctx=Load()),
+                      List(ctx=Load())])])])),
+        Return(
+          value=Call(
+            func=Name(id='_make_prompt_instance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load())),
+              keyword(
+                arg='envelope',
+                value=Name(id='envelope', ctx=Load())),
+              keyword(
+                arg='variables',
+                value=Name(id='variables', ctx=Load()))]))],
+      returns=Name(id='PromptInstance', ctx=Load())),
+    FunctionDef(
+      name='build_hyde_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Name(id='RAGPlan', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='system.rag.hyde_query'),
+          Constant(value='L2'),
+          Constant(value='rag'),
+          Constant(value='balanced')]),
+      body=[
+        Expr(
+          value=Constant(value="\n    Build a HYDE prompt: generate an ideal answer for use as a retrieval proxy.\n\n    The output is a synthetic, idealized answer to the user's (implicit) query\n    for the job/resume pair, which retrieval.py will treat as a dense query.\n    ")),
+        Assign(
+          targets=[
+            Name(id='envelope', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptEnvelope', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='framing',
+                value=Constant(value='You are the HYDE (Hypothetical Document) generator for retrieval.')),
+              keyword(
+                arg='context',
+                value=Call(
+                  func=Name(id='_summarize_job_and_resume', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load())])),
+              keyword(
+                arg='reasoning',
+                value=Constant(value='Imagine the ideal, well-written answer that would perfectly match this job and candidate. This answer will be used as a semantic query to retrieve similar documents.')),
+              keyword(
+                arg='instructions',
+                value=Constant(value="Write a single, coherent paragraph that describes the ideal candidate's experience and impact for this role, grounded in the provided job and resume information.")),
+              keyword(
+                arg='safety_signals',
+                value=Constant(value='Do not fabricate credentials or experience not hinted in the resume.')),
+              keyword(
+                arg='output_schema',
+                value=Constant(value='Return only the hypothetical answer paragraph.'))])),
+        Assign(
+          targets=[
+            Name(id='variables', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='plan'),
+              Constant(value='job'),
+              Constant(value='resume'),
+              Constant(value='config')],
+            values=[
+              Name(id='plan', ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='config',
+                ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='_make_prompt_instance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load())),
+              keyword(
+                arg='envelope',
+                value=Name(id='envelope', ctx=Load())),
+              keyword(
+                arg='variables',
+                value=Name(id='variables', ctx=Load()))]))],
+      returns=Name(id='PromptInstance', ctx=Load())),
+    FunctionDef(
+      name='build_drafting_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Name(id='DraftingPlan', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='strategy',
+            annotation=Name(id='StrategyResult', ctx=Load())),
+          arg(
+            arg='rag',
+            annotation=Name(id='RAGResult', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='system.resume.drafter'),
+          Constant(value='L2'),
+          Constant(value='drafting'),
+          Constant(value='balanced')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build a drafting prompt for resume sections.\n    ')),
+        Assign(
+          targets=[
+            Name(id='envelope', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptEnvelope', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='framing',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value='You are the Drafting agent (Layer {layer}). You generate resume sections tailored to the job.'),
+                    attr='format',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='layer',
+                      value=Name(id='layer', ctx=Load()))])),
+              keyword(
+                arg='context',
+                value=Call(
+                  func=Name(id='_summarize_job_and_resume', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load())])),
+              keyword(
+                arg='reasoning',
+                value=Constant(value='Use the chosen strategy and the RAG reasoning summary to decide what to emphasize and how to structure the resume.')),
+              keyword(
+                arg='instructions',
+                value=Constant(value='Produce well-structured resume sections with bullet points that highlight impact and alignment with job requirements.')),
+              keyword(
+                arg='safety_signals',
+                value=Constant(value="Do not claim experiences not grounded in the candidate's history.")),
+              keyword(
+                arg='output_schema',
+                value=Constant(value='Return a set of sections with titles and bullet points.'))])),
+        Assign(
+          targets=[
+            Name(id='variables', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='plan'),
+              Constant(value='job'),
+              Constant(value='resume'),
+              Constant(value='config'),
+              Constant(value='strategy'),
+              Constant(value='rag')],
+            values=[
+              Name(id='plan', ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='config',
+                ctx=Load()),
+              Name(id='strategy', ctx=Load()),
+              Name(id='rag', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='_make_prompt_instance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load())),
+              keyword(
+                arg='envelope',
+                value=Name(id='envelope', ctx=Load())),
+              keyword(
+                arg='variables',
+                value=Name(id='variables', ctx=Load()))]))],
+      returns=Name(id='PromptInstance', ctx=Load())),
+    FunctionDef(
+      name='build_qa_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Name(id='QAPlan', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='drafting',
+            annotation=Name(id='DraftingResult', ctx=Load())),
+          arg(
+            arg='rag',
+            annotation=Name(id='RAGResult', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='system.qa.agent'),
+          Constant(value='L3'),
+          Constant(value='qa'),
+          Constant(value='balanced')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build a QA prompt for validating drafted content.\n    ')),
+        Assign(
+          targets=[
+            Name(id='envelope', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptEnvelope', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='framing',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value='You are the QA agent (Layer {layer}). You check the drafted resume for correctness, coherence, and alignment with the job.'),
+                    attr='format',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='layer',
+                      value=Name(id='layer', ctx=Load()))])),
+              keyword(
+                arg='context',
+                value=Call(
+                  func=Name(id='_summarize_job_and_resume', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load())])),
+              keyword(
+                arg='reasoning',
+                value=Constant(value='Cross-check the drafted content with the job description and retrieved evidence to detect hallucinations or misalignment.')),
+              keyword(
+                arg='instructions',
+                value=Constant(value='Identify issues such as unsupported claims, missing key requirements, or unclear phrasing. Suggest concrete fixes.')),
+              keyword(
+                arg='safety_signals',
+                value=Constant(value='Flag any content that could be misleading or unethical.')),
+              keyword(
+                arg='output_schema',
+                value=Constant(value='Return a list of QA findings with severity and recommendations.'))])),
+        Assign(
+          targets=[
+            Name(id='variables', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='plan'),
+              Constant(value='job'),
+              Constant(value='resume'),
+              Constant(value='config'),
+              Constant(value='draft'),
+              Constant(value='rag')],
+            values=[
+              Name(id='plan', ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='config',
+                ctx=Load()),
+              Name(id='drafting', ctx=Load()),
+              Name(id='rag', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='_make_prompt_instance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load())),
+              keyword(
+                arg='envelope',
+                value=Name(id='envelope', ctx=Load())),
+              keyword(
+                arg='variables',
+                value=Name(id='variables', ctx=Load()))]))],
+      returns=Name(id='PromptInstance', ctx=Load())),
+    FunctionDef(
+      name='build_safety_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Name(id='SafetyPlan', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='drafting',
+            annotation=Name(id='DraftingResult', ctx=Load())),
+          arg(
+            arg='qa',
+            annotation=Name(id='QAResult', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='layer',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='agent',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='system.safety.agent'),
+          Constant(value='L5'),
+          Constant(value='safety'),
+          Constant(value='balanced')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build a safety prompt for final policy / safety review.\n    ')),
+        Assign(
+          targets=[
+            Name(id='envelope', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptEnvelope', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='framing',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value='You are the Safety agent (Layer {layer}). You ensure the final resume output complies with policies.'),
+                    attr='format',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='layer',
+                      value=Name(id='layer', ctx=Load()))])),
+              keyword(
+                arg='context',
+                value=Call(
+                  func=Name(id='_summarize_job_and_resume', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load())])),
+              keyword(
+                arg='reasoning',
+                value=Constant(value='Consider the drafted content and QA findings to assess risk and ensure compliance with internal and external policies.')),
+              keyword(
+                arg='instructions',
+                value=Constant(value='Identify any content that may violate safety policies, privacy, or fairness considerations. Suggest required edits or blocks.')),
+              keyword(
+                arg='safety_signals',
+                value=Constant(value='Err on the side of caution; escalate ambiguous cases.')),
+              keyword(
+                arg='output_schema',
+                value=Constant(value='Return a list of safety findings with severity and required actions.'))])),
+        Assign(
+          targets=[
+            Name(id='variables', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='plan'),
+              Constant(value='job'),
+              Constant(value='resume'),
+              Constant(value='config'),
+              Constant(value='draft'),
+              Constant(value='qa')],
+            values=[
+              Name(id='plan', ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='config',
+                ctx=Load()),
+              Name(id='drafting', ctx=Load()),
+              Name(id='qa', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='_make_prompt_instance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt_id',
+                value=Name(id='prompt_id', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Name(id='layer', ctx=Load())),
+              keyword(
+                arg='agent',
+                value=Name(id='agent', ctx=Load())),
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load())),
+              keyword(
+                arg='envelope',
+                value=Name(id='envelope', ctx=Load())),
+              keyword(
+                arg='variables',
+                value=Name(id='variables', ctx=Load()))]))],
+      returns=Name(id='PromptInstance', ctx=Load()))])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\update_scripts_budget.py",
+    "rel_path": "update_scripts_budget.py",
+    "root_name": "scripts",
+    "file_hash": "14b0237d6030e3d443a533a99fdfad0e1ac3a8c07d815177b9cace33d2073eb3",
+    "file_size": 11332,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.049355
+}

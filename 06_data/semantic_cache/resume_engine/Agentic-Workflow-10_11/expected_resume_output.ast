@@ -1,0 +1,46 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='version'),
+          Constant(value='description'),
+          Constant(value='outputs')],
+        values=[
+          Constant(value='1.0'),
+          Constant(value='Expected outputs for golden dataset samples'),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='sample_id'),
+                  Constant(value='expected_summary_keywords'),
+                  Constant(value='expected_skill_count'),
+                  Constant(value='expected_quality_score')],
+                values=[
+                  Constant(value='sample_001'),
+                  List(
+                    elts=[
+                      Constant(value='software'),
+                      Constant(value='engineer'),
+                      Constant(value='experience')],
+                    ctx=Load()),
+                  Constant(value=5),
+                  Constant(value=0.85)]),
+              Dict(
+                keys=[
+                  Constant(value='sample_id'),
+                  Constant(value='expected_summary_keywords'),
+                  Constant(value='expected_skill_count'),
+                  Constant(value='expected_quality_score')],
+                values=[
+                  Constant(value='sample_002'),
+                  List(
+                    elts=[
+                      Constant(value='data'),
+                      Constant(value='scientist'),
+                      Constant(value='machine learning')],
+                    ctx=Load()),
+                  Constant(value=7),
+                  Constant(value=0.9)])],
+            ctx=Load())]))])

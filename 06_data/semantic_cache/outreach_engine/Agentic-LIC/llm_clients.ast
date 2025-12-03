@@ -1,0 +1,168 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='12.0')),
+    Import(
+      names=[
+        alias(name='google.generativeai', asname='genai')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='utils_LIC',
+      names=[
+        alias(name='CircuitBreaker'),
+        alias(name='CircuitBreakerOpenError')],
+      level=0),
+    ClassDef(
+      name='GeminiLLMClient',
+      body=[
+        Expr(
+          value=Constant(value='\n    Centralized client for all Gemini API calls with circuit breaker protection\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='circuit_breaker',
+                annotation=Name(id='CircuitBreaker', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='api_key',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='environ',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='GEMINI_API_KEY')])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='api_key',
+                  ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      Constant(value='GEMINI_API_KEY not found in environment')]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='genai', ctx=Load()),
+                  attr='configure',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='api_key',
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='api_key',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='model',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='genai', ctx=Load()),
+                  attr='GenerativeModel',
+                  ctx=Load()),
+                args=[
+                  Constant(value='gemini-1.5-pro-latest')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='circuit_breaker',
+                  ctx=Store())],
+              value=Name(id='circuit_breaker', ctx=Load()))]),
+        FunctionDef(
+          name='_execute_llm_call',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Execute the actual LLM API call')),
+            Assign(
+              targets=[
+                Name(id='response', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='model',
+                    ctx=Load()),
+                  attr='generate_content',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])),
+            Return(
+              value=Attribute(
+                value=Name(id='response', ctx=Load()),
+                attr='text',
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='generate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate content with circuit breaker protection\n        \n        Args:\n            prompt: The prompt string to send to Gemini\n            \n        Returns:\n            Generated text response\n            \n        Raises:\n            Exception: If API call fails\n            CircuitBreakerOpenError: If circuit breaker is OPEN\n        ')),
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='circuit_breaker',
+                        ctx=Load()),
+                      attr='call',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_execute_llm_call',
+                        ctx=Load()),
+                      Name(id='prompt', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='Exception', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Gemini API call failed: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Name(id='str', ctx=Load()))])])

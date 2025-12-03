@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - diagnose_data_issues\nImplements L1 Cognitive Planning Layer for diagnose data issues operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass DiagnoseDataIssuesExecutorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass DiagnoseDataIssuesExecutorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass DiagnoseDataIssuesExecutorResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    suc",
+  "full_hash": "7b719d4446a400bc913eb2a13a15807aa1b371b688624858d6aade8d9d1b1cf2",
+  "generated_at": 1764728349.5540347,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\exec-layer\\inspect-phase\\find-data-problems\\general\\update-memory\\diagnose_data_issues.py"
+}

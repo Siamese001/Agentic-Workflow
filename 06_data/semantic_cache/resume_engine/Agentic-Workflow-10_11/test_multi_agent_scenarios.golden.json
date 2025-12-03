@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"E2E Multi-Agent Scenario Tests.\"\"\"\n\nclass TestMultiAgentScenarios:\n    \"\"\"E2E tests for multi-agent scenarios.\"\"\"\n    \n    def test_planner_executor_coordination(self):\n        \"\"\"Test planner-executor agent coordination.\"\"\"\n        agents = [\"planner\", \"executor\", \"validator\"]\n        assert len(agents) == 3\n    \n    def test_parallel_agent_execution(self):\n        \"\"\"Test parallel agent execution scenario.\"\"\"\n        results = [True, True, True]\n        assert all(results)\n",
+  "full_hash": "8916476272f4bfc602fde1594738514a9cf975920022537621c143602cc003fd",
+  "generated_at": 1764728226.583392,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\multi_agent_scenarios\\test_multi_agent_scenarios.py"
+}

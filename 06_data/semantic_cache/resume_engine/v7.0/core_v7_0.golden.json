@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: core_v7_0.py\n# Overwrites: core_v6_5.py\n# Version: 7.0 (LangGraph + Redis)\n# Zero-Loss Consolidation - The Foundation\n# Merges: models_RES.py \u2192 config_RES.py \u2192 utils_RES.py \u2192 prompts_RES.py\n# v7.0: Pointing CONFIG_PATH to master_config_v7_0.json\n#\n# v6.4 (Corrected V3) CHANGES:\n# - Renamed ImmutableStagingBuffer 'metadata' field to 'sections' to match\n#   the semantic expectations of the ValidationContext.\n# v6.4 (Corrected V2) CHANGES:\n# - Added master_resume and job_input to WorkflowBlackboard dataclass\n#   to fix TypeError during Governor initialization.\n#\n# GEMINI REVIEW (v6.4 FINAL):\n# - Removed unused import 'TYPE_CHECKING'.\n# - Removed unused/uncalled function 'build_atomic_agent_prompt'.\n# - Removed unused/uncalled class 'WorkflowLogFilter'.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n# ============================================================================\nimport copy\nimport hashlib\nimport json\n",
+  "full_hash": "f891515975411a48c39fae859f38bcb63980b7dfb99234f6ac2bc4661b12bddd",
+  "generated_at": 1764728327.6904495,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\core_v7_0.py"
+}

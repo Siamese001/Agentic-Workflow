@@ -1,0 +1,855 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    ImportFrom(
+      module='time',
+      names=[
+        alias(name='perf_counter')],
+      level=0),
+    FunctionDef(
+      name='_assert_resume_structure',
+      args=arguments(
+        args=[
+          arg(
+            arg='resume',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='resume', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          msg=Constant(value='Resume output must be a dict')),
+        Assert(
+          test=Compare(
+            left=Constant(value='strategy'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='resume', ctx=Load())]),
+          msg=Constant(value='Missing strategy block')),
+        Assert(
+          test=Compare(
+            left=Constant(value='qa'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='resume', ctx=Load())]),
+          msg=Constant(value='Missing QA block')),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='k', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='resume', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Tuple(
+                      elts=[
+                        Constant(value='summary'),
+                        Constant(value='bullets'),
+                        Constant(value='body')],
+                      ctx=Load()),
+                    is_async=0)])]),
+          msg=Constant(value='Resume must contain summary/bullets/body'))]),
+    FunctionDef(
+      name='test_api_envelope_structure',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='AI Exec'),
+                  Constant(value='Databricks')])])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          msg=Constant(value='Workflow must return dict')),
+        Assert(
+          test=Compare(
+            left=Constant(value='status'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='out', ctx=Load())]),
+          msg=Constant(value='Missing top-level status')),
+        Assert(
+          test=Compare(
+            left=Constant(value='events'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='out', ctx=Load())]),
+          msg=Constant(value='Missing top-level events')),
+        Assert(
+          test=Compare(
+            left=Constant(value='resume'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='out', ctx=Load())]),
+          msg=Constant(value='Missing top-level resume payload')),
+        Expr(
+          value=Call(
+            func=Name(id='_assert_resume_structure', ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='out', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_status_values_are_valid',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='AI Exec'),
+                  Constant(value='CoreWeave')])])),
+        Assign(
+          targets=[
+            Name(id='valid', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='success'),
+              Constant(value='fail'),
+              Constant(value='blocked')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='out', ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='valid', ctx=Load())]),
+          msg=JoinedStr(
+            values=[
+              Constant(value="Invalid status '"),
+              FormattedValue(
+                value=Subscript(
+                  value=Name(id='out', ctx=Load()),
+                  slice=Constant(value='status'),
+                  ctx=Load()),
+                conversion=-1),
+              Constant(value="'. Allowed: "),
+              FormattedValue(
+                value=Name(id='valid', ctx=Load()),
+                conversion=-1)])),
+        If(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='out', ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='blocked')]),
+          body=[
+            Assert(
+              test=Compare(
+                left=Constant(value='events'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='out', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='safety'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='e', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='e', ctx=Store()),
+                        iter=Subscript(
+                          value=Name(id='out', ctx=Load()),
+                          slice=Constant(value='events'),
+                          ctx=Load()),
+                        is_async=0)])]),
+              msg=Constant(value='Blocked status must accompany safety-related event'))])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_event_list_is_properly_structured',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='AuditCase'),
+                  Constant(value='AI Director')])])),
+        Assign(
+          targets=[
+            Name(id='events', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='events'),
+            ctx=Load())),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='events', ctx=Load()),
+              Name(id='list', ctx=Load())]),
+          msg=Constant(value='Events must be list')),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='events', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=1)]),
+          msg=Constant(value='Event list may not be empty')),
+        For(
+          target=Name(id='e', ctx=Store()),
+          iter=Name(id='events', ctx=Load()),
+          body=[
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='e', ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='dict', ctx=Load())],
+                    ctx=Load())]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Event `'),
+                  FormattedValue(
+                    value=Name(id='e', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='` must be string or dict')]))])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_retry_events_present_when_low_confidence',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd'),
+                  Constant(value='low_confidence')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='RetryCase'),
+                  Constant(value='AI Exec'),
+                  Constant(value=True)])])),
+        Assign(
+          targets=[
+            Name(id='ev', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='out', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='events'),
+              List(ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Constant(value='retry'),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]),
+                        attr='lower',
+                        ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='e', ctx=Store()),
+                    iter=Name(id='ev', ctx=Load()),
+                    is_async=0)])]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Expected retry event missing. Events='),
+              FormattedValue(
+                value=Name(id='ev', ctx=Load()),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_strategy_block_fields_correct',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='AI Exec'),
+                  Constant(value='Anthropic')])])),
+        Assign(
+          targets=[
+            Name(id='strat', ctx=Store())],
+          value=Subscript(
+            value=Subscript(
+              value=Name(id='out', ctx=Load()),
+              slice=Constant(value='resume'),
+              ctx=Load()),
+            slice=Constant(value='strategy'),
+            ctx=Load())),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='strat', ctx=Load()),
+              Name(id='dict', ctx=Load())])),
+        For(
+          target=Name(id='field', ctx=Store()),
+          iter=List(
+            elts=[
+              Constant(value='steps'),
+              Constant(value='goal'),
+              Constant(value='context')],
+            ctx=Load()),
+          body=[
+            Assert(
+              test=Compare(
+                left=Name(id='field', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='strat', ctx=Load())]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Strategy block missing field `'),
+                  FormattedValue(
+                    value=Name(id='field', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='`')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='strat', ctx=Load()),
+                  slice=Name(id='field', ctx=Load()),
+                  ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Constant(value=None),
+                      Constant(value=''),
+                      List(ctx=Load())],
+                    ctx=Load())]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Strategy field `'),
+                  FormattedValue(
+                    value=Name(id='field', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='` cannot be empty')]))])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_qa_block_fields_correct',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='AI Exec'),
+                  Constant(value='AWS')])])),
+        Assign(
+          targets=[
+            Name(id='qa', ctx=Store())],
+          value=Subscript(
+            value=Subscript(
+              value=Name(id='out', ctx=Load()),
+              slice=Constant(value='resume'),
+              ctx=Load()),
+            slice=Constant(value='qa'),
+            ctx=Load())),
+        For(
+          target=Name(id='field', ctx=Store()),
+          iter=List(
+            elts=[
+              Constant(value='confidence'),
+              Constant(value='summary'),
+              Constant(value='issues')],
+            ctx=Load()),
+          body=[
+            Assert(
+              test=Compare(
+                left=Name(id='field', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='qa', ctx=Load())]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='QA block missing field `'),
+                  FormattedValue(
+                    value=Name(id='field', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='`')]))]),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='qa', ctx=Load()),
+                slice=Constant(value='issues'),
+                ctx=Load()),
+              Name(id='list', ctx=Load())]),
+          msg=Constant(value='`issues` must be list-like'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_summary_shorter_than_input',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='text', ctx=Store())],
+          value=Constant(value='This is a long AI-related resume description intended to test summary shortening.')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='text', ctx=Load()),
+                  Constant(value='Databricks')])])),
+        Assign(
+          targets=[
+            Name(id='summary', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Subscript(
+                value=Name(id='out', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='summary')])),
+        Assert(
+          test=Name(id='summary', ctx=Load()),
+          msg=Constant(value='Summary missing from resume output')),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='summary', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load())])]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Summary not shorter than input.\nSummary('),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='summary', ctx=Load())]),
+                conversion=-1),
+              Constant(value=' chars): '),
+              FormattedValue(
+                value=Name(id='summary', ctx=Load()),
+                conversion=-1),
+              Constant(value='\nInput('),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='text', ctx=Load())]),
+                conversion=-1),
+              Constant(value=' chars): '),
+              FormattedValue(
+                value=Name(id='text', ctx=Load()),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_response_not_none_and_under_3s',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='start', ctx=Store())],
+          value=Call(
+            func=Name(id='perf_counter', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='PerfTest'),
+                  Constant(value='Citi')])])),
+        Assign(
+          targets=[
+            Name(id='elapsed', ctx=Store())],
+          value=BinOp(
+            left=Call(
+              func=Name(id='perf_counter', ctx=Load())),
+            op=Sub(),
+            right=Name(id='start', ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Name(id='out', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          msg=Constant(value='Workflow returned None')),
+        Assert(
+          test=Compare(
+            left=Name(id='elapsed', ctx=Load()),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=3.0)]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Workflow exceeded 3-second SLA (elapsed='),
+              FormattedValue(
+                value=Name(id='elapsed', ctx=Load()),
+                conversion=-1,
+                format_spec=JoinedStr(
+                  values=[
+                    Constant(value='.2f')])),
+              Constant(value='s)')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_error_contract_for_malformed_input',
+      args=arguments(
+        args=[
+          arg(arg='bad_input')]),
+      body=[
+        Expr(
+          value=Constant(value="\n    Ensures no raw stack traces leak. The workflow must normalize errors\n    into a proper {status:'fail', error:{...}} envelope.\n    ")),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='bad_input', ctx=Load()),
+                  Constant(value='AI Exec')])])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          msg=Constant(value='Workflow must return a dict even for bad input')),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='out', ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='fail'),
+                  Constant(value='blocked')])]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Malformed input should produce fail/blocked status, not '),
+              FormattedValue(
+                value=Subscript(
+                  value=Name(id='out', ctx=Load()),
+                  slice=Constant(value='status'),
+                  ctx=Load()),
+                conversion=-1)])),
+        Assert(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Constant(value='error'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='out', ctx=Load())]),
+              Compare(
+                left=Constant(value='issues'),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='out', ctx=Load()),
+                        slice=Constant(value='resume'),
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='qa'),
+                      Dict()])])]),
+          msg=Constant(value='Malformed input must provide structured error information'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='bad_input'),
+            List(
+              elts=[
+                Constant(value=None),
+                Constant(value=123),
+                List(
+                  elts=[
+                    Constant(value='not valid')],
+                  ctx=Load()),
+                Dict(
+                  keys=[
+                    Constant(value='oops')],
+                  values=[
+                    Constant(value='no resume')])],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_resume_enrichment_minimum_structure',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='StructuralTest'),
+                  Constant(value='Google')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Call(
+                  func=Attribute(
+                    value=Name(id='resume', ctx=Load()),
+                    attr='keys',
+                    ctx=Load()))]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=3)]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Resume output not sufficiently enriched: keys='),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='resume', ctx=Load()),
+                        attr='keys',
+                        ctx=Load()))]),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='contract',
+          ctx=Load())])])

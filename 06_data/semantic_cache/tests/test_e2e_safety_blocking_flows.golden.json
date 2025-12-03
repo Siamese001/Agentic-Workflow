@@ -1,0 +1,6 @@
+{
+  "golden_content": "from orchestration.agent_registry import AgentRegistry\nfrom core.agent_router_policy import choose_agents_for_task\nfrom config.agent_profile import AgentCard\nfrom core.models.models import AgentRole  # normalized import\n\n\ndef test_choose_agents_for_strategy_task_prefers_planner():\n    registry = AgentRegistry()\n\n    planner = AgentCard(agent_id=\"planner-1\", role=AgentRole.PLANNER, agent_type=\"planner\")\n    researcher = AgentCard(agent_id=\"researcher-1\", role=AgentRole.EXECUTION, agent_type=\"researcher\")\n\n    registry.register_agent(planner)\n    registry.register_agent(researcher)\n\n    chosen = choose_agents_for_task(\"strategy\", registry)\n    assert planner in chosen\n\n\n\n\n\n\n\n",
+  "full_hash": "12a7fd4ae5ccac8b44e7c326e45068ae41c54033ee63243f607d497ab4c2d3fc",
+  "generated_at": 1764728354.9174519,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\router-microagent-layer\\validate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\test_e2e_safety_blocking_flows.py"
+}

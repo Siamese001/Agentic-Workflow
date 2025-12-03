@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL4 temporal schemas for resume job alignment workflows.\n\nDefines career timeline structures for resume enhancement processing.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set\nfrom datetime import datetime, UTC\nfrom enum import Enum\nimport hashlib\n\nfrom .types import StatePath\n\n\nclass TemporalFactStatus(str, Enum):\n    \"\"\"\n    Tracks validation status of career facts for resume job alignment.\n\n    Ensures only verified career information is displayed for resume enhancement.\n    \"\"\"\n    ACTIVE = \"active\"\n    INVALIDATED = \"invalidated\"\n    PENDING_VALIDATION = \"pending_validation\"\n    CONFLICTED = \"conflicted\"\n    STALE = \"stale\"\n\n\nclass ConflictType(str, Enum):\n    \"\"\"\n    Identifies inconsistencies in career timeline for resume job alignment.\n\n    Detects conflicting career information for resume enhancement processing.\n    \"\"\"\n    OVERLAPPING_FACTS = \"overlapping_facts\"\n    CONTRADICTORY_PREDICATES",
+  "full_hash": "acad67a0f9dc35e4de977bd03a08119f1e4f353fb4fc2e666a19df3443f21f3b",
+  "generated_at": 1764728225.3196142,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\temporal_schemas.py"
+}

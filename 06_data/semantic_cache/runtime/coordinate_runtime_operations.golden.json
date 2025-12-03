@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - coordinate_runtime_operations\nImplements L1 Cognitive Planning Layer for coordinate runtime operations operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass CoordinateRuntimeOperationsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass CoordinateRuntimeOperationsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass CoordinateRuntimeOperationsOrchestratorResult:\n    \"\"\"L5",
+  "full_hash": "245be3dd4768499623a37905d17257b9860fd1377717b938080c52aae560af04",
+  "generated_at": 1764728347.090095,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\plan-phase\\get-runtime-info\\general\\understand-request\\coordinate_runtime_operations.py"
+}

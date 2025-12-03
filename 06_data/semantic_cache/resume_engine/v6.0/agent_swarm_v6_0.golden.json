@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: agent_swarm.py\n# Version: 5.9 (Batch Harness)\n# Zero-Loss Consolidation - The Crew\n# Implements: Conductor, MoE Routers, Reflection Loops, ReAct Tool-Using, Adversarial MoE Drafting\n# REFACTORED: Removed all hard-coded plans, agent complexity maps, and redundant configs.\n# All configuration is now read from the central CONFIG object.\n\n# ============================================================================\n# EXTERNAL IMPORTS\n# ============================================================================\nimport copy\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport re\nimport time\nfrom collections import defaultdict\nfrom enum import Enum\nfrom dataclasses import asdict, dataclass, field\nfrom datetime import datetime\nfrom typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union\n\n# Optional imports\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\nexcept ImportError:\n    GEMINI_AVAILABLE = False\n    genai = None\n\n# Impor",
+  "full_hash": "3d13088d20762f9bf0cca36802a3110e6c0a91c6f85a7290b99c495df4ab59f6",
+  "generated_at": 1764728327.4715757,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\agent_swarm_v6_0.py"
+}

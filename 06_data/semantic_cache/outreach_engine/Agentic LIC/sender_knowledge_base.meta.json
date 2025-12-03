@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\sender_knowledge_base.json",
+    "rel_path": "sender_knowledge_base.json",
+    "root_name": "outreach_engine/Agentic LIC",
+    "file_hash": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc",
+    "file_size": 3362,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.470908
+}

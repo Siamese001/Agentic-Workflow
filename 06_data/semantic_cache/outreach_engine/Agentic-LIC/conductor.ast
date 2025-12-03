@@ -1,0 +1,622 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Async conductor coordinating bounded, reproducible execution.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    Import(
+      names=[
+        alias(name='random')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Awaitable'),
+        alias(name='Callable'),
+        alias(name='List'),
+        alias(name='Sequence'),
+        alias(name='Tuple'),
+        alias(name='TypeVar')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='T', ctx=Store())],
+      value=Call(
+        func=Name(id='TypeVar', ctx=Load()),
+        args=[
+          Constant(value='T')])),
+    ClassDef(
+      name='Conductor',
+      body=[
+        Expr(
+          value=Constant(value='Coordinate async tasks with deterministic ordering and IDs.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='concurrency',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='seed',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=3),
+              Constant(value=7)]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='concurrency', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=1)]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      Constant(value='concurrency must be >= 1')]))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_concurrency',
+                  ctx=Store())],
+              value=Name(id='concurrency', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_seed',
+                  ctx=Store())],
+              value=Name(id='seed', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_rng',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='random', ctx=Load()),
+                  attr='Random',
+                  ctx=Load()),
+                args=[
+                  Name(id='seed', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_id_counter',
+                  ctx=Store())],
+              value=Constant(value=0))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='concurrency',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_concurrency',
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='reset',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Reset deterministic state for repeatable replays.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_rng',
+                    ctx=Load()),
+                  attr='seed',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_seed',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_id_counter',
+                  ctx=Store())],
+              value=Constant(value=0))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='make_artifact_id',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='scope',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='company_id',
+                annotation=BinOp(
+                  left=Name(id='str', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Return a deterministic artifact identifier.')),
+            AugAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_id_counter',
+                ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            Assign(
+              targets=[
+                Name(id='digest_input', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_seed',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='|'),
+                  FormattedValue(
+                    value=Name(id='scope', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='|'),
+                  FormattedValue(
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='company_id', ctx=Load()),
+                        Constant(value='')]),
+                    conversion=-1),
+                  Constant(value='|'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_id_counter',
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Name(id='digest', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hashlib', ctx=Load()),
+                      attr='sha256',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='digest_input', ctx=Load()),
+                          attr='encode',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='utf-8')])]),
+                  attr='hexdigest',
+                  ctx=Load()))),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='ev-'),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='digest', ctx=Load()),
+                      slice=Slice(
+                        upper=Constant(value=12)),
+                      ctx=Load()),
+                    conversion=-1)]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_latency_delay',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='latency_ms',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Scale latency into a minimal async sleep for ordering.')),
+            Assign(
+              targets=[
+                Name(id='jitter', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_rng',
+                      ctx=Load()),
+                    attr='random',
+                    ctx=Load())),
+                op=Mult(),
+                right=Constant(value=0.002))),
+            Return(
+              value=BinOp(
+                left=Call(
+                  func=Name(id='min', ctx=Load()),
+                  args=[
+                    Constant(value=0.05),
+                    BinOp(
+                      left=BinOp(
+                        left=Name(id='latency_ms', ctx=Load()),
+                        op=Div(),
+                        right=Constant(value=1000.0)),
+                      op=Mult(),
+                      right=Constant(value=0.01))]),
+                op=Add(),
+                right=Name(id='jitter', ctx=Load())))],
+          returns=Name(id='float', ctx=Load())),
+        AsyncFunctionDef(
+          name='_execute_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='coroutine_factories',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Callable', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        List(ctx=Load()),
+                        Subscript(
+                          value=Name(id='Awaitable', ctx=Load()),
+                          slice=Subscript(
+                            value=Name(id='Tuple', ctx=Load()),
+                            slice=Tuple(
+                              elts=[
+                                Name(id='int', ctx=Load()),
+                                Name(id='T', ctx=Load())],
+                              ctx=Load()),
+                            ctx=Load()),
+                          ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='sem', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='Semaphore',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_concurrency',
+                    ctx=Load())])),
+            AnnAssign(
+              target=Name(id='results', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='int', ctx=Load()),
+                      Name(id='T', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            AsyncFunctionDef(
+              name='_run',
+              args=arguments(
+                args=[
+                  arg(
+                    arg='idx',
+                    annotation=Name(id='int', ctx=Load())),
+                  arg(
+                    arg='factory',
+                    annotation=Subscript(
+                      value=Name(id='Callable', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          List(ctx=Load()),
+                          Subscript(
+                            value=Name(id='Awaitable', ctx=Load()),
+                            slice=Subscript(
+                              value=Name(id='Tuple', ctx=Load()),
+                              slice=Tuple(
+                                elts=[
+                                  Name(id='int', ctx=Load()),
+                                  Name(id='T', ctx=Load())],
+                                ctx=Load()),
+                              ctx=Load()),
+                            ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load()))]),
+              body=[
+                AsyncWith(
+                  items=[
+                    withitem(
+                      context_expr=Name(id='sem', ctx=Load()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='value', ctx=Store())],
+                      value=Await(
+                        value=Call(
+                          func=Name(id='factory', ctx=Load())))),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load())]))])],
+              returns=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='tasks', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='create_task',
+                    ctx=Load()),
+                  args=[
+                    Call(
+                      func=Name(id='_run', ctx=Load()),
+                      args=[
+                        Name(id='i', ctx=Load()),
+                        Name(id='factory', ctx=Load())])]),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='i', ctx=Store()),
+                        Name(id='factory', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Name(id='enumerate', ctx=Load()),
+                      args=[
+                        Name(id='coroutine_factories', ctx=Load())]),
+                    is_async=0)])),
+            If(
+              test=Name(id='tasks', ctx=Load()),
+              body=[
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='asyncio', ctx=Load()),
+                        attr='wait',
+                        ctx=Load()),
+                      args=[
+                        Name(id='tasks', ctx=Load())])))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='results', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='item')]),
+                      body=Subscript(
+                        value=Name(id='item', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load())))])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='T', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='coroutine_factories',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Callable', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        List(ctx=Load()),
+                        Subscript(
+                          value=Name(id='Awaitable', ctx=Load()),
+                          slice=Subscript(
+                            value=Name(id='Tuple', ctx=Load()),
+                            slice=Tuple(
+                              elts=[
+                                Name(id='int', ctx=Load()),
+                                Name(id='T', ctx=Load())],
+                              ctx=Load()),
+                            ctx=Load()),
+                          ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Execute factories synchronously, returning results in input order.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='coroutine_factories', ctx=Load())),
+              body=[
+                Return(
+                  value=List(ctx=Load()))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_execute_async',
+                      ctx=Load()),
+                    args=[
+                      Name(id='coroutine_factories', ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='int', ctx=Load()),
+                  Name(id='T', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='wrap_tool_call',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='idx',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='call',
+                annotation=Subscript(
+                  value=Name(id='Callable', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      List(ctx=Load()),
+                      Subscript(
+                        value=Name(id='Tuple', ctx=Load()),
+                        slice=Tuple(
+                          elts=[
+                            Name(id='T', ctx=Load()),
+                            Name(id='int', ctx=Load())],
+                          ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='after',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Callable', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        List(
+                          elts=[
+                            Name(id='T', ctx=Load())],
+                          ctx=Load()),
+                        Constant(value=None)],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Return a coroutine factory executing ``call`` under the semaphore.')),
+            AsyncFunctionDef(
+              name='_invoke',
+              args=arguments(),
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='result', ctx=Store()),
+                        Name(id='latency_ms', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='call', ctx=Load()))),
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='asyncio', ctx=Load()),
+                        attr='sleep',
+                        ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_latency_delay',
+                            ctx=Load()),
+                          args=[
+                            Name(id='latency_ms', ctx=Load())])]))),
+                If(
+                  test=Name(id='after', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='after', ctx=Load()),
+                        args=[
+                          Name(id='result', ctx=Load())]))]),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='idx', ctx=Load()),
+                      Name(id='result', ctx=Load())],
+                    ctx=Load()))],
+              returns=Subscript(
+                value=Name(id='Tuple', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='int', ctx=Load()),
+                    Name(id='T', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load())),
+            Return(
+              value=Name(id='_invoke', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Callable', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                List(ctx=Load()),
+                Subscript(
+                  value=Name(id='Awaitable', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Tuple', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='int', ctx=Load()),
+                        Name(id='T', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))])])

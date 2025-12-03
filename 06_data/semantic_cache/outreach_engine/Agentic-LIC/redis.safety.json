@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 5,
+  "generated_at": 1764728330.3799553,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\redis.py"
+}

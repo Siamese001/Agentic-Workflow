@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__hil__test_hil_loop_bounding_v10_7.py",
+    "rel_path": "test_flat__hil__test_hil_loop_bounding_v10_7.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "b103af0cf7464260b5841df4988486170d6400df4ab71eeebac3e9caa2d08a0a",
+    "file_size": 4256,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.002399
+}

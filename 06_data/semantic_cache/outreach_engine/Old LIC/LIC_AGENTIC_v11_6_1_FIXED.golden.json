@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.6.1\n====================================================\n\nCHANGELOG v11.6.1 (PATCH - Test Fixes):\n---------------------------------------------------------\n\ud83d\udd27 FIX: Added \"drive\" to FORBIDDEN_VERBS list (complements existing \"drove\")\n\ud83d\udd27 FIX: Adjusted feasibility heuristic - CONNECTION_REQ now requires 8 words/element (was 5)\n\ud83d\udd27 FIX: Improved RAG confidence calculation - less conservative scoring with diversity bonus\n- Base score: 0.15 per result (caps at 0.75 for 5+ results)\n- Diversity bonus: 0.10 per unique source type (caps at 0.30)\n- Gap penalty: reduced from 0.15 to 0.10 per gap\n- Result: All 47 tests now pass (100% vs 93.6% in v11.6.0)\n\nCHANGELOG v11.6 (CRITICAL - Full Implementation of v10.22 Gaps & v16.20 Features):\n---------------------------------------------------------\n\u2728 NEW: S1 - Hardened Archetype Classification\n- Implemented v10.22 4-archetype static classification logic (C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER).\n- Modi",
+  "full_hash": "bddff5f41b911ca6e704f18d7bfc9d454e343774aa44c206384284fc73dffb1a",
+  "generated_at": 1764728339.187006,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_6_1_FIXED.py"
+}

@@ -1,0 +1,1609 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL4 Pinecone adapter for resume job alignment workflows.\n\nCentralizes vector operations for resume enhancement processing.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Sequence')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    ClassDef(
+      name='PineconeConfig',
+      body=[
+        Expr(
+          value=Constant(value='Configuration for resume workflow Pinecone vector store.')),
+        AnnAssign(
+          target=Name(id='api_key', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='index_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='namespace_prefix', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='agentic_workflow'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='embedding_model', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='text-embedding-3-small'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dimension', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1536),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='VectorRecord',
+      body=[
+        Expr(
+          value=Constant(value='Vector record for resume workflow job alignment processing.')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='values', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='VectorQueryResult',
+      body=[
+        Expr(
+          value=Constant(value='Result from resume workflow vector similarity search.')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PineconeAdapter',
+      body=[
+        Expr(
+          value=Constant(value='L4 adapter for resume workflow Pinecone vector operations.\n    \n    Ensures all Pinecone access goes through L4 for job alignment processing.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='PineconeConfig', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Initializes resume workflow Pinecone adapter.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Name(id='config', ctx=Load())),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_client',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='Any', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_index',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='Any', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=0)]),
+        FunctionDef(
+          name='_ensure_client',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Lazy initializes resume workflow Pinecone client.')),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_client',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                ImportFrom(
+                  module='providers.pinecone_client',
+                  names=[
+                    alias(name='PineconeClient')],
+                  level=0),
+                Assign(
+                  targets=[
+                    Name(id='client', ctx=Store())],
+                  value=Call(
+                    func=Name(id='PineconeClient', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='api_key',
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='config',
+                            ctx=Load()),
+                          attr='api_key',
+                          ctx=Load())),
+                      keyword(
+                        arg='index_name',
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='config',
+                            ctx=Load()),
+                          attr='index_name',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_client',
+                      ctx=Store())],
+                  value=Name(id='client', ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_index',
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='client', ctx=Load()),
+                    attr='index',
+                    ctx=Load()))]),
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_client',
+                ctx=Load()))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='build_namespace',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='user_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='job_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Builds namespace for resume workflow data separation.')),
+            Assign(
+              targets=[
+                Name(id='parts', ctx=Store())],
+              value=List(
+                elts=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='namespace_prefix',
+                    ctx=Load())],
+                ctx=Load())),
+            If(
+              test=Name(id='user_id', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='user_'),
+                          FormattedValue(
+                            value=Name(id='user_id', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Name(id='job_id', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='job_'),
+                          FormattedValue(
+                            value=Name(id='job_id', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Name(id='workflow_id', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='wf_'),
+                          FormattedValue(
+                            value=Name(id='workflow_id', ctx=Load()),
+                            conversion=-1)])]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='_'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='parts', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='build_id',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='record_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='content_hash',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='timestamp',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Builds consistent ID for resume workflow vector records.')),
+            Assign(
+              targets=[
+                Name(id='parts', ctx=Store())],
+              value=List(
+                elts=[
+                  Name(id='record_type', ctx=Load())],
+                ctx=Load())),
+            If(
+              test=Name(id='content_hash', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='content_hash', ctx=Load()),
+                        slice=Slice(
+                          upper=Constant(value=16)),
+                        ctx=Load())]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='auto')]))]),
+            If(
+              test=Name(id='timestamp', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='timestamp', ctx=Load()),
+                          attr='strftime',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='%Y%m%d%H%M%S')])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load()),
+                            args=[
+                              Name(id='UTC', ctx=Load())]),
+                          attr='strftime',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='%Y%m%d%H%M%S')])]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='_'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='parts', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='hash_content',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generates stable hash for resume workflow content.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hashlib', ctx=Load()),
+                      attr='sha256',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='content', ctx=Load()),
+                          attr='encode',
+                          ctx=Load()))]),
+                  attr='hexdigest',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='embed_text',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generates embeddings for resume workflow text processing.')),
+            Import(
+              names=[
+                alias(name='random')]),
+            Assign(
+              targets=[
+                Name(id='hash_val', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='hashlib', ctx=Load()),
+                            attr='sha256',
+                            ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='text', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))]),
+                        attr='hexdigest',
+                        ctx=Load())),
+                    slice=Slice(
+                      upper=Constant(value=16)),
+                    ctx=Load()),
+                  Constant(value=16)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='random', ctx=Load()),
+                  attr='seed',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='hash_val', ctx=Load()),
+                    op=Mod(),
+                    right=BinOp(
+                      left=Constant(value=2),
+                      op=Pow(),
+                      right=Constant(value=32)))])),
+            Return(
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='float', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='random', ctx=Load()),
+                        attr='random',
+                        ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='_', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='range', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='config',
+                            ctx=Load()),
+                          attr='dimension',
+                          ctx=Load())]),
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='retrieve_evidence',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='retrieval_cfg',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='hyde_query',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='council_vote',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Retrieves evidence for resume job alignment processing.\n        \n        Provides DI-compatible interface through L4 adapter for resume enhancement.\n        \n        Args:\n            query: Base query string\n            ctx: Execution context\n            retrieval_cfg: Retrieval configuration\n            hyde_query: Optional HYDE-generated query\n            council_vote: Optional council vote for weighting\n            \n        Returns:\n            List of Evidence objects\n        ')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='namespace', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='build_namespace',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='user_id',
+                        value=Call(
+                          func=Name(id='getattr', ctx=Load()),
+                          args=[
+                            Name(id='ctx', ctx=Load()),
+                            Constant(value='user_id'),
+                            Constant(value=None)])),
+                      keyword(
+                        arg='job_id',
+                        value=Call(
+                          func=Name(id='getattr', ctx=Load()),
+                          args=[
+                            Name(id='ctx', ctx=Load()),
+                            Constant(value='job_id'),
+                            Constant(value=None)])),
+                      keyword(
+                        arg='workflow_id',
+                        value=Call(
+                          func=Name(id='getattr', ctx=Load()),
+                          args=[
+                            Name(id='ctx', ctx=Load()),
+                            Constant(value='workflow_id'),
+                            Constant(value=None)]))])),
+                Assign(
+                  targets=[
+                    Name(id='search_query', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='hyde_query', ctx=Load()),
+                      Name(id='query', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='query_embedding', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='embed_text',
+                      ctx=Load()),
+                    args=[
+                      Name(id='search_query', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_ensure_client',
+                      ctx=Load()))),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_index',
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=[
+                    Return(
+                      value=List(ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='results', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_index',
+                        ctx=Load()),
+                      attr='query',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='vector',
+                        value=Name(id='query_embedding', ctx=Load())),
+                      keyword(
+                        arg='namespace',
+                        value=Name(id='namespace', ctx=Load())),
+                      keyword(
+                        arg='top_k',
+                        value=Call(
+                          func=Name(id='getattr', ctx=Load()),
+                          args=[
+                            Name(id='retrieval_cfg', ctx=Load()),
+                            Constant(value='top_k'),
+                            Constant(value=10)])),
+                      keyword(
+                        arg='include_metadata',
+                        value=Constant(value=True))])),
+                ImportFrom(
+                  module='core.models.models',
+                  names=[
+                    alias(name='Evidence')],
+                  level=0),
+                Assign(
+                  targets=[
+                    Name(id='evidence_list', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='match', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='matches'),
+                      List(ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='evidence', ctx=Store())],
+                      value=Call(
+                        func=Name(id='Evidence', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='text',
+                            value=Call(
+                              func=Attribute(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='match', ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='metadata'),
+                                    Dict()]),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='text'),
+                                Constant(value='')])),
+                          keyword(
+                            arg='score',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='match', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='score'),
+                                Constant(value=0.0)])),
+                          keyword(
+                            arg='source',
+                            value=Call(
+                              func=Attribute(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='match', ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='metadata'),
+                                    Dict()]),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='source'),
+                                Constant(value='pinecone')])),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='id'),
+                                Constant(value='namespace'),
+                                Constant(value='retrieval_method')],
+                              values=[
+                                Call(
+                                  func=Attribute(
+                                    value=Name(id='match', ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='id')]),
+                                Name(id='namespace', ctx=Load()),
+                                Constant(value='vector_similarity')]))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='evidence_list', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='evidence', ctx=Load())]))]),
+                Return(
+                  value=Name(id='evidence_list', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Import(
+                      names=[
+                        alias(name='logging')]),
+                    Assign(
+                      targets=[
+                        Name(id='logger', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logging', ctx=Load()),
+                          attr='getLogger',
+                          ctx=Load()),
+                        args=[
+                          Name(id='__name__', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='PineconeAdapter retrieval failed: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])])),
+                    Return(
+                      value=List(ctx=Load()))])])],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='upsert_records',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='records',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='VectorRecord', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Upserts resume workflow vector records to Pinecone.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_ensure_client',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='vectors', ctx=Store())],
+              value=ListComp(
+                elt=Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='r', ctx=Load()),
+                      attr='id',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='r', ctx=Load()),
+                      attr='values',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='r', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load())],
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='records', ctx=Load()),
+                    is_async=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_index',
+                    ctx=Load()),
+                  attr='upsert',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='vectors',
+                    value=Name(id='vectors', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load()))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='query_vectors',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_vector',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='top_k',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='metadata_filter',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='score_threshold',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=10),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Queries resume workflow vectors by similarity for job alignment.\n        \n        Args:\n            namespace: Namespace to query in\n            top_k: Number of results to return\n            metadata_filter: Optional metadata filters\n            score_threshold: Optional minimum score threshold\n            \n        Returns:\n            List of query results with scores and metadata\n        ')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_ensure_client',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Name(id='query_kwargs', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            If(
+              test=Name(id='metadata_filter', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='query_kwargs', ctx=Load()),
+                      slice=Constant(value='filter'),
+                      ctx=Store())],
+                  value=Name(id='metadata_filter', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='response', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_index',
+                    ctx=Load()),
+                  attr='query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='vector',
+                    value=Name(id='query_vector', ctx=Load())),
+                  keyword(
+                    arg='top_k',
+                    value=Name(id='top_k', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load())),
+                  keyword(
+                    arg='include_metadata',
+                    value=Constant(value=True)),
+                  keyword(
+                    value=Name(id='query_kwargs', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='typed_results', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='matches', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='response', ctx=Load()),
+                    Constant(value='matches')]),
+                body=Attribute(
+                  value=Name(id='response', ctx=Load()),
+                  attr='matches',
+                  ctx=Load()),
+                orelse=Call(
+                  func=Attribute(
+                    value=Name(id='response', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='matches'),
+                    List(ctx=Load())]))),
+            For(
+              target=Name(id='match', ctx=Store()),
+              iter=Name(id='matches', ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='match', ctx=Load()),
+                      Constant(value='score')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='score', ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='match', ctx=Load()),
+                        attr='score',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='match_id', ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='match', ctx=Load()),
+                        attr='id',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='metadata', ctx=Store())],
+                      value=BoolOp(
+                        op=Or(),
+                        values=[
+                          Attribute(
+                            value=Name(id='match', ctx=Load()),
+                            attr='metadata',
+                            ctx=Load()),
+                          Dict()]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='score', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='match', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='score'),
+                          Constant(value=0.0)])),
+                    Assign(
+                      targets=[
+                        Name(id='match_id', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='match', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='id'),
+                          Constant(value='')])),
+                    Assign(
+                      targets=[
+                        Name(id='metadata', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='match', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='metadata'),
+                          Dict()]))]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='score_threshold', ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Constant(value=None)]),
+                      Compare(
+                        left=Name(id='score', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Name(id='score_threshold', ctx=Load())])]),
+                  body=[
+                    Continue()]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='typed_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='VectorQueryResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='id',
+                            value=Name(id='match_id', ctx=Load())),
+                          keyword(
+                            arg='score',
+                            value=Name(id='score', ctx=Load())),
+                          keyword(
+                            arg='metadata',
+                            value=Name(id='metadata', ctx=Load())),
+                          keyword(
+                            arg='text',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='metadata', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='text')]))])]))]),
+            Return(
+              value=Name(id='typed_results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='VectorQueryResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='query_by_text',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='top_k',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='metadata_filter',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='score_threshold',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=10),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Queries resume workflow vectors using text for job alignment.')),
+            Assign(
+              targets=[
+                Name(id='query_vector', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='embed_text',
+                  ctx=Load()),
+                args=[
+                  Name(id='query_text', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='query_vectors',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_vector',
+                    value=Name(id='query_vector', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load())),
+                  keyword(
+                    arg='top_k',
+                    value=Name(id='top_k', ctx=Load())),
+                  keyword(
+                    arg='metadata_filter',
+                    value=Name(id='metadata_filter', ctx=Load())),
+                  keyword(
+                    arg='score_threshold',
+                    value=Name(id='score_threshold', ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='VectorQueryResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='query_temporal',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query_vector',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='start_time',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='end_time',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='top_k',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='metadata_filter',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=10),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Queries resume workflow vectors with temporal constraints.\n        \n        Args:\n            query_vector: Query vector for similarity search\n            namespace: Namespace to query in\n            start_time: Optional start of time range\n            end_time: Optional end of time range\n            top_k: Number of results\n            metadata_filter: Additional metadata filters\n            \n        Returns:\n            Filtered query results within time range\n        ')),
+            Assign(
+              targets=[
+                Name(id='temporal_filter', ctx=Store())],
+              value=IfExp(
+                test=Name(id='metadata_filter', ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='metadata_filter', ctx=Load()),
+                    attr='copy',
+                    ctx=Load())),
+                orelse=Dict())),
+            If(
+              test=Name(id='start_time', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='temporal_filter', ctx=Load()),
+                      slice=Constant(value='timestamp'),
+                      ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='$gte')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='start_time', ctx=Load()),
+                          attr='isoformat',
+                          ctx=Load()))]))]),
+            If(
+              test=Name(id='end_time', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Constant(value='timestamp'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='temporal_filter', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Subscript(
+                            value=Name(id='temporal_filter', ctx=Load()),
+                            slice=Constant(value='timestamp'),
+                            ctx=Load()),
+                          slice=Constant(value='$lte'),
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='end_time', ctx=Load()),
+                          attr='isoformat',
+                          ctx=Load())))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='temporal_filter', ctx=Load()),
+                          slice=Constant(value='timestamp'),
+                          ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='$lte')],
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='end_time', ctx=Load()),
+                              attr='isoformat',
+                              ctx=Load()))]))])]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='query_vectors',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_vector',
+                    value=Name(id='query_vector', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load())),
+                  keyword(
+                    arg='top_k',
+                    value=Name(id='top_k', ctx=Load())),
+                  keyword(
+                    arg='metadata_filter',
+                    value=IfExp(
+                      test=Name(id='temporal_filter', ctx=Load()),
+                      body=Name(id='temporal_filter', ctx=Load()),
+                      orelse=Constant(value=None)))]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='VectorQueryResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='delete_records',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='ids',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Deletes resume workflow vector records by ID.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_ensure_client',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_index',
+                    ctx=Load()),
+                  attr='delete',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='ids',
+                    value=Call(
+                      func=Name(id='list', ctx=Load()),
+                      args=[
+                        Name(id='ids', ctx=Load())])),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load()))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='upsert_text_records',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='texts',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='record_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='metadata_list',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Sequence', ctx=Load()),
+                    slice=Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value='doc'),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Upserts resume workflow text records with auto-embedding.')),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='metadata_list', ctx=Load()),
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='metadata_list', ctx=Load())]),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='texts', ctx=Load())])])]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      Constant(value='metadata_list length must match texts length')]))]),
+            Assign(
+              targets=[
+                Name(id='records', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='ids', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='text', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='texts', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='embedding', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='embed_text',
+                      ctx=Load()),
+                    args=[
+                      Name(id='text', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='content_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='hash_content',
+                      ctx=Load()),
+                    args=[
+                      Name(id='text', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='record_id', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='build_id',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='record_type',
+                        value=Name(id='record_type', ctx=Load())),
+                      keyword(
+                        arg='content_hash',
+                        value=Name(id='content_hash', ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ids', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='record_id', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=IfExp(
+                    test=Name(id='metadata_list', ctx=Load()),
+                    body=Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='metadata_list', ctx=Load()),
+                          slice=Name(id='i', ctx=Load()),
+                          ctx=Load()),
+                        attr='copy',
+                        ctx=Load())),
+                    orelse=Dict())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metadata', ctx=Load()),
+                      slice=Constant(value='text'),
+                      ctx=Store())],
+                  value=Name(id='text', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metadata', ctx=Load()),
+                      slice=Constant(value='timestamp'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load()),
+                        args=[
+                          Name(id='UTC', ctx=Load())]),
+                      attr='isoformat',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metadata', ctx=Load()),
+                      slice=Constant(value='record_type'),
+                      ctx=Store())],
+                  value=Name(id='record_type', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='records', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='VectorRecord', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='id',
+                            value=Name(id='record_id', ctx=Load())),
+                          keyword(
+                            arg='values',
+                            value=Name(id='embedding', ctx=Load())),
+                          keyword(
+                            arg='metadata',
+                            value=Name(id='metadata', ctx=Load()))])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='upsert_records',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='records',
+                    value=Name(id='records', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load()))])),
+            Return(
+              value=Name(id='ids', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))])])

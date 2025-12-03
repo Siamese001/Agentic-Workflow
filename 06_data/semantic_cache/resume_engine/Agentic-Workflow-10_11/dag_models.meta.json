@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\models\\dag_models.py",
+    "rel_path": "dag_models.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
+    "file_size": 308,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728225.8613868
+}

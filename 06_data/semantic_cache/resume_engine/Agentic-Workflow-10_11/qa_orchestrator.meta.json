@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\qa_orchestrator.py",
+    "rel_path": "qa_orchestrator.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "6e42118668a62a1d01a2641896a78ce3be612cc6401fe1cba24cb8470335d651",
+    "file_size": 1010,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728225.134592
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\run_learning_v10_7.py",
+    "rel_path": "run_learning_v10_7.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "b21911c70db83c40e5700dadc11b4cdf0a9cea4d9d00d52212e6267a5c4080ba",
+    "file_size": 27156,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728230.0385249
+}

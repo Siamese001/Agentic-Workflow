@@ -1,0 +1,3052 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Any'),
+        alias(name='Tuple'),
+        alias(name='Callable')],
+      level=0),
+    ImportFrom(
+      module='models_RES',
+      names=[
+        alias(name='ImmutableStagingBuffer'),
+        alias(name='ThematicAnalysis'),
+        alias(name='ResumeSection')],
+      level=0),
+    ImportFrom(
+      module='config_RES_v2',
+      names=[
+        alias(name='COVER_LETTER_SIGNATURE_TEMPLATE')],
+      level=0),
+    ImportFrom(
+      module='utils_RES_v2',
+      names=[
+        alias(name='text_utils'),
+        alias(name='calculate_signal_score')],
+      level=0),
+    ClassDef(
+      name='ValidationContext',
+      body=[
+        Expr(
+          value=Constant(value='\n    Holds all necessary data for the ValidationEngine to run checks.\n    Uses lazy calculation for metrics.\n    (Extracted from resume_workflow_v16_20.py)\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='thematic_analysis',
+                annotation=Name(id='ThematicAnalysis', ctx=Load())),
+              arg(
+                arg='job_description',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='master_resume',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='app_config',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='staging_buffer',
+                  ctx=Store())],
+              value=Name(id='staging_buffer', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='thematic_analysis',
+                  ctx=Store())],
+              value=Name(id='thematic_analysis', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='job_description',
+                  ctx=Store())],
+              value=Name(id='job_description', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_resume',
+                  ctx=Store())],
+              value=Name(id='master_resume', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_cache',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='constraints',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='app_config', ctx=Load()),
+                attr='constraints',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='signal_constraints',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='app_config', ctx=Load()),
+                attr='signal_constraints',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())]))]),
+        FunctionDef(
+          name='get_details_for_rule',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rule_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Retrieves cached details for a given rule ID.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='rule_id', ctx=Load()),
+                  Dict()]))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_calculate_metric_details',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='section_enum',
+                annotation=Name(id='ResumeSection', ctx=Load())),
+              arg(
+                arg='metrics_to_calc',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Tuple', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Callable', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='constraints',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Helper to calculate and cache metrics for a section.')),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='staging_buffer',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='section_enum', ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='metric_name', ctx=Store()),
+                  Name(id='calc_func', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='metrics_to_calc', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='details', ctx=Load()),
+                          slice=Name(id='metric_name', ctx=Load()),
+                          ctx=Store())],
+                      value=IfExp(
+                        test=Call(
+                          func=Name(id='isinstance', ctx=Load()),
+                          args=[
+                            Name(id='text', ctx=Load()),
+                            Tuple(
+                              elts=[
+                                Name(id='str', ctx=Load()),
+                                Name(id='list', ctx=Load())],
+                              ctx=Load())]),
+                        body=Call(
+                          func=Name(id='calc_func', ctx=Load()),
+                          args=[
+                            Name(id='text', ctx=Load())]),
+                        orelse=Constant(value=0)))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='logger',
+                                ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value="Error calculating metric '"),
+                                  FormattedValue(
+                                    value=Name(id='metric_name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value="' for section "),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='section_enum', ctx=Load()),
+                                      attr='name',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='details', ctx=Load()),
+                              slice=Name(id='metric_name', ctx=Load()),
+                              ctx=Store())],
+                          value=Constant(value='Error'))])])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='details', ctx=Load()),
+                  attr='update',
+                  ctx=Load()),
+                args=[
+                  Name(id='constraints', ctx=Load())])),
+            Return(
+              value=Name(id='details', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='__getattr__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='name')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Magic method for lazy calculation of metrics.\n        Accessing `context.total_words` will call `_calculate_total_words`.\n        Accessing `context.k1_sentence_count_details` will call `_calculate_k1_sentence_count_details`.\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_cache',
+                      ctx=Load()),
+                    slice=Name(id='name', ctx=Load()),
+                    ctx=Load()))]),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='name', ctx=Load()),
+                  attr='endswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='_details')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='calculation_method_details', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      JoinedStr(
+                        values=[
+                          Constant(value='_calculate_'),
+                          FormattedValue(
+                            value=Name(id='name', ctx=Load()),
+                            conversion=-1)]),
+                      Constant(value=None)])),
+                If(
+                  test=Name(id='calculation_method_details', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='value', ctx=Store())],
+                      value=Call(
+                        func=Name(id='calculation_method_details', ctx=Load()))),
+                    Return(
+                      value=Name(id='value', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='calculation_method', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='self', ctx=Load()),
+                  JoinedStr(
+                    values=[
+                      Constant(value='_calculate_'),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1)]),
+                  Constant(value=None)])),
+            If(
+              test=Name(id='calculation_method', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='value', ctx=Store())],
+                  value=Call(
+                    func=Name(id='calculation_method', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_cache',
+                        ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='value', ctx=Load())),
+                Return(
+                  value=Name(id='value', ctx=Load()))]),
+            Raise(
+              exc=Call(
+                func=Name(id='AttributeError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="'"),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='__class__',
+                            ctx=Load()),
+                          attr='__name__',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' object has no attribute '"),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' or calculation method '_calculate_"),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' or '_calculate_"),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="_details'")])]))]),
+        FunctionDef(
+          name='_calculate_total_words',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='total', ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Name(id='buffer_data', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='staging_buffer',
+                  ctx=Load()),
+                attr='data',
+                ctx=Load())),
+            For(
+              target=Name(id='key_enum', ctx=Store()),
+              iter=Name(id='ResumeSection', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='key', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='key_enum', ctx=Load()),
+                    attr='value',
+                    ctx=Load())),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='key_enum', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          List(
+                            elts=[
+                              Attribute(
+                                value=Name(id='ResumeSection', ctx=Load()),
+                                attr='K0_NAME',
+                                ctx=Load()),
+                              Attribute(
+                                value=Name(id='ResumeSection', ctx=Load()),
+                                attr='K0_CONTACT',
+                                ctx=Load())],
+                            ctx=Load())]),
+                      UnaryOp(
+                        op=Not(),
+                        operand=Call(
+                          func=Attribute(
+                            value=Name(id='key', ctx=Load()),
+                            attr='endswith',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='_HEADER')]))]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='value', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='buffer_data', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Name(id='key', ctx=Load())])),
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Name(id='str', ctx=Load())]),
+                      body=[
+                        AugAssign(
+                          target=Name(id='total', ctx=Store()),
+                          op=Add(),
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load()),
+                              Name(id='list', ctx=Load())]),
+                          body=[
+                            AugAssign(
+                              target=Name(id='total', ctx=Store()),
+                              op=Add(),
+                              value=Call(
+                                func=Name(id='sum', ctx=Load()),
+                                args=[
+                                  GeneratorExp(
+                                    elt=IfExp(
+                                      test=Call(
+                                        func=Name(id='isinstance', ctx=Load()),
+                                        args=[
+                                          Name(id='item', ctx=Load()),
+                                          Name(id='dict', ctx=Load())]),
+                                      body=Call(
+                                        func=Attribute(
+                                          value=Name(id='text_utils', ctx=Load()),
+                                          attr='count_words_ms_word_style',
+                                          ctx=Load()),
+                                        args=[
+                                          Call(
+                                            func=Attribute(
+                                              value=Name(id='item', ctx=Load()),
+                                              attr='get',
+                                              ctx=Load()),
+                                            args=[
+                                              Constant(value='text'),
+                                              Call(
+                                                func=Name(id='str', ctx=Load()),
+                                                args=[
+                                                  Name(id='item', ctx=Load())])])]),
+                                      orelse=Call(
+                                        func=Attribute(
+                                          value=Name(id='text_utils', ctx=Load()),
+                                          attr='count_words_ms_word_style',
+                                          ctx=Load()),
+                                        args=[
+                                          Call(
+                                            func=Name(id='str', ctx=Load()),
+                                            args=[
+                                              Name(id='item', ctx=Load())])])),
+                                    generators=[
+                                      comprehension(
+                                        target=Name(id='item', ctx=Store()),
+                                        iter=Name(id='value', ctx=Load()),
+                                        is_async=0)])]))])])])]),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='total_words'),
+                  Constant(value='min'),
+                  Constant(value='max')],
+                values=[
+                  Name(id='total', ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='constraints',
+                      ctx=Load()),
+                    attr='TOTAL_WORD_COUNT_MIN',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='constraints',
+                      ctx=Load()),
+                    attr='TOTAL_WORD_COUNT_MAX',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H5_GLOBAL_TOTAL_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='total', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_k1_sentence_count_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K1_EXECUTIVE_SUMMARY',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='sentence_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_sentences',
+                              ctx=Load())],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min'),
+                        Constant(value='max')],
+                      values=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EXEC_SUMMARY_SENTENCE_COUNT_MIN',
+                          ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EXEC_SUMMARY_SENTENCE_COUNT_MAX',
+                          ctx=Load())]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K1T_SENTENCE_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_k1_word_count_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K1_EXECUTIVE_SUMMARY',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='word_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load())],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min'),
+                        Constant(value='max')],
+                      values=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EXEC_SUMMARY_WORD_COUNT_MIN',
+                          ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EXEC_SUMMARY_WORD_COUNT_MAX',
+                          ctx=Load())]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K1_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_k2_overview_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K2_UNIFY_OVERVIEW',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='word_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load())],
+                          ctx=Load()),
+                        Tuple(
+                          elts=[
+                            Constant(value='sentence_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_sentences',
+                              ctx=Load())],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_wc'),
+                        Constant(value='max_wc'),
+                        Constant(value='min_sc'),
+                        Constant(value='max_sc')],
+                      values=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='UNIFY_OVERVIEW_WORD_COUNT_MIN',
+                          ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='UNIFY_OVERVIEW_WORD_COUNT_MAX',
+                          ctx=Load()),
+                        Constant(value=1),
+                        Constant(value=2)]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K2_OVERVIEW_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K2_OVERVIEW_SENTENCE_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_k3_overview_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K3_IBM_OVERVIEW',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='word_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load())],
+                          ctx=Load()),
+                        Tuple(
+                          elts=[
+                            Constant(value='sentence_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_sentences',
+                              ctx=Load())],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_wc'),
+                        Constant(value='max_wc'),
+                        Constant(value='min_sc'),
+                        Constant(value='max_sc')],
+                      values=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='IBM_OVERVIEW_WORD_COUNT_MIN',
+                          ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='IBM_OVERVIEW_WORD_COUNT_MAX',
+                          ctx=Load()),
+                        Constant(value=1),
+                        Constant(value=2)]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K3_OVERVIEW_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K3_OVERVIEW_SENTENCE_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_headline_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K0_HEADLINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='word_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load())],
+                          ctx=Load()),
+                        Tuple(
+                          elts=[
+                            Constant(value='headline'),
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='t')]),
+                              body=Name(id='t', ctx=Load()))],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min'),
+                        Constant(value='max')],
+                      values=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='HEADLINE_WORD_COUNT_MIN',
+                          ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='HEADLINE_WORD_COUNT_MAX',
+                          ctx=Load())]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K0_HEADLINE_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K0_HEADLINE_NO_TITLES'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K0_HEADLINE_NO_COMMAS'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K0_HEADLINE_COMPONENT_WC'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_cover_letter_jd_similarity',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cover_letter_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='staging_buffer',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K11_COVER_LETTER',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='similarity', ctx=Store())],
+              value=Constant(value=0.0)),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='cover_letter_text', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='job_description',
+                    ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='similarity', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='text_utils', ctx=Load()),
+                          attr='calculate_similarity',
+                          ctx=Load()),
+                        args=[
+                          Name(id='cover_letter_text', ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='job_description',
+                            ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='logger',
+                                ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Error calculating cover letter similarity: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])])),
+                        Assign(
+                          targets=[
+                            Name(id='similarity', ctx=Store())],
+                          value=Constant(value=0.0))])])]),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='cover_letter_jd_similarity'),
+                  Constant(value='min_sim'),
+                  Constant(value='max_sim')],
+                values=[
+                  Name(id='similarity', ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='constraints',
+                      ctx=Load()),
+                    attr='COVER_LETTER_JD_RELEVANCE_THRESHOLD',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='signal_constraints',
+                      ctx=Load()),
+                    attr='CL_MAX_JD_SIMILARITY',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K11_COVER_LETTER_RELEVANCE_RANGE'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='similarity', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_expected_signature',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='owner_info', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='master_resume',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='owner'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='contact_info', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='owner_info', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='contact'),
+                  Dict()])),
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='COVER_LETTER_SIGNATURE_TEMPLATE', ctx=Load()),
+                          attr='format',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='name',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='owner_info', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='name'),
+                                Constant(value='[Your Name]')])),
+                          keyword(
+                            arg='email',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='contact_info', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='email'),
+                                Constant(value='[Your Email]')])),
+                          keyword(
+                            arg='phone',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='contact_info', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='phone'),
+                                Constant(value='[Your Phone]')])),
+                          keyword(
+                            arg='linkedin',
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='contact_info', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='linkedin'),
+                                Constant(value='[Your LinkedIn]')]))]),
+                      attr='strip',
+                      ctx=Load())))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='KeyError', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Error formatting signature template: Missing key '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])])),
+                    Return(
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='[Error: Missing signature key '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=']')]))])])]),
+        FunctionDef(
+          name='_calculate_cover_letter_structure_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cl_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='staging_buffer',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K11_COVER_LETTER',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='paras', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='p', ctx=Load()),
+                    attr='strip',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='p', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='cl_text', ctx=Load()),
+                        attr='split',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='\n\n')]),
+                    ifs=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='p', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='p1_wc', ctx=Store()),
+                    Name(id='p2_wc', ctx=Store()),
+                    Name(id='p3_wc', ctx=Store())],
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0)],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='error_msg', ctx=Store())],
+              value=Constant(value=None)),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='salutation_idx', ctx=Store())],
+                  value=Call(
+                    func=Name(id='next', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Name(id='i', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Tuple(
+                              elts=[
+                                Name(id='i', ctx=Store()),
+                                Name(id='p', ctx=Store())],
+                              ctx=Store()),
+                            iter=Call(
+                              func=Name(id='enumerate', ctx=Load()),
+                              args=[
+                                Name(id='paras', ctx=Load())]),
+                            ifs=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='p', ctx=Load()),
+                                  attr='startswith',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='Dear Hiring Manager,')])],
+                            is_async=0)])])),
+                Assign(
+                  targets=[
+                    Name(id='closing_idx', ctx=Store())],
+                  value=Call(
+                    func=Name(id='next', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Name(id='i', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Tuple(
+                              elts=[
+                                Name(id='i', ctx=Store()),
+                                Name(id='p', ctx=Store())],
+                              ctx=Store()),
+                            iter=Call(
+                              func=Name(id='enumerate', ctx=Load()),
+                              args=[
+                                Name(id='paras', ctx=Load())]),
+                            ifs=[
+                              Compare(
+                                left=Name(id='p', ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='Sincerely,')])],
+                            is_async=0)]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='paras', ctx=Load())])])),
+                Assign(
+                  targets=[
+                    Name(id='p1_idx', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='salutation_idx', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Assign(
+                  targets=[
+                    Name(id='p2_idx', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='p1_idx', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Assign(
+                  targets=[
+                    Name(id='p3_idx', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='p2_idx', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='p1_idx', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Name(id='closing_idx', ctx=Load())]),
+                      Compare(
+                        left=Name(id='p1_idx', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='paras', ctx=Load())])])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='p1_wc', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='text_utils', ctx=Load()),
+                          attr='count_words_ms_word_style',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='paras', ctx=Load()),
+                            slice=Name(id='p1_idx', ctx=Load()),
+                            ctx=Load())]))]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='p2_idx', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Name(id='closing_idx', ctx=Load())]),
+                      Compare(
+                        left=Name(id='p2_idx', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='paras', ctx=Load())])])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='p2_wc', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='text_utils', ctx=Load()),
+                          attr='count_words_ms_word_style',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='paras', ctx=Load()),
+                            slice=Name(id='p2_idx', ctx=Load()),
+                            ctx=Load())]))]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='p3_idx', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Name(id='closing_idx', ctx=Load())]),
+                      Compare(
+                        left=Name(id='p3_idx', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='paras', ctx=Load())])])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='p3_wc', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='text_utils', ctx=Load()),
+                          attr='count_words_ms_word_style',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='paras', ctx=Load()),
+                            slice=Name(id='p3_idx', ctx=Load()),
+                            ctx=Load())]))]),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=BoolOp(
+                      op=And(),
+                      values=[
+                        Compare(
+                          left=Name(id='p1_idx', ctx=Load()),
+                          ops=[
+                            Lt()],
+                          comparators=[
+                            Name(id='closing_idx', ctx=Load())]),
+                        Compare(
+                          left=Name(id='p2_idx', ctx=Load()),
+                          ops=[
+                            Lt()],
+                          comparators=[
+                            Name(id='closing_idx', ctx=Load())]),
+                        Compare(
+                          left=Name(id='p3_idx', ctx=Load()),
+                          ops=[
+                            Lt()],
+                          comparators=[
+                            Name(id='closing_idx', ctx=Load())]),
+                        Compare(
+                          left=Name(id='p3_idx', ctx=Load()),
+                          ops=[
+                            Lt()],
+                          comparators=[
+                            Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='paras', ctx=Load())])])])),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='error_msg', ctx=Store())],
+                      value=Constant(value='Could not find expected 3 body paragraphs before closing'))])],
+              handlers=[
+                ExceptHandler(
+                  type=Tuple(
+                    elts=[
+                      Name(id='StopIteration', ctx=Load()),
+                      Name(id='IndexError', ctx=Load())],
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='error_msg', ctx=Store())],
+                      value=Constant(value='Could not find expected salutation or closing'))])]),
+            Assign(
+              targets=[
+                Name(id='c', ctx=Store())],
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='constraints',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='p1_wc'),
+                  Constant(value='p1_min'),
+                  Constant(value='p1_max'),
+                  Constant(value='p2_wc'),
+                  Constant(value='p2_min'),
+                  Constant(value='p2_max'),
+                  Constant(value='p3_wc'),
+                  Constant(value='p3_min'),
+                  Constant(value='p3_max'),
+                  Constant(value='error')],
+                values=[
+                  Name(id='p1_wc', ctx=Load()),
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='COVER_LETTER_P1_WORD_COUNT_MIN',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='COVER_LETTER_P1_WORD_COUNT_MAX',
+                    ctx=Load()),
+                  Name(id='p2_wc', ctx=Load()),
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='COVER_LETTER_P2_WORD_COUNT_MIN',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='COVER_LETTER_P2_WORD_COUNT_MAX',
+                    ctx=Load()),
+                  Name(id='p3_wc', ctx=Load()),
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='COVER_LETTER_P3_WORD_COUNT_MIN',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='COVER_LETTER_P3_WORD_COUNT_MAX',
+                    ctx=Load()),
+                  Name(id='error_msg', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K11_COVER_LETTER_STRUCTURE'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_k4_narrative_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='min_wc', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='constraints',
+                    ctx=Load()),
+                  Constant(value='TRADERSENSE_NARRATIVE_WORD_COUNT_MIN'),
+                  Constant(value=40)])),
+            Assign(
+              targets=[
+                Name(id='max_wc', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='constraints',
+                    ctx=Load()),
+                  Constant(value='TRADERSENSE_NARRATIVE_WORD_COUNT_MAX'),
+                  Constant(value=60)])),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K4_TRADERSENSE_NARRATIVE',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='word_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load())],
+                          ctx=Load()),
+                        Tuple(
+                          elts=[
+                            Constant(value='sentence_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_sentences',
+                              ctx=Load())],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_wc'),
+                        Constant(value='max_wc'),
+                        Constant(value='target_sc')],
+                      values=[
+                        Name(id='min_wc', ctx=Load()),
+                        Name(id='max_wc', ctx=Load()),
+                        Constant(value=3)]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K4_NARRATIVE_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K4_NARRATIVE_SENTENCE_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_k5_narrative_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K5_EY_NARRATIVE',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='word_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load())],
+                          ctx=Load()),
+                        Tuple(
+                          elts=[
+                            Constant(value='sentence_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_sentences',
+                              ctx=Load())],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_wc'),
+                        Constant(value='max_wc'),
+                        Constant(value='target_sc')],
+                      values=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EY_NARRATIVE_WORD_COUNT_MIN',
+                          ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EY_NARRATIVE_WORD_COUNT_MAX',
+                          ctx=Load()),
+                        Constant(value=3)]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K5_NARRATIVE_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K5_NARRATIVE_SENTENCE_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_k6_narrative_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metric_details',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_enum',
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K6_EARLY_CAREER_NARRATIVE',
+                      ctx=Load())),
+                  keyword(
+                    arg='metrics_to_calc',
+                    value=List(
+                      elts=[
+                        Tuple(
+                          elts=[
+                            Constant(value='word_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_words_ms_word_style',
+                              ctx=Load())],
+                          ctx=Load()),
+                        Tuple(
+                          elts=[
+                            Constant(value='sentence_count'),
+                            Attribute(
+                              value=Name(id='text_utils', ctx=Load()),
+                              attr='count_sentences',
+                              ctx=Load())],
+                          ctx=Load())],
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_wc'),
+                        Constant(value='max_wc'),
+                        Constant(value='target_sc')],
+                      values=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EARLY_CAREER_NARRATIVE_WORD_COUNT_MIN',
+                          ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='constraints',
+                            ctx=Load()),
+                          attr='EARLY_CAREER_NARRATIVE_WORD_COUNT_MAX',
+                          ctx=Load()),
+                        Constant(value=3)]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K6_NARRATIVE_WORD_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K6_NARRATIVE_SENTENCE_COUNT'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))]),
+        FunctionDef(
+          name='_calculate_cross_section_similarity_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='failures'),
+                  Constant(value='checked_pairs'),
+                  Constant(value='max_similarity'),
+                  Constant(value='scores')],
+                values=[
+                  List(ctx=Load()),
+                  Constant(value=0),
+                  Constant(value=0.0),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='threshold', ctx=Store())],
+              value=Constant(value=0.65)),
+            Assign(
+              targets=[
+                Name(id='sections_to_compare', ctx=Store())],
+              value=List(
+                elts=[
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K1_EXECUTIVE_SUMMARY',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K2_UNIFY_OVERVIEW',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K3_IBM_OVERVIEW',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K4_TRADERSENSE_NARRATIVE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K5_EY_NARRATIVE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K6_EARLY_CAREER_NARRATIVE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K9_COMPETENCIES',
+                    ctx=Load())],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='section_content', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Name(id='section_enum', ctx=Store()),
+              iter=Name(id='sections_to_compare', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='staging_buffer',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='section_enum', ctx=Load()),
+                        attr='value',
+                        ctx=Load())])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='content', ctx=Load()),
+                          Name(id='list', ctx=Load())]),
+                      Compare(
+                        left=Name(id='section_enum', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='ResumeSection', ctx=Load()),
+                            attr='K9_COMPETENCIES',
+                            ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='text_list', ctx=Store())],
+                      value=ListComp(
+                        elt=IfExp(
+                          test=Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='item', ctx=Load()),
+                              Name(id='dict', ctx=Load())]),
+                          body=Call(
+                            func=Attribute(
+                              value=Name(id='item', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='text'),
+                              Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Name(id='item', ctx=Load())])]),
+                          orelse=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='item', ctx=Load())])),
+                        generators=[
+                          comprehension(
+                            target=Name(id='item', ctx=Store()),
+                            iter=Name(id='content', ctx=Load()),
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='section_content', ctx=Load()),
+                          slice=Name(id='section_enum', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Constant(value='\n'),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='text_list', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='content', ctx=Load()),
+                          Name(id='str', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='section_content', ctx=Load()),
+                              slice=Name(id='section_enum', ctx=Load()),
+                              ctx=Store())],
+                          value=Name(id='content', ctx=Load()))])])]),
+            Assign(
+              targets=[
+                Name(id='max_sim', ctx=Store())],
+              value=Constant(value=0.0)),
+            For(
+              target=Name(id='i', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='sections_to_compare', ctx=Load())])]),
+              body=[
+                For(
+                  target=Name(id='j', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='range', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Add(),
+                        right=Constant(value=1)),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='sections_to_compare', ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='enum1', ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='sections_to_compare', ctx=Load()),
+                        slice=Name(id='i', ctx=Load()),
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='enum2', ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='sections_to_compare', ctx=Load()),
+                        slice=Name(id='j', ctx=Load()),
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='text1', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='section_content', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Name(id='enum1', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='text2', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='section_content', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Name(id='enum2', ctx=Load())])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='text1', ctx=Load()),
+                          Name(id='text2', ctx=Load())]),
+                      body=[
+                        Try(
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='similarity', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='text_utils', ctx=Load()),
+                                  attr='calculate_similarity',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='text1', ctx=Load()),
+                                  Name(id='text2', ctx=Load())])),
+                            AugAssign(
+                              target=Subscript(
+                                value=Name(id='details', ctx=Load()),
+                                slice=Constant(value='checked_pairs'),
+                                ctx=Store()),
+                              op=Add(),
+                              value=Constant(value=1)),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Subscript(
+                                    value=Name(id='details', ctx=Load()),
+                                    slice=Constant(value='scores'),
+                                    ctx=Load()),
+                                  slice=JoinedStr(
+                                    values=[
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='enum1', ctx=Load()),
+                                          attr='name',
+                                          ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value='_vs_'),
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='enum2', ctx=Load()),
+                                          attr='name',
+                                          ctx=Load()),
+                                        conversion=-1)]),
+                                  ctx=Store())],
+                              value=Name(id='similarity', ctx=Load())),
+                            Assign(
+                              targets=[
+                                Name(id='max_sim', ctx=Store())],
+                              value=Call(
+                                func=Name(id='max', ctx=Load()),
+                                args=[
+                                  Name(id='max_sim', ctx=Load()),
+                                  Name(id='similarity', ctx=Load())])),
+                            If(
+                              test=Compare(
+                                left=Name(id='similarity', ctx=Load()),
+                                ops=[
+                                  GtE()],
+                                comparators=[
+                                  Name(id='threshold', ctx=Load())]),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Subscript(
+                                        value=Name(id='details', ctx=Load()),
+                                        slice=Constant(value='failures'),
+                                        ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='enum1', ctx=Load()),
+                                              attr='name',
+                                              ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=' vs '),
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='enum2', ctx=Load()),
+                                              attr='name',
+                                              ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=': '),
+                                          FormattedValue(
+                                            value=Name(id='similarity', ctx=Load()),
+                                            conversion=-1,
+                                            format_spec=JoinedStr(
+                                              values=[
+                                                Constant(value='.3f')]))])]))])],
+                          handlers=[
+                            ExceptHandler(
+                              type=Name(id='Exception', ctx=Load()),
+                              name='e',
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Attribute(
+                                        value=Name(id='self', ctx=Load()),
+                                        attr='logger',
+                                        ctx=Load()),
+                                      attr='warning',
+                                      ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Error calculating similarity between '),
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='enum1', ctx=Load()),
+                                              attr='name',
+                                              ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=' and '),
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='enum2', ctx=Load()),
+                                              attr='name',
+                                              ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=': '),
+                                          FormattedValue(
+                                            value=Name(id='e', ctx=Load()),
+                                            conversion=-1)])]))])])])])]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='details', ctx=Load()),
+                  slice=Constant(value='max_similarity'),
+                  ctx=Store())],
+              value=Name(id='max_sim', ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H5_GLOBAL_CROSS_SECTION_SIMILARITY'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_calculate_k1_differentiator_range_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='k1_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='staging_buffer',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='ResumeSection', ctx=Load()),
+                          attr='K1_EXECUTIVE_SUMMARY',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='differentiators', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='comp_intel', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='thematic_analysis',
+                    ctx=Load()),
+                  Constant(value='competitive_intelligence'),
+                  Constant(value=None)])),
+            If(
+              test=Name(id='comp_intel', ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='comp_intel', ctx=Load()),
+                      Constant(value='differentiator_keywords')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='differentiators', ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='comp_intel', ctx=Load()),
+                          Constant(value='differentiator_keywords'),
+                          List(ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='comp_intel', ctx=Load()),
+                          Name(id='dict', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='differentiators', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='comp_intel', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='differentiator_keywords'),
+                              List(ctx=Load())]))])])]),
+            Assign(
+              targets=[
+                Name(id='valid_diffs', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='kw', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='kw', ctx=Store()),
+                    iter=Name(id='differentiators', ctx=Load()),
+                    ifs=[
+                      BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='kw', ctx=Load()),
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='kw', ctx=Load()),
+                              Name(id='str', ctx=Load())])])],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='found', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Constant(value=1),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=Name(id='valid_diffs', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='kw', ctx=Load()),
+                                attr='lower',
+                                ctx=Load())),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='k1_text', ctx=Load())])],
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='min_target', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='constraints',
+                  ctx=Load()),
+                attr='K1_MIN_DIFFERENTIATORS',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='max_target', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='signal_constraints',
+                  ctx=Load()),
+                attr='K1_MAX_DIFFERENTIATORS',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='found'),
+                  Constant(value='min'),
+                  Constant(value='max')],
+                values=[
+                  Name(id='found', ctx=Load()),
+                  Name(id='min_target', ctx=Load()),
+                  Name(id='max_target', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K1_DIFFERENTIATOR_RANGE'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_calculate_cover_letter_narrative_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cl_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='staging_buffer',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='ResumeSection', ctx=Load()),
+                          attr='K11_COVER_LETTER',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='hook', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='kw', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='cl_text', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='enthusiastic'),
+                            Constant(value='excited'),
+                            Constant(value='apply for'),
+                            Constant(value='interest in'),
+                            Constant(value='compelling opportunity')],
+                          ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='proof', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='kw', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='cl_text', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='demonstrated'),
+                            Constant(value='achieved'),
+                            Constant(value='delivered'),
+                            Constant(value='resulted in'),
+                            Constant(value='experience'),
+                            Constant(value='proven ability'),
+                            Constant(value='track record')],
+                          ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='vision', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='kw', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='cl_text', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='contribute'),
+                            Constant(value='goals'),
+                            Constant(value='opportunity'),
+                            Constant(value='eager to discuss'),
+                            Constant(value='drive success'),
+                            Constant(value='valuable asset')],
+                          ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='hook'),
+                  Constant(value='proof'),
+                  Constant(value='vision'),
+                  Constant(value='valid')],
+                values=[
+                  Name(id='hook', ctx=Load()),
+                  Name(id='proof', ctx=Load()),
+                  Name(id='vision', ctx=Load()),
+                  BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='hook', ctx=Load()),
+                      Name(id='proof', ctx=Load()),
+                      Name(id='vision', ctx=Load())])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H3_K11_COVER_LETTER_NARRATIVE_INTEGRITY'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_calculate_narrative_vs_master_similarity_details',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='section_results'),
+                  Constant(value='failures'),
+                  Constant(value='min_threshold'),
+                  Constant(value='max_threshold')],
+                values=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  Constant(value=0.4),
+                  Constant(value=0.7)])),
+            Assign(
+              targets=[
+                Name(id='narrative_sections', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K4_TRADERSENSE_NARRATIVE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K5_EY_NARRATIVE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K6_EARLY_CAREER_NARRATIVE',
+                    ctx=Load())],
+                values=[
+                  Constant(value=2),
+                  Constant(value=3),
+                  Constant(value=4)])),
+            Assign(
+              targets=[
+                Name(id='master_experience', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='master_resume',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='professional_experience'),
+                  List(ctx=Load())])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='section_enum', ctx=Store()),
+                  Name(id='master_index', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='narrative_sections', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='narrative_text', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='staging_buffer',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='section_enum', ctx=Load()),
+                        attr='value',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='master_highlights', ctx=Store())],
+                  value=List(ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='section_result', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='section'),
+                      Constant(value='avg_similarity'),
+                      Constant(value='max_similarity'),
+                      Constant(value='min_similarity'),
+                      Constant(value='scores'),
+                      Constant(value='valid_range')],
+                    values=[
+                      Attribute(
+                        value=Name(id='section_enum', ctx=Load()),
+                        attr='name',
+                        ctx=Load()),
+                      Constant(value=0.0),
+                      Constant(value=0.0),
+                      Constant(value=1.0),
+                      List(ctx=Load()),
+                      Constant(value=True)])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='narrative_text', ctx=Load()),
+                          Name(id='str', ctx=Load())]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='narrative_text', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))]),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Constant(value=0),
+                        ops=[
+                          LtE(),
+                          Lt()],
+                        comparators=[
+                          Name(id='master_index', ctx=Load()),
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='master_experience', ctx=Load())])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='exp', ctx=Store())],
+                          value=Subscript(
+                            value=Name(id='master_experience', ctx=Load()),
+                            slice=Name(id='master_index', ctx=Load()),
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='highlights_raw', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='exp', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='highlights'),
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='exp', ctx=Load()),
+                                  attr='get',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='bullet_pool'),
+                                  List(ctx=Load())])])),
+                        If(
+                          test=Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='highlights_raw', ctx=Load()),
+                              Name(id='list', ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='master_highlights', ctx=Store())],
+                              value=ListComp(
+                                elt=Name(id='h', ctx=Load()),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='h', ctx=Store()),
+                                    iter=Name(id='highlights_raw', ctx=Load()),
+                                    ifs=[
+                                      BoolOp(
+                                        op=And(),
+                                        values=[
+                                          Call(
+                                            func=Name(id='isinstance', ctx=Load()),
+                                            args=[
+                                              Name(id='h', ctx=Load()),
+                                              Name(id='str', ctx=Load())]),
+                                          Call(
+                                            func=Attribute(
+                                              value=Name(id='h', ctx=Load()),
+                                              attr='strip',
+                                              ctx=Load()))])],
+                                    is_async=0)]))])]),
+                    If(
+                      test=Name(id='master_highlights', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='similarities', ctx=Store())],
+                          value=List(ctx=Load())),
+                        For(
+                          target=Name(id='highlight', ctx=Store()),
+                          iter=Name(id='master_highlights', ctx=Load()),
+                          body=[
+                            Try(
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='similarity', ctx=Store())],
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='text_utils', ctx=Load()),
+                                      attr='calculate_similarity',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='narrative_text', ctx=Load()),
+                                      Name(id='highlight', ctx=Load())])),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='similarities', ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='similarity', ctx=Load())])),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Subscript(
+                                        value=Name(id='section_result', ctx=Load()),
+                                        slice=Constant(value='scores'),
+                                        ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      Call(
+                                        func=Name(id='round', ctx=Load()),
+                                        args=[
+                                          Name(id='similarity', ctx=Load()),
+                                          Constant(value=3)])]))],
+                              handlers=[
+                                ExceptHandler(
+                                  type=Name(id='Exception', ctx=Load()),
+                                  name='e',
+                                  body=[
+                                    Expr(
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Attribute(
+                                            value=Name(id='self', ctx=Load()),
+                                            attr='logger',
+                                            ctx=Load()),
+                                          attr='warning',
+                                          ctx=Load()),
+                                        args=[
+                                          JoinedStr(
+                                            values=[
+                                              Constant(value='Error calculating narrative similarity for '),
+                                              FormattedValue(
+                                                value=Attribute(
+                                                  value=Name(id='section_enum', ctx=Load()),
+                                                  attr='name',
+                                                  ctx=Load()),
+                                                conversion=-1),
+                                              Constant(value=' vs highlight: '),
+                                              FormattedValue(
+                                                value=Name(id='e', ctx=Load()),
+                                                conversion=-1)])]))])])]),
+                        If(
+                          test=Name(id='similarities', ctx=Load()),
+                          body=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='section_result', ctx=Load()),
+                                  slice=Constant(value='avg_similarity'),
+                                  ctx=Store())],
+                              value=BinOp(
+                                left=Call(
+                                  func=Name(id='sum', ctx=Load()),
+                                  args=[
+                                    Name(id='similarities', ctx=Load())]),
+                                op=Div(),
+                                right=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='similarities', ctx=Load())]))),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='section_result', ctx=Load()),
+                                  slice=Constant(value='max_similarity'),
+                                  ctx=Store())],
+                              value=Call(
+                                func=Name(id='max', ctx=Load()),
+                                args=[
+                                  Name(id='similarities', ctx=Load())])),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='section_result', ctx=Load()),
+                                  slice=Constant(value='min_similarity'),
+                                  ctx=Store())],
+                              value=Call(
+                                func=Name(id='min', ctx=Load()),
+                                args=[
+                                  Name(id='similarities', ctx=Load())])),
+                            If(
+                              test=UnaryOp(
+                                op=Not(),
+                                operand=Compare(
+                                  left=Subscript(
+                                    value=Name(id='details', ctx=Load()),
+                                    slice=Constant(value='min_threshold'),
+                                    ctx=Load()),
+                                  ops=[
+                                    LtE(),
+                                    LtE()],
+                                  comparators=[
+                                    Subscript(
+                                      value=Name(id='section_result', ctx=Load()),
+                                      slice=Constant(value='avg_similarity'),
+                                      ctx=Load()),
+                                    Subscript(
+                                      value=Name(id='details', ctx=Load()),
+                                      slice=Constant(value='max_threshold'),
+                                      ctx=Load())])),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Subscript(
+                                      value=Name(id='section_result', ctx=Load()),
+                                      slice=Constant(value='valid_range'),
+                                      ctx=Store())],
+                                  value=Constant(value=False)),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Subscript(
+                                        value=Name(id='details', ctx=Load()),
+                                        slice=Constant(value='failures'),
+                                        ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='section_enum', ctx=Load()),
+                                              attr='name',
+                                              ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=' avg sim ('),
+                                          FormattedValue(
+                                            value=Subscript(
+                                              value=Name(id='section_result', ctx=Load()),
+                                              slice=Constant(value='avg_similarity'),
+                                              ctx=Load()),
+                                            conversion=-1,
+                                            format_spec=JoinedStr(
+                                              values=[
+                                                Constant(value='.3f')])),
+                                          Constant(value=') outside range ('),
+                                          FormattedValue(
+                                            value=Subscript(
+                                              value=Name(id='details', ctx=Load()),
+                                              slice=Constant(value='min_threshold'),
+                                              ctx=Load()),
+                                            conversion=-1,
+                                            format_spec=JoinedStr(
+                                              values=[
+                                                Constant(value='.2f')])),
+                                          Constant(value='-'),
+                                          FormattedValue(
+                                            value=Subscript(
+                                              value=Name(id='details', ctx=Load()),
+                                              slice=Constant(value='max_threshold'),
+                                              ctx=Load()),
+                                            conversion=-1,
+                                            format_spec=JoinedStr(
+                                              values=[
+                                                Constant(value='.2f')])),
+                                          Constant(value=')')])]))])],
+                          orelse=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='section_result', ctx=Load()),
+                                  slice=Constant(value='valid_range'),
+                                  ctx=Store())],
+                              value=Constant(value=False)),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='details', ctx=Load()),
+                                    slice=Constant(value='failures'),
+                                    ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='section_enum', ctx=Load()),
+                                          attr='name',
+                                          ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': Could not calculate similarities.')])]))])],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='section_result', ctx=Load()),
+                              slice=Constant(value='valid_range'),
+                              ctx=Store())],
+                          value=Constant(value=False)),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Subscript(
+                                value=Name(id='details', ctx=Load()),
+                                slice=Constant(value='failures'),
+                                ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='section_enum', ctx=Load()),
+                                      attr='name',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': Master highlights missing or empty.')])]))])],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='section_result', ctx=Load()),
+                          slice=Constant(value='valid_range'),
+                          ctx=Store())],
+                      value=Constant(value=False)),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='details', ctx=Load()),
+                            slice=Constant(value='failures'),
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='section_enum', ctx=Load()),
+                                  attr='name',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': Generated narrative missing or empty.')])]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='details', ctx=Load()),
+                        slice=Constant(value='section_results'),
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section_result', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_cache',
+                    ctx=Load()),
+                  slice=Constant(value='H5_GLOBAL_NARRATIVE_VS_MASTER_SIMILARITY'),
+                  ctx=Store())],
+              value=Name(id='details', ctx=Load())),
+            Return(
+              value=Name(id='details', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load()))])])

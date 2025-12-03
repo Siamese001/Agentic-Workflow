@@ -1,0 +1,231 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Expr(
+      value=Constant(value='Implements simple failure-detection helpers that turn raw telemetry into health signals so recurring problems can be fixed before they degrade resume quality.')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ClassDef(
+      name='FailureSignal',
+      body=[
+        Expr(
+          value=Constant(value='Represents a coarse failure signal used by health policies to judge how serious repeated issues are for resume runs.')),
+        AnnAssign(
+          target=Name(id='code', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='detect_repeated_failures',
+      args=arguments(
+        args=[
+          arg(
+            arg='events',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='threshold',
+            annotation=Name(id='int', ctx=Load()))],
+        defaults=[
+          Constant(value=3)]),
+      body=[
+        Expr(
+          value=Constant(value='Finds repeated error patterns in events so teams can spot unstable behavior that might lead to inconsistent or failed resume outputs.')),
+        AnnAssign(
+          target=Name(id='counts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='int', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        For(
+          target=Name(id='evt', ctx=Store()),
+          iter=Name(id='events', ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='evt', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='event_type')]),
+                ops=[
+                  NotEq()],
+                comparators=[
+                  Constant(value='error')]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='code', ctx=Store())],
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='evt', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='error_code')]),
+                      Constant(value='unknown')])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='counts', ctx=Load()),
+                  slice=Name(id='code', ctx=Load()),
+                  ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='counts', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='code', ctx=Load()),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Constant(value=1)))]),
+        AnnAssign(
+          target=Name(id='signals', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='FailureSignal', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='code', ctx=Store()),
+              Name(id='count', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='counts', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='count', ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Name(id='threshold', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='severity', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='count', ctx=Load()),
+                      ops=[
+                        GtE()],
+                      comparators=[
+                        BinOp(
+                          left=Name(id='threshold', ctx=Load()),
+                          op=Mult(),
+                          right=Constant(value=2))]),
+                    body=Constant(value='high'),
+                    orelse=Constant(value='medium'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='FailureSignal', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='code',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='repeated_'),
+                                FormattedValue(
+                                  value=Name(id='code', ctx=Load()),
+                                  conversion=-1)])),
+                          keyword(
+                            arg='message',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='Error '),
+                                FormattedValue(
+                                  value=Name(id='code', ctx=Load()),
+                                  conversion=114),
+                                Constant(value=' occurred '),
+                                FormattedValue(
+                                  value=Name(id='count', ctx=Load()),
+                                  conversion=-1),
+                                Constant(value=' times')])),
+                          keyword(
+                            arg='severity',
+                            value=Name(id='severity', ctx=Load())),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='count')],
+                              values=[
+                                Name(id='count', ctx=Load())]))])]))])]),
+        Return(
+          value=Name(id='signals', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='FailureSignal', ctx=Load()),
+        ctx=Load()))])

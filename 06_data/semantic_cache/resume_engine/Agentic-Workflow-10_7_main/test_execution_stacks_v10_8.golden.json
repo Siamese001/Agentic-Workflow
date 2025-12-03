@@ -1,0 +1,6 @@
+{
+  "golden_content": "import copy\nimport json\nimport pytest\n\nfrom stacks_v10_8 import (\n    BulletExecutionStack,\n    BulletPlanningStack,\n    DraftPlanningStack,\n    DraftingExecutionStack,\n    RAGExecutionStack,\n    RAGPlanningStack,\n)\n\n\nclass DummyLLMClient:\n    def __init__(self) -> None:\n        self.goal_state = \"\"\n        self.top_failures = \"\"\n        self.budget_manager = None\n        self.latency_task_name = \"\"\n        self.workflow_id = \"\"\n        self.agent_name = \"\"\n\n    async def chat_completion_async(self, messages, temperature=0.0, response_format=None):\n        prompt = messages[-1][\"content\"]\n        if \"hypothetical document\" in prompt.lower():\n            query = _extract_between(prompt, \"query:\", \"JD:\") or \"query\"\n            return {\"content\": json.dumps({\"hypothetical_document\": f\"{query.strip()} evidence\"})}\n        if \"candidates:\" in prompt.lower():\n            data = _extract_between(prompt, \"Candidates:\", \"Example:\")\n            try:\n                ranked = json.loads(data.strip",
+  "full_hash": "26a04819eedb45a8a0e05274cef740a8d103673258662ed131dd88d294ce776c",
+  "generated_at": 1764728231.5851436,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\stacks\\test_execution_stacks_v10_8.py"
+}

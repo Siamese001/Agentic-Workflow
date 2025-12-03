@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\exec-layer\\inspect-phase\\find-scripts-problems\\general\\update-memory\\inspect_scripts_quality.py",
+    "rel_path": "inspect_scripts_quality.py",
+    "root_name": "scripts",
+    "file_hash": "b991f67b024c494adbb1b0625a4fd1bc929b82d91ef9247c64150d1bd2c7a1c5",
+    "file_size": 6818,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.7449806
+}

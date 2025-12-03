@@ -1,0 +1,1526 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSelf-Correction Injection for resume generation quality improvement.\n\nProvides self-correction loops and mechanisms for continuous\nresume enhancement and error recovery.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Tuple'),
+        alias(name='Callable')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='l1.instructional_injection_v6',
+      names=[
+        alias(name='InstructionalExtension'),
+        alias(name='ExtensionContent')],
+      level=0),
+    ClassDef(
+      name='CorrectionType',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Types of self-correction mechanisms for resume improvement.\n\n    Defines correction approaches for enhanced resume quality.\n    ')),
+        Assign(
+          targets=[
+            Name(id='PROMPT_REFINEMENT', ctx=Store())],
+          value=Constant(value='prompt_refinement')),
+        Assign(
+          targets=[
+            Name(id='OUTPUT_VALIDATION', ctx=Store())],
+          value=Constant(value='output_validation')),
+        Assign(
+          targets=[
+            Name(id='STRATEGY_ADJUSTMENT', ctx=Store())],
+          value=Constant(value='strategy_adjustment')),
+        Assign(
+          targets=[
+            Name(id='ERROR_RECOVERY', ctx=Store())],
+          value=Constant(value='error_recovery')),
+        Assign(
+          targets=[
+            Name(id='QUALITY_IMPROVEMENT', ctx=Store())],
+          value=Constant(value='quality_improvement'))]),
+    ClassDef(
+      name='CorrectionRule',
+      body=[
+        Expr(
+          value=Constant(value='\n    Rule for triggering self-correction in resume generation.\n\n    Ensures automated quality improvement for resume content.\n    ')),
+        AnnAssign(
+          target=Name(id='rule_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='correction_type', ctx=Store()),
+          annotation=Name(id='CorrectionType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='trigger_condition', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='correction_action', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.7),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=3),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='CorrectionAttempt',
+      body=[
+        Expr(
+          value=Constant(value='\n    Record of a correction attempt for resume improvement.\n\n    Tracks quality enhancement progress for resume content optimization.\n    ')),
+        AnnAssign(
+          target=Name(id='attempt_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='original_output', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='correction_type', ctx=Store()),
+          annotation=Name(id='CorrectionType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='correction_applied', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='improved_output', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='quality_score_before', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='quality_score_after', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SelfCorrectionEngine',
+      body=[
+        Expr(
+          value=Constant(value='Engine for applying self-correction mechanisms.')),
+        Assign(
+          targets=[
+            Name(id='DEFAULT_RULES', ctx=Store())],
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='CorrectionRule', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='prompt_clarity')),
+                  keyword(
+                    arg='correction_type',
+                    value=Attribute(
+                      value=Name(id='CorrectionType', ctx=Load()),
+                      attr='PROMPT_REFINEMENT',
+                      ctx=Load())),
+                  keyword(
+                    arg='trigger_condition',
+                    value=Constant(value='output_length < 50 or contains_generic_phrases')),
+                  keyword(
+                    arg='correction_action',
+                    value=Constant(value='add_specific_examples_and_details')),
+                  keyword(
+                    arg='confidence_threshold',
+                    value=Constant(value=0.6))]),
+              Call(
+                func=Name(id='CorrectionRule', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='output_validation')),
+                  keyword(
+                    arg='correction_type',
+                    value=Attribute(
+                      value=Name(id='CorrectionType', ctx=Load()),
+                      attr='OUTPUT_VALIDATION',
+                      ctx=Load())),
+                  keyword(
+                    arg='trigger_condition',
+                    value=Constant(value='missing_required_fields or invalid_format')),
+                  keyword(
+                    arg='correction_action',
+                    value=Constant(value='reformat_and_add_missing_fields')),
+                  keyword(
+                    arg='confidence_threshold',
+                    value=Constant(value=0.8))]),
+              Call(
+                func=Name(id='CorrectionRule', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='strategy_optimization')),
+                  keyword(
+                    arg='correction_type',
+                    value=Attribute(
+                      value=Name(id='CorrectionType', ctx=Load()),
+                      attr='STRATEGY_ADJUSTMENT',
+                      ctx=Load())),
+                  keyword(
+                    arg='trigger_condition',
+                    value=Constant(value='low_relevance_score or poor_evidence_alignment')),
+                  keyword(
+                    arg='correction_action',
+                    value=Constant(value='adjust_strategy_based_on_evidence')),
+                  keyword(
+                    arg='confidence_threshold',
+                    value=Constant(value=0.7))]),
+              Call(
+                func=Name(id='CorrectionRule', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='error_recovery')),
+                  keyword(
+                    arg='correction_type',
+                    value=Attribute(
+                      value=Name(id='CorrectionType', ctx=Load()),
+                      attr='ERROR_RECOVERY',
+                      ctx=Load())),
+                  keyword(
+                    arg='trigger_condition',
+                    value=Constant(value='execution_failed or timeout_occurred')),
+                  keyword(
+                    arg='correction_action',
+                    value=Constant(value='fallback_to_simpler_approach')),
+                  keyword(
+                    arg='confidence_threshold',
+                    value=Constant(value=0.9))])],
+            ctx=Load())),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rules',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='CorrectionRule', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize the self-correction engine.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='rules',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='rules', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='DEFAULT_RULES',
+                    ctx=Load())])),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='correction_history',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='CorrectionAttempt', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='should_correct',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='quality_score',
+                annotation=Name(id='float', ctx=Load()))],
+            defaults=[
+              Constant(value=0.5)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Determine if correction should be applied based on rules.\n        \n        Args:\n            output: Current output to evaluate\n            context: Execution context\n            quality_score: Quality score of the output\n            \n        Returns:\n            List of applicable correction rules\n        ')),
+            Assign(
+              targets=[
+                Name(id='applicable_rules', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='rule', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='rules',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_evaluate_trigger',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='rule', ctx=Load()),
+                        attr='trigger_condition',
+                        ctx=Load()),
+                      Name(id='output', ctx=Load()),
+                      Name(id='context', ctx=Load())]),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='quality_score', ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='rule', ctx=Load()),
+                            attr='confidence_threshold',
+                            ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='applicable_rules', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='rule', ctx=Load())]))])])]),
+            Return(
+              value=Name(id='applicable_rules', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='CorrectionRule', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='apply_correction',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rule',
+                annotation=Name(id='CorrectionRule', ctx=Load())),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Apply a correction rule to improve output.\n        \n        Args:\n            rule: Correction rule to apply\n            output: Current output\n            context: Execution context\n            \n        Returns:\n            Tuple of (improved_output, new_quality_score)\n        ')),
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='rule', ctx=Load()),
+                      attr='correction_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='CorrectionType', ctx=Load()),
+                        attr='PROMPT_REFINEMENT',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='improved_output', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_refine_prompt_output',
+                          ctx=Load()),
+                        args=[
+                          Name(id='output', ctx=Load()),
+                          Name(id='context', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='rule', ctx=Load()),
+                          attr='correction_type',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='CorrectionType', ctx=Load()),
+                            attr='OUTPUT_VALIDATION',
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='improved_output', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_validate_and_fix_output',
+                              ctx=Load()),
+                            args=[
+                              Name(id='output', ctx=Load()),
+                              Name(id='context', ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='rule', ctx=Load()),
+                              attr='correction_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='CorrectionType', ctx=Load()),
+                                attr='STRATEGY_ADJUSTMENT',
+                                ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='improved_output', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_adjust_strategy_output',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='output', ctx=Load()),
+                                  Name(id='context', ctx=Load())]))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Attribute(
+                                  value=Name(id='rule', ctx=Load()),
+                                  attr='correction_type',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='CorrectionType', ctx=Load()),
+                                    attr='ERROR_RECOVERY',
+                                    ctx=Load())]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='improved_output', ctx=Store())],
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='_recover_from_error',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='output', ctx=Load()),
+                                      Name(id='context', ctx=Load())]))],
+                              orelse=[
+                                Assign(
+                                  targets=[
+                                    Name(id='improved_output', ctx=Store())],
+                                  value=Name(id='output', ctx=Load()))])])])]),
+                Assign(
+                  targets=[
+                    Name(id='new_quality_score', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_calculate_quality_score',
+                      ctx=Load()),
+                    args=[
+                      Name(id='improved_output', ctx=Load()),
+                      Name(id='context', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='attempt', ctx=Store())],
+                  value=Call(
+                    func=Name(id='CorrectionAttempt', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='attempt_id',
+                        value=JoinedStr(
+                          values=[
+                            Constant(value='corr_'),
+                            FormattedValue(
+                              value=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='correction_history',
+                                    ctx=Load())]),
+                              conversion=-1)])),
+                      keyword(
+                        arg='original_output',
+                        value=Name(id='output', ctx=Load())),
+                      keyword(
+                        arg='correction_type',
+                        value=Attribute(
+                          value=Name(id='rule', ctx=Load()),
+                          attr='correction_type',
+                          ctx=Load())),
+                      keyword(
+                        arg='correction_applied',
+                        value=Attribute(
+                          value=Name(id='rule', ctx=Load()),
+                          attr='correction_action',
+                          ctx=Load())),
+                      keyword(
+                        arg='improved_output',
+                        value=Name(id='improved_output', ctx=Load())),
+                      keyword(
+                        arg='quality_score_before',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_calculate_quality_score',
+                            ctx=Load()),
+                          args=[
+                            Name(id='output', ctx=Load()),
+                            Name(id='context', ctx=Load())])),
+                      keyword(
+                        arg='quality_score_after',
+                        value=Name(id='new_quality_score', ctx=Load())),
+                      keyword(
+                        arg='timestamp',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load()),
+                              args=[
+                                Name(id='UTC', ctx=Load())])]))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='correction_history',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='attempt', ctx=Load())])),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='improved_output', ctx=Load()),
+                      Name(id='new_quality_score', ctx=Load())],
+                    ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Correction failed: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])])),
+                    Return(
+                      value=Tuple(
+                        elts=[
+                          Name(id='output', ctx=Load()),
+                          Constant(value=0.0)],
+                        ctx=Load()))])])],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_evaluate_trigger',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='condition',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Evaluate if a trigger condition is met.')),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Constant(value='output_length < 50'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='condition', ctx=Load())]),
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='output', ctx=Load())]),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Constant(value=50)])]),
+              body=[
+                Return(
+                  value=Constant(value=True))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Constant(value='missing_required_fields'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='condition', ctx=Load())]),
+                  body=[
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='parsed', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='json', ctx=Load()),
+                              attr='loads',
+                              ctx=Load()),
+                            args=[
+                              Name(id='output', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='required_fields', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='context', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='required_fields'),
+                              List(ctx=Load())])),
+                        Return(
+                          value=UnaryOp(
+                            op=Not(),
+                            operand=Call(
+                              func=Name(id='all', ctx=Load()),
+                              args=[
+                                GeneratorExp(
+                                  elt=Compare(
+                                    left=Name(id='field', ctx=Load()),
+                                    ops=[
+                                      In()],
+                                    comparators=[
+                                      Name(id='parsed', ctx=Load())]),
+                                  generators=[
+                                    comprehension(
+                                      target=Name(id='field', ctx=Store()),
+                                      iter=Name(id='required_fields', ctx=Load()),
+                                      is_async=0)])])))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='JSONDecodeError',
+                            ctx=Load()),
+                          body=[
+                            Return(
+                              value=Constant(value=True))])])],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Constant(value='low_relevance_score'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='condition', ctx=Load())]),
+                      body=[
+                        Return(
+                          value=Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='context', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='relevance_score'),
+                                Constant(value=1.0)]),
+                            ops=[
+                              Lt()],
+                            comparators=[
+                              Constant(value=0.5)]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Constant(value='execution_failed'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='condition', ctx=Load())]),
+                          body=[
+                            Return(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='context', ctx=Load()),
+                                  attr='get',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='execution_failed'),
+                                  Constant(value=False)]))])])])]),
+            Return(
+              value=Constant(value=False))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='_refine_prompt_output',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Refine output for better prompt clarity.')),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='output', ctx=Load())]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=50)]),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='output', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n\nAdditional details and specific examples should be included to strengthen this response.')]))]),
+            Return(
+              value=Name(id='output', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_validate_and_fix_output',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate and fix output format.')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='parsed', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='output', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='required_fields', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='required_fields'),
+                      List(ctx=Load())])),
+                For(
+                  target=Name(id='field', ctx=Store()),
+                  iter=Name(id='required_fields', ctx=Load()),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='field', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='parsed', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='parsed', ctx=Load()),
+                              slice=Name(id='field', ctx=Load()),
+                              ctx=Store())],
+                          value=Constant(value='placeholder_value'))])]),
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      Name(id='parsed', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2))]))],
+              handlers=[
+                ExceptHandler(
+                  type=Attribute(
+                    value=Name(id='json', ctx=Load()),
+                    attr='JSONDecodeError',
+                    ctx=Load()),
+                  body=[
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='fixed', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='output', ctx=Load()),
+                              attr='replace',
+                              ctx=Load()),
+                            args=[
+                              Constant(value="'"),
+                              Constant(value='"')])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='json', ctx=Load()),
+                              attr='loads',
+                              ctx=Load()),
+                            args=[
+                              Name(id='fixed', ctx=Load())])),
+                        Return(
+                          value=Name(id='fixed', ctx=Load()))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='JSONDecodeError',
+                            ctx=Load()),
+                          body=[
+                            Return(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='json', ctx=Load()),
+                                  attr='dumps',
+                                  ctx=Load()),
+                                args=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='error'),
+                                      Constant(value='original')],
+                                    values=[
+                                      Constant(value='Invalid JSON format'),
+                                      Name(id='output', ctx=Load())])]))])])])])],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_adjust_strategy_output',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Adjust strategy based on evidence and context.')),
+            If(
+              test=Compare(
+                left=Constant(value='strategy'),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='output', ctx=Load()),
+                      attr='lower',
+                      ctx=Load()))]),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='output', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n\nStrategy refined based on available evidence and job requirements.')]))]),
+            Return(
+              value=Name(id='output', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_recover_from_error',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Recover from execution errors.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='error_recovery'),
+                      Constant(value='fallback_strategy'),
+                      Constant(value='original_error')],
+                    values=[
+                      Constant(value=True),
+                      Constant(value='Use simplified approach'),
+                      Name(id='output', ctx=Load())])]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_calculate_quality_score',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Calculate quality score for output.')),
+            Assign(
+              targets=[
+                Name(id='score', ctx=Store())],
+              value=Constant(value=0.5)),
+            If(
+              test=Compare(
+                left=Constant(value=50),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='output', ctx=Load())]),
+                  Constant(value=1000)]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.2))]),
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='loads',
+                      ctx=Load()),
+                    args=[
+                      Name(id='output', ctx=Load())])),
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.2))],
+              handlers=[
+                ExceptHandler(
+                  type=Attribute(
+                    value=Name(id='json', ctx=Load()),
+                    attr='JSONDecodeError',
+                    ctx=Load()),
+                  body=[
+                    Pass()])]),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='keyword', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='output', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='keyword', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='strategy'),
+                            Constant(value='analysis'),
+                            Constant(value='recommendation')],
+                          ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            Return(
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  Name(id='score', ctx=Load()),
+                  Constant(value=1.0)]))],
+          returns=Name(id='float', ctx=Load()))]),
+    ClassDef(
+      name='SelfCorrectionInjectionProvider',
+      body=[
+        Expr(
+          value=Constant(value='Provides self-correction injection for V6 prompts.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='engine',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='SelfCorrectionEngine', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize the self-correction injection provider.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='engine',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='engine', ctx=Load()),
+                  Call(
+                    func=Name(id='SelfCorrectionEngine', ctx=Load()))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='add_self_correction_extension',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt_extensions',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='InstructionalExtension', ctx=Load()),
+                      Name(id='ExtensionContent', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='agent_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Add self-correction instructions as a V6 extension.\n        \n        Args:\n            prompt_extensions: Existing prompt extensions\n            agent_type: Type of agent (strategy, rag, drafting, etc.)\n            context: Execution context\n            \n        Returns:\n            Updated extensions with self-correction instructions\n        ')),
+            Assign(
+              targets=[
+                Name(id='correction_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_correction_instructions',
+                  ctx=Load()),
+                args=[
+                  Name(id='agent_type', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            If(
+              test=Name(id='correction_content', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='correction_extension', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ExtensionContent', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='extension',
+                        value=Attribute(
+                          value=Name(id='InstructionalExtension', ctx=Load()),
+                          attr='SELF_CORRECTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='content',
+                        value=Name(id='correction_content', ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='prompt_extensions', ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='InstructionalExtension', ctx=Load()),
+                        attr='SELF_CORRECTION',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='correction_extension', ctx=Load()))]),
+            Return(
+              value=Name(id='prompt_extensions', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='InstructionalExtension', ctx=Load()),
+                Name(id='ExtensionContent', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_build_correction_instructions',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='agent_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Build self-correction instructions for the agent type.')),
+            Assign(
+              targets=[
+                Name(id='instructions', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='## SELF-CORRECTION INSTRUCTIONS'),
+                  Constant(value=''),
+                  Constant(value='After generating your initial output, review and improve it using these criteria:'),
+                  Constant(value='')],
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Name(id='agent_type', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='strategy')]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='instructions', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Constant(value='1. **Strategy Clarity**: Is the strategy specific and actionable?'),
+                          Constant(value='2. **Evidence Alignment**: Does the strategy align with available evidence?'),
+                          Constant(value='3. **Job Relevance**: Is the strategy tailored to the specific job requirements?'),
+                          Constant(value='')],
+                        ctx=Load())]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='agent_type', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='drafting')]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='instructions', ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          List(
+                            elts=[
+                              Constant(value='1. **Content Quality**: Is the content professional and well-written?'),
+                              Constant(value='2. **Keyword Optimization**: Are relevant keywords naturally included?'),
+                              Constant(value='3. **Achievement Quantification**: Are achievements quantified where possible?'),
+                              Constant(value='')],
+                            ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='agent_type', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='qa')]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='instructions', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              List(
+                                elts=[
+                                  Constant(value='1. **Completeness**: Are all aspects of the content reviewed?'),
+                                  Constant(value='2. **Accuracy**: Are the findings accurate and well-justified?'),
+                                  Constant(value='3. **Actionability**: Are the recommendations actionable?'),
+                                  Constant(value='')],
+                                ctx=Load())]))])])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='instructions', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value="If the output doesn't meet these criteria, revise and improve it before finalizing."),
+                      Constant(value='Focus on continuous improvement and quality enhancement.')],
+                    ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='instructions', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='apply_corrections_if_needed',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='agent_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Apply self-corrections if needed based on output quality.\n        \n        Args:\n            output: Current output\n            agent_type: Type of agent\n            context: Execution context\n            \n        Returns:\n            Tuple of (improved_output, correction_attempts)\n        ')),
+            Assign(
+              targets=[
+                Name(id='quality_score', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='engine',
+                    ctx=Load()),
+                  attr='_calculate_quality_score',
+                  ctx=Load()),
+                args=[
+                  Name(id='output', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='applicable_rules', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='engine',
+                    ctx=Load()),
+                  attr='should_correct',
+                  ctx=Load()),
+                args=[
+                  Name(id='output', ctx=Load()),
+                  Name(id='context', ctx=Load()),
+                  Name(id='quality_score', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='correction_attempts', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='improved_output', ctx=Store())],
+              value=Name(id='output', ctx=Load())),
+            For(
+              target=Name(id='rule', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='applicable_rules', ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=2)),
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='improved_output', ctx=Store()),
+                        Name(id='new_score', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='engine',
+                        ctx=Load()),
+                      attr='apply_correction',
+                      ctx=Load()),
+                    args=[
+                      Name(id='rule', ctx=Load()),
+                      Name(id='improved_output', ctx=Load()),
+                      Name(id='context', ctx=Load())])),
+                If(
+                  test=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='engine',
+                      ctx=Load()),
+                    attr='correction_history',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='correction_attempts', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='engine',
+                                ctx=Load()),
+                              attr='correction_history',
+                              ctx=Load()),
+                            slice=UnaryOp(
+                              op=USub(),
+                              operand=Constant(value=1)),
+                            ctx=Load())]))])]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='improved_output', ctx=Load()),
+                  Name(id='correction_attempts', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='CorrectionAttempt', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='create_self_correction_provider',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Create a self-correction injection provider.')),
+        Return(
+          value=Call(
+            func=Name(id='SelfCorrectionInjectionProvider', ctx=Load())))],
+      returns=Name(id='SelfCorrectionInjectionProvider', ctx=Load())),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='CorrectionType'),
+          Constant(value='CorrectionRule'),
+          Constant(value='CorrectionAttempt'),
+          Constant(value='SelfCorrectionEngine'),
+          Constant(value='SelfCorrectionInjectionProvider'),
+          Constant(value='create_self_correction_provider')],
+        ctx=Load()))])

@@ -1,0 +1,716 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Deterministic Level-1 planner for RAG orchestration.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='BaseAgent'),
+        alias(name='RAGPlan')],
+      level=0),
+    ImportFrom(
+      module='planning_utils',
+      names=[
+        alias(name='describe_experience'),
+        alias(name='extract_job_profile'),
+        alias(name='extract_resume_profile')],
+      level=1),
+    ClassDef(
+      name='RAGPlanningStack',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Produces a lightweight retrieval plan without calling any tools.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())]))],
+          returns=Constant(value=None)),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_plan',
+                  ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='rag')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='plan')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load()))])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_build_plan',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='job_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='extract_job_profile', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='resume_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='extract_resume_profile', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='experiences', ctx=Store())],
+              value=Subscript(
+                value=Name(id='resume_profile', ctx=Load()),
+                slice=Constant(value='experiences'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='requirements', ctx=Store())],
+              value=Subscript(
+                value=Name(id='job_profile', ctx=Load()),
+                slice=Constant(value='requirements'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='workflow_goal', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_goal_statement',
+                  ctx=Load()),
+                args=[
+                  Name(id='job_profile', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='context_inputs', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_context_inputs',
+                  ctx=Load()),
+                args=[
+                  Name(id='job_profile', ctx=Load()),
+                  Name(id='resume_profile', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='retrieval_queries', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_queries',
+                  ctx=Load()),
+                args=[
+                  Name(id='job_profile', ctx=Load()),
+                  Name(id='experiences', ctx=Load()),
+                  Name(id='requirements', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='prioritization', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_prioritization',
+                  ctx=Load()),
+                args=[
+                  Name(id='requirements', ctx=Load()),
+                  Name(id='experiences', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='risk_checks', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_risk_checks',
+                  ctx=Load()),
+                args=[
+                  Name(id='requirements', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='RAGPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='goal',
+                    value=Name(id='workflow_goal', ctx=Load())),
+                  keyword(
+                    arg='context_inputs',
+                    value=Name(id='context_inputs', ctx=Load())),
+                  keyword(
+                    arg='retrieval_queries',
+                    value=Name(id='retrieval_queries', ctx=Load())),
+                  keyword(
+                    arg='prioritization',
+                    value=Name(id='prioritization', ctx=Load())),
+                  keyword(
+                    arg='risk_checks',
+                    value=Name(id='risk_checks', ctx=Load()))]))],
+          returns=Name(id='RAGPlan', ctx=Load())),
+        FunctionDef(
+          name='_goal_statement',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job_profile',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='title', ctx=Store())],
+              value=Subscript(
+                value=Name(id='job_profile', ctx=Load()),
+                slice=Constant(value='title'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='company', ctx=Store())],
+              value=Subscript(
+                value=Name(id='job_profile', ctx=Load()),
+                slice=Constant(value='company'),
+                ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='title', ctx=Load()),
+                  Name(id='company', ctx=Load())]),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='Surface evidence that proves readiness for '),
+                      FormattedValue(
+                        value=Name(id='title', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' at '),
+                      FormattedValue(
+                        value=Name(id='company', ctx=Load()),
+                        conversion=-1)]))]),
+            If(
+              test=Name(id='title', ctx=Load()),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='Surface evidence tailored to the '),
+                      FormattedValue(
+                        value=Name(id='title', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' mandate')]))]),
+            Return(
+              value=Constant(value='Surface evidence aligned to the target role'))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_context_inputs',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job_profile',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='resume_profile',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            AnnAssign(
+              target=Name(id='inputs', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=Subscript(
+                value=Name(id='job_profile', ctx=Load()),
+                slice=Constant(value='summary'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='inputs', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='job.description')]))]),
+            If(
+              test=Subscript(
+                value=Name(id='job_profile', ctx=Load()),
+                slice=Constant(value='requirements'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='inputs', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='job.requirements')]))]),
+            If(
+              test=Subscript(
+                value=Name(id='resume_profile', ctx=Load()),
+                slice=Constant(value='summary'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='inputs', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume.summary')]))]),
+            If(
+              test=Subscript(
+                value=Name(id='resume_profile', ctx=Load()),
+                slice=Constant(value='experiences'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='inputs', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume.professional_experience')]))]),
+            Assign(
+              targets=[
+                Name(id='metadata', ctx=Store())],
+              value=IfExp(
+                test=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Load()),
+                body=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='context',
+                      ctx=Load()),
+                    attr='prompt_manager',
+                    ctx=Load()),
+                  attr='goal_state',
+                  ctx=Load()),
+                orelse=Dict())),
+            If(
+              test=Name(id='metadata', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='inputs', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='prompt.goal_state')]))]),
+            Return(
+              value=Name(id='inputs', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_queries',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job_profile',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='experiences',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='requirements',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            AnnAssign(
+              target=Name(id='queries', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='base_role', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Subscript(
+                    value=Name(id='job_profile', ctx=Load()),
+                    slice=Constant(value='title'),
+                    ctx=Load()),
+                  Constant(value='target role')])),
+            Assign(
+              targets=[
+                Name(id='company', ctx=Store())],
+              value=Subscript(
+                value=Name(id='job_profile', ctx=Load()),
+                slice=Constant(value='company'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='keyword_suffix', ctx=Store())],
+              value=IfExp(
+                test=Name(id='requirements', ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Constant(value=' '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='requirements', ctx=Load()),
+                      slice=Slice(
+                        upper=Constant(value=2)),
+                      ctx=Load())]),
+                orelse=Constant(value='impact metrics'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='queries', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='base_role', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' '),
+                          FormattedValue(
+                            value=Name(id='company', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' '),
+                          FormattedValue(
+                            value=Name(id='keyword_suffix', ctx=Load()),
+                            conversion=-1)]),
+                      attr='strip',
+                      ctx=Load()))])),
+            If(
+              test=Name(id='experiences', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='queries', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='describe_experience', ctx=Load()),
+                              args=[
+                                Subscript(
+                                  value=Name(id='experiences', ctx=Load()),
+                                  slice=Constant(value=0),
+                                  ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=' supporting evidence for '),
+                          FormattedValue(
+                            value=Name(id='base_role', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='experiences', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=1)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='queries', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Leadership examples from '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='describe_experience', ctx=Load()),
+                              args=[
+                                Subscript(
+                                  value=Name(id='experiences', ctx=Load()),
+                                  slice=Constant(value=1),
+                                  ctx=Load())]),
+                            conversion=-1)])]))]),
+            Return(
+              value=ListComp(
+                elt=Name(id='query', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='query', ctx=Store()),
+                    iter=Name(id='queries', ctx=Load()),
+                    ifs=[
+                      Name(id='query', ctx=Load())],
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_prioritization',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='requirements',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='experiences',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            AnnAssign(
+              target=Name(id='prioritization', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=Name(id='requirements', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='prioritization', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Match JD keywords first: '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value=', '),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Subscript(
+                                  value=Name(id='requirements', ctx=Load()),
+                                  slice=Slice(
+                                    upper=Constant(value=3)),
+                                  ctx=Load())]),
+                            conversion=-1)])]))]),
+            If(
+              test=Name(id='experiences', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='prioritization', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Favor most recent quantified roles')]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prioritization', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Deduplicate overlapping bullets before ranking')])),
+            Return(
+              value=Name(id='prioritization', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_risk_checks',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='requirements',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='checks', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Verify every plan output references an original resume source'),
+                  Constant(value='Ensure at least one leadership and one technical example')],
+                ctx=Load())),
+            If(
+              test=Name(id='requirements', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='checks', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Confirm each top JD requirement is backed by evidence')]))]),
+            Return(
+              value=Name(id='checks', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))])])

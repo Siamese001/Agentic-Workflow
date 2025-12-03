@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n@pytest.mark.parametrize(\"case\", [\"fast\",\"e2e\",\"rag-heavy\",\"qa-heavy\"])\ndef test_latency_smoke(benchmark, case):\n    out = benchmark(lambda: run_workflow({\"compat_mode\": \"v10_7\", \"resume\": case, \"jd\":\"perf\"}))\n    assert out is not None\n",
+  "full_hash": "874b9b7be0f4c55b943e6c3c076d99b18d95ca130b67ad97e7ad7cf94e1fe246",
+  "generated_at": 1764728230.6009018,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\integration\\test_perf_latency_v10_7.py"
+}

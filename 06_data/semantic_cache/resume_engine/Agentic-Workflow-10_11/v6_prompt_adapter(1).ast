@@ -1,0 +1,263 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nV6 Prompt Adapter for strategy planning.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional')],
+      level=0),
+    ClassDef(
+      name='V6PromptConfig',
+      body=[
+        Expr(
+          value=Constant(value='Configuration for V6 prompt building.')),
+        AnnAssign(
+          target=Name(id='max_context_length', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=4000),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_safety_checks', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_examples', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ExecutionContext',
+      body=[
+        Expr(
+          value=Constant(value='Mock execution context for compatibility.')),
+        Pass()]),
+    FunctionDef(
+      name='build_v6_strategy_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='strategy_input',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='config',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='V6PromptConfig', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Build V6 strategy prompt from input data.')),
+        If(
+          test=Compare(
+            left=Name(id='config', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='V6PromptConfig', ctx=Load())))]),
+        Assign(
+          targets=[
+            Name(id='sections', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='# STRATEGY PLANNING'),
+              Constant(value='')],
+            ctx=Load())),
+        If(
+          test=Name(id='strategy_input', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='## INPUT DATA')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Strategy: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='strategy_input', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='strategy'),
+                            Constant(value='Unknown')]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sections', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Constant(value='## YOUR TASK')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sections', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Constant(value='Create a comprehensive strategy plan.')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sections', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Constant(value='')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='sections', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_build_safety_context_section',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='safety_plan',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='draft_result',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Build context section for safety planning.')),
+        Assign(
+          targets=[
+            Name(id='sections', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='## CURRENT CONTEXT'),
+              Constant(value='')],
+            ctx=Load())),
+        If(
+          test=Name(id='draft_result', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='sections_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='draft_result', ctx=Load()),
+                      Constant(value='sections'),
+                      List(ctx=Load())])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='**Draft Sections:** '),
+                      FormattedValue(
+                        value=Name(id='sections_count', ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sections', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Constant(value='## YOUR TASK')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sections', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Constant(value='')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sections', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Constant(value='Create a safety review plan to detect and prevent problematic content.')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='sections', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load()))])

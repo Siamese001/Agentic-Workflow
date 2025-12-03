@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.64 - COMPREHENSIVE QA FIXES\n\nv5.64 DUAL QA HARDENING:\n\u2705 FIXED: Section 4 & 5 QA disconnection (DuplicateDetector analysis retention)\n   - Root Cause: WorkflowOrchestrator never retained DuplicateDetector instance\n   - Solution: Store dup_detector on self, invoke similarity analysis pre-HOP-8\n   - Result: Section 4 (AI Detection) & Section 5 (Dedup Matrix) now populate\n\n\u2705 ENHANCED: Section 1 QA per-section signal bars \n   - New Method: _calculate_signal_score() scores each resume section\n   - Enhanced Logic: Per-section ASCII bar graphs with weighted scoring\n   - Result: All 9 resume sections now display individual signal quality\n\nALL 9 QA SECTIONS COMPLETE:\n\u2713 Section 1: Signal Quality with per-section ASCII bars\n\u2713 Section 2: Thematic Compliance\n\u2713 Section 3: Content Authenticity  \n\u2713 Section 4: AI Detection Defense (K.5B vs K.6B similarity)\n\u2713 Section 5: Deduplication Matrix (pairwise similarity analysis)\n\u2713 Section 6: Pipeline Health\n\u2713 Section 7: Word Count",
+  "full_hash": "7726c2c3004662b7fc2d915d4def933efbe04eb692c93be84507e1c31e7c569b",
+  "generated_at": 1764728308.7679088,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_65.py"
+}

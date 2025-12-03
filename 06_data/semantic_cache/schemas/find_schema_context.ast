@@ -1,0 +1,189 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema context finding and discovery.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ContextType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema context types.')),
+        Assign(
+          targets=[
+            Name(id='SEMANTIC', ctx=Store())],
+          value=Constant(value='semantic')),
+        Assign(
+          targets=[
+            Name(id='STRUCTURAL', ctx=Store())],
+          value=Constant(value='structural')),
+        Assign(
+          targets=[
+            Name(id='BEHAVIORAL', ctx=Store())],
+          value=Constant(value='behavioral')),
+        Assign(
+          targets=[
+            Name(id='TEMPORAL', ctx=Store())],
+          value=Constant(value='temporal'))]),
+    ClassDef(
+      name='DiscoveryMethod',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Context discovery methods.')),
+        Assign(
+          targets=[
+            Name(id='PATTERN_MATCHING', ctx=Store())],
+          value=Constant(value='pattern_matching')),
+        Assign(
+          targets=[
+            Name(id='SIMILARITY_SEARCH', ctx=Store())],
+          value=Constant(value='similarity_search')),
+        Assign(
+          targets=[
+            Name(id='GRAPH_TRAVERSAL', ctx=Store())],
+          value=Constant(value='graph_traversal')),
+        Assign(
+          targets=[
+            Name(id='RULE_BASED', ctx=Store())],
+          value=Constant(value='rule_based'))]),
+    ClassDef(
+      name='ContextQuery',
+      body=[
+        Expr(
+          value=Constant(value='Schema for context query.')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_type', ctx=Store()),
+          annotation=Name(id='ContextType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='search_criteria', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='discovery_method', ctx=Store()),
+          annotation=Name(id='DiscoveryMethod', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ContextDiscovery',
+      body=[
+        Expr(
+          value=Constant(value='Schema for context discovery.')),
+        AnnAssign(
+          target=Name(id='discovery_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query', ctx=Store()),
+          annotation=Name(id='ContextQuery', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='discovered_contexts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='discovery_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ContextFindingResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for context finding results.')),
+        AnnAssign(
+          target=Name(id='result_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='discovery', ctx=Store()),
+          annotation=Name(id='ContextDiscovery', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='relevant_contexts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context_rankings', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='finding_successful', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

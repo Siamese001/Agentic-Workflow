@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\act-phase\\use-schema-tools\\routing\\retry-task\\implement_schema_retry.py",
+    "rel_path": "implement_schema_retry.py",
+    "root_name": "schemas",
+    "file_hash": "a4b3e4d8a3eff62d9f22007e94ed04617cf691bf7d820ec98e7c87080ad72f53",
+    "file_size": 1398,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.9521165
+}

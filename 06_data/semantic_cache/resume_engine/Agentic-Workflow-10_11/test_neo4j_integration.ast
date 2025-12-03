@@ -1,0 +1,711 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest Neo4j integration for L2 execution modules\n\nTests that Neo4j integration works correctly and gracefully handles\nmissing Neo4j driver or connection issues.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='patch')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='insert',
+          ctx=Load()),
+        args=[
+          Constant(value=0),
+          Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='os', ctx=Load()),
+                attr='path',
+                ctx=Load()),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='dirname',
+                  ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              Constant(value='..'),
+              Constant(value='..'),
+              Constant(value='..')])])),
+    ImportFrom(
+      module='l4.temporal_schemas',
+      names=[
+        alias(name='TemporalEntity'),
+        alias(name='TemporalTriplet'),
+        alias(name='TemporalEvent'),
+        alias(name='TemporalRange')],
+      level=0),
+    ClassDef(
+      name='TestNeo4jIntegration',
+      body=[
+        Expr(
+          value=Constant(value='Test Neo4j integration components.')),
+        FunctionDef(
+          name='test_graph_query_imports',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that graph_query module imports correctly.')),
+            ImportFrom(
+              module='graph_query',
+              names=[
+                alias(name='graph_query')],
+              level=0),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='graph_query', ctx=Load())]))]),
+        FunctionDef(
+          name='test_graph_query_without_neo4j',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test graph_query gracefully handles missing Neo4j.')),
+            ImportFrom(
+              module='graph_query',
+              names=[
+                alias(name='graph_query')],
+              level=0),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='graph_query._NEO4J_AVAILABLE'),
+                      Constant(value=False)]))],
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='raises',
+                          ctx=Load()),
+                        args=[
+                          Name(id='ImportError', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='match',
+                            value=Constant(value='Neo4j driver not installed'))]))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='graph_query', ctx=Load()),
+                        args=[
+                          Constant(value='MATCH (n) RETURN n')]))])])]),
+        FunctionDef(
+          name='test_factual_qa_imports',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that factual_qa module imports correctly.')),
+            ImportFrom(
+              module='l2.factual_qa',
+              names=[
+                alias(name='factual_qa'),
+                alias(name='trend_analysis')],
+              level=0),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='factual_qa', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='trend_analysis', ctx=Load())]))]),
+        FunctionDef(
+          name='test_factual_qa_without_neo4j',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test factual_qa gracefully handles missing Neo4j.')),
+            ImportFrom(
+              module='l2.factual_qa',
+              names=[
+                alias(name='factual_qa')],
+              level=0),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='l2.factual_qa._NEO4J_AVAILABLE'),
+                      Constant(value=False)]))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='factual_qa', ctx=Load()),
+                    args=[
+                      Constant(value='test_company'),
+                      Constant(value='2020-01-01T00:00:00Z'),
+                      Constant(value='2023-01-01T00:00:00Z'),
+                      Constant(value='WORKED_AT')])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='Neo4j driver not installed'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='result', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_trend_analysis_without_neo4j',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test trend_analysis gracefully handles missing Neo4j.')),
+            ImportFrom(
+              module='l2.factual_qa',
+              names=[
+                alias(name='trend_analysis')],
+              level=0),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='l2.factual_qa._NEO4J_AVAILABLE'),
+                      Constant(value=False)]))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='trend_analysis', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Constant(value='company1'),
+                          Constant(value='company2')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='WORKED_AT'),
+                          Constant(value='HAS_SKILL')],
+                        ctx=Load()),
+                      Constant(value='2020-01-01T00:00:00Z'),
+                      Constant(value='2023-01-01T00:00:00Z')])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='Neo4j driver not installed'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='result', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_kg_writer_imports',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that kg_writer module imports correctly.')),
+            ImportFrom(
+              module='l2.kg_writer',
+              names=[
+                alias(name='insert_entity'),
+                alias(name='insert_triplet'),
+                alias(name='insert_event'),
+                alias(name='batch_process_invalidation'),
+                alias(name='ingest_transcript')],
+              level=0),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='insert_entity', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='insert_triplet', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='insert_event', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='batch_process_invalidation', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='ingest_transcript', ctx=Load())]))]),
+        AsyncFunctionDef(
+          name='test_kg_writer_without_neo4j',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test kg_writer gracefully handles missing Neo4j.')),
+            ImportFrom(
+              module='l2.kg_writer',
+              names=[
+                alias(name='insert_entity'),
+                alias(name='insert_triplet'),
+                alias(name='insert_event')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='entity', ctx=Store())],
+              value=Call(
+                func=Name(id='TemporalEntity', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='entity_id',
+                    value=Constant(value='test_entity')),
+                  keyword(
+                    arg='entity_type',
+                    value=Constant(value='organization')),
+                  keyword(
+                    arg='canonical_id',
+                    value=Constant(value='canonical_1')),
+                  keyword(
+                    arg='aliases',
+                    value=Set(
+                      elts=[
+                        Constant(value='Test Corp'),
+                        Constant(value='Test Company')]))])),
+            Assign(
+              targets=[
+                Name(id='triplet', ctx=Store())],
+              value=Call(
+                func=Name(id='TemporalTriplet', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='triplet_id',
+                    value=Constant(value='test_triplet')),
+                  keyword(
+                    arg='subject',
+                    value=Constant(value='user_1')),
+                  keyword(
+                    arg='predicate',
+                    value=Constant(value='WORKED_AT')),
+                  keyword(
+                    arg='object',
+                    value=Constant(value='test_entity')),
+                  keyword(
+                    arg='temporal_range',
+                    value=Call(
+                      func=Name(id='TemporalRange', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='valid_at',
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load()),
+                            args=[
+                              Name(id='UTC', ctx=Load())]))]))])),
+            Assign(
+              targets=[
+                Name(id='event', ctx=Store())],
+              value=Call(
+                func=Name(id='TemporalEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='event_id',
+                    value=Constant(value='test_event')),
+                  keyword(
+                    arg='event_type',
+                    value=Constant(value='invalidation')),
+                  keyword(
+                    arg='triplet_id',
+                    value=Constant(value='test_triplet'))])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='l2.kg_writer._NEO4J_AVAILABLE'),
+                      Constant(value=False)]))],
+              body=[
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Name(id='insert_entity', ctx=Load()),
+                      args=[
+                        Name(id='entity', ctx=Load())]))),
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Name(id='insert_triplet', ctx=Load()),
+                      args=[
+                        Name(id='triplet', ctx=Load())]))),
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Name(id='insert_event', ctx=Load()),
+                      args=[
+                        Name(id='event', ctx=Load())])))])],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='asyncio',
+              ctx=Load())]),
+        FunctionDef(
+          name='test_neo4j_graph_store_imports',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that Neo4jGraphStore imports correctly.')),
+            Try(
+              body=[
+                ImportFrom(
+                  module='graph_store_neo4j',
+                  names=[
+                    alias(name='Neo4jGraphStore')],
+                  level=0),
+                Assert(
+                  test=Compare(
+                    left=Name(id='Neo4jGraphStore', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='skip',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='Neo4j driver not installed')]))])])]),
+        FunctionDef(
+          name='test_neo4j_graph_store_without_driver',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test Neo4jGraphStore gracefully handles missing driver.')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='graph_store_neo4j.GraphDatabase'),
+                      Constant(value=None)]))],
+              body=[
+                ImportFrom(
+                  module='graph_store_neo4j',
+                  names=[
+                    alias(name='Neo4jGraphStore')],
+                  level=0),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='raises',
+                          ctx=Load()),
+                        args=[
+                          Name(id='ImportError', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='match',
+                            value=Constant(value='Neo4j driver not installed'))]))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='Neo4jGraphStore', ctx=Load())))])])]),
+        FunctionDef(
+          name='test_ingestion_dag_imports',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that kg_ingestion_dag imports with Neo4j components.')),
+            Try(
+              body=[
+                ImportFrom(
+                  module='orchestration.kg_ingestion_dag',
+                  names=[
+                    alias(name='UnifiedKGIngestionDAG'),
+                    alias(name='IngestionStage'),
+                    alias(name='ingest_documents')],
+                  level=0),
+                Assert(
+                  test=Compare(
+                    left=Name(id='UnifiedKGIngestionDAG', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='IngestionStage', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])),
+                Assert(
+                  test=Call(
+                    func=Name(id='callable', ctx=Load()),
+                    args=[
+                      Name(id='ingest_documents', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='fail',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='kg_ingestion_dag should import successfully: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])]),
+        AsyncFunctionDef(
+          name='test_ingestion_dag_mirroring_methods',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that ingestion DAG mirroring methods exist and are callable.')),
+            ImportFrom(
+              module='orchestration.kg_ingestion_dag',
+              names=[
+                alias(name='_mirror_entities_to_neo4j'),
+                alias(name='_mirror_triplets_to_neo4j'),
+                alias(name='_mirror_invalidations_to_neo4j'),
+                alias(name='_mirror_complete_transcript_to_neo4j')],
+              level=0),
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='_mirror_entities_to_neo4j', ctx=Load()),
+                  args=[
+                    Dict()]))),
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='_mirror_triplets_to_neo4j', ctx=Load()),
+                  args=[
+                    Dict()]))),
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='_mirror_invalidations_to_neo4j', ctx=Load()),
+                  args=[
+                    Dict()]))),
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='_mirror_complete_transcript_to_neo4j', ctx=Load()),
+                  args=[
+                    Dict()])))],
+          decorator_list=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='asyncio',
+              ctx=Load())]),
+        FunctionDef(
+          name='test_requirements_includes_neo4j',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that requirements.txt includes Neo4j dependency.')),
+            Import(
+              names=[
+                alias(name='os')]),
+            Assign(
+              targets=[
+                Name(id='project_root', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='abspath',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='os', ctx=Load()),
+                        attr='path',
+                        ctx=Load()),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='os', ctx=Load()),
+                            attr='path',
+                            ctx=Load()),
+                          attr='dirname',
+                          ctx=Load()),
+                        args=[
+                          Name(id='__file__', ctx=Load())]),
+                      Constant(value='..'),
+                      Constant(value='..')])])),
+            Assign(
+              targets=[
+                Name(id='requirements_path', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='project_root', ctx=Load()),
+                  Constant(value='requirements.txt')])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='requirements_path', ctx=Load()),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='requirements', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='read',
+                      ctx=Load())))]),
+            Assert(
+              test=Compare(
+                left=Constant(value='neo4j>=5.22.0'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='requirements', ctx=Load())]))]),
+        FunctionDef(
+          name='test_all_modules_import_without_neo4j',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that all new Neo4j modules can be imported without Neo4j driver.')),
+            Assign(
+              targets=[
+                Name(id='modules_to_test', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='graph_query'),
+                  Constant(value='graph_store_neo4j'),
+                  Constant(value='l2.kg_writer'),
+                  Constant(value='l2.factual_qa'),
+                  Constant(value='orchestration.kg_ingestion_dag')],
+                ctx=Load())),
+            For(
+              target=Name(id='module_name', ctx=Store()),
+              iter=Name(id='modules_to_test', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='__import__', ctx=Load()),
+                        args=[
+                          Name(id='module_name', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ImportError', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='pytest', ctx=Load()),
+                              attr='fail',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Module '),
+                                  FormattedValue(
+                                    value=Name(id='module_name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' should import without Neo4j driver: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])]))])])])])])])

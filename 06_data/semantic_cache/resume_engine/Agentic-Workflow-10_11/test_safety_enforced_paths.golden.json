@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"E2E Safety Enforced Path Tests.\"\"\"\n\nclass TestSafetyEnforcedPaths:\n    \"\"\"E2E tests for safety enforced paths.\"\"\"\n    \n    def test_pii_blocked_path(self):\n        \"\"\"Test PII is blocked in workflow path.\"\"\"\n        content = \"safe resume content\"\n        assert \"SSN:\" not in content\n    \n    def test_policy_violation_path(self):\n        \"\"\"Test policy violation handling path.\"\"\"\n        violations = []\n        assert len(violations) == 0\n",
+  "full_hash": "7bcee091ebeb49fff522c9c79d8f7574b4cbfbe8ba57f119c4dd79fc326c2241",
+  "generated_at": 1764728226.5988848,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\safety_enforced_paths\\test_safety_enforced_paths.py"
+}

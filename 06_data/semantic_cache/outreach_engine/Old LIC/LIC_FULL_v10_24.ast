@@ -1,0 +1,3009 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='metadata'),
+          Constant(value='1_role'),
+          Constant(value='2_task'),
+          Constant(value='3_context'),
+          Constant(value='4_reasoning'),
+          Constant(value='5_output'),
+          Constant(value='6_conditions')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='template_id'),
+              Constant(value='template_name'),
+              Constant(value='version'),
+              Constant(value='base_version'),
+              Constant(value='patches_applied'),
+              Constant(value='created_date'),
+              Constant(value='status'),
+              Constant(value='changelog'),
+              Constant(value='critical_enhancements'),
+              Constant(value='architecture'),
+              Constant(value='coverage')],
+            values=[
+              Constant(value='LIC-FULL-v10.24'),
+              Constant(value='LinkedIn InMail Cold Outreach - Complete with Hardened Enforcement'),
+              Constant(value='10.24'),
+              Constant(value='10.23.1'),
+              List(
+                elts=[
+                  Constant(value='v10.23: Staging Buffer Integration'),
+                  Constant(value='v10.23.1: Scope Isolation Fix'),
+                  Constant(value='v10.24: Complete Enforcement Hardening (59 new rules, 2 new batches)')],
+                ctx=Load()),
+              Constant(value='2025-10-15'),
+              Constant(value='PRODUCTION_READY'),
+              Dict(
+                keys=[
+                  Constant(value='v10.22'),
+                  Constant(value='v10.23'),
+                  Constant(value='v10.23.1'),
+                  Constant(value='v10.24')],
+                values=[
+                  Constant(value='Baseline - metadata-based validation'),
+                  Constant(value='Added staging buffer for ground truth validation (DO NOT USE - has scope bug)'),
+                  Constant(value='Fixed scope isolation bug - artist_output deleted before validation'),
+                  Constant(value='Complete enforcement hardening - 100% coverage of all enforcement points')]),
+              List(
+                elts=[
+                  Constant(value='Added BATCH_0_PRE_FLIGHT with 12 structural validation rules'),
+                  Constant(value='Added BATCH_5_POST_VALIDATION with 10 monitoring rules'),
+                  Constant(value='Added 37 additional enforcement rules for complete coverage'),
+                  Constant(value='All 89 enforcement points now have QA validation mapping'),
+                  Constant(value='Zero critical gaps remaining')],
+                ctx=Load()),
+              Constant(value='Staging Buffer Pattern with Hard Scope Isolation and Complete Enforcement'),
+              Dict(
+                keys=[
+                  Constant(value='before_v10.24'),
+                  Constant(value='after_v10.24'),
+                  Constant(value='critical_gaps_closed'),
+                  Constant(value='new_validation_rules'),
+                  Constant(value='new_validation_batches')],
+                values=[
+                  Constant(value='47% (42/89 enforcement points mapped)'),
+                  Constant(value='100% (89/89 enforcement points mapped)'),
+                  Constant(value=18),
+                  Constant(value=59),
+                  Constant(value=2)])]),
+          Dict(
+            keys=[
+              Constant(value='name'),
+              Constant(value='version'),
+              Constant(value='authority'),
+              Constant(value='core_capabilities'),
+              Constant(value='governance_toggles'),
+              Constant(value='critical_rules')],
+            values=[
+              Constant(value='LinkedIn InMail Cold Outreach Message Generator'),
+              Constant(value='10.24'),
+              Constant(value='Generate personalized LinkedIn cold outreach messages using RAG-enhanced factual scaffolding, creative prose, and staging buffer validation with hard scope isolation and complete enforcement'),
+              List(
+                elts=[
+                  Constant(value='Route selection (INMAIL, CONNECTION_REQ, FOLLOW_UP)'),
+                  Constant(value='Recipient archetype classification'),
+                  Constant(value='RAG-driven achievement extraction'),
+                  Constant(value='Factual scaffold construction'),
+                  Constant(value='Artist-driven prose generation'),
+                  Constant(value='Staging buffer capture (ground truth)'),
+                  Constant(value='QA validation with scope isolation'),
+                  Constant(value='Gate-based output control'),
+                  Constant(value='Pre-flight structural validation (NEW)'),
+                  Constant(value='Post-validation monitoring (NEW)')],
+                ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='STAGING_BUFFER_ENABLED'),
+                  Constant(value='SCOPE_ISOLATION_ENFORCED'),
+                  Constant(value='QA_ENGINE_VERSION'),
+                  Constant(value='MANUAL_VERIFICATION_REQUIRED'),
+                  Constant(value='ARTIST_METADATA_BLOCKED'),
+                  Constant(value='PRE_FLIGHT_VALIDATION'),
+                  Constant(value='POST_VALIDATION_MONITORING')],
+                values=[
+                  Name(id='true', ctx=Load()),
+                  Name(id='true', ctx=Load()),
+                  Constant(value='V3'),
+                  Name(id='true', ctx=Load()),
+                  Name(id='true', ctx=Load()),
+                  Name(id='true', ctx=Load()),
+                  Name(id='true', ctx=Load())]),
+              List(
+                elts=[
+                  Constant(value='SCOPE ISOLATION: artist_output MUST be deleted before validation'),
+                  Constant(value='SCOPE ISOLATION: Validation functions signature: def validate(staging_buffer: dict) ONLY'),
+                  Constant(value="SCOPE ISOLATION: Every validation batch MUST check: if 'artist_output' in dir(): raise ScopeViolationError()"),
+                  Constant(value="SCOPE ISOLATION: QA reports MUST read from staging_buffer[section]['word_count']"),
+                  Constant(value='SCOPE ISOLATION: Test LIC-SCOPE-SMOKE-001 (MS Word verification) MUST pass before production'),
+                  Constant(value='ENFORCEMENT: All 89 enforcement points MUST have corresponding validation rules'),
+                  Constant(value='ENFORCEMENT: BATCH_0_PRE_FLIGHT MUST execute before all other batches'),
+                  Constant(value='ENFORCEMENT: BATCH_5_POST_VALIDATION MUST execute after gate decision')],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='deliverable'),
+              Constant(value='workflow_phases'),
+              Constant(value='validation_batches'),
+              Constant(value='success_criteria')],
+            values=[
+              Constant(value='Generate high-quality, personalized cold outreach messages that respect recipient archetypes, maintain factual accuracy, and comply with strict word count and content constraints'),
+              Constant(value='Final message file with K-node structure (K.1 greeting, K.2 subject, K.3 body, K.5 CTA, K.6 signature) validated against staging buffer with complete enforcement'),
+              List(
+                elts=[
+                  Constant(value='Phase 1: The Analyst - Route Selection & Classification'),
+                  Constant(value='Phase 2: The Architect - Factual Scaffold Construction'),
+                  Constant(value='Phase 3: The Artist - Creative Prose Generation'),
+                  Constant(value='Phase 4: The Assembler - Staging Buffer Capture'),
+                  Constant(value='Phase 5: The Validator - QA Validation with Scope Isolation'),
+                  Constant(value='Phase 6: The Gate - Output Decision')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='BATCH_0: Pre-Flight Structural Validation (NEW - 12 rules)'),
+                  Constant(value='BATCH_1: Constraint Compliance Validation'),
+                  Constant(value='BATCH_2: Confidence & Accuracy Validation'),
+                  Constant(value='BATCH_3: Entity & Source Validation'),
+                  Constant(value='BATCH_4: Format & Quality Validation'),
+                  Constant(value='BATCH_5: Post-Validation Monitoring (NEW - 10 rules)')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='All pre-flight structural checks pass'),
+                  Constant(value='Route correctly classified from valid enum'),
+                  Constant(value='Archetype accurately identified from valid enum'),
+                  Constant(value='RAG achievements incorporated with source binding'),
+                  Constant(value='Word counts within route/archetype constraints'),
+                  Constant(value='Confidence thresholds met (per-claim and aggregate)'),
+                  Constant(value='No placeholders in output'),
+                  Constant(value='Staging buffer validates actual output'),
+                  Constant(value='Scope isolation verified (artist_output inaccessible)'),
+                  Constant(value='All 6 validation batches pass'),
+                  Constant(value='Manual MS Word verification matches QA report'),
+                  Constant(value='Post-validation monitoring confirms success')],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='version_pins'),
+              Constant(value='routes'),
+              Constant(value='archetypes'),
+              Constant(value='k_node_structure'),
+              Constant(value='global_constraints')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='LIC_VERSION'),
+                  Constant(value='STAGING_BUFFER_VERSION'),
+                  Constant(value='QA_ENGINE_VERSION'),
+                  Constant(value='SCOPE_ISOLATION_VERSION'),
+                  Constant(value='ENFORCEMENT_VERSION')],
+                values=[
+                  Constant(value='10.24'),
+                  Constant(value='1.0'),
+                  Constant(value='V3'),
+                  Constant(value='1.0'),
+                  Constant(value='2.0')]),
+              Dict(
+                keys=[
+                  Constant(value='INMAIL'),
+                  Constant(value='CONNECTION_REQ'),
+                  Constant(value='FOLLOW_UP')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='word_range'),
+                      Constant(value='char_limit'),
+                      Constant(value='subject_line_required'),
+                      Constant(value='subject_word_range'),
+                      Constant(value='subject_char_limit'),
+                      Constant(value='use_cases'),
+                      Constant(value='tone')],
+                    values=[
+                      Constant(value='LinkedIn InMail to non-connections'),
+                      List(
+                        elts=[
+                          Constant(value=180),
+                          Constant(value=250)],
+                        ctx=Load()),
+                      Constant(value=1900),
+                      Name(id='true', ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value=5),
+                          Constant(value=8)],
+                        ctx=Load()),
+                      Constant(value=60),
+                      List(
+                        elts=[
+                          Constant(value='C-level executives'),
+                          Constant(value='Hiring managers'),
+                          Constant(value='Decision makers')],
+                        ctx=Load()),
+                      Constant(value='Professional, respectful, value-focused')]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='word_range'),
+                      Constant(value='char_limit'),
+                      Constant(value='subject_line_required'),
+                      Constant(value='use_cases'),
+                      Constant(value='tone')],
+                    values=[
+                      Constant(value='Connection request message'),
+                      List(
+                        elts=[
+                          Constant(value=40),
+                          Constant(value=60)],
+                        ctx=Load()),
+                      Constant(value=300),
+                      Name(id='false', ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Recruiters'),
+                          Constant(value='HR professionals'),
+                          Constant(value='Potential referrals')],
+                        ctx=Load()),
+                      Constant(value='Friendly, brief, clear intent')]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='word_range'),
+                      Constant(value='char_limit'),
+                      Constant(value='subject_line_required'),
+                      Constant(value='use_cases'),
+                      Constant(value='tone')],
+                    values=[
+                      Constant(value='Follow-up message to existing connections'),
+                      List(
+                        elts=[
+                          Constant(value=100),
+                          Constant(value=150)],
+                        ctx=Load()),
+                      Constant(value=800),
+                      Name(id='false', ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='After initial contact'),
+                          Constant(value='Post-application'),
+                          Constant(value='Nurture sequence')],
+                        ctx=Load()),
+                      Constant(value='Persistent but respectful, value-add')])]),
+              Dict(
+                keys=[
+                  Constant(value='EXECUTIVE'),
+                  Constant(value='RECRUITER'),
+                  Constant(value='HIRING_MANAGER'),
+                  Constant(value='C_LEVEL')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='preferred_route'),
+                      Constant(value='word_count_target'),
+                      Constant(value='focus'),
+                      Constant(value='avoid')],
+                    values=[
+                      Constant(value='C-level, VP-level decision makers'),
+                      Constant(value='INMAIL'),
+                      List(
+                        elts=[
+                          Constant(value=200),
+                          Constant(value=230)],
+                        ctx=Load()),
+                      Constant(value='Strategic value, business outcomes, leadership experience'),
+                      Constant(value='Tactical details, excessive metrics, junior-level achievements')]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='preferred_route'),
+                      Constant(value='word_count_target'),
+                      Constant(value='focus'),
+                      Constant(value='avoid')],
+                    values=[
+                      Constant(value='Technical recruiters, sourcing specialists'),
+                      Constant(value='CONNECTION_REQ'),
+                      List(
+                        elts=[
+                          Constant(value=45),
+                          Constant(value=55)],
+                        ctx=Load()),
+                      Constant(value='Clear job fit, relevant skills, availability'),
+                      Constant(value='Lengthy narratives, unrelated experience')]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='preferred_route'),
+                      Constant(value='word_count_target'),
+                      Constant(value='focus'),
+                      Constant(value='avoid')],
+                    values=[
+                      Constant(value='Department heads, team leads'),
+                      Constant(value='INMAIL'),
+                      List(
+                        elts=[
+                          Constant(value=180),
+                          Constant(value=210)],
+                        ctx=Load()),
+                      Constant(value='Team impact, relevant projects, technical depth'),
+                      Constant(value='Generic statements, irrelevant industries')]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='preferred_route'),
+                      Constant(value='word_count_target'),
+                      Constant(value='focus'),
+                      Constant(value='avoid')],
+                    values=[
+                      Constant(value='CEO, CTO, COO level contacts'),
+                      Constant(value='INMAIL'),
+                      List(
+                        elts=[
+                          Constant(value=210),
+                          Constant(value=240)],
+                        ctx=Load()),
+                      Constant(value='Executive presence, transformation, strategic initiatives'),
+                      Constant(value='Micro-level details, implementation specifics')])]),
+              Dict(
+                keys=[
+                  Constant(value='K.1_greeting'),
+                  Constant(value='K.2_subject_line'),
+                  Constant(value='K.3_body'),
+                  Constant(value='K.5_cta'),
+                  Constant(value='K.6_signature')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='word_range'),
+                      Constant(value='examples'),
+                      Constant(value='required')],
+                    values=[
+                      Constant(value='Personalized greeting with recipient name'),
+                      List(
+                        elts=[
+                          Constant(value=3),
+                          Constant(value=6)],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Hi Sarah,'),
+                          Constant(value='Hello John,'),
+                          Constant(value='Good morning Dr. Chen,')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='word_range'),
+                      Constant(value='char_limit'),
+                      Constant(value='required_for_routes'),
+                      Constant(value='best_practices')],
+                    values=[
+                      Constant(value='Subject line for InMail only'),
+                      List(
+                        elts=[
+                          Constant(value=5),
+                          Constant(value=8)],
+                        ctx=Load()),
+                      Constant(value=60),
+                      List(
+                        elts=[
+                          Constant(value='INMAIL')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Value proposition'),
+                          Constant(value='Curiosity hook'),
+                          Constant(value='No clickbait')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='word_range_by_route'),
+                      Constant(value='structure'),
+                      Constant(value='required')],
+                    values=[
+                      Constant(value='Main message body with achievements and value proposition'),
+                      Dict(
+                        keys=[
+                          Constant(value='INMAIL'),
+                          Constant(value='CONNECTION_REQ'),
+                          Constant(value='FOLLOW_UP')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value=160),
+                              Constant(value=220)],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value=30),
+                              Constant(value=50)],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value=85),
+                              Constant(value=130)],
+                            ctx=Load())]),
+                      List(
+                        elts=[
+                          Constant(value='Hook'),
+                          Constant(value='Credibility'),
+                          Constant(value='Value proposition'),
+                          Constant(value='Social proof')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='word_range'),
+                      Constant(value='examples'),
+                      Constant(value='required')],
+                    values=[
+                      Constant(value='Call to action'),
+                      List(
+                        elts=[
+                          Constant(value=18),
+                          Constant(value=30)],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Would you be open to a brief conversation next week?'),
+                          Constant(value='Could we schedule 15 minutes to discuss this role?'),
+                          Constant(value="I'd appreciate 10 minutes of your time if available.")],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='line_count'),
+                      Constant(value='includes'),
+                      Constant(value='required')],
+                    values=[
+                      Constant(value='Professional signature block'),
+                      List(
+                        elts=[
+                          Constant(value=3),
+                          Constant(value=4)],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Name'),
+                          Constant(value='Current/recent title'),
+                          Constant(value='Contact info')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())])]),
+              Dict(
+                keys=[
+                  Constant(value='component_constraints'),
+                  Constant(value='confidence_thresholds'),
+                  Constant(value='character_encoding_rules'),
+                  Constant(value='tokenization_standard')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='K.1_greeting'),
+                      Constant(value='K.2_subject_line'),
+                      Constant(value='K.3_body'),
+                      Constant(value='K.5_cta'),
+                      Constant(value='K.6_signature')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='word_min'),
+                          Constant(value='word_max'),
+                          Constant(value='must_include')],
+                        values=[
+                          Constant(value=3),
+                          Constant(value=6),
+                          List(
+                            elts=[
+                              Constant(value='recipient_first_name')],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='word_min'),
+                          Constant(value='word_max'),
+                          Constant(value='char_limit'),
+                          Constant(value='applies_to_routes')],
+                        values=[
+                          Constant(value=5),
+                          Constant(value=8),
+                          Constant(value=60),
+                          List(
+                            elts=[
+                              Constant(value='INMAIL')],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='word_min_by_route'),
+                          Constant(value='word_max_by_route'),
+                          Constant(value='must_include_achievements'),
+                          Constant(value='min_achievement_count'),
+                          Constant(value='paragraph_count_range'),
+                          Constant(value='avg_words_per_paragraph')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='INMAIL'),
+                              Constant(value='CONNECTION_REQ'),
+                              Constant(value='FOLLOW_UP')],
+                            values=[
+                              Constant(value=160),
+                              Constant(value=30),
+                              Constant(value=85)]),
+                          Dict(
+                            keys=[
+                              Constant(value='INMAIL'),
+                              Constant(value='CONNECTION_REQ'),
+                              Constant(value='FOLLOW_UP')],
+                            values=[
+                              Constant(value=220),
+                              Constant(value=50),
+                              Constant(value=130)]),
+                          Name(id='true', ctx=Load()),
+                          Constant(value=2),
+                          List(
+                            elts=[
+                              Constant(value=2),
+                              Constant(value=5)],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value=30),
+                              Constant(value=80)],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='word_min'),
+                          Constant(value='word_max'),
+                          Constant(value='must_include_date_proposal'),
+                          Constant(value='must_include_timeframe'),
+                          Constant(value='tone')],
+                        values=[
+                          Constant(value=18),
+                          Constant(value=30),
+                          Name(id='false', ctx=Load()),
+                          Name(id='true', ctx=Load()),
+                          Constant(value='Respectful ask, not demanding')]),
+                      Dict(
+                        keys=[
+                          Constant(value='line_min'),
+                          Constant(value='line_max'),
+                          Constant(value='char_estimate_per_line'),
+                          Constant(value='must_include')],
+                        values=[
+                          Constant(value=3),
+                          Constant(value=4),
+                          Constant(value=40),
+                          List(
+                            elts=[
+                              Constant(value='sender_name'),
+                              Constant(value='sender_title'),
+                              Constant(value='contact_info')],
+                            ctx=Load())])]),
+                  Dict(
+                    keys=[
+                      Constant(value='per_claim_minimum'),
+                      Constant(value='aggregate_minimum'),
+                      Constant(value='context_coherence_minimum'),
+                      Constant(value='team_whitelist_minimum')],
+                    values=[
+                      Constant(value=0.8),
+                      Constant(value=0.95),
+                      Constant(value=0.8),
+                      Constant(value=0.85)]),
+                  Dict(
+                    keys=[
+                      Constant(value='unicode_replacements'),
+                      Constant(value='allowed_characters'),
+                      Constant(value='emoji_policy')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='‘'),
+                          Constant(value='’'),
+                          Constant(value='“'),
+                          Constant(value='”'),
+                          Constant(value='—'),
+                          Constant(value='–'),
+                          Constant(value='…')],
+                        values=[
+                          Constant(value="'"),
+                          Constant(value="'"),
+                          Constant(value='"'),
+                          Constant(value='"'),
+                          Constant(value='--'),
+                          Constant(value='-'),
+                          Constant(value='...')]),
+                      Constant(value='ASCII printable only'),
+                      Constant(value='Not allowed in professional outreach')]),
+                  Dict(
+                    keys=[
+                      Constant(value='method'),
+                      Constant(value='exclude_from_count'),
+                      Constant(value='note'),
+                      Constant(value='implementation'),
+                      Constant(value='contractions'),
+                      Constant(value='hyphenated_words'),
+                      Constant(value='numbers_and_dates')],
+                    values=[
+                      Constant(value='whitespace + punctuation splitting'),
+                      List(ctx=Load()),
+                      Constant(value='Must match MS Word tokenization for manual verification'),
+                      Constant(value='len(text.split())'),
+                      Constant(value="Count as 1 word (we're = 1, not 2)"),
+                      Constant(value='Count as 1 word (state-of-the-art = 1)'),
+                      Constant(value='Count as words (Q4 = 1 word, 10/15/2025 = 1 word)')])])]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='phase_1_analyst'),
+              Constant(value='phase_2_architect'),
+              Constant(value='phase_3_artist'),
+              Constant(value='phase_4_assembler_staging'),
+              Constant(value='phase_5_validator'),
+              Constant(value='phase_6_gate')],
+            values=[
+              Constant(value='Multi-phase pipeline with staging buffer and scope isolation'),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='engine'),
+                  Constant(value='inputs'),
+                  Constant(value='outputs'),
+                  Constant(value='logic'),
+                  Constant(value='constraint_lookup')],
+                values=[
+                  Constant(value='The Analyst: Route Selection & Classification'),
+                  Constant(value='Classification Engine'),
+                  List(
+                    elts=[
+                      Constant(value='Recipient LinkedIn profile'),
+                      Constant(value='Job description'),
+                      Constant(value='Sender profile')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Route selection'),
+                      Constant(value='Archetype classification'),
+                      Constant(value='Constraint parameters')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='route_selection'),
+                      Constant(value='archetype_classification')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value="IF recipient_connection_status == 'not_connected' AND recipient_title CONTAINS ['CEO', 'CTO', 'VP', 'Director'] THEN route = INMAIL"),
+                          Constant(value="ELSE IF recipient_title CONTAINS ['Recruiter', 'Talent', 'Sourcing'] THEN route = CONNECTION_REQ"),
+                          Constant(value="ELSE IF recipient_connection_status == 'connected' AND prior_message_count > 0 THEN route = FOLLOW_UP"),
+                          Constant(value='ELSE route = CONNECTION_REQ')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value="IF recipient_title CONTAINS ['CEO', 'Chief', 'President'] THEN archetype = C_LEVEL"),
+                          Constant(value="ELSE IF recipient_title CONTAINS ['VP', 'Vice President', 'SVP'] THEN archetype = EXECUTIVE"),
+                          Constant(value="ELSE IF recipient_title CONTAINS ['Recruiter', 'Talent Acquisition'] THEN archetype = RECRUITER"),
+                          Constant(value="ELSE IF recipient_title CONTAINS ['Manager', 'Director', 'Head of'] THEN archetype = HIRING_MANAGER"),
+                          Constant(value='ELSE archetype = HIRING_MANAGER (default)')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='word_range'),
+                      Constant(value='char_limit'),
+                      Constant(value='target_word_count')],
+                    values=[
+                      Constant(value="get_global_constraint('routes', route, 'word_range')"),
+                      Constant(value="get_global_constraint('routes', route, 'char_limit')"),
+                      Constant(value='get_target_word_count(route, archetype)')])]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='engine'),
+                  Constant(value='inputs'),
+                  Constant(value='outputs'),
+                  Constant(value='rag_pipeline'),
+                  Constant(value='entity_grounding'),
+                  Constant(value='factual_scaffold_structure')],
+                values=[
+                  Constant(value='The Architect: Factual Scaffold Construction'),
+                  Constant(value='RAG + Entity Grounding Engine'),
+                  List(
+                    elts=[
+                      Constant(value='Sender resume/profile'),
+                      Constant(value='Job description'),
+                      Constant(value='Company research')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Factual scaffold'),
+                      Constant(value='RAG achievements'),
+                      Constant(value='Entity grounding map')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='step_1'),
+                      Constant(value='step_2'),
+                      Constant(value='step_3'),
+                      Constant(value='step_4'),
+                      Constant(value='step_5')],
+                    values=[
+                      Constant(value='Extract sender achievements from resume'),
+                      Constant(value='Score achievements against job requirements'),
+                      Constant(value='Select top 3-5 most relevant achievements'),
+                      Constant(value='Extract metrics with ±20 word context windows'),
+                      Constant(value='Build metric_source_map for validation')]),
+                  Dict(
+                    keys=[
+                      Constant(value='companies'),
+                      Constant(value='teams'),
+                      Constant(value='metrics'),
+                      Constant(value='job_title')],
+                    values=[
+                      Constant(value='Extract sender employment history → validated_companies whitelist'),
+                      Constant(value='Extract team descriptions → team_whitelist for validation'),
+                      Constant(value='Map each metric to source document → metric_source_map'),
+                      Constant(value='Extract target job title for position validation')]),
+                  Dict(
+                    keys=[
+                      Constant(value='sender_name'),
+                      Constant(value='recipient_name'),
+                      Constant(value='recipient_title'),
+                      Constant(value='company_name'),
+                      Constant(value='job_title'),
+                      Constant(value='achievements'),
+                      Constant(value='validated_companies'),
+                      Constant(value='team_whitelist'),
+                      Constant(value='metric_source_map')],
+                    values=[
+                      Constant(value='string'),
+                      Constant(value='string'),
+                      Constant(value='string'),
+                      Constant(value='string'),
+                      Constant(value='string'),
+                      Constant(value='array of objects with {text, metric, context, confidence}'),
+                      Constant(value='array of strings'),
+                      Constant(value='array of strings'),
+                      Constant(value='object mapping metrics to sources')])]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='engine'),
+                  Constant(value='inputs'),
+                  Constant(value='outputs'),
+                  Constant(value='generation_instructions'),
+                  Constant(value='artist_metadata_warning'),
+                  Constant(value='artist_output_structure')],
+                values=[
+                  Constant(value='The Artist: Creative Prose Generation'),
+                  Constant(value='LLM (GPT-4, Claude, etc.)'),
+                  List(
+                    elts=[
+                      Constant(value='Factual scaffold'),
+                      Constant(value='Route constraints'),
+                      Constant(value='Archetype parameters')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Artist-generated content for all K-nodes'),
+                      Constant(value='Artist metadata (DO NOT TRUST)')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='K.1_greeting'),
+                      Constant(value='K.2_subject'),
+                      Constant(value='K.3_body'),
+                      Constant(value='K.5_cta'),
+                      Constant(value='K.6_signature')],
+                    values=[
+                      Constant(value='Generate personalized greeting using recipient_name'),
+                      Constant(value='Generate compelling subject line (INMAIL only) within word/char limits'),
+                      Constant(value='Weave factual scaffold achievements into natural prose, maintain authenticity'),
+                      Constant(value='Generate respectful call to action within constraints'),
+                      Constant(value='Format professional signature with sender details')]),
+                  Dict(
+                    keys=[
+                      Constant(value='CRITICAL'),
+                      Constant(value='BUG_HISTORY'),
+                      Constant(value='SOLUTION')],
+                    values=[
+                      Constant(value='Artist may generate metadata claims (e.g., word_count: 215) but these CANNOT BE TRUSTED'),
+                      Constant(value='Job Workflow v1.6.2: Artist claimed 129 words but actual was 111 words'),
+                      Constant(value='Staging buffer will capture ACTUAL rendered text and compute ground truth measurements')]),
+                  Dict(
+                    keys=[
+                      Constant(value='K.1'),
+                      Constant(value='K.2'),
+                      Constant(value='K.3'),
+                      Constant(value='K.5'),
+                      Constant(value='K.6')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='text'),
+                          Constant(value='word_count')],
+                        values=[
+                          Constant(value='string'),
+                          Constant(value='integer (DO NOT TRUST)')]),
+                      Dict(
+                        keys=[
+                          Constant(value='text'),
+                          Constant(value='word_count')],
+                        values=[
+                          Constant(value='string'),
+                          Constant(value='integer (DO NOT TRUST)')]),
+                      Dict(
+                        keys=[
+                          Constant(value='text'),
+                          Constant(value='word_count'),
+                          Constant(value='achievements')],
+                        values=[
+                          Constant(value='string'),
+                          Constant(value='integer (DO NOT TRUST)'),
+                          Constant(value='array')]),
+                      Dict(
+                        keys=[
+                          Constant(value='text'),
+                          Constant(value='word_count')],
+                        values=[
+                          Constant(value='string'),
+                          Constant(value='integer (DO NOT TRUST)')]),
+                      Dict(
+                        keys=[
+                          Constant(value='text'),
+                          Constant(value='line_count')],
+                        values=[
+                          Constant(value='string'),
+                          Constant(value='integer (DO NOT TRUST)')])])]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='engine'),
+                  Constant(value='inputs'),
+                  Constant(value='outputs'),
+                  Constant(value='critical_process'),
+                  Constant(value='assembly_steps'),
+                  Constant(value='scope_isolation_enforcement'),
+                  Constant(value='staging_buffer_structure'),
+                  Constant(value='tokenization_implementation')],
+                values=[
+                  Constant(value='The Assembler: Staging Buffer Capture'),
+                  Constant(value='Deterministic Assembly + Staging Buffer Extractor'),
+                  List(
+                    elts=[
+                      Constant(value='Artist-generated content')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='staging_buffer with ground truth measurements')],
+                    ctx=Load()),
+                  Constant(value='This phase provides GROUND TRUTH for validation'),
+                  Dict(
+                    keys=[
+                      Constant(value='step_1'),
+                      Constant(value='step_2'),
+                      Constant(value='step_3'),
+                      Constant(value='step_4'),
+                      Constant(value='step_5'),
+                      Constant(value='step_6'),
+                      Constant(value='step_7'),
+                      Constant(value='step_8')],
+                    values=[
+                      Constant(value='Render all K-nodes to temporary buffer'),
+                      Constant(value='Extract each K-node section as raw text string (no metadata)'),
+                      Constant(value='Compute actual word counts using standardized tokenizer'),
+                      Constant(value='Compute actual character counts including spaces and punctuation'),
+                      Constant(value='Extract structural elements (paragraphs, claims, metrics)'),
+                      Constant(value='Store all extracted data in staging_buffer object'),
+                      Constant(value='Pass staging_buffer to QA Engine V3 for validation'),
+                      Constant(value='DO NOT allow Artist metadata to bypass staging buffer')]),
+                  Dict(
+                    keys=[
+                      Constant(value='CRITICAL_STEP_9'),
+                      Constant(value='CRITICAL_STEP_10'),
+                      Constant(value='CRITICAL_STEP_11'),
+                      Constant(value='CRITICAL_STEP_12'),
+                      Constant(value='CRITICAL_STEP_13'),
+                      Constant(value='RATIONALE')],
+                    values=[
+                      Constant(value='Create backup: artist_output_backup = deepcopy(artist_output)'),
+                      Constant(value='DELETE from scope: del artist_output'),
+                      Constant(value="Verification: assert 'artist_output' not in locals()"),
+                      Constant(value='All validation passes staging_buffer ONLY'),
+                      Constant(value='After validation: Restore artist_output_backup for final rendering (if validation passes)'),
+                      Constant(value='Hard scope isolation prevents validation from accidentally reading artist_output instead of staging_buffer')]),
+                  Dict(
+                    keys=[
+                      Constant(value='K.1_greeting_actual'),
+                      Constant(value='K.2_subject_actual'),
+                      Constant(value='K.3_body_actual'),
+                      Constant(value='K.5_cta_actual'),
+                      Constant(value='K.6_signature_actual'),
+                      Constant(value='full_message_actual')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='raw_text'),
+                          Constant(value='word_count'),
+                          Constant(value='char_count'),
+                          Constant(value='contains_recipient_name')],
+                        values=[
+                          Constant(value='string - actual rendered greeting text'),
+                          Constant(value='integer - len(raw_text.split())'),
+                          Constant(value='integer - len(raw_text)'),
+                          Constant(value='boolean')]),
+                      Dict(
+                        keys=[
+                          Constant(value='raw_text'),
+                          Constant(value='word_count'),
+                          Constant(value='char_count'),
+                          Constant(value='applies_to_routes')],
+                        values=[
+                          Constant(value='string - actual rendered subject line'),
+                          Constant(value='integer - computed from raw_text'),
+                          Constant(value='integer - computed from raw_text'),
+                          List(
+                            elts=[
+                              Constant(value='INMAIL')],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='raw_text'),
+                          Constant(value='word_count'),
+                          Constant(value='char_count'),
+                          Constant(value='paragraphs'),
+                          Constant(value='paragraph_count'),
+                          Constant(value='claims'),
+                          Constant(value='metrics'),
+                          Constant(value='companies'),
+                          Constant(value='team_descriptions'),
+                          Constant(value='achievements'),
+                          Constant(value='achievement_count')],
+                        values=[
+                          Constant(value='string - actual rendered body text'),
+                          Constant(value='integer - computed from raw_text'),
+                          Constant(value='integer - computed from raw_text'),
+                          Constant(value='array - split on double newline'),
+                          Constant(value='integer'),
+                          Constant(value='array - extracted atomic claims'),
+                          Constant(value='array - extracted metrics with context windows'),
+                          Constant(value='array - extracted company names'),
+                          Constant(value='array - extracted team/role descriptions'),
+                          Constant(value='array - extracted achievements'),
+                          Constant(value='integer')]),
+                      Dict(
+                        keys=[
+                          Constant(value='raw_text'),
+                          Constant(value='word_count'),
+                          Constant(value='char_count'),
+                          Constant(value='date_proposals'),
+                          Constant(value='contains_timeframe'),
+                          Constant(value='tone_indicators')],
+                        values=[
+                          Constant(value='string - actual rendered CTA text'),
+                          Constant(value='integer - computed from raw_text'),
+                          Constant(value='integer - computed from raw_text'),
+                          Constant(value='array - extracted date strings'),
+                          Constant(value='boolean'),
+                          Constant(value='array - extracted tone words')]),
+                      Dict(
+                        keys=[
+                          Constant(value='raw_text'),
+                          Constant(value='line_count'),
+                          Constant(value='estimated_chars'),
+                          Constant(value='contains_name'),
+                          Constant(value='contains_title'),
+                          Constant(value='contains_contact')],
+                        values=[
+                          Constant(value='string - actual rendered signature block'),
+                          Constant(value='integer - count newlines + 1'),
+                          Constant(value='integer - actual char count'),
+                          Constant(value='boolean'),
+                          Constant(value='boolean'),
+                          Constant(value='boolean')]),
+                      Dict(
+                        keys=[
+                          Constant(value='raw_text'),
+                          Constant(value='word_count'),
+                          Constant(value='char_count'),
+                          Constant(value='route'),
+                          Constant(value='archetype'),
+                          Constant(value='k_node_sequence')],
+                        values=[
+                          Constant(value='string - complete assembled message'),
+                          Constant(value='integer - total word count'),
+                          Constant(value='integer - total char count'),
+                          Constant(value='string - resolved route name'),
+                          Constant(value='string - classified recipient type'),
+                          Constant(value='array - order of K-nodes in message')])]),
+                  Dict(
+                    keys=[
+                      Constant(value='function'),
+                      Constant(value='consistency_requirement'),
+                      Constant(value='test')],
+                    values=[
+                      Constant(value='def compute_word_count(text: str) -> int: return len(text.split())'),
+                      Constant(value='MUST match MS Word tokenization for manual verification'),
+                      Constant(value='LIC-SCOPE-SMOKE-001 requires MS Word count to match staging_buffer count exactly')])]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='engine'),
+                  Constant(value='inputs'),
+                  Constant(value='outputs'),
+                  Constant(value='critical_rule'),
+                  Constant(value='scope_isolation_verification'),
+                  Constant(value='validation_batches'),
+                  Constant(value='workflow_validation_rules'),
+                  Constant(value='phase_1_analyst_validation'),
+                  Constant(value='token_optimization')],
+                values=[
+                  Constant(value='The Validator: QA Validation with Scope Isolation'),
+                  Constant(value='QA Engine V3'),
+                  List(
+                    elts=[
+                      Constant(value='staging_buffer ONLY (artist_output deleted)')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='ValidationResult or FatalValidationException')],
+                    ctx=Load()),
+                  Constant(value='QA Engine V3 has ZERO access to artist_output (scope isolated)'),
+                  Dict(
+                    keys=[
+                      Constant(value='pre_validation_check'),
+                      Constant(value='function_signature'),
+                      Constant(value='mandatory_scope_check')],
+                    values=[
+                      Constant(value="if 'artist_output' in dir(): raise ScopeViolationError('artist_output still accessible')"),
+                      Constant(value='def validate(staging_buffer: dict) -> ValidationResult'),
+                      Constant(value="Every validation batch MUST check: if 'artist_output' in dir(): raise ScopeViolationError()")]),
+                  Dict(
+                    keys=[
+                      Constant(value='batch_0_pre_flight'),
+                      Constant(value='batch_1_constraint_compliance'),
+                      Constant(value='batch_2_confidence_validation'),
+                      Constant(value='batch_3_entity_validation'),
+                      Constant(value='batch_4_format_validation'),
+                      Constant(value='batch_5_post_validation')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='priority'),
+                          Constant(value='blocking'),
+                          Constant(value='estimated_tokens'),
+                          Constant(value='execution_order'),
+                          Constant(value='description'),
+                          Constant(value='checks')],
+                        values=[
+                          Constant(value=0),
+                          Name(id='true', ctx=Load()),
+                          Constant(value=2000),
+                          Constant(value='BEFORE_ALL_OTHER_BATCHES'),
+                          Constant(value='Structural pre-flight validation before expensive content validation'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-000'),
+                                  Constant(value='Route enum validation'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']['route']"),
+                                  Constant(value="assert route in ['INMAIL', 'CONNECTION_REQ', 'FOLLOW_UP']"),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-000: Invalid route')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-001A'),
+                                  Constant(value='Archetype enum validation'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']['archetype']"),
+                                  Constant(value="assert archetype in ['EXECUTIVE', 'RECRUITER', 'HIRING_MANAGER', 'C_LEVEL']"),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-001A: Invalid archetype')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-003'),
+                                  Constant(value='Subject line presence for INMAIL'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.2_subject_actual']"),
+                                  Constant(value="if route == 'INMAIL': assert K.2_subject_actual is not None and len(raw_text) > 0"),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-003: INMAIL requires subject line')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-004'),
+                                  Constant(value='Subject line exclusion for non-INMAIL'),
+                                  Constant(value='WARNING'),
+                                  Constant(value="staging_buffer['K.2_subject_actual']"),
+                                  Constant(value="if route != 'INMAIL': assert K.2_subject_actual is None or len(raw_text) == 0"),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-004: Non-INMAIL routes should not have subject line')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-005'),
+                                  Constant(value='K.1 greeting presence'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.1_greeting_actual']"),
+                                  Constant(value='assert K.1_greeting_actual is not None and len(raw_text) > 0'),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-005: K.1 greeting missing')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-006'),
+                                  Constant(value='K.3 body presence'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']"),
+                                  Constant(value='assert K.3_body_actual is not None and len(raw_text) > 0'),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-006: K.3 body missing')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-007'),
+                                  Constant(value='K.5 CTA presence'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.5_cta_actual']"),
+                                  Constant(value='assert K.5_cta_actual is not None and len(raw_text) > 0'),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-007: K.5 CTA missing')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-008'),
+                                  Constant(value='K.6 signature presence'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.6_signature_actual']"),
+                                  Constant(value='assert K.6_signature_actual is not None and len(raw_text) > 0'),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-008: K.6 signature missing')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-009'),
+                                  Constant(value='K-node sequence validation'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']['k_node_sequence']"),
+                                  Constant(value='Verify K-nodes appear in correct order: K.1, K.2 (if INMAIL), K.3, K.5, K.6'),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-009: K-nodes out of sequence')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-013'),
+                                  Constant(value='K-node uniqueness'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='staging_buffer keys'),
+                                  Constant(value='Verify each K-node section appears exactly once'),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-013: Duplicate K-node detected')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-WORKFLOW-002'),
+                                  Constant(value='Staging buffer presence validation'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value='staging_buffer'),
+                                  Constant(value='assert staging_buffer is not None and isinstance(staging_buffer, dict)'),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise WorkflowViolationError('Staging buffer not created before validation')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='blocking_conditions'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-WORKFLOW-009'),
+                                  Constant(value='Blocking condition validation'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']"),
+                                  Constant(value='Check all blocking conditions before workflow continues'),
+                                  List(
+                                    elts=[
+                                      Constant(value='sender_profile exists'),
+                                      Constant(value='recipient_info exists'),
+                                      Constant(value='RAG pipeline healthy'),
+                                      Constant(value='No prior scope violations')],
+                                    ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise WorkflowViolationError('Blocking condition not met')")])],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='priority'),
+                          Constant(value='blocking'),
+                          Constant(value='estimated_tokens'),
+                          Constant(value='execution_order'),
+                          Constant(value='checks')],
+                        values=[
+                          Constant(value=1),
+                          Name(id='true', ctx=Load()),
+                          Constant(value=8000),
+                          Constant(value='AFTER_BATCH_0'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='constraint_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-001'),
+                                  Constant(value='Full message word count within route range'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']['word_count']"),
+                                  Constant(value="get_global_constraint('routes', route, 'word_range')"),
+                                  Constant(value='word_count >= word_min AND word_count <= word_max'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-001')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='constraint_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-002'),
+                                  Constant(value='Character limit respected'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']['char_count']"),
+                                  Constant(value="get_global_constraint('routes', route, 'char_limit')"),
+                                  Constant(value='char_count <= char_limit'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-002')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='constraint_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-010'),
+                                  Constant(value='K.1 greeting word count'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.1_greeting_actual']['word_count']"),
+                                  Constant(value="get_global_constraint('component_constraints', 'K.1_greeting')"),
+                                  Constant(value='assert 3 <= word_count <= 6'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-010: K.1 greeting word count out of range')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='constraint_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-011'),
+                                  Constant(value='K.6 signature line count'),
+                                  Constant(value='WARNING'),
+                                  Constant(value="staging_buffer['K.6_signature_actual']['line_count']"),
+                                  Constant(value="get_global_constraint('component_constraints', 'K.6_signature')"),
+                                  Constant(value='assert 3 <= line_count <= 4'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-011: K.6 signature line count out of range')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='constraint_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='applies_to_routes'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-012'),
+                                  Constant(value='Subject line constraints (INMAIL only)'),
+                                  Constant(value='WARNING'),
+                                  Constant(value="staging_buffer['K.2_subject_actual']"),
+                                  Constant(value="get_global_constraint('component_constraints', 'K.2_subject_line')"),
+                                  Constant(value='word_count in [5,8] AND char_count <= 60'),
+                                  List(
+                                    elts=[
+                                      Constant(value='INMAIL')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-012')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='constraint_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-026'),
+                                  Constant(value='K.3 body word count in archetype target range'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['word_count']"),
+                                  Constant(value='get_target_word_count(route, archetype)'),
+                                  Constant(value='word_count within target ±10%'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-026')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='constraint_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-033'),
+                                  Constant(value='CTA word count constraints'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.5_cta_actual']['word_count']"),
+                                  Constant(value="get_global_constraint('component_constraints', 'K.5_cta')"),
+                                  Constant(value='word_count in [18,30]'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-033')")])],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='priority'),
+                          Constant(value='blocking'),
+                          Constant(value='estimated_tokens'),
+                          Constant(value='execution_order'),
+                          Constant(value='checks')],
+                        values=[
+                          Constant(value=2),
+                          Name(id='true', ctx=Load()),
+                          Constant(value=12000),
+                          Constant(value='AFTER_BATCH_1'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='threshold_source'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-106'),
+                                  Constant(value='Per-claim confidence enforcement'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['claims']"),
+                                  Constant(value="get_confidence_threshold('per_claim_minimum')"),
+                                  List(
+                                    elts=[
+                                      Constant(value='Extract claims from staging_buffer (actual rendered claims)'),
+                                      Constant(value='Score each claim against RAG sources'),
+                                      Constant(value='Check each claim confidence >= 0.80'),
+                                      Constant(value='Remove claims below threshold'),
+                                      Constant(value='Recalculate aggregate')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="remove_low_confidence_claims() or raise FatalValidationException('LIC-QA-106')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='threshold_source'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-104'),
+                                  Constant(value='Aggregate confidence threshold'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value="get_confidence_threshold('aggregate_minimum')"),
+                                  List(
+                                    elts=[
+                                      Constant(value='Score entire K.3 body against RAG sources'),
+                                      Constant(value='Calculate weighted average confidence'),
+                                      Constant(value='Check aggregate >= 0.95')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-104')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='threshold_source'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-107'),
+                                  Constant(value='Metric context coherence'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['metrics']"),
+                                  Constant(value="get_confidence_threshold('context_coherence_minimum')"),
+                                  List(
+                                    elts=[
+                                      Constant(value='For each metric: extract ±20 word context'),
+                                      Constant(value='Lookup required context keywords from metric_source_map'),
+                                      Constant(value='Calculate coherence score'),
+                                      Constant(value='Check coherence >= 0.80')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-107')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-120'),
+                                  Constant(value='Minimum achievement inclusion'),
+                                  Constant(value='HIGH'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['achievement_count']"),
+                                  Constant(value='assert achievement_count >= 2'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-120: Insufficient achievements in K.3')")])],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='priority'),
+                          Constant(value='blocking'),
+                          Constant(value='estimated_tokens'),
+                          Constant(value='execution_order'),
+                          Constant(value='checks')],
+                        values=[
+                          Constant(value=3),
+                          Name(id='true', ctx=Load()),
+                          Constant(value=6000),
+                          Constant(value='AFTER_BATCH_2'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='whitelist_source'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-032'),
+                                  Constant(value='Company name whitelist enforcement'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['companies']"),
+                                  Constant(value='sender_profile.validated_companies'),
+                                  List(
+                                    elts=[
+                                      Constant(value='Extract company names from staging_buffer'),
+                                      Constant(value='Compare against validated_companies whitelist'),
+                                      Constant(value='Check for hallucinated companies')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-032')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='mapping_source'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-041'),
+                                  Constant(value='Metric source binding validation'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['metrics']"),
+                                  Constant(value='metric_source_map'),
+                                  List(
+                                    elts=[
+                                      Constant(value='Extract metrics from staging_buffer'),
+                                      Constant(value='Verify each has entry in metric_source_map'),
+                                      Constant(value='Check no unmapped metrics')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-041')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='whitelist_source'),
+                                  Constant(value='threshold_source'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-105'),
+                                  Constant(value='Team whitelist enforcement'),
+                                  Constant(value='WARNING'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['team_descriptions']"),
+                                  Constant(value='team_whitelist'),
+                                  Constant(value="get_confidence_threshold('team_whitelist_minimum')"),
+                                  List(
+                                    elts=[
+                                      Constant(value='Extract team descriptions from staging_buffer'),
+                                      Constant(value='Calculate similarity to whitelist'),
+                                      Constant(value='Check similarity >= 0.85')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-105')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-108'),
+                                  Constant(value='Claim attribution accuracy'),
+                                  Constant(value='HIGH'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['claims']"),
+                                  Constant(value="Check that claims properly attribute sender's role (led vs participated)"),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-108: Misleading claim attribution')")])],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='priority'),
+                          Constant(value='blocking'),
+                          Constant(value='estimated_tokens'),
+                          Constant(value='execution_order'),
+                          Constant(value='checks')],
+                        values=[
+                          Constant(value=4),
+                          Name(id='true', ctx=Load()),
+                          Constant(value=4000),
+                          Constant(value='AFTER_BATCH_3'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='patterns'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-067'),
+                                  Constant(value='No placeholders in output'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  List(
+                                    elts=[
+                                      Constant(value='\\[([A-Z_]+)\\]'),
+                                      Constant(value='\\{([A-Z_]+)\\}'),
+                                      Constant(value='__([A-Z_]+)__'),
+                                      Constant(value='\\[TBD\\]|\\[TODO\\]|\\[PLACEHOLDER\\]')],
+                                    ctx=Load()),
+                                  Constant(value='Scan raw_text for placeholder patterns'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-067')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-068'),
+                                  Constant(value='K.1 recipient name inclusion'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.1_greeting_actual']['contains_recipient_name']"),
+                                  Constant(value='assert contains_recipient_name == true'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-068: Greeting missing recipient name')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-069'),
+                                  Constant(value='K.6 signature completeness'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.6_signature_actual']"),
+                                  Constant(value='assert contains_name AND contains_title AND contains_contact'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-069: Signature missing required elements')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='trigger'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-075'),
+                                  Constant(value='Job title in first 50 words'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value='job_application_confirmed == true'),
+                                  List(
+                                    elts=[
+                                      Constant(value='Tokenize K.3 raw_text'),
+                                      Constant(value='Find first occurrence of job_title'),
+                                      Constant(value='Check position <= 50 words')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-075')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-076'),
+                                  Constant(value='Company name inclusion in K.3'),
+                                  Constant(value='HIGH'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value='Check if recipient_company_name appears in K.3'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-076: Company name not mentioned in body')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='encoding_rules'),
+                                  Constant(value='process'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-055'),
+                                  Constant(value='ASCII hygiene compliance'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value="get_character_encoding_rule('unicode_replacements')"),
+                                  List(
+                                    elts=[
+                                      Constant(value='Scan raw_text for non-ASCII'),
+                                      Constant(value='Apply unicode_replacements'),
+                                      Constant(value='Verify no unmapped Unicode')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="apply_ascii_replacements() or raise FatalValidationException('LIC-QA-055')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-110'),
+                                  Constant(value='Route tone compliance'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Classify tone, compare to route.tone requirements'),
+                                  Constant(value='Tone match confidence >= 0.70'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-111'),
+                                  Constant(value='Archetype content focus compliance'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value='Check for presence of focus keywords/themes'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-112'),
+                                  Constant(value='Archetype content avoidance compliance'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value='Check for absence of avoidance keywords/themes'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-113'),
+                                  Constant(value='Subject line quality check'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.2_subject_actual']['raw_text']"),
+                                  Constant(value='Check for clickbait patterns, all-caps, excessive punctuation'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-114'),
+                                  Constant(value='K.3 body structure compliance'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value='NLP detection of hook, credibility, value prop, social proof elements'),
+                                  Constant(value='At least 3/4 elements present'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-115'),
+                                  Constant(value='CTA timeframe inclusion'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.5_cta_actual']['contains_timeframe']"),
+                                  Constant(value='assert contains_timeframe == true'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='patterns_to_flag'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-116'),
+                                  Constant(value='CTA tone appropriateness'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.5_cta_actual']['tone_indicators']"),
+                                  Constant(value='Sentiment analysis + imperative phrase detection'),
+                                  List(
+                                    elts=[
+                                      Constant(value='You must'),
+                                      Constant(value='You need to'),
+                                      Constant(value='Respond immediately')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-117'),
+                                  Constant(value='K-node spacing validation'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Check for blank lines between K-nodes'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-118'),
+                                  Constant(value='K.3 paragraph structure'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['paragraph_count']"),
+                                  Constant(value='Check paragraph count (2-5 typical), avg words per paragraph (30-80)'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-119'),
+                                  Constant(value='K-node content uniqueness'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value='staging_buffer all K-node raw_text fields'),
+                                  Constant(value='Calculate text similarity between K-nodes, flag >50% overlap'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-121'),
+                                  Constant(value='Emoji detection'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Scan for Unicode emoji ranges, flag if found'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-121: Emojis not allowed in professional outreach')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-122'),
+                                  Constant(value='Grammar and spelling check'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Run spelling/grammar checker, flag errors'),
+                                  Constant(value='Max 2 minor errors acceptable'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning with error list (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-123'),
+                                  Constant(value='Capitalization appropriateness'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Count all-caps words (>3 consecutive), flag excessive use'),
+                                  Constant(value="Max 2 all-caps words (e.g., 'CEO', 'AI') acceptable"),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-124'),
+                                  Constant(value='Punctuation appropriateness'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Detect patterns like !!!, ???, ..., flag if found'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='patterns_to_flag'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-125'),
+                                  Constant(value='Professional language validation'),
+                                  Constant(value='HIGH'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Check against slang/profanity dictionary, flag matches'),
+                                  List(
+                                    elts=[
+                                      Constant(value='bro'),
+                                      Constant(value='dude'),
+                                      Constant(value='wanna'),
+                                      Constant(value='gonna'),
+                                      Constant(value='gig')],
+                                    ctx=Load()),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-125: Inappropriate language detected')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='patterns_to_flag'),
+                                  Constant(value='threshold'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-126'),
+                                  Constant(value='Personalization quality check'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value='Check for generic phrases, calculate personalization score'),
+                                  List(
+                                    elts=[
+                                      Constant(value='I am writing to express'),
+                                      Constant(value='I hope this message finds you well')],
+                                    ctx=Load()),
+                                  Constant(value='Max 1 generic phrase acceptable'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-127'),
+                                  Constant(value='Sender information consistency'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='staging_buffer K.3 + K.6 + factual_scaffold'),
+                                  Constant(value='Verify sender_name, sender_title consistent across all mentions'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value="raise FatalValidationException('LIC-QA-127: Inconsistent sender information')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-128'),
+                                  Constant(value='Metric formatting consistency'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['metrics']"),
+                                  Constant(value='Check metric formats follow style guide (e.g., M/B for millions/billions)'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning with suggested corrections (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-129'),
+                                  Constant(value='Date formatting consistency'),
+                                  Constant(value='LOW'),
+                                  Constant(value="staging_buffer['K.3_body_actual']['raw_text']"),
+                                  Constant(value='Extract dates, verify consistent format'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning only (non-blocking)')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='data_source'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='patterns_to_flag'),
+                                  Constant(value='threshold'),
+                                  Constant(value='ignore_artist_metadata'),
+                                  Constant(value='scope_check'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-QA-130'),
+                                  Constant(value='Strong language validation'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value="staging_buffer['full_message_actual']['raw_text']"),
+                                  Constant(value='Check for weak qualifiers, calculate confidence language score'),
+                                  List(
+                                    elts=[
+                                      Constant(value='somewhat'),
+                                      Constant(value='pretty'),
+                                      Constant(value='kind of'),
+                                      Constant(value='sort of'),
+                                      Constant(value='maybe')],
+                                    ctx=Load()),
+                                  Constant(value='Max 1 weak phrase acceptable'),
+                                  Name(id='true', ctx=Load()),
+                                  Constant(value="assert 'artist_output' not in dir()"),
+                                  Constant(value='Warning (non-blocking)')])],
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='priority'),
+                          Constant(value='blocking'),
+                          Constant(value='estimated_tokens'),
+                          Constant(value='execution_order'),
+                          Constant(value='description'),
+                          Constant(value='checks')],
+                        values=[
+                          Constant(value=5),
+                          Name(id='false', ctx=Load()),
+                          Constant(value=1000),
+                          Constant(value='AFTER_GATE_DECISION'),
+                          Constant(value='Runtime monitoring and post-validation checks'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='frequency'),
+                                  Constant(value='on_detection')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-001'),
+                                  Constant(value='Runtime scope violation monitoring'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='Query logs for ScopeViolationError, alert if count > 0'),
+                                  Constant(value='Every message generation'),
+                                  Constant(value='Alert + log details + increment metric')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='frequency'),
+                                  Constant(value='on_threshold_breach')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-002'),
+                                  Constant(value='Validation rate tracking'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='Track validation_passed / total_attempts ratio'),
+                                  Constant(value='Alert if success rate < 90%'),
+                                  Constant(value='Hourly aggregation'),
+                                  Constant(value='Alert operations team')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='frequency'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-003'),
+                                  Constant(value='Automated daily manual verification'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value='Generate test message daily, auto-extract K.3, compare MS Word vs QA report'),
+                                  Constant(value='Daily at 9AM (first week post-deployment)'),
+                                  Constant(value='Page on-call engineer + halt new generations')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='frequency'),
+                                  Constant(value='on_threshold_breach')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-004'),
+                                  Constant(value='Word count accuracy monitoring'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='Sample 10% of messages, auto-compare staging_buffer vs expected tokenization'),
+                                  Constant(value='Alert if >1% of samples show discrepancy'),
+                                  Constant(value='Every 100 messages'),
+                                  Constant(value='Alert + investigate tokenization')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='frequency'),
+                                  Constant(value='on_threshold_breach')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-005'),
+                                  Constant(value='Token usage monitoring'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value='Track tokens_used per message, calculate rolling average'),
+                                  Constant(value='Alert if avg > 33K (10% above expected 30K)'),
+                                  Constant(value='Hourly aggregation'),
+                                  Constant(value='Alert + review early exit logic')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='frequency'),
+                                  Constant(value='on_threshold_breach')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-006'),
+                                  Constant(value='Validation latency monitoring'),
+                                  Constant(value='MEDIUM'),
+                                  Constant(value='Track validation_time per message, calculate P50/P95/P99'),
+                                  Constant(value='Alert if P95 > 7 seconds'),
+                                  Constant(value='Real-time per message'),
+                                  Constant(value='Alert + profile slow validations')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='threshold'),
+                                  Constant(value='frequency'),
+                                  Constant(value='on_threshold_breach')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-007'),
+                                  Constant(value='File write success monitoring'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='Track file_write_success / file_write_attempts ratio'),
+                                  Constant(value='Alert if success rate < 99%'),
+                                  Constant(value='Real-time per message'),
+                                  Constant(value='Alert + check file system')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-008'),
+                                  Constant(value='QA report generation verification'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='Verify QA report file exists after validation'),
+                                  Constant(value='Log error + generate alert')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-009'),
+                                  Constant(value='Backup restoration verification'),
+                                  Constant(value='CRITICAL'),
+                                  Constant(value='After restoration: verify artist_output == artist_output_backup'),
+                                  Constant(value="raise WorkflowViolationError('Backup restoration failed')")]),
+                              Dict(
+                                keys=[
+                                  Constant(value='rule_id'),
+                                  Constant(value='name'),
+                                  Constant(value='severity'),
+                                  Constant(value='validation_logic'),
+                                  Constant(value='on_failure')],
+                                values=[
+                                  Constant(value='LIC-MONITOR-010'),
+                                  Constant(value='Error report completeness validation'),
+                                  Constant(value='HIGH'),
+                                  Constant(value='Verify error report contains: result, failed_checks, timestamp, staging_buffer_snapshot'),
+                                  Constant(value='Log warning + flag incomplete report')])],
+                            ctx=Load())])]),
+                  Dict(
+                    keys=[
+                      Constant(value='LIC-WORKFLOW-001'),
+                      Constant(value='LIC-WORKFLOW-003'),
+                      Constant(value='LIC-WORKFLOW-004'),
+                      Constant(value='LIC-WORKFLOW-005'),
+                      Constant(value='LIC-WORKFLOW-006'),
+                      Constant(value='LIC-WORKFLOW-007'),
+                      Constant(value='LIC-WORKFLOW-008')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='validation_logic'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Phase execution order validation'),
+                          Constant(value='CRITICAL'),
+                          Constant(value='State machine: Phase N completion required before Phase N+1 starts'),
+                          Constant(value="raise WorkflowViolationError('Phases executed out of order')")]),
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='validation_logic'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Backup creation verification'),
+                          Constant(value='HIGH'),
+                          Constant(value='assert artist_output_backup is not None and len(artist_output_backup) > 0'),
+                          Constant(value="raise WorkflowViolationError('Backup not created before artist_output deletion')")]),
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='validation_logic'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Batch execution order validation'),
+                          Constant(value='HIGH'),
+                          Constant(value='assert batch_N_complete before starting batch_N+1'),
+                          Constant(value="raise WorkflowViolationError('Validation batches executed out of order')")]),
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='validation_logic'),
+                          Constant(value='metric'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Early exit verification'),
+                          Constant(value='HIGH'),
+                          Constant(value='If batch_1 failed, verify batches 2-4 did NOT execute'),
+                          Constant(value='tokens_used <= batch_1_tokens + overhead'),
+                          Constant(value='Log warning (non-blocking but indicates optimization broken)')]),
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='validation_logic'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Gate decision enforcement verification'),
+                          Constant(value='CRITICAL'),
+                          Constant(value='assert (file_written XOR error_displayed) == True'),
+                          Constant(value="raise WorkflowViolationError('Gate decision not properly enforced')")]),
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='validation_logic'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Success path completion verification'),
+                          Constant(value='HIGH'),
+                          Constant(value='Verify: backup_restored AND file_written AND user_displayed AND logged'),
+                          Constant(value="raise WorkflowViolationError('Success path incomplete')")]),
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='validation_logic'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Failure path enforcement verification'),
+                          Constant(value='CRITICAL'),
+                          Constant(value='Verify: report_generated AND report_displayed AND file_NOT_written AND logged'),
+                          Constant(value="raise WorkflowViolationError('Failure path violated - file may have been written')")])]),
+                  Dict(
+                    keys=[
+                      Constant(value='LIC-QA-201'),
+                      Constant(value='LIC-QA-202')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='phase'),
+                          Constant(value='validation_logic'),
+                          Constant(value='example'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Route-recipient appropriateness'),
+                          Constant(value='MEDIUM'),
+                          Constant(value='PHASE_1'),
+                          Constant(value='Verify selected route matches recipient archetype'),
+                          Constant(value='If archetype=EXECUTIVE → route should be INMAIL'),
+                          Constant(value='Raise warning, suggest route correction')]),
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='severity'),
+                          Constant(value='phase'),
+                          Constant(value='validation_logic'),
+                          Constant(value='on_failure')],
+                        values=[
+                          Constant(value='Route-archetype preference match'),
+                          Constant(value='MEDIUM'),
+                          Constant(value='PHASE_1'),
+                          Constant(value='If route != archetype.preferred_route, log warning with reason'),
+                          Constant(value='Warning only (non-blocking but logged)')])]),
+                  Dict(
+                    keys=[
+                      Constant(value='strategy'),
+                      Constant(value='baseline_cost'),
+                      Constant(value='optimized_cost'),
+                      Constant(value='savings'),
+                      Constant(value='implementation')],
+                    values=[
+                      Constant(value='Batched validation with early exit'),
+                      Constant(value='60K tokens (all checks)'),
+                      Constant(value='~30K tokens (batched)'),
+                      Constant(value='50% via early exit on failure'),
+                      Constant(value="If batch_1 fails, batches 2-5 don't execute")])]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='engine'),
+                  Constant(value='inputs'),
+                  Constant(value='outputs'),
+                  Constant(value='blocking'),
+                  Constant(value='gate_decision_pattern'),
+                  Constant(value='FatalValidationException'),
+                  Constant(value='failure_report_format')],
+                values=[
+                  Constant(value='The Gate: Output Decision'),
+                  Constant(value='Master Validation Gate'),
+                  List(
+                    elts=[
+                      Constant(value='ValidationResult from QA Engine V3')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Final message file OR failure report (NEVER both)')],
+                    ctx=Load()),
+                  Name(id='true', ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='execution_point'),
+                      Constant(value='implementation_pseudocode'),
+                      Constant(value='success_path'),
+                      Constant(value='failure_path')],
+                    values=[
+                      Constant(value='Exception-based gate that blocks file writes on validation failure'),
+                      Constant(value='After all validation batches complete'),
+                      List(
+                        elts=[
+                          Constant(value='# SCOPE ISOLATION VERIFICATION'),
+                          Constant(value="if 'artist_output' in dir():"),
+                          Constant(value="    raise ScopeViolationError('artist_output still accessible - scope isolation failed')"),
+                          Constant(value=''),
+                          Constant(value='# VALIDATION EXECUTION'),
+                          Constant(value='try:'),
+                          Constant(value='    run_validation_batch_0(staging_buffer)  # Pre-flight checks'),
+                          Constant(value='    run_validation_batch_1(staging_buffer)  # Constraint compliance'),
+                          Constant(value='    run_validation_batch_2(staging_buffer)  # Confidence validation'),
+                          Constant(value='    run_validation_batch_3(staging_buffer)  # Entity validation'),
+                          Constant(value='    run_validation_batch_4(staging_buffer)  # Format validation'),
+                          Constant(value='    all_validations_pass = True'),
+                          Constant(value='except FatalValidationException as e:'),
+                          Constant(value='    all_validations_pass = False'),
+                          Constant(value='    failure_report = generate_failure_report(e, staging_buffer)'),
+                          Constant(value=''),
+                          Constant(value='# GATE DECISION'),
+                          Constant(value='if all_validations_pass:'),
+                          Constant(value='    artist_output = artist_output_backup  # Restore for file rendering'),
+                          Constant(value="    write_final_message_file(staging_buffer['full_message_actual']['raw_text'])"),
+                          Constant(value="    display_to_user(staging_buffer['full_message_actual']['raw_text'])"),
+                          Constant(value="    log_success('All validations passed, message delivered')"),
+                          Constant(value='    run_validation_batch_5(staging_buffer)  # Post-validation monitoring'),
+                          Constant(value='else:'),
+                          Constant(value='    display_failure_report(failure_report)'),
+                          Constant(value='    DO_NOT_WRITE_FILE'),
+                          Constant(value='    DO_NOT_DISPLAY_MESSAGE'),
+                          Constant(value="    log_failure('Validation failed, message blocked')")],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='All 5 pre-gate validation batches pass'),
+                          Constant(value='Restore artist_output_backup for final rendering'),
+                          Constant(value='Write message file to disk'),
+                          Constant(value='Display message to user'),
+                          Constant(value='Log success with metrics'),
+                          Constant(value='Execute post-validation monitoring (Batch 5)')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Any validation fails'),
+                          Constant(value='Generate failure report with specifics'),
+                          Constant(value='Display report to user'),
+                          Constant(value='DO NOT write message file'),
+                          Constant(value='DO NOT display message'),
+                          Constant(value='Log failure with details'),
+                          Constant(value='Skip post-validation monitoring')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='description'),
+                      Constant(value='attributes')],
+                    values=[
+                      Constant(value='Exception raised when critical validation fails'),
+                      Dict(
+                        keys=[
+                          Constant(value='rule_id'),
+                          Constant(value='message'),
+                          Constant(value='data_source'),
+                          Constant(value='expected'),
+                          Constant(value='actual'),
+                          Constant(value='suggested_fix')],
+                        values=[
+                          Constant(value='string - failed rule ID'),
+                          Constant(value='string - detailed error message'),
+                          Constant(value='string - staging_buffer field checked'),
+                          Constant(value='any - expected value or range'),
+                          Constant(value='any - actual measured value from staging_buffer'),
+                          Constant(value='string - remediation guidance')])]),
+                  Dict(
+                    keys=[
+                      Constant(value='result'),
+                      Constant(value='failed_checks'),
+                      Constant(value='timestamp'),
+                      Constant(value='route'),
+                      Constant(value='archetype'),
+                      Constant(value='staging_buffer_snapshot')],
+                    values=[
+                      Constant(value='BLOCKED'),
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='rule_id'),
+                              Constant(value='severity'),
+                              Constant(value='component'),
+                              Constant(value='data_source'),
+                              Constant(value='expected'),
+                              Constant(value='actual'),
+                              Constant(value='message'),
+                              Constant(value='suggested_fix')],
+                            values=[
+                              Constant(value='string'),
+                              Constant(value='CRITICAL | WARNING | INFO'),
+                              Constant(value='string - which K-node failed'),
+                              Constant(value='string - staging_buffer field'),
+                              Constant(value='any'),
+                              Constant(value='any'),
+                              Constant(value='string'),
+                              Constant(value='string')])],
+                        ctx=Load()),
+                      Constant(value='ISO8601'),
+                      Constant(value='string'),
+                      Constant(value='string'),
+                      Constant(value='object - for debugging')])])]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='format'),
+              Constant(value='blocking'),
+              Constant(value='5.5_staging_buffer'),
+              Constant(value='final_message_structure'),
+              Constant(value='success_output'),
+              Constant(value='failure_output')],
+            values=[
+              Constant(value='Final message file with K-node structure, validated against staging buffer with scope isolation'),
+              Constant(value='Text file or JSON with rendered message'),
+              Constant(value='Gate decision determines if file is written'),
+              Dict(
+                keys=[
+                  Constant(value='description'),
+                  Constant(value='purpose'),
+                  Constant(value='execution_point'),
+                  Constant(value='blocking'),
+                  Constant(value='critical_rule'),
+                  Constant(value='scope_isolation_enforcement'),
+                  Constant(value='validation_readiness')],
+                values=[
+                  Constant(value='Capture zone for actual rendered output before validation'),
+                  Constant(value='Provide ground truth for QA validation, eliminating metadata trust assumption'),
+                  Constant(value='POST_ASSEMBLY, PRE_VALIDATION'),
+                  Name(id='true', ctx=Load()),
+                  Constant(value='QA Engine V3 MUST read ONLY from staging_buffer, NEVER from Artist metadata'),
+                  Dict(
+                    keys=[
+                      Constant(value='step_9'),
+                      Constant(value='step_10'),
+                      Constant(value='step_11'),
+                      Constant(value='step_12'),
+                      Constant(value='step_13'),
+                      Constant(value='critical_rule'),
+                      Constant(value='python_implementation')],
+                    values=[
+                      Constant(value='Create backup: artist_output_backup = deepcopy(artist_output)'),
+                      Constant(value='DELETE from scope: del artist_output (CRITICAL - enforces hard isolation)'),
+                      Constant(value="Verification: assert 'artist_output' not in locals()"),
+                      Constant(value='All validation passes staging_buffer ONLY'),
+                      Constant(value='After validation: Restore artist_output_backup for final rendering (if passes)'),
+                      Constant(value='After step_10, artist_output MUST NOT exist in any scope accessible to validation'),
+                      List(
+                        elts=[
+                          Constant(value='# Step 6-8: Create staging_buffer (already documented above)'),
+                          Constant(value='staging_buffer = {'),
+                          Constant(value="  'K.1_greeting_actual': {'raw_text': k1_text, 'word_count': len(k1_text.split())},"),
+                          Constant(value="  'K.3_body_actual': {'raw_text': k3_text, 'word_count': len(k3_text.split())},"),
+                          Constant(value="  'full_message_actual': {'raw_text': full_text, 'word_count': len(full_text.split())}"),
+                          Constant(value='}'),
+                          Constant(value=''),
+                          Constant(value='# Step 9: Backup for later file rendering'),
+                          Constant(value='artist_output_backup = deepcopy(artist_output)'),
+                          Constant(value=''),
+                          Constant(value='# Step 10: DELETE to enforce scope isolation (CRITICAL)'),
+                          Constant(value='del artist_output'),
+                          Constant(value=''),
+                          Constant(value='# Step 11: Verification'),
+                          Constant(value="if 'artist_output' in dir():"),
+                          Constant(value="    raise ScopeViolationError('Artist output still accessible after deletion')"),
+                          Constant(value=''),
+                          Constant(value='# Step 12: Validation can ONLY see staging_buffer'),
+                          Constant(value='validation_result = run_all_qa_validations(staging_buffer)  # NO artist_output parameter'),
+                          Constant(value=''),
+                          Constant(value='# Step 13: Restore for file rendering (if validation passed)'),
+                          Constant(value='if validation_result.passed:'),
+                          Constant(value='    artist_output = artist_output_backup'),
+                          Constant(value='    render_final_message(staging_buffer, artist_output_backup)')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='qa_engine_v3_input'),
+                      Constant(value='artist_metadata_blocked'),
+                      Constant(value='ground_truth_source'),
+                      Constant(value='consistency_guarantee')],
+                    values=[
+                      Constant(value='staging_buffer object (complete)'),
+                      Constant(value='QA Engine V3 has NO ACCESS to Artist metadata'),
+                      Constant(value='staging_buffer.*.raw_text for all measurements'),
+                      Constant(value='Same tokenizer used in staging and validation')])]),
+              Dict(
+                keys=[
+                  Constant(value='file_format'),
+                  Constant(value='file_name'),
+                  Constant(value='content'),
+                  Constant(value='qa_validation_report')],
+                values=[
+                  Constant(value='text'),
+                  Constant(value='{company}_{role}_{route}_{timestamp}.txt'),
+                  List(
+                    elts=[
+                      Constant(value='K.1: {greeting}'),
+                      Constant(value=''),
+                      Constant(value='K.2: Subject: {subject_line}  [INMAIL only]'),
+                      Constant(value=''),
+                      Constant(value='K.3: {body_text}'),
+                      Constant(value=''),
+                      Constant(value='K.5: {cta}'),
+                      Constant(value=''),
+                      Constant(value='K.6:'),
+                      Constant(value='{signature_line_1}'),
+                      Constant(value='{signature_line_2}'),
+                      Constant(value='{signature_line_3}'),
+                      Constant(value='{signature_line_4}')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='included'),
+                      Constant(value='location'),
+                      Constant(value='contents')],
+                    values=[
+                      Name(id='true', ctx=Load()),
+                      Constant(value='Separate file: {company}_{role}_QA_REPORT_{timestamp}.json'),
+                      List(
+                        elts=[
+                          Constant(value='All validation results from 6 batches'),
+                          Constant(value='Staging buffer measurements'),
+                          Constant(value='Scope isolation verification'),
+                          Constant(value='Pass/fail status per rule (89 total rules)'),
+                          Constant(value='Word counts from staging_buffer'),
+                          Constant(value='Confidence scores'),
+                          Constant(value='Entity validation results'),
+                          Constant(value='Post-validation monitoring results')],
+                        ctx=Load())])]),
+              Dict(
+                keys=[
+                  Constant(value='message_file'),
+                  Constant(value='qa_report'),
+                  Constant(value='user_display'),
+                  Constant(value='log_entry'),
+                  Constant(value='monitoring')],
+                values=[
+                  Constant(value='Written to disk with actual content from staging_buffer'),
+                  Constant(value='Generated with all validation results (89 rules across 6 batches)'),
+                  Constant(value='Message shown to user'),
+                  Constant(value='Success logged with metrics'),
+                  Constant(value='Post-validation monitoring executed')]),
+              Dict(
+                keys=[
+                  Constant(value='message_file'),
+                  Constant(value='failure_report'),
+                  Constant(value='user_display'),
+                  Constant(value='log_entry'),
+                  Constant(value='monitoring')],
+                values=[
+                  Constant(value='NOT WRITTEN - gate blocked'),
+                  Constant(value='Generated with specific failures'),
+                  Constant(value='Failure report shown (not message)'),
+                  Constant(value='Failure logged with details'),
+                  Constant(value='Post-validation monitoring skipped')])]),
+          Dict(
+            keys=[
+              Constant(value='critical_execution_requirements'),
+              Constant(value='blocking_conditions'),
+              Constant(value='scope_violation_handling'),
+              Constant(value='rollback_scenarios'),
+              Constant(value='monitoring_requirements'),
+              Constant(value='testing_requirements'),
+              Constant(value='manual_verification_procedure'),
+              Constant(value='enforcement_coverage')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='SCOPE ISOLATION: artist_output MUST be deleted before validation'),
+                  Constant(value='SCOPE ISOLATION: Validation functions accept ONLY staging_buffer parameter'),
+                  Constant(value="SCOPE ISOLATION: Every batch checks: if 'artist_output' in dir(): raise ScopeViolationError()"),
+                  Constant(value='STAGING BUFFER: Created before validation with actual measurements'),
+                  Constant(value='QA ENGINE V3: Reads ONLY from staging_buffer, NEVER from Artist metadata'),
+                  Constant(value='GATE PATTERN: File writes ONLY if all validations pass'),
+                  Constant(value='MANUAL VERIFICATION: LIC-SCOPE-SMOKE-001 MUST pass before production'),
+                  Constant(value='PRE-FLIGHT: BATCH_0 MUST execute before all other batches'),
+                  Constant(value='POST-VALIDATION: BATCH_5 MUST execute after successful gate decision'),
+                  Constant(value='ENFORCEMENT: All 89 enforcement points MUST have corresponding validation rules')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Missing sender profile or resume'),
+                  Constant(value='Missing recipient information'),
+                  Constant(value='RAG pipeline failure'),
+                  Constant(value='Artist generation failure'),
+                  Constant(value='Staging buffer extraction failure'),
+                  Constant(value='Scope isolation violation detected'),
+                  Constant(value='Any CRITICAL validation failure'),
+                  Constant(value='Gate decision = BLOCKED'),
+                  Constant(value='Invalid route or archetype enum value')],
+                ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='detection'),
+                  Constant(value='action'),
+                  Constant(value='logging'),
+                  Constant(value='remediation'),
+                  Constant(value='never_proceed')],
+                values=[
+                  Constant(value="if 'artist_output' in dir() during validation"),
+                  Constant(value='raise ScopeViolationError immediately'),
+                  Constant(value='Log full context (variables in scope, stack trace)'),
+                  Constant(value='HALT workflow, review scope isolation implementation'),
+                  Constant(value='DO NOT continue validation if scope violation detected')]),
+              List(
+                elts=[
+                  Constant(value='If v10.24 causes issues, rollback to v10.23.1'),
+                  Constant(value='Remove BATCH_0 and BATCH_5'),
+                  Constant(value='Remove additional enforcement rules'),
+                  Constant(value='Keep staging buffer and scope isolation (critical)'),
+                  Constant(value='Document rollback reason and investigation plan')],
+                ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='post_deployment')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='Monitor for ScopeViolationError (should be 0)'),
+                      Constant(value='Track validation success/failure rates across all 6 batches'),
+                      Constant(value='Run LIC-SCOPE-SMOKE-001 daily (first week)'),
+                      Constant(value='Measure word count accuracy (manual verification)'),
+                      Constant(value='Track token usage (~30K per message expected)'),
+                      Constant(value='Monitor validation latency (<5 seconds target)'),
+                      Constant(value='Track batch-specific failure rates'),
+                      Constant(value='Monitor enforcement coverage (should be 100%)')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='before_production')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='Execute all 89 enforcement point tests (100% pass required)'),
+                      Constant(value='Execute LIC-SCOPE-SMOKE-001 (manual MS Word verification)'),
+                      Constant(value='Verify scope isolation (artist_output inaccessible during validation)'),
+                      Constant(value='Verify token optimization (early exit working)'),
+                      Constant(value='Verify performance acceptable (<20% latency increase vs v10.23.1)'),
+                      Constant(value='Test BATCH_0 pre-flight validation'),
+                      Constant(value='Test BATCH_5 post-validation monitoring'),
+                      Constant(value='Verify all 59 new rules functioning')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='test_id'),
+                  Constant(value='priority'),
+                  Constant(value='procedure'),
+                  Constant(value='pass_criteria'),
+                  Constant(value='fail_criteria'),
+                  Constant(value='on_failure')],
+                values=[
+                  Constant(value='LIC-SCOPE-SMOKE-001'),
+                  Constant(value='P0 - MANDATORY'),
+                  List(
+                    elts=[
+                      Constant(value='1. Generate INMAIL message for EXECUTIVE archetype'),
+                      Constant(value='2. Copy K.3 body text from final message'),
+                      Constant(value='3. Paste into Microsoft Word'),
+                      Constant(value='4. Check Tools → Word Count'),
+                      Constant(value="5. Compare to QA validation report 'K.3 Actual' value"),
+                      Constant(value='6. Verify EXACT match (zero discrepancy)')],
+                    ctx=Load()),
+                  Constant(value='MS Word count EXACTLY matches QA report'),
+                  Constant(value='Even 1 word difference = scope isolation failed'),
+                  Constant(value='DO NOT DEPLOY - debug scope isolation immediately')]),
+              Dict(
+                keys=[
+                  Constant(value='total_enforcement_points'),
+                  Constant(value='mapped_to_qa_gates'),
+                  Constant(value='coverage_percentage'),
+                  Constant(value='critical_gaps'),
+                  Constant(value='by_category')],
+                values=[
+                  Constant(value=89),
+                  Constant(value=89),
+                  Constant(value='100%'),
+                  Constant(value=0),
+                  Dict(
+                    keys=[
+                      Constant(value='scope_isolation'),
+                      Constant(value='route_constraints'),
+                      Constant(value='k_node_structure'),
+                      Constant(value='content_quality'),
+                      Constant(value='process_enforcement'),
+                      Constant(value='post_validation_monitoring')],
+                    values=[
+                      Constant(value='100% (5/5)'),
+                      Constant(value='100% (18/18)'),
+                      Constant(value='100% (24/24)'),
+                      Constant(value='100% (22/22)'),
+                      Constant(value='100% (10/10)'),
+                      Constant(value='100% (10/10)')])])])]))])

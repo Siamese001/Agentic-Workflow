@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nRedis client provider for caching operations.\n\nIsolates Redis SDK dependencies to the providers layer\nand provides a clean interface for cache operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Optional\n\ntry:\n    import redis  # type: ignore\nexcept ImportError as exc:\n    raise ImportError(\"redis package not installed. Install with: pip install redis\") from exc\n\n\nclass RedisClient:\n    \"\"\"Provider client for Redis operations.\"\"\"\n    \n    def __init__(self, host: str = \"localhost\", port: int = 6379, \n                 db: int = 0, password: Optional[str] = None,\n                 decode_responses: bool = True, **kwargs):\n        \"\"\"Initialize Redis client with connection parameters.\"\"\"\n        self.client = redis.Redis(\n            host=host, port=port, db=db, password=password,\n            decode_responses=decode_responses, **kwargs\n        )\n    \n    def get(self, key: str) -> Optional[str]:\n        \"\"\"Get value from Redis.\"\"\"\n        return self.client.get(key)",
+  "full_hash": "035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4",
+  "generated_at": 1764728226.0666368,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\redis_client.py"
+}

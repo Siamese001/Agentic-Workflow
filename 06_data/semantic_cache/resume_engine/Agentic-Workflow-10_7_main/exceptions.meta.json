@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\exceptions.py",
+    "rel_path": "exceptions.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66",
+    "file_size": 1406,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728229.741959
+}

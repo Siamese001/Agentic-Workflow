@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"v9.23-overwrite\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-29T22:40:49Z\",\n    \"sources\":\n    \"notes\": \n    \"sha256\": \"7902fdba75aae9da7c721873fb15f5085ff76e452cb8109be9b4aebef82b5ab2\"\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 (Task) in visible output.\",\n    \"Run Section 3 (Context) once and pause.\",\n    \"Run all of Section 4 and pause.\",\n    \"Run all of Section 5 and pause.\",\n    \"Do not batch multiple artifacts in a single run.\"\n  ],\n  \"governance\": {\n    \"RequireRuntimeLinkedInInput\": true,\n    \"LinkedInInputGates\": [\n      \"name\",\n      \"title\",\n      \"about\",\n      \"profile_url\"\n    ],\n    \"block_on_missing\": true,\n    \"router_requires_details\": [\n      \"name\",\n      \"title\",\n      \"about\",\n      \"profile_url\"\n    ]\n  },\n  \"1.role\": {\n    \"name\": \"LinkedIn Outreach Orchestrator\",\n    \"authority\": \"Convert any prompt into a six-section LIC workflow with audit and QA.\",\n    \"stan",
+  "full_hash": "73f927043366620e409b1de1046d678a42ce74f68d1e2f56f487d25d1e02f1f4",
+  "generated_at": 1764728337.7311392,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9-30-2025 v6.json"
+}

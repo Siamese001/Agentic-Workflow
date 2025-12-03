@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Shared Fake LLM for Deterministic Testing.\"\"\"\n\nclass FakeLLM:\n    \"\"\"Deterministic fake LLM for testing.\"\"\"\n    \n    def __init__(self, responses=None):\n        self.responses = responses or [\"Default fake response\"]\n        self.call_count = 0\n    \n    def generate(self, prompt):\n        \"\"\"Generate deterministic response.\"\"\"\n        response = self.responses[self.call_count % len(self.responses)]\n        self.call_count += 1\n        return response\n    \n    def reset(self):\n        \"\"\"Reset call count.\"\"\"\n        self.call_count = 0\n\ndef test_fake_llm_deterministic():\n    \"\"\"Test FakeLLM produces deterministic responses.\"\"\"\n    llm = FakeLLM(responses=[\"Response A\", \"Response B\"])\n    \n    assert llm.generate(\"prompt1\") == \"Response A\"\n    assert llm.generate(\"prompt2\") == \"Response B\"\n    assert llm.generate(\"prompt3\") == \"Response A\"\n    \n    llm.reset()\n    assert llm.call_count == 0\n",
+  "full_hash": "fbcca0d028f24042ce707ae86ddf4fde2f0ac54541c35b68fd4c84e963d20b29",
+  "generated_at": 1764728227.5438664,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\fake_llms\\test_fake_llms.py"
+}

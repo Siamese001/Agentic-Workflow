@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.58 - CRITICAL FIX: LLM-POWERED TAILORING\n\nv5.58 CHANGES - FIX IDENTICAL RESUME BUG:\n\u2705 FIXED: ArtistGenerator now uses LLM to tailor ALL resume sections\n   - K.1 Executive Summary: LLM rewrites using JD themes (was: verbatim copy)\n   - K.4 Headline: LLM generates role-specific headline (was: static template)\n   - K.5A Unify Bullets: LLM selects + reorders top 7 by JD relevance (was: first 7)\n   - K.6A IBM Bullets: LLM selects + reorders top 6 by JD relevance (was: first 6)\n   - K.8 Competencies: LLM selects + reorders top 6 by JD themes (was: first 6)\n\n\u2705 FIXED: JDAlignmentScorer bug in Output 2 (was called with no arguments)\n   - FileRenderer._render_skills now passes job_description and parsed_jd\n   - JDAlignmentScorer.__init__ simplified to auto-parse JD\n\n\u2705 RESULT:\n   - Resumes now ACTUALLY tailored to each job description\n   - RAG intelligence from HOP-0 now used in content generation\n   - Cover letter (K.9) already worked, now entire resume works too\n",
+  "full_hash": "d53adb5a2650d2f8ff7ab4c9a5872e757392e741f975c35db63ac367b1edaa87",
+  "generated_at": 1764728307.341676,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_58.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Router agent responsible for selecting the outreach path.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict\n\nfrom ..safety.bias_auditor import BiasAssessment\n\n\n@dataclass(frozen=True)\nclass RouteDecision:\n    channel: str\n    priority: str\n\n\nclass RouterAgent:\n    \"\"\"Very small heuristic-based router.\"\"\"\n\n    def route(self, sanitized_inputs, bias: BiasAssessment) -> RouteDecision:\n        prompt = getattr(sanitized_inputs, \"prompt\", \"\")\n        if \"meeting\" in prompt.lower():\n            return RouteDecision(channel=\"email\", priority=\"high\")\n        return RouteDecision(channel=\"email\", priority=\"normal\")\n",
+  "full_hash": "28cd123d93784034c7746398234d6e769298911c1ce354ab1d8994ed708a8ae3",
+  "generated_at": 1764728330.4621341,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k1_router_agent.py"
+}

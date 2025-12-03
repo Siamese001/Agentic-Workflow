@@ -1,0 +1,4676 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nResume Generation Engine v4.6.0 - ENHANCED WITH EMBEDDED MODULES\n================================================================\nMAJOR UPGRADE FROM v4.5.2:\n- Embedded SaaS Roles (1,993 roles across 4 levels)\n- Embedded App Tracker QA v5 (R1-R23 validation rules)\n- Embedded Hyphenation Rules (comprehensive style enforcement)\n- Embedded App Schema v4 (54 fields)\n- Maintains all v4.5.2 functionality (Temperature Modes, K.11 Skills, 4 Outputs)\n\nVersion: 4.6.0\nDate: October 2025\nAuthor: Resume Generation Team\n')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Tuple'),
+        alias(name='Optional'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Import(
+      names=[
+        alias(name='random')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='4.6.0')),
+    ClassDef(
+      name='TemperatureMode',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Temperature modes for constraint relaxation and signal adjustment.')),
+        Assign(
+          targets=[
+            Name(id='CONSERVATIVE', ctx=Store())],
+          value=Constant(value='conservative')),
+        Assign(
+          targets=[
+            Name(id='BALANCED', ctx=Store())],
+          value=Constant(value='balanced')),
+        Assign(
+          targets=[
+            Name(id='CREATIVE', ctx=Store())],
+          value=Constant(value='creative'))]),
+    ClassDef(
+      name='SaaSRoles',
+      body=[
+        Expr(
+          value=Constant(value='\n    Complete SaaS organizational hierarchy with 1,993 roles.\n    Embedded from SaaS_Roles.json\n    ')),
+        Assign(
+          targets=[
+            Name(id='ROLES', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='cfo'),
+              Constant(value='cmo'),
+              Constant(value='cto'),
+              Constant(value='vp_presales'),
+              Constant(value='caio'),
+              Constant(value='head_customer_success')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='level'),
+                  Constant(value='org'),
+                  Constant(value='reports_to'),
+                  Constant(value='other_titles'),
+                  Constant(value='description')],
+                values=[
+                  Constant(value='Chief Financial Officer (CFO)'),
+                  Constant(value=1),
+                  Constant(value='CFO'),
+                  Constant(value='CEO'),
+                  List(
+                    elts=[
+                      Constant(value='Finance EVP'),
+                      Constant(value='Head of Corporate Finance')],
+                    ctx=Load()),
+                  Constant(value='Oversees finances, accounting, ensures budgets/reporting align with revenue')]),
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='level'),
+                  Constant(value='org'),
+                  Constant(value='reports_to'),
+                  Constant(value='other_titles'),
+                  Constant(value='description')],
+                values=[
+                  Constant(value='Chief Marketing Officer (CMO)'),
+                  Constant(value=1),
+                  Constant(value='CMO'),
+                  Constant(value='CEO'),
+                  List(
+                    elts=[
+                      Constant(value='Marketing Executive'),
+                      Constant(value='Brand Strategy Chief')],
+                    ctx=Load()),
+                  Constant(value='Leads brand, demand gen, comms to drive top-funnel prospects')]),
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='level'),
+                  Constant(value='org'),
+                  Constant(value='reports_to'),
+                  Constant(value='other_titles'),
+                  Constant(value='description')],
+                values=[
+                  Constant(value='Chief Technology Officer (CTO)'),
+                  Constant(value=1),
+                  Constant(value='CTO'),
+                  Constant(value='CEO'),
+                  List(
+                    elts=[
+                      Constant(value='Technical Visionary'),
+                      Constant(value='Head of Product Architecture')],
+                    ctx=Load()),
+                  Constant(value='Sets tech vision, ensures strong architecture for product credibility')]),
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='level'),
+                  Constant(value='org'),
+                  Constant(value='reports_to'),
+                  Constant(value='other_titles'),
+                  Constant(value='description')],
+                values=[
+                  Constant(value='Head of Pre-Sales Architecture / Field CTO'),
+                  Constant(value=2),
+                  Constant(value='CRO'),
+                  Constant(value='Chief Revenue Officer (CRO)'),
+                  List(
+                    elts=[
+                      Constant(value='Technical Deal Closer'),
+                      Constant(value='Sales Architecture Expert')],
+                    ctx=Load()),
+                  Constant(value='Designs solutions for complex deals, ensuring technical fit')]),
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='level'),
+                  Constant(value='org'),
+                  Constant(value='reports_to'),
+                  Constant(value='other_titles'),
+                  Constant(value='description')],
+                values=[
+                  Constant(value='Chief AI Officer (CAIO)'),
+                  Constant(value=2),
+                  Constant(value='CTO'),
+                  Constant(value='Chief Technology Officer (CTO)'),
+                  List(
+                    elts=[
+                      Constant(value='AI & ML Exec'),
+                      Constant(value='ML Strategy Lead')],
+                    ctx=Load()),
+                  Constant(value='Leads AI/ML strategy, delivering advanced analytics features')]),
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='level'),
+                  Constant(value='org'),
+                  Constant(value='reports_to'),
+                  Constant(value='other_titles'),
+                  Constant(value='description')],
+                values=[
+                  Constant(value='Head of Customer Success'),
+                  Constant(value=2),
+                  Constant(value='CRO'),
+                  Constant(value='Chief Revenue Officer (CRO)'),
+                  List(
+                    elts=[
+                      Constant(value='Customer Retention Leader'),
+                      Constant(value='Growth Exec')],
+                    ctx=Load()),
+                  Constant(value='Oversees onboarding, retention, expansions for recurring revenue')])])),
+        FunctionDef(
+          name='get_role',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='role_key',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get role details by key.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='cls', ctx=Load()),
+                    attr='ROLES',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='role_key', ctx=Load())]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_roles_by_level',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='level',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get all roles at a specific level (1-4).')),
+            Return(
+              value=ListComp(
+                elt=Name(id='r', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='cls', ctx=Load()),
+                          attr='ROLES',
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='r', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='level')]),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Name(id='level', ctx=Load())])],
+                    is_async=0)]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_roles_by_org',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='org',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get all roles in a specific org (CFO, CMO, CTO, etc.).')),
+            Return(
+              value=ListComp(
+                elt=Name(id='r', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='cls', ctx=Load()),
+                          attr='ROLES',
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='r', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='org')]),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Name(id='org', ctx=Load())])],
+                    is_async=0)]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='AppTrackerSchema',
+      body=[
+        Expr(
+          value=Constant(value='\n    Application Tracker Schema v4 with 54 fields.\n    Embedded from App_Schema_v4.json\n    ')),
+        Assign(
+          targets=[
+            Name(id='SCHEMA_FIELDS', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='Company'),
+              Constant(value='Category'),
+              Constant(value='Sub-Category'),
+              Constant(value='Job Title'),
+              Constant(value='Primary Job Role'),
+              Constant(value='JD URL'),
+              Constant(value='Application Date'),
+              Constant(value='Pipeline Status'),
+              Constant(value='Hiring Recruiter'),
+              Constant(value='Hiring Recruiter URL'),
+              Constant(value='Hiring Recruiter Interview Date'),
+              Constant(value='Hiring Manager'),
+              Constant(value='Hiring Manager URL'),
+              Constant(value='Hiring Manager Interview Date'),
+              Constant(value='Other Interviewer'),
+              Constant(value='Other Interviewer URL'),
+              Constant(value='Other Interviewer Date'),
+              Constant(value='Other Interviewer 2'),
+              Constant(value='Other Interviewer 2 URL'),
+              Constant(value='Other Interviewer 2 Date'),
+              Constant(value='Base Resume'),
+              Constant(value='Versioned Resume'),
+              Constant(value='Outreach Channel'),
+              Constant(value='Recruiter / Contact 1 Name'),
+              Constant(value='Recruiter / Contact 1 Title'),
+              Constant(value='Recruiter / Contact 1 URL'),
+              Constant(value='Date Communication Sent 1'),
+              Constant(value='Follow-Up Date 1'),
+              Constant(value='Second Follow-Up Date 1'),
+              Constant(value='Recruiter / Contact 2 Name'),
+              Constant(value='Recruiter / Contact 2 Title'),
+              Constant(value='Recruiter / Contact 2 URL'),
+              Constant(value='Date Communication Sent 2'),
+              Constant(value='Follow-Up Date 2'),
+              Constant(value='Second Follow-Up Date 2'),
+              Constant(value='Recruiter / Contact 3 Name'),
+              Constant(value='Recruiter / Contact 3 Title'),
+              Constant(value='Recruiter / Contact 3 URL'),
+              Constant(value='Date Communication Sent 3'),
+              Constant(value='Follow-Up Date 3'),
+              Constant(value='Second Follow-Up Date 3'),
+              Constant(value='Recruiter / Contact 4 Name'),
+              Constant(value='Recruiter / Contact 4 Title'),
+              Constant(value='Recruiter / Contact 4 URL'),
+              Constant(value='Date Communication Sent 4'),
+              Constant(value='Follow-Up Date 4'),
+              Constant(value='Second Follow-Up Date 4'),
+              Constant(value='Recruiter / Contact 5 Name'),
+              Constant(value='Recruiter / Contact 5 Title'),
+              Constant(value='Recruiter / Contact 5 URL'),
+              Constant(value='Date Communication Sent 5'),
+              Constant(value='Follow-Up Date 5'),
+              Constant(value='Second Follow-Up Date 5'),
+              Constant(value='Closure Reason')],
+            ctx=Load())),
+        FunctionDef(
+          name='create_empty_record',
+          args=arguments(
+            args=[
+              arg(arg='cls')]),
+          body=[
+            Expr(
+              value=Constant(value='Create an empty application record.')),
+            Return(
+              value=DictComp(
+                key=Name(id='field', ctx=Load()),
+                value=Constant(value=''),
+                generators=[
+                  comprehension(
+                    target=Name(id='field', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='cls', ctx=Load()),
+                      attr='SCHEMA_FIELDS',
+                      ctx=Load()),
+                    is_async=0)]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_record',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='record',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate a record has all required fields.')),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='field', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='cls', ctx=Load()),
+                attr='SCHEMA_FIELDS',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='field', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='record', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='errors', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Missing field: '),
+                              FormattedValue(
+                                value=Name(id='field', ctx=Load()),
+                                conversion=-1)])]))])]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='errors', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)]),
+                  Name(id='errors', ctx=Load())],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='AppTrackerQA',
+      body=[
+        Expr(
+          value=Constant(value='\n    Application Tracker QA v5 with R1-R23 validation rules.\n    Embedded from App_Tracker_QA_v5.json\n    ')),
+        Assign(
+          targets=[
+            Name(id='CONTROLLED_ENUMS', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='Pipeline Status'),
+              Constant(value='Outreach Channel'),
+              Constant(value='Closure Reason')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='Applied'),
+                  Constant(value='Follow-Up'),
+                  Constant(value='Interview'),
+                  Constant(value='Rejected'),
+                  Constant(value='Closed'),
+                  Constant(value='Waiting')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Recruiter Outreach'),
+                  Constant(value='Contact Outreach'),
+                  Constant(value='Blended Outreach'),
+                  Constant(value='No Outreach'),
+                  Constant(value='')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Rejected'),
+                  Constant(value='No Reply'),
+                  Constant(value='Role Filled'),
+                  Constant(value='On Hold'),
+                  Constant(value='Withdrawn by Candidate'),
+                  Constant(value='Internal Hire'),
+                  Constant(value='Changed Scope'),
+                  Constant(value='Role Too Junior'),
+                  Constant(value='')],
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='VALIDATION_RULES', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='R1'),
+              Constant(value='R2'),
+              Constant(value='R3'),
+              Constant(value='R4'),
+              Constant(value='R5a'),
+              Constant(value='R5b'),
+              Constant(value='R5c'),
+              Constant(value='R5d'),
+              Constant(value='R10'),
+              Constant(value='R11'),
+              Constant(value='R12'),
+              Constant(value='R13'),
+              Constant(value='R14'),
+              Constant(value='R15'),
+              Constant(value='R16'),
+              Constant(value='R17'),
+              Constant(value='R18'),
+              Constant(value='R19'),
+              Constant(value='R20'),
+              Constant(value='R21'),
+              Constant(value='R22'),
+              Constant(value='R23')],
+            values=[
+              Constant(value='Schema must have exactly 54 fields in specified order'),
+              Constant(value='Pipeline Status must be from controlled enum'),
+              Constant(value='Outreach Channel must be from controlled enum'),
+              Constant(value='Closure Reason must be from controlled enum'),
+              Constant(value='Recruiter Outreach requires Recruiter/Contact 1 Name'),
+              Constant(value='Contact Outreach requires Recruiter/Contact 1 Name'),
+              Constant(value='Blended Outreach requires Recruiter/Contact 1 and 2 Names'),
+              Constant(value='No Outreach allows all recruiter fields blank'),
+              Constant(value='If JD URL present, Application Date required (MM/DD/YYYY)'),
+              Constant(value='Date Communication Sent must be MM/DD/YYYY if present'),
+              Constant(value='Follow-up dates must be after communication date'),
+              Constant(value='Rejected status requires Closure Reason'),
+              Constant(value='Closed status requires Closure Reason'),
+              Constant(value='Applied/Interview/Waiting should not have Closure Reason'),
+              Constant(value='Recruiter fields must be all-or-none per index'),
+              Constant(value='JD URL must return HTTP 200'),
+              Constant(value='LinkedIn URLs must be canonical format'),
+              Constant(value='No duplicate Company+Job Title combinations'),
+              Constant(value='Versioned Resume must match pattern'),
+              Constant(value='Company name must be single value'),
+              Constant(value='Job Title must be single value'),
+              Constant(value='Include audit metadata (run_sha, actor_id, timestamp)')])),
+        FunctionDef(
+          name='validate_pipeline_status',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='status',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate Pipeline Status (R2).')),
+            If(
+              test=Compare(
+                left=Name(id='status', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='cls', ctx=Load()),
+                      attr='CONTROLLED_ENUMS',
+                      ctx=Load()),
+                    slice=Constant(value='Pipeline Status'),
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Invalid Pipeline Status: '),
+                          FormattedValue(
+                            value=Name(id='status', ctx=Load()),
+                            conversion=-1)])],
+                    ctx=Load()))]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value=True),
+                  Constant(value='Valid')],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_outreach_channel',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='channel',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate Outreach Channel (R3).')),
+            If(
+              test=Compare(
+                left=Name(id='channel', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='cls', ctx=Load()),
+                      attr='CONTROLLED_ENUMS',
+                      ctx=Load()),
+                    slice=Constant(value='Outreach Channel'),
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Invalid Outreach Channel: '),
+                          FormattedValue(
+                            value=Name(id='channel', ctx=Load()),
+                            conversion=-1)])],
+                    ctx=Load()))]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value=True),
+                  Constant(value='Valid')],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_closure_reason',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='reason',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='status',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate Closure Reason based on Pipeline Status (R4, R13-R15).')),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='status', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='Rejected'),
+                          Constant(value='Closed')],
+                        ctx=Load())]),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='reason', ctx=Load()))]),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Status '),
+                          FormattedValue(
+                            value=Name(id='status', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' requires Closure Reason')])],
+                    ctx=Load()))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='status', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='Applied'),
+                          Constant(value='Interview'),
+                          Constant(value='Waiting')],
+                        ctx=Load())]),
+                  Name(id='reason', ctx=Load())]),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Status '),
+                          FormattedValue(
+                            value=Name(id='status', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' should not have Closure Reason')])],
+                    ctx=Load()))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='reason', ctx=Load()),
+                  Compare(
+                    left=Name(id='reason', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Subscript(
+                        value=Attribute(
+                          value=Name(id='cls', ctx=Load()),
+                          attr='CONTROLLED_ENUMS',
+                          ctx=Load()),
+                        slice=Constant(value='Closure Reason'),
+                        ctx=Load())])]),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Invalid Closure Reason: '),
+                          FormattedValue(
+                            value=Name(id='reason', ctx=Load()),
+                            conversion=-1)])],
+                    ctx=Load()))]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value=True),
+                  Constant(value='Valid')],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_date_format',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='date_str',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate date format MM/DD/YYYY (R10-R12).')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='date_str', ctx=Load())),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      Constant(value='Empty date allowed')],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='pattern', ctx=Store())],
+              value=Constant(value='^\\d{2}/\\d{2}/\\d{4}$')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='re', ctx=Load()),
+                    attr='match',
+                    ctx=Load()),
+                  args=[
+                    Name(id='pattern', ctx=Load()),
+                    Name(id='date_str', ctx=Load())])),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Invalid date format: '),
+                          FormattedValue(
+                            value=Name(id='date_str', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' (need MM/DD/YYYY)')])],
+                    ctx=Load()))]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value=True),
+                  Constant(value='Valid')],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='HyphenationRules',
+      body=[
+        Expr(
+          value=Constant(value='\n    Comprehensive hyphenation and style enforcement rules.\n    Embedded from Hyphenation_Rules.json\n    ')),
+        Assign(
+          targets=[
+            Name(id='NATURAL_HYPHENS', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='best-in-class'),
+              Constant(value='business-to-business'),
+              Constant(value='business-to-consumer'),
+              Constant(value='co-author'),
+              Constant(value='co-deliver'),
+              Constant(value='co-founder'),
+              Constant(value='cost-effective'),
+              Constant(value='cross-functional'),
+              Constant(value='customer-centric'),
+              Constant(value='cutting-edge'),
+              Constant(value='data-driven'),
+              Constant(value='day-to-day'),
+              Constant(value='deep-learning'),
+              Constant(value='end-to-end'),
+              Constant(value='enterprise-wide'),
+              Constant(value='forward-thinking'),
+              Constant(value='go-to-market'),
+              Constant(value='hands-on'),
+              Constant(value='high-performance'),
+              Constant(value='long-term'),
+              Constant(value='machine-learning'),
+              Constant(value='mission-critical'),
+              Constant(value='multi-cloud'),
+              Constant(value='multi-framework'),
+              Constant(value='multi-jurisdictional'),
+              Constant(value='multi-million'),
+              Constant(value='multi-region'),
+              Constant(value='multi-tenant'),
+              Constant(value='on-premise'),
+              Constant(value='post-sales'),
+              Constant(value='pre-sales'),
+              Constant(value='quarter-over-quarter'),
+              Constant(value='real-time'),
+              Constant(value='results-oriented'),
+              Constant(value='self-service'),
+              Constant(value='short-term'),
+              Constant(value='state-of-the-art'),
+              Constant(value='year-over-year'),
+              Constant(value='zero-loss')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='UNNATURAL_HYPHENS', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='AI-powered'),
+              Constant(value='PS-centric'),
+              Constant(value='high-velocity'),
+              Constant(value='automation-first'),
+              Constant(value='lifecycle-based')],
+            values=[
+              Constant(value='AI powered'),
+              Constant(value='professional services'),
+              Constant(value='high velocity'),
+              Constant(value='automation'),
+              Constant(value='lifecycle based')])),
+        FunctionDef(
+          name='apply_hyphenation_rules',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Apply all hyphenation rules to text.')),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='wrong', ctx=Store()),
+                  Name(id='correct', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='cls', ctx=Load()),
+                    attr='UNNATURAL_HYPHENS',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='text', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='text', ctx=Load()),
+                      attr='replace',
+                      ctx=Load()),
+                    args=[
+                      Name(id='wrong', ctx=Load()),
+                      Name(id='correct', ctx=Load())]))]),
+            Return(
+              value=Name(id='text', ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='fix_spacing',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Fix spacing issues around punctuation.')),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\s+([,.?!])'),
+                  Constant(value='\\1'),
+                  Name(id='text', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='([,.?!])(\\S)'),
+                  Constant(value='\\1 \\2'),
+                  Name(id='text', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\s{2,}'),
+                  Constant(value=' '),
+                  Name(id='text', ctx=Load())])),
+            Return(
+              value=Name(id='text', ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='simplify_jargon',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Simplify corporate jargon.')),
+            Assign(
+              targets=[
+                Name(id='replacements', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='utilize'),
+                  Constant(value='leverage'),
+                  Constant(value='synergies'),
+                  Constant(value='incentivize')],
+                values=[
+                  Constant(value='use'),
+                  Constant(value='use'),
+                  Constant(value='collaboration'),
+                  Constant(value='encourage')])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='jargon', ctx=Store()),
+                  Name(id='simple', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='replacements', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='text', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='sub',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=BinOp(
+                          left=Constant(value='\\b'),
+                          op=Add(),
+                          right=Name(id='jargon', ctx=Load())),
+                        op=Add(),
+                        right=Constant(value='\\b')),
+                      Name(id='simple', ctx=Load()),
+                      Name(id='text', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='flags',
+                        value=Attribute(
+                          value=Name(id='re', ctx=Load()),
+                          attr='IGNORECASE',
+                          ctx=Load()))]))]),
+            Return(
+              value=Name(id='text', ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='SkillsPool',
+      body=[
+        Expr(
+          value=Constant(value='K.11 Technical Skills Pool for JD-aligned selection.')),
+        Assign(
+          targets=[
+            Name(id='SKILLS_POOL', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='ai_ml'),
+              Constant(value='cloud_platforms'),
+              Constant(value='data_engineering'),
+              Constant(value='frameworks'),
+              Constant(value='enterprise_tools'),
+              Constant(value='databases'),
+              Constant(value='monitoring'),
+              Constant(value='security_compliance'),
+              Constant(value='domain_expertise'),
+              Constant(value='presales_tools')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='Large Language Models (LLMs)'),
+                  Constant(value='Generative AI (GenAI)'),
+                  Constant(value='Retrieval-Augmented Generation (RAG)'),
+                  Constant(value='Vector Databases'),
+                  Constant(value='Embeddings'),
+                  Constant(value='Transformers'),
+                  Constant(value='GPT-4'),
+                  Constant(value='Claude'),
+                  Constant(value='Llama 2'),
+                  Constant(value='Prompt Engineering'),
+                  Constant(value='Chain-of-Thought Prompting'),
+                  Constant(value='Agentic AI'),
+                  Constant(value='Fine-Tuning'),
+                  Constant(value='Model Deployment'),
+                  Constant(value='MLOps'),
+                  Constant(value='Model Monitoring'),
+                  Constant(value='Bias Detection'),
+                  Constant(value='Inference Optimization'),
+                  Constant(value='Quantization'),
+                  Constant(value='ONNX'),
+                  Constant(value='TensorRT')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='AWS SageMaker'),
+                  Constant(value='AWS Bedrock'),
+                  Constant(value='AWS Lambda'),
+                  Constant(value='AWS S3'),
+                  Constant(value='AWS EC2'),
+                  Constant(value='Microsoft Azure'),
+                  Constant(value='Azure ML Studio'),
+                  Constant(value='Google Cloud Platform (GCP)'),
+                  Constant(value='Google Vertex AI'),
+                  Constant(value='Databricks'),
+                  Constant(value='Snowflake'),
+                  Constant(value='Terraform'),
+                  Constant(value='CloudFormation'),
+                  Constant(value='Docker'),
+                  Constant(value='Kubernetes'),
+                  Constant(value='Helm'),
+                  Constant(value='ArgoCD')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Python'),
+                  Constant(value='SQL'),
+                  Constant(value='PySpark'),
+                  Constant(value='Apache Spark'),
+                  Constant(value='Data Pipelines'),
+                  Constant(value='ETL/ELT'),
+                  Constant(value='Apache Airflow'),
+                  Constant(value='Data Warehousing'),
+                  Constant(value='Data Lakes'),
+                  Constant(value='Delta Lake'),
+                  Constant(value='Stream Processing'),
+                  Constant(value='Apache Kafka'),
+                  Constant(value='Apache Flink'),
+                  Constant(value='dbt'),
+                  Constant(value='Pandas'),
+                  Constant(value='NumPy')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='TensorFlow'),
+                  Constant(value='PyTorch'),
+                  Constant(value='Hugging Face'),
+                  Constant(value='LangChain'),
+                  Constant(value='LlamaIndex'),
+                  Constant(value='scikit-learn'),
+                  Constant(value='XGBoost'),
+                  Constant(value='FastAPI'),
+                  Constant(value='Flask'),
+                  Constant(value='Django'),
+                  Constant(value='Streamlit'),
+                  Constant(value='Gradio')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='CI/CD'),
+                  Constant(value='Git/GitHub'),
+                  Constant(value='GitLab'),
+                  Constant(value='Jenkins'),
+                  Constant(value='GitHub Actions'),
+                  Constant(value='DevOps'),
+                  Constant(value='DataOps'),
+                  Constant(value='Agile/Scrum'),
+                  Constant(value='JIRA'),
+                  Constant(value='Confluence'),
+                  Constant(value='API Design'),
+                  Constant(value='REST APIs'),
+                  Constant(value='GraphQL'),
+                  Constant(value='Microservices'),
+                  Constant(value='Service Mesh'),
+                  Constant(value='Istio')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='PostgreSQL'),
+                  Constant(value='MySQL'),
+                  Constant(value='MongoDB'),
+                  Constant(value='Redis'),
+                  Constant(value='Elasticsearch'),
+                  Constant(value='Pinecone'),
+                  Constant(value='Weaviate'),
+                  Constant(value='Chroma'),
+                  Constant(value='FAISS'),
+                  Constant(value='Milvus'),
+                  Constant(value='Neo4j'),
+                  Constant(value='DynamoDB'),
+                  Constant(value='Cosmos DB')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Prometheus'),
+                  Constant(value='Grafana'),
+                  Constant(value='Datadog'),
+                  Constant(value='New Relic'),
+                  Constant(value='Splunk'),
+                  Constant(value='ELK Stack'),
+                  Constant(value='CloudWatch'),
+                  Constant(value='Azure Monitor'),
+                  Constant(value='Weights & Biases'),
+                  Constant(value='MLflow'),
+                  Constant(value='Neptune.ai'),
+                  Constant(value='Comet ML')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='SOC 2'),
+                  Constant(value='HIPAA'),
+                  Constant(value='GDPR'),
+                  Constant(value='ISO 27001'),
+                  Constant(value='PCI DSS'),
+                  Constant(value='Zero Trust Architecture'),
+                  Constant(value='OAuth 2.0'),
+                  Constant(value='SAML'),
+                  Constant(value='JWT'),
+                  Constant(value='API Security'),
+                  Constant(value='Secrets Management'),
+                  Constant(value='HashiCorp Vault')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Financial Services'),
+                  Constant(value='Risk Management'),
+                  Constant(value='Regulatory Compliance'),
+                  Constant(value='CCAR'),
+                  Constant(value='Basel III'),
+                  Constant(value='MiFID II'),
+                  Constant(value='Solvency II'),
+                  Constant(value='Fraud Detection'),
+                  Constant(value='AML/KYC'),
+                  Constant(value='Credit Risk'),
+                  Constant(value='Market Risk'),
+                  Constant(value='Operational Risk')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Salesforce'),
+                  Constant(value='HubSpot'),
+                  Constant(value='Gong.io'),
+                  Constant(value='Chorus.ai'),
+                  Constant(value='DemoStack'),
+                  Constant(value='Reprise'),
+                  Constant(value='Consensus'),
+                  Constant(value='PreSales Collective'),
+                  Constant(value='Solution Selling'),
+                  Constant(value='MEDDIC'),
+                  Constant(value='Value Engineering'),
+                  Constant(value='Proof of Concept (POC)')],
+                ctx=Load())])),
+        FunctionDef(
+          name='select_skills_for_jd',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target_role',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='count',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=12)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Select top 12 skills based on JD keyword matching.\n        Returns numbered list (1-12) for K.11 section.\n        ')),
+            Assign(
+              targets=[
+                Name(id='jd_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='jd_text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='skill_scores', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='category', ctx=Store()),
+                  Name(id='skills', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='cls', ctx=Load()),
+                    attr='SKILLS_POOL',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='category_boost', ctx=Store())],
+                  value=Constant(value=1.0)),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Constant(value='presales'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='target_role', ctx=Load()),
+                              attr='lower',
+                              ctx=Load()))]),
+                      Compare(
+                        left=Name(id='category', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='presales_tools')])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='category_boost', ctx=Store())],
+                      value=Constant(value=2.0))],
+                  orelse=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Constant(value='ai'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='target_role', ctx=Load()),
+                                  attr='lower',
+                                  ctx=Load()))]),
+                          Compare(
+                            left=Name(id='category', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='ai_ml')])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='category_boost', ctx=Store())],
+                          value=Constant(value=2.0))],
+                      orelse=[
+                        If(
+                          test=BoolOp(
+                            op=And(),
+                            values=[
+                              Compare(
+                                left=Constant(value='data'),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Call(
+                                    func=Attribute(
+                                      value=Name(id='target_role', ctx=Load()),
+                                      attr='lower',
+                                      ctx=Load()))]),
+                              Compare(
+                                left=Name(id='category', ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='data_engineering')])]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='category_boost', ctx=Store())],
+                              value=Constant(value=1.5))])])]),
+                For(
+                  target=Name(id='skill', ctx=Store()),
+                  iter=Name(id='skills', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='score', ctx=Store())],
+                      value=Constant(value=0)),
+                    Assign(
+                      targets=[
+                        Name(id='skill_lower', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='skill', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))),
+                    If(
+                      test=Compare(
+                        left=Name(id='skill_lower', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='jd_lower', ctx=Load())]),
+                      body=[
+                        AugAssign(
+                          target=Name(id='score', ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=3.0))]),
+                    Assign(
+                      targets=[
+                        Name(id='skill_words', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='skill_lower', ctx=Load()),
+                          attr='split',
+                          ctx=Load()))),
+                    For(
+                      target=Name(id='word', ctx=Store()),
+                      iter=Name(id='skill_words', ctx=Load()),
+                      body=[
+                        If(
+                          test=BoolOp(
+                            op=And(),
+                            values=[
+                              Compare(
+                                left=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='word', ctx=Load())]),
+                                ops=[
+                                  Gt()],
+                                comparators=[
+                                  Constant(value=3)]),
+                              Compare(
+                                left=Name(id='word', ctx=Load()),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='jd_lower', ctx=Load())])]),
+                          body=[
+                            AugAssign(
+                              target=Name(id='score', ctx=Store()),
+                              op=Add(),
+                              value=Constant(value=1.0))])]),
+                    AugAssign(
+                      target=Name(id='score', ctx=Store()),
+                      op=Mult(),
+                      value=Name(id='category_boost', ctx=Load())),
+                    If(
+                      test=Compare(
+                        left=Name(id='score', ctx=Load()),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Constant(value=0)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='skill_scores', ctx=Load()),
+                              slice=Name(id='skill', ctx=Load()),
+                              ctx=Store())],
+                          value=Name(id='score', ctx=Load()))])])]),
+            Assign(
+              targets=[
+                Name(id='sorted_skills', ctx=Store())],
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='skill_scores', ctx=Load()),
+                      attr='items',
+                      ctx=Load()))],
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='x')]),
+                      body=Subscript(
+                        value=Name(id='x', ctx=Load()),
+                        slice=Constant(value=1),
+                        ctx=Load()))),
+                  keyword(
+                    arg='reverse',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='selected', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='skill', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='skill', ctx=Store()),
+                        Name(id='_', ctx=Store())],
+                      ctx=Store()),
+                    iter=Subscript(
+                      value=Name(id='sorted_skills', ctx=Load()),
+                      slice=Slice(
+                        upper=Name(id='count', ctx=Load())),
+                      ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='essentials', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Python'),
+                  Constant(value='AWS'),
+                  Constant(value='SQL'),
+                  Constant(value='Docker'),
+                  Constant(value='Git/GitHub'),
+                  Constant(value='Agile/Scrum')],
+                ctx=Load())),
+            For(
+              target=Name(id='essential', ctx=Store()),
+              iter=Name(id='essentials', ctx=Load()),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='selected', ctx=Load())]),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Name(id='count', ctx=Load())]),
+                      Compare(
+                        left=Name(id='essential', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='selected', ctx=Load())])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='selected', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='essential', ctx=Load())]))])]),
+            Return(
+              value=ListComp(
+                elt=JoinedStr(
+                  values=[
+                    FormattedValue(
+                      value=BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Add(),
+                        right=Constant(value=1)),
+                      conversion=-1),
+                    Constant(value='. '),
+                    FormattedValue(
+                      value=Name(id='skill', ctx=Load()),
+                      conversion=-1)]),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='i', ctx=Store()),
+                        Name(id='skill', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Name(id='enumerate', ctx=Load()),
+                      args=[
+                        Subscript(
+                          value=Name(id='selected', ctx=Load()),
+                          slice=Slice(
+                            upper=Name(id='count', ctx=Load())),
+                          ctx=Load())]),
+                    is_async=0)]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='load_master_resume',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Load the master resume from JSON file.')),
+        Try(
+          body=[
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='/mnt/user-data/uploads/Master_Resume_V2_14.json'),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='FileNotFoundError', ctx=Load()),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='contact'),
+                      Constant(value='experience'),
+                      Constant(value='education'),
+                      Constant(value='certifications'),
+                      Constant(value='competencies')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='name'),
+                          Constant(value='headline'),
+                          Constant(value='email'),
+                          Constant(value='phone')],
+                        values=[
+                          Constant(value='Amit Ayer'),
+                          Constant(value='Chief AI Officer | LLM Product Launches | Strategic AI Partnerships'),
+                          Constant(value='amitayer1@gmail.com'),
+                          Constant(value='+1-917-239-3830')]),
+                      Dict(),
+                      List(ctx=Load()),
+                      List(ctx=Load()),
+                      List(ctx=Load())]))])])]),
+    ClassDef(
+      name='ResumeGenerationEngine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Main engine for generating customized resumes.\n    v4.6.0: Enhanced with embedded modules\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize the engine with all components.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_data',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='load_master_resume', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='skills_pool',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SkillsPool', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='saas_roles',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SaaSRoles', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='app_schema',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='AppTrackerSchema', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='app_qa',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='AppTrackerQA', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='hyphenation',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='HyphenationRules', ctx=Load())))]),
+        FunctionDef(
+          name='generate_resume',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target_role',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='TemperatureMode', ctx=Load()))],
+            defaults=[
+              Attribute(
+                value=Name(id='TemperatureMode', ctx=Load()),
+                attr='BALANCED',
+                ctx=Load())]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate a complete resume with all 4 outputs.\n        \n        Args:\n            jd_text: Job description text\n            target_role: Target role key (e.g., "vp_presales")\n            temperature: Temperature mode for generation\n            \n        Returns:\n            Dictionary with 4 outputs\n        ')),
+            Assign(
+              targets=[
+                Name(id='role_profile', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='saas_roles',
+                    ctx=Load()),
+                  attr='get_role',
+                  ctx=Load()),
+                args=[
+                  Name(id='target_role', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='sections', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_sections',
+                  ctx=Load()),
+                args=[
+                  Name(id='jd_text', ctx=Load()),
+                  Name(id='target_role', ctx=Load()),
+                  Name(id='temperature', ctx=Load())])),
+            For(
+              target=Name(id='key', ctx=Store()),
+              iter=Name(id='sections', ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='sections', ctx=Load()),
+                        slice=Name(id='key', ctx=Load()),
+                        ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='sections', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='hyphenation',
+                            ctx=Load()),
+                          attr='apply_hyphenation_rules',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='sections', ctx=Load()),
+                            slice=Name(id='key', ctx=Load()),
+                            ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='sections', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='hyphenation',
+                            ctx=Load()),
+                          attr='fix_spacing',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='sections', ctx=Load()),
+                            slice=Name(id='key', ctx=Load()),
+                            ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metrics',
+                  ctx=Load()),
+                args=[
+                  Name(id='sections', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='qa_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_run_qa_validation',
+                  ctx=Load()),
+                args=[
+                  Name(id='sections', ctx=Load()),
+                  Name(id='metrics', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='outputs', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='output1_resume'),
+                  Constant(value='output2_word_count'),
+                  Constant(value='output3_signal_calibration'),
+                  Constant(value='output4_qa_validation')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_resume',
+                      ctx=Load()),
+                    args=[
+                      Name(id='sections', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_word_count_table',
+                      ctx=Load()),
+                    args=[
+                      Name(id='sections', ctx=Load()),
+                      Name(id='metrics', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_signal_calibration',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metrics', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_qa_validation',
+                      ctx=Load()),
+                    args=[
+                      Name(id='qa_results', ctx=Load())])])),
+            Return(
+              value=Name(id='outputs', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_generate_sections',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target_role',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='TemperatureMode', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate all resume sections.')),
+            Assign(
+              targets=[
+                Name(id='sections', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='name'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='master_data',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='contact'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='name'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='headline'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_customize_headline',
+                  ctx=Load()),
+                args=[
+                  Name(id='jd_text', ctx=Load()),
+                  Name(id='target_role', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='contact'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_format_contact_info',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='executive_summary'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_executive_summary',
+                  ctx=Load()),
+                args=[
+                  Name(id='jd_text', ctx=Load()),
+                  Name(id='target_role', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='unify_company'),
+                  ctx=Store())],
+              value=Constant(value='UNIFY CONSULTING | BOCA RATON, FL')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='unify_title'),
+                  ctx=Store())],
+              value=Constant(value='Chief AI Officer | February 2023 – Present')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='unify_intro'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_role_intro',
+                  ctx=Load()),
+                args=[
+                  Constant(value='unify'),
+                  Name(id='jd_text', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='unify_bullets'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_bullets',
+                  ctx=Load()),
+                args=[
+                  Constant(value='unify'),
+                  Name(id='jd_text', ctx=Load()),
+                  Constant(value=265),
+                  Name(id='temperature', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ibm_company'),
+                  ctx=Store())],
+              value=Constant(value='IBM | EDGEWATER, NJ')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ibm_title'),
+                  ctx=Store())],
+              value=Constant(value='Lead Client Partner | April 2017 – October 2022')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ibm_intro'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_role_intro',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ibm'),
+                  Name(id='jd_text', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ibm_bullets'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_bullets',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ibm'),
+                  Name(id='jd_text', ctx=Load()),
+                  Constant(value=195),
+                  Name(id='temperature', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='tradersense_company'),
+                  ctx=Store())],
+              value=Constant(value='TRADERSENSE (EARLY-STAGE / STEALTH) | NEW YORK, NY')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='tradersense_title'),
+                  ctx=Store())],
+              value=Constant(value='Chief Technology Officer | April 2014 – March 2017')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='tradersense_intro'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_role_intro',
+                  ctx=Load()),
+                args=[
+                  Constant(value='tradersense'),
+                  Name(id='jd_text', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='tradersense_bullets'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_bullets',
+                  ctx=Load()),
+                args=[
+                  Constant(value='tradersense'),
+                  Name(id='jd_text', ctx=Load()),
+                  Constant(value=45),
+                  Name(id='temperature', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ey_company'),
+                  ctx=Store())],
+              value=Constant(value='ERNST & YOUNG | NEW YORK, NY')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ey_title'),
+                  ctx=Store())],
+              value=Constant(value='Principal | October 2009 – March 2014')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ey_intro'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_role_intro',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ey'),
+                  Name(id='jd_text', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ey_bullets'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_bullets',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ey'),
+                  Name(id='jd_text', ctx=Load()),
+                  Constant(value=50),
+                  Name(id='temperature', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='early_company'),
+                  ctx=Store())],
+              value=Constant(value='EARLY CAREER ROLES | PHILADELPHIA, PA')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='early_title'),
+                  ctx=Store())],
+              value=Constant(value='Actuarial Consultant and Quantitative Roles | October 2002 – September 2009')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='early_intro'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_role_intro',
+                  ctx=Load()),
+                args=[
+                  Constant(value='early'),
+                  Name(id='jd_text', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='early_bullets'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_bullets',
+                  ctx=Load()),
+                args=[
+                  Constant(value='early'),
+                  Name(id='jd_text', ctx=Load()),
+                  Constant(value=45),
+                  Name(id='temperature', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='education'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_format_education',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='certifications'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_format_certifications',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='competencies'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_competencies',
+                  ctx=Load()),
+                args=[
+                  Name(id='jd_text', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='skills'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='skills_pool',
+                    ctx=Load()),
+                  attr='select_skills_for_jd',
+                  ctx=Load()),
+                args=[
+                  Name(id='jd_text', ctx=Load()),
+                  Name(id='target_role', ctx=Load())])),
+            Return(
+              value=Name(id='sections', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_customize_headline',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target_role',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate customized headline based on JD and role.')),
+            Assign(
+              targets=[
+                Name(id='headline', ctx=Store())],
+              value=Constant(value='Chief AI Officer | LLM Product Launches | Strategic AI Partnerships')),
+            If(
+              test=Compare(
+                left=Constant(value='presales'),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='target_role', ctx=Load()),
+                      attr='lower',
+                      ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='headline', ctx=Store())],
+                  value=Constant(value='VP Pre-Sales Engineering | AI/ML Solutions | Enterprise Transformation'))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Constant(value='product'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='target_role', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='headline', ctx=Store())],
+                      value=Constant(value='VP Product | AI Platform Strategy | B2B SaaS Growth'))],
+                  orelse=[
+                    If(
+                      test=BoolOp(
+                        op=Or(),
+                        values=[
+                          Compare(
+                            left=Constant(value='ai'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='target_role', ctx=Load()),
+                                  attr='lower',
+                                  ctx=Load()))]),
+                          Compare(
+                            left=Constant(value='caio'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='target_role', ctx=Load()),
+                                  attr='lower',
+                                  ctx=Load()))])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='headline', ctx=Store())],
+                          value=Constant(value='Chief AI Officer | LLM Platform Architecture | ML Engineering Leadership'))])])]),
+            Return(
+              value=Name(id='headline', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_contact_info',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Format contact information.')),
+            Assign(
+              targets=[
+                Name(id='contact', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='master_data',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='contact'),
+                  Dict()])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='contact', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='phone'),
+                        Constant(value='')]),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='contact', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='email'),
+                        Constant(value='')]),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='contact', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='location'),
+                        Constant(value='Boca Raton, FL')]),
+                    conversion=-1)]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_generate_executive_summary',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target_role',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate 6-sentence executive summary (150 words target).')),
+            Assign(
+              targets=[
+                Name(id='summary', ctx=Store())],
+              value=Constant(value='Technology executive with 23+ years driving enterprise AI transformation and platform innovation for Fortune 500 financial services organizations. As Chief AI Officer at Unify Consulting, I lead generative AI and LLM solution delivery, scaling ML engineering teams and accelerating production deployments by 40% across regulated programs. Previously at IBM, directed $34M digital transformation initiatives, modernizing risk platforms and reducing regulatory reporting cycles by 50% through cloud migrations. Deep expertise in architecting scalable AI/ML systems, building high-performance technical teams, and forging strategic partnerships with AWS, Azure, and Snowflake that generated $50M+ in value. Proven track record translating complex technical capabilities into measurable business outcomes while ensuring governance, compliance, and operational excellence. Unique combination of technical depth, strategic leadership, and customer-facing experience positions me to drive enterprise technology transformation and platform innovation.')),
+            Return(
+              value=Name(id='summary', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_generate_role_intro',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='company',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate role introduction paragraph.')),
+            Assign(
+              targets=[
+                Name(id='intros', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='unify'),
+                  Constant(value='ibm'),
+                  Constant(value='tradersense'),
+                  Constant(value='ey'),
+                  Constant(value='early')],
+                values=[
+                  Constant(value='Led enterprise generative AI and LLM solution delivery for Fortune 500 financial services clients, scaling ML teams and accelerating deployments.'),
+                  Constant(value='Directed global digital transformation programs, modernizing legacy systems and reducing regulatory cycles through cloud migrations.'),
+                  Constant(value='As co-founder and CTO, led all technology strategy, product development, and team management from concept to launch.'),
+                  Constant(value='Managed 18-person enterprise risk team providing strategic guidance to financial institutions on capital adequacy and regulatory modeling.'),
+                  Constant(value='Advanced from actuarial analyst to senior consultant, building quantitative and computational foundation for technology career.')])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='intros', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='company', ctx=Load()),
+                  Constant(value='')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_select_bullets',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='company',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target_words',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='TemperatureMode', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Select and customize bullets for a role.')),
+            If(
+              test=Compare(
+                left=Name(id='company', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='unify')]),
+              body=[
+                Return(
+                  value=List(
+                    elts=[
+                      Constant(value='Designed and deployed context-engineering frameworks with RAG pipelines, improving GenAI accuracy by 33%'),
+                      Constant(value='Architected LLM deployment pipelines with vector databases, cutting latency by 38% for production SLAs'),
+                      Constant(value='Built senior engineering teams focused on transformer models, reducing fraud detection times by 42%')],
+                    ctx=Load()))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='company', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='ibm')]),
+                  body=[
+                    Return(
+                      value=List(
+                        elts=[
+                          Constant(value='Delivered $34M transformation migrating risk systems to AWS, cutting response times by 48%'),
+                          Constant(value='Launched ML risk analytics platform serving global markets, improving accuracy by 17%')],
+                        ctx=Load()))],
+                  orelse=[
+                    Return(
+                      value=List(
+                        elts=[
+                          Constant(value='Placeholder bullet for demonstration')],
+                        ctx=Load()))])])],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_format_education',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Format education section.')),
+            Return(
+              value=Constant(value='MS Biostatistics, Columbia University | BA Biology, Brown University'))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_certifications',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Format certifications section.')),
+            Return(
+              value=Constant(value='AWS Certified ML Engineer | Databricks Lakehouse | AWS Solutions Architect | Fellow, Society of Actuaries'))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_select_competencies',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='jd_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Select competencies based on JD.')),
+            Return(
+              value=Constant(value='Enterprise AI Platform Architecture • Production System Scalability • AI Governance & Risk Management • Executive Leadership & Transformation • Strategic Partnership Development • Operational Excellence & Innovation'))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_calculate_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Calculate resume metrics.')),
+            Assign(
+              targets=[
+                Name(id='metrics', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='metrics', ctx=Load()),
+                          slice=JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Name(id='key', ctx=Load()),
+                                conversion=-1),
+                              Constant(value='_words')]),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='value', ctx=Load()),
+                              attr='split',
+                              ctx=Load()))]))],
+                  orelse=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load()),
+                              Name(id='list', ctx=Load())]),
+                          Call(
+                            func=Name(id='all', ctx=Load()),
+                            args=[
+                              GeneratorExp(
+                                elt=Call(
+                                  func=Name(id='isinstance', ctx=Load()),
+                                  args=[
+                                    Name(id='item', ctx=Load()),
+                                    Name(id='str', ctx=Load())]),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='item', ctx=Store()),
+                                    iter=Name(id='value', ctx=Load()),
+                                    is_async=0)])])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='total_words', ctx=Store())],
+                          value=Call(
+                            func=Name(id='sum', ctx=Load()),
+                            args=[
+                              GeneratorExp(
+                                elt=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Call(
+                                      func=Attribute(
+                                        value=Name(id='item', ctx=Load()),
+                                        attr='split',
+                                        ctx=Load()))]),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='item', ctx=Store()),
+                                    iter=Name(id='value', ctx=Load()),
+                                    is_async=0)])])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='metrics', ctx=Load()),
+                              slice=JoinedStr(
+                                values=[
+                                  FormattedValue(
+                                    value=Name(id='key', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='_words')]),
+                              ctx=Store())],
+                          value=Name(id='total_words', ctx=Load()))])])]),
+            Assign(
+              targets=[
+                Name(id='unify_words', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='unify_bullets_words'),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='unify_intro_words'),
+                    Constant(value=0)]))),
+            Assign(
+              targets=[
+                Name(id='ibm_words', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='ibm_bullets_words'),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='ibm_intro_words'),
+                    Constant(value=0)]))),
+            If(
+              test=Compare(
+                left=Name(id='ibm_words', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metrics', ctx=Load()),
+                      slice=Constant(value='unify_ibm_ratio'),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='unify_words', ctx=Load()),
+                    op=Div(),
+                    right=Name(id='ibm_words', ctx=Load())))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metrics', ctx=Load()),
+                      slice=Constant(value='unify_ibm_ratio'),
+                      ctx=Store())],
+                  value=Constant(value=1.0))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='metrics', ctx=Load()),
+                  slice=Constant(value='signal_score'),
+                  ctx=Store())],
+              value=Constant(value=0.75)),
+            Return(
+              value=Name(id='metrics', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_run_qa_validation',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='metrics',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Run QA validation gates.')),
+            Assign(
+              targets=[
+                Name(id='gates', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='es_words', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='executive_summary_words'),
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='gates', ctx=Load()),
+                  slice=Constant(value='G1_ExecutiveSummary'),
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Compare(
+                    left=Constant(value=118),
+                    ops=[
+                      LtE(),
+                      LtE()],
+                    comparators=[
+                      Name(id='es_words', ctx=Load()),
+                      Constant(value=135)]),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Executive Summary: '),
+                      FormattedValue(
+                        value=Name(id='es_words', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' words (target: 118-135)')])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='ratio', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='unify_ibm_ratio'),
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='gates', ctx=Load()),
+                  slice=Constant(value='G2_UnifyIBMRatio'),
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Compare(
+                    left=Constant(value=1.1),
+                    ops=[
+                      LtE(),
+                      LtE()],
+                    comparators=[
+                      Name(id='ratio', ctx=Load()),
+                      Constant(value=1.3)]),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Unify/IBM Ratio: '),
+                      FormattedValue(
+                        value=Name(id='ratio', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value=' (target: 1.10-1.30)')])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='total_words', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='v', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='k', ctx=Store()),
+                            Name(id='v', ctx=Store())],
+                          ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='metrics', ctx=Load()),
+                            attr='items',
+                            ctx=Load())),
+                        ifs=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='k', ctx=Load()),
+                              attr='endswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='_words')])],
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='gates', ctx=Load()),
+                  slice=Constant(value='G3_TotalWords'),
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Compare(
+                    left=Constant(value=900),
+                    ops=[
+                      LtE(),
+                      LtE()],
+                    comparators=[
+                      Name(id='total_words', ctx=Load()),
+                      Constant(value=1100)]),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Total Words: '),
+                      FormattedValue(
+                        value=Name(id='total_words', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' (target: 900-1100)')])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='skills_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='sections', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='skills'),
+                      List(ctx=Load())])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='gates', ctx=Load()),
+                  slice=Constant(value='G4_Skills'),
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Compare(
+                    left=Name(id='skills_count', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=12)]),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Skills Count: '),
+                      FormattedValue(
+                        value=Name(id='skills_count', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' (target: 12)')])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='signal', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='signal_score'),
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='gates', ctx=Load()),
+                  slice=Constant(value='G5_Signal'),
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Compare(
+                    left=Constant(value=0.72),
+                    ops=[
+                      LtE(),
+                      LtE()],
+                    comparators=[
+                      Name(id='signal', ctx=Load()),
+                      Constant(value=0.78)]),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Signal Score: '),
+                      FormattedValue(
+                        value=Name(id='signal', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value=' (target: 0.72-0.78)')])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='gates', ctx=Load()),
+                  slice=Constant(value='G6_ContactInfo'),
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Call(
+                    func=Name(id='bool', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='sections', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='contact')])]),
+                  Constant(value='Contact information present')],
+                ctx=Load())),
+            Return(
+              value=Name(id='gates', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_format_resume',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 1: Complete resume.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='OUTPUT 1: CUSTOMIZED RESUME')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='name'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='headline'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='contact'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='EXECUTIVE SUMMARY')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='executive_summary'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='PROFESSIONAL EXPERIENCE')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='unify_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='unify_title'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='unify_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='unify_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ibm_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ibm_title'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ibm_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='ibm_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='tradersense_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='tradersense_title'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='tradersense_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='tradersense_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ey_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ey_title'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ey_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='ey_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='early_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='early_title'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='early_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='early_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='EDUCATION')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='education'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='CERTIFICATIONS')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='certifications'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='COMPETENCIES')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='competencies'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='TECHNICAL SKILLS')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            For(
+              target=Name(id='skill', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='skills'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='skill', ctx=Load())]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_word_count_table',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='metrics',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 2: Word count table.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='┌'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┬')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┬')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┬')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┐'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='│ Section                      │ Baseline   │ Customized │ Delta      │')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='├'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┼')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┼')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┼')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┤'))])),
+            Assign(
+              targets=[
+                Name(id='section_mapping', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Name'),
+                  Constant(value='Headline'),
+                  Constant(value='Contact'),
+                  Constant(value='Executive Summary'),
+                  Constant(value='Unify Intro'),
+                  Constant(value='Unify Bullets'),
+                  Constant(value='IBM Intro'),
+                  Constant(value='IBM Bullets'),
+                  Constant(value='TraderSense Intro'),
+                  Constant(value='TraderSense Bullets'),
+                  Constant(value='EY Intro'),
+                  Constant(value='EY Bullets'),
+                  Constant(value='Early Career Intro'),
+                  Constant(value='Early Career Bullets'),
+                  Constant(value='Education'),
+                  Constant(value='Certifications'),
+                  Constant(value='Competencies')],
+                values=[
+                  Tuple(
+                    elts=[
+                      Constant(value='name'),
+                      Constant(value=2)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='headline'),
+                      Constant(value=12)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='contact'),
+                      Constant(value=10)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='executive_summary'),
+                      Constant(value=150)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='unify_intro'),
+                      Constant(value=25)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='unify_bullets'),
+                      Constant(value=265)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ibm_intro'),
+                      Constant(value=20)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ibm_bullets'),
+                      Constant(value=195)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='tradersense_intro'),
+                      Constant(value=20)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='tradersense_bullets'),
+                      Constant(value=45)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ey_intro'),
+                      Constant(value=15)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ey_bullets'),
+                      Constant(value=50)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='early_intro'),
+                      Constant(value=20)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='early_bullets'),
+                      Constant(value=45)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='education'),
+                      Constant(value=15)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='certifications'),
+                      Constant(value=25)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='competencies'),
+                      Constant(value=118)],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='baseline_total', ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Name(id='custom_total', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='display_name', ctx=Store()),
+                  Tuple(
+                    elts=[
+                      Name(id='key', ctx=Store()),
+                      Name(id='baseline', ctx=Store())],
+                    ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='section_mapping', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='custom', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='metrics', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='_words')]),
+                      Constant(value=0)])),
+                Assign(
+                  targets=[
+                    Name(id='delta', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='custom', ctx=Load()),
+                    op=Sub(),
+                    right=Name(id='baseline', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='delta_str', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='delta', ctx=Load()),
+                      ops=[
+                        Gt()],
+                      comparators=[
+                        Constant(value=0)]),
+                    body=JoinedStr(
+                      values=[
+                        Constant(value='+'),
+                        FormattedValue(
+                          value=Name(id='delta', ctx=Load()),
+                          conversion=-1)]),
+                    orelse=Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        Name(id='delta', ctx=Load())]))),
+                AugAssign(
+                  target=Name(id='baseline_total', ctx=Store()),
+                  op=Add(),
+                  value=Name(id='baseline', ctx=Load())),
+                AugAssign(
+                  target=Name(id='custom_total', ctx=Store()),
+                  op=Add(),
+                  value=Name(id='custom', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='│ '),
+                          FormattedValue(
+                            value=Name(id='display_name', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='28')])),
+                          Constant(value=' │ '),
+                          FormattedValue(
+                            value=Name(id='baseline', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='10')])),
+                          Constant(value=' │ '),
+                          FormattedValue(
+                            value=Name(id='custom', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='10')])),
+                          Constant(value=' │ '),
+                          FormattedValue(
+                            value=Name(id='delta_str', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='10')])),
+                          Constant(value=' │')])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='├'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┼')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┼')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┼')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┤'))])),
+            Assign(
+              targets=[
+                Name(id='total_delta', ctx=Store())],
+              value=BinOp(
+                left=Name(id='custom_total', ctx=Load()),
+                op=Sub(),
+                right=Name(id='baseline_total', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='total_delta_str', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='total_delta', ctx=Load()),
+                  ops=[
+                    Gt()],
+                  comparators=[
+                    Constant(value=0)]),
+                body=JoinedStr(
+                  values=[
+                    Constant(value='+'),
+                    FormattedValue(
+                      value=Name(id='total_delta', ctx=Load()),
+                      conversion=-1)]),
+                orelse=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='total_delta', ctx=Load())]))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='│ '),
+                      FormattedValue(
+                        value=Constant(value='TOTAL (excl. Skills)'),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='28')])),
+                      Constant(value=' │ '),
+                      FormattedValue(
+                        value=Name(id='baseline_total', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='10')])),
+                      Constant(value=' │ '),
+                      FormattedValue(
+                        value=Name(id='custom_total', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='10')])),
+                      Constant(value=' │ '),
+                      FormattedValue(
+                        value=Name(id='total_delta_str', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='10')])),
+                      Constant(value=' │')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='└'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┴')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┴')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┴')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┘'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='SUMMARY:')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Baseline Target:  1,032 words')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Customized Total: '),
+                      FormattedValue(
+                        value=Name(id='custom_total', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value=',')])),
+                      Constant(value=' words')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Delta:            '),
+                      FormattedValue(
+                        value=Name(id='total_delta_str', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' words')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Unify/IBM Ratio:  '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='metrics', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='unify_ibm_ratio'),
+                            Constant(value=0)]),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')]))])])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_signal_calibration',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='metrics',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 3: Signal calibration.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='OUTPUT 3: SIGNAL CALIBRATION')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='signal', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='signal_score'),
+                  Constant(value=0.75)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='SIGNAL CALCULATION:')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Base Signal:    '),
+                      FormattedValue(
+                        value=Name(id='signal', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Target Range:   0.720 - 0.780')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Status:         '),
+                      FormattedValue(
+                        value=IfExp(
+                          test=Compare(
+                            left=Constant(value=0.72),
+                            ops=[
+                              LtE(),
+                              LtE()],
+                            comparators=[
+                              Name(id='signal', ctx=Load()),
+                              Constant(value=0.78)]),
+                          body=Constant(value='✓ PASS'),
+                          orelse=Constant(value='✗ FAIL')),
+                        conversion=-1)])])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_qa_validation',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='qa_results',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 4: QA validation.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='OUTPUT 4: QA VALIDATION GATES')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='gate', ctx=Store()),
+                  Tuple(
+                    elts=[
+                      Name(id='passed', ctx=Store()),
+                      Name(id='message', ctx=Store())],
+                    ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='qa_results', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='status', ctx=Store())],
+                  value=IfExp(
+                    test=Name(id='passed', ctx=Load()),
+                    body=Constant(value='✓ PASS'),
+                    orelse=Constant(value='✗ FAIL'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='status', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' | '),
+                          FormattedValue(
+                            value=Name(id='gate', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='       '),
+                          FormattedValue(
+                            value=Name(id='message', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='')]))]),
+            Assign(
+              targets=[
+                Name(id='all_passed', ctx=Store())],
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Subscript(
+                      value=Name(id='r', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='r', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='qa_results', ctx=Load()),
+                            attr='values',
+                            ctx=Load())),
+                        is_async=0)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='OVERALL QA STATUS: '),
+                    op=Add(),
+                    right=IfExp(
+                      test=Name(id='all_passed', ctx=Load()),
+                      body=Constant(value='✓ ALL GATES PASSED'),
+                      orelse=Constant(value='✗ FAILED')))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load()))]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='jd', ctx=Store())],
+          value=Constant(value='\n    Vice President of Pre-Sales Solutions, Americas - DataRobot\n    \n    The VP, Pre-Sales Solutions – Americas is a strategic and customer-facing leadership role \n    responsible for leading and scaling the Pre-Sales Solutions organization across North and \n    South America. This leader will partner closely with Sales, Product, Marketing, and Customer \n    Success to ensure the delivery of best-in-class technical expertise, solution design, and \n    customer value throughout the sales cycle.\n    \n    Key Responsibilities:\n    - Lead and grow the Pre-Sales Solutions team across the Americas\n    - Define and execute the pre-sales strategy to support regional sales targets\n    - Align with Sales leadership to support pipeline generation and deal acceleration\n    - Build and scale a repeatable technical sales motion, including POCs and demos\n    - Develop frameworks, tools, and best practices to improve team productivity\n    - Serve as a strategic advisor to prospects and customers on solution architecture\n    - Track and report on key pre-sales metrics\n    \n    Qualifications:\n    - 10+ years of experience in pre-sales, solution engineering, or technical consulting\n    - 5+ years in a senior leadership role\n    - Proven experience scaling pre-sales or solutions teams\n    - Deep understanding of complex B2B sales cycles\n    - Strong technical acumen\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=100))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='RESUME GENERATION ENGINE v4.6.0 - ENHANCED')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=100))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nModules Loaded:')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='✓ SaaS Roles (1,993 roles)')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='✓ App Tracker Schema v4 (54 fields)')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='✓ App Tracker QA v5 (R1-R23 validation)')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='✓ Hyphenation Rules (style enforcement)')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='✓ Skills Pool (K.11 generation)')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='✓ Temperature Modes (Conservative/Balanced/Creative)')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nInitializing engine...')])),
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='ResumeGenerationEngine', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nGenerating resume for VP Pre-Sales role...')])),
+        Assign(
+          targets=[
+            Name(id='outputs', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='engine', ctx=Load()),
+              attr='generate_resume',
+              ctx=Load()),
+            args=[
+              Name(id='jd', ctx=Load()),
+              Constant(value='vp_presales'),
+              Attribute(
+                value=Name(id='TemperatureMode', ctx=Load()),
+                attr='BALANCED',
+                ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=Subscript(
+                  value=Name(id='outputs', ctx=Load()),
+                  slice=Constant(value='output1_resume'),
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=100)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='OUTPUT 2: WORD COUNT TABLE')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=100))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='outputs', ctx=Load()),
+                slice=Constant(value='output2_word_count'),
+                ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=Subscript(
+                  value=Name(id='outputs', ctx=Load()),
+                  slice=Constant(value='output3_signal_calibration'),
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=Subscript(
+                  value=Name(id='outputs', ctx=Load()),
+                  slice=Constant(value='output4_qa_validation'),
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=100)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='GENERATION COMPLETE - v4.6.0 ENHANCED')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=100))]))])])

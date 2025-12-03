@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_policy_controller_bounds.py",
+    "rel_path": "test_policy_controller_bounds.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "a5d2e85b466095ec4d3f50ef20b030cf72c01849e7178f10b61e051785fb0220",
+    "file_size": 2579,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.158201
+}

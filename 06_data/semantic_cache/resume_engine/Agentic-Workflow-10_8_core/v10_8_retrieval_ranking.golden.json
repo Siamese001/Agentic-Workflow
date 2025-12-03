@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nV10.8 Consolidated Module: Retrieval Ranking\nMerged from 4 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom ranking import bm25_rank, dense_rank, hybrid_rank\nfrom typing import Any, Dict, List\nfrom utils_types import BudgetConfig\nimport hashlib\n\n\n# ============================================================\n# From v10_8_retrieval.py\n# ============================================================\n\n@dataclass\nclass RetrievalConfig:\n    queries: List[str]\n    filters: Dict[str, Any]\n    ranking: Dict[str, Any]\n    metadata: Dict[str, Any] | None = None\n\n    def to_plan_fragment(self) -> Dict[str, Any]:\n        return {\n            \"queries\": self.queries,\n            \"filters\": self.filters,\n            \"ranking\": self.ranking,\n            \"metadata\": self.metadata or {},\n        }\nfrom typing import Any, Dict, List\n\nfrom ranking import bm25_rank, dense_rank, hybrid_rank\nfrom utils_types import BudgetConfig\n\n\ndef normal",
+  "full_hash": "daaa91a082006d0821b67b3d04653e3154f470da4d14ef298d07202bbe146f62",
+  "generated_at": 1764728228.9664056,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_retrieval_ranking.py"
+}

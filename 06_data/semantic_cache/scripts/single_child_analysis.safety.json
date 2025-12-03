@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 509,
+  "generated_at": 1764728352.6059322,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\validation_tools\\single_child_analysis.txt"
+}

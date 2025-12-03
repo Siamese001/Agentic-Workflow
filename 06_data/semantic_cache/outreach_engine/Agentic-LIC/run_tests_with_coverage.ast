@@ -1,0 +1,914 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value="Run pytest under the stdlib trace module and enforce a coverage threshold.\n\nThis script exists so we can enforce the repository's 90%% coverage gate even in\nrestricted environments where third-party coverage plugins (e.g. pytest-cov)\nare not available.  It executes pytest with the builtin ``trace`` module to\ncollect line execution counts, computes the aggregate coverage for the\n``src/lic_agentic`` package, and exits with a non-zero status code if coverage\nfalls below the requested threshold.\n")),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='argparse')]),
+    Import(
+      names=[
+        alias(name='pathlib')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='trace')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Iterable'),
+        alias(name='Set'),
+        alias(name='Tuple')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Assign(
+      targets=[
+        Name(id='ROOT', ctx=Store())],
+      value=Subscript(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pathlib', ctx=Load()),
+                  attr='Path',
+                  ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parents',
+          ctx=Load()),
+        slice=Constant(value=1),
+        ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='TARGET_DIR', ctx=Store())],
+      value=BinOp(
+        left=BinOp(
+          left=Name(id='ROOT', ctx=Load()),
+          op=Div(),
+          right=Constant(value='src')),
+        op=Div(),
+        right=Constant(value='lic_agentic'))),
+    Assign(
+      targets=[
+        Name(id='DEFAULT_TEST_TARGETS', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='tests/unit'),
+          Constant(value='tests/integration'),
+          Constant(value='tests/e2e'),
+          Constant(value='tests/regression')],
+        ctx=Load())),
+    FunctionDef(
+      name='_iter_code_lines',
+      args=arguments(
+        args=[
+          arg(
+            arg='path',
+            annotation=Attribute(
+              value=Name(id='pathlib', ctx=Load()),
+              attr='Path',
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Return the line numbers that should count toward coverage for *path*.')),
+        AnnAssign(
+          target=Name(id='code_lines', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='int', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='set', ctx=Load())),
+          simple=1),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='open',
+                  ctx=Load()),
+                args=[
+                  Constant(value='r')],
+                keywords=[
+                  keyword(
+                    arg='encoding',
+                    value=Constant(value='utf-8'))]),
+              optional_vars=Name(id='handle', ctx=Store()))],
+          body=[
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='lineno', ctx=Store()),
+                  Name(id='raw_line', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='handle', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='start',
+                    value=Constant(value=1))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='stripped', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='raw_line', ctx=Load()),
+                      attr='strip',
+                      ctx=Load()))),
+                If(
+                  test=BoolOp(
+                    op=Or(),
+                    values=[
+                      UnaryOp(
+                        op=Not(),
+                        operand=Name(id='stripped', ctx=Load())),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='stripped', ctx=Load()),
+                          attr='startswith',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='#')])]),
+                  body=[
+                    Continue()]),
+                If(
+                  test=Compare(
+                    left=Constant(value='# pragma: no cover'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='stripped', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))]),
+                  body=[
+                    Continue()]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='code_lines', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Name(id='lineno', ctx=Load())]))])]),
+        Return(
+          value=Name(id='code_lines', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Set', ctx=Load()),
+        slice=Name(id='int', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_collect_coverage',
+      args=arguments(
+        args=[
+          arg(
+            arg='counts',
+            annotation=Subscript(
+              value=Name(id='dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Subscript(
+                    value=Name(id='Tuple', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='int', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  Name(id='int', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='total_lines', ctx=Store())],
+          value=Constant(value=0)),
+        Assign(
+          targets=[
+            Name(id='executed_lines', ctx=Store())],
+          value=Constant(value=0)),
+        AnnAssign(
+          target=Name(id='normalized_counts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Attribute(
+                  value=Name(id='pathlib', ctx=Load()),
+                  attr='Path',
+                  ctx=Load()),
+                Subscript(
+                  value=Name(id='Set', ctx=Load()),
+                  slice=Name(id='int', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        AnnAssign(
+          target=Name(id='breakdown', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Attribute(
+                    value=Name(id='pathlib', ctx=Load()),
+                    attr='Path',
+                    ctx=Load()),
+                  Name(id='int', ctx=Load()),
+                  Name(id='int', ctx=Load()),
+                  Subscript(
+                    value=Name(id='list', ctx=Load()),
+                    slice=Name(id='int', ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Tuple(
+                elts=[
+                  Name(id='filename', ctx=Store()),
+                  Name(id='lineno', ctx=Store())],
+                ctx=Store()),
+              Name(id='hit_count', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='counts', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='hit_count', ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='file_path', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pathlib', ctx=Load()),
+                      attr='Path',
+                      ctx=Load()),
+                    args=[
+                      Name(id='filename', ctx=Load())]),
+                  attr='resolve',
+                  ctx=Load()))),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='TARGET_DIR', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='file_path', ctx=Load()),
+                        attr='parents',
+                        ctx=Load())]),
+                  Compare(
+                    left=Name(id='file_path', ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Name(id='TARGET_DIR', ctx=Load())])]),
+              body=[
+                Continue()]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='normalized_counts', ctx=Load()),
+                      attr='setdefault',
+                      ctx=Load()),
+                    args=[
+                      Name(id='file_path', ctx=Load()),
+                      Call(
+                        func=Name(id='set', ctx=Load()))]),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  Name(id='lineno', ctx=Load())]))]),
+        For(
+          target=Name(id='file_path', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='TARGET_DIR', ctx=Load()),
+              attr='rglob',
+              ctx=Load()),
+            args=[
+              Constant(value='*.py')]),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='file_path', ctx=Load()),
+                  attr='name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='__init__.py')]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=Call(
+                func=Name(id='_iter_code_lines', ctx=Load()),
+                args=[
+                  Name(id='file_path', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='lines', ctx=Load())),
+              body=[
+                Continue()]),
+            AugAssign(
+              target=Name(id='total_lines', ctx=Store()),
+              op=Add(),
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='executed', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='normalized_counts', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='file_path', ctx=Load()),
+                      attr='resolve',
+                      ctx=Load())),
+                  Call(
+                    func=Name(id='set', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='hit_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='lines', ctx=Load()),
+                    op=BitAnd(),
+                    right=Name(id='executed', ctx=Load()))])),
+            AugAssign(
+              target=Name(id='executed_lines', ctx=Store()),
+              op=Add(),
+              value=Name(id='hit_count', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='missing_lines', ctx=Store())],
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='lines', ctx=Load()),
+                    op=Sub(),
+                    right=Name(id='executed', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='breakdown', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Tuple(
+                    elts=[
+                      Name(id='file_path', ctx=Load()),
+                      Name(id='hit_count', ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='lines', ctx=Load())]),
+                      Name(id='missing_lines', ctx=Load())],
+                    ctx=Load())]))]),
+        Return(
+          value=Tuple(
+            elts=[
+              Name(id='executed_lines', ctx=Load()),
+              Name(id='total_lines', ctx=Load()),
+              Name(id='breakdown', ctx=Load())],
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='int', ctx=Load()),
+            Name(id='int', ctx=Load()),
+            Subscript(
+              value=Name(id='list', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Tuple', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='pathlib', ctx=Load()),
+                      attr='Path',
+                      ctx=Load()),
+                    Name(id='int', ctx=Load()),
+                    Name(id='int', ctx=Load()),
+                    Subscript(
+                      value=Name(id='list', ctx=Load()),
+                      slice=Name(id='int', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='main',
+      args=arguments(
+        args=[
+          arg(
+            arg='argv',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Iterable', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='Run pytest with stdlib coverage enforcement'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--threshold')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='float', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value=90.0)),
+              keyword(
+                arg='help',
+                value=Constant(value='Required coverage percentage for src/lic_agentic (default: 90.0)'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--report-missing')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Print per-file coverage breakdown sorted by ascending coverage'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='pytest_args')],
+            keywords=[
+              keyword(
+                arg='nargs',
+                value=Attribute(
+                  value=Name(id='argparse', ctx=Load()),
+                  attr='REMAINDER',
+                  ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value="Arguments forwarded to pytest (prefix with '--' to separate)"))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()),
+            args=[
+              IfExp(
+                test=Compare(
+                  left=Name(id='argv', ctx=Load()),
+                  ops=[
+                    IsNot()],
+                  comparators=[
+                    Constant(value=None)]),
+                body=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Name(id='argv', ctx=Load())]),
+                orelse=Constant(value=None))])),
+        Assign(
+          targets=[
+            Name(id='tracer', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='trace', ctx=Load()),
+              attr='Trace',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='count',
+                value=Constant(value=True)),
+              keyword(
+                arg='trace',
+                value=Constant(value=False)),
+              keyword(
+                arg='ignoredirs',
+                value=List(
+                  elts=[
+                    Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='prefix',
+                      ctx=Load()),
+                    Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        BinOp(
+                          left=Name(id='ROOT', ctx=Load()),
+                          op=Div(),
+                          right=Constant(value='tests'))])],
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='pytest_args', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Name(id='args', ctx=Load()),
+                    attr='pytest_args',
+                    ctx=Load()),
+                  List(ctx=Load())])])),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='pytest_args', ctx=Load()),
+              Compare(
+                left=Subscript(
+                  value=Name(id='pytest_args', ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='--')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='pytest_args', ctx=Store())],
+              value=Subscript(
+                value=Name(id='pytest_args', ctx=Load()),
+                slice=Slice(
+                  lower=Constant(value=1)),
+                ctx=Load()))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='pytest_args', ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='pytest_args', ctx=Store())],
+              value=Name(id='DEFAULT_TEST_TARGETS', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='exit_code', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracer', ctx=Load()),
+              attr='runfunc',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='main',
+                ctx=Load()),
+              Name(id='pytest_args', ctx=Load())])),
+        If(
+          test=Compare(
+            left=Name(id='exit_code', ctx=Load()),
+            ops=[
+              NotEq()],
+            comparators=[
+              Constant(value=0)]),
+          body=[
+            Return(
+              value=Name(id='exit_code', ctx=Load()))]),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='executed', ctx=Store()),
+                Name(id='total', ctx=Store()),
+                Name(id='breakdown', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Name(id='_collect_coverage', ctx=Load()),
+            args=[
+              Attribute(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='tracer', ctx=Load()),
+                    attr='results',
+                    ctx=Load())),
+                attr='counts',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='coverage_pct', ctx=Store())],
+          value=IfExp(
+            test=Name(id='total', ctx=Load()),
+            body=BinOp(
+              left=BinOp(
+                left=Name(id='executed', ctx=Load()),
+                op=Div(),
+                right=Name(id='total', ctx=Load())),
+              op=Mult(),
+              right=Constant(value=100.0)),
+            orelse=Constant(value=100.0))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Coverage for src/lic_agentic: '),
+                  FormattedValue(
+                    value=Name(id='coverage_pct', ctx=Load()),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='.2f')])),
+                  Constant(value='% ('),
+                  FormattedValue(
+                    value=Name(id='executed', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='/'),
+                  FormattedValue(
+                    value=Name(id='total', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' lines)')])])),
+        If(
+          test=Attribute(
+            value=Name(id='args', ctx=Load()),
+            attr='report_missing',
+            ctx=Load()),
+          body=[
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='file_path', ctx=Store()),
+                  Name(id='hit_count', ctx=Store()),
+                  Name(id='line_count', ctx=Store()),
+                  Name(id='missing', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  Name(id='breakdown', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='item')]),
+                      body=IfExp(
+                        test=Subscript(
+                          value=Name(id='item', ctx=Load()),
+                          slice=Constant(value=2),
+                          ctx=Load()),
+                        body=BinOp(
+                          left=Subscript(
+                            value=Name(id='item', ctx=Load()),
+                            slice=Constant(value=1),
+                            ctx=Load()),
+                          op=Div(),
+                          right=Subscript(
+                            value=Name(id='item', ctx=Load()),
+                            slice=Constant(value=2),
+                            ctx=Load())),
+                        orelse=Constant(value=1.0))))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='pct', ctx=Store())],
+                  value=IfExp(
+                    test=Name(id='line_count', ctx=Load()),
+                    body=BinOp(
+                      left=BinOp(
+                        left=Name(id='hit_count', ctx=Load()),
+                        op=Div(),
+                        right=Name(id='line_count', ctx=Load())),
+                      op=Mult(),
+                      right=Constant(value=100.0)),
+                    orelse=Constant(value=100.0))),
+                Assign(
+                  targets=[
+                    Name(id='preview', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Constant(value=', '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='num', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='num', ctx=Store()),
+                            iter=Subscript(
+                              value=Name(id='missing', ctx=Load()),
+                              slice=Slice(
+                                upper=Constant(value=5)),
+                              ctx=Load()),
+                            is_async=0)])])),
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='missing', ctx=Load())]),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=5)]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='preview', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=', ...'))]),
+                Assign(
+                  targets=[
+                    Name(id='suffix', ctx=Store())],
+                  value=IfExp(
+                    test=Name(id='missing', ctx=Load()),
+                    body=JoinedStr(
+                      values=[
+                        Constant(value=' missing: '),
+                        FormattedValue(
+                          value=Name(id='preview', ctx=Load()),
+                          conversion=-1)]),
+                    orelse=Constant(value=''))),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='file_path', ctx=Load()),
+                                attr='relative_to',
+                                ctx=Load()),
+                              args=[
+                                Name(id='ROOT', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='pct', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.1f')])),
+                          Constant(value='% ('),
+                          FormattedValue(
+                            value=Name(id='hit_count', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='/'),
+                          FormattedValue(
+                            value=Name(id='line_count', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=')'),
+                          FormattedValue(
+                            value=Name(id='suffix', ctx=Load()),
+                            conversion=-1)])]))])]),
+        If(
+          test=Compare(
+            left=Name(id='coverage_pct', ctx=Load()),
+            ops=[
+              Lt()],
+            comparators=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='threshold',
+                ctx=Load())]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='ERROR: coverage '),
+                      FormattedValue(
+                        value=Name(id='coverage_pct', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='% is below the required '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='args', ctx=Load()),
+                          attr='threshold',
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='%')])],
+                keywords=[
+                  keyword(
+                    arg='file',
+                    value=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='stderr',
+                      ctx=Load()))])),
+            Return(
+              value=Constant(value=1))]),
+        Return(
+          value=Constant(value=0))],
+      returns=Name(id='int', ctx=Load())),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sys', ctx=Load()),
+              attr='exit',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='main', ctx=Load()))]))])])

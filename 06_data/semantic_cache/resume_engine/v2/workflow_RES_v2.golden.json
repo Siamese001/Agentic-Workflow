@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: workflow_RES_v2.py\n# Resume Generation Workflow - V2 Agentic Architecture\n# Version: 17.02 (CRL Integration Fix)\n\nfrom __future__ import annotations\n\nimport copy\nimport functools\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport re\nimport time\nimport uuid\nfrom enum import Enum\nfrom collections import defaultdict\nfrom datetime import datetime, timedelta\nfrom functools import partial\nfrom typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union\nfrom dataclasses import asdict, is_dataclass\nimport asyncio\n\n# V2 Agent imports (Governor Module)\nfrom governor import (\n    PolicyAgent, CostRouter, ContextRelayLayer, \n    CritiqueTool, HIL_Interface, TraceRegistry,\n    MAX_RETRIES_PER_NODE, DEFAULT_MODEL\n)\n\n# V2 Modular Tool imports\nfrom clerk_RES_v2 import ClerkExtractor\nfrom enricher_RES_v2 import DataEnricher\nfrom artist_RES_v2 import ArtistGenerator\nfrom renderer_RES_v2 import FileRenderer\n\n# Import from modular components\nfrom models_RES import (\n",
+  "full_hash": "53dcfddcbe1a88ed9425dc1f4e6167774235398f1e0f07c4f877862e6cbedd7c",
+  "generated_at": 1764728327.4360607,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\workflow_RES_v2.py"
+}

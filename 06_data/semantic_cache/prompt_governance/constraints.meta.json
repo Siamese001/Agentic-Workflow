@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\observer-microagent-layer\\expand-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\constraints.yaml",
+    "rel_path": "constraints.yaml",
+    "root_name": "prompt_governance",
+    "file_hash": "b93f6b9e5dc15ee9652ca90757b70210882c0000ff7ecd822cb0129c806b10e8",
+    "file_size": 1896,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728348.0307302
+}

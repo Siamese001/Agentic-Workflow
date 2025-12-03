@@ -1,0 +1,1832 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Human-in-the-loop routing and reconciliation agents.')),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='math')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel'),
+        alias(name='Field')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='BaseAgent'),
+        alias(name='HILAmbiguityReport'),
+        alias(name='HILFeedbackIntent'),
+        alias(name='HILFeedbackRoute'),
+        alias(name='HILReconciliationResult'),
+        alias(name='PersonaConsensus'),
+        alias(name='PersonaReviewDecision'),
+        alias(name='StrategyPlan'),
+        alias(name='WorkflowContext'),
+        alias(name='track_metrics'),
+        alias(name='_format_prompt_with_defaults'),
+        alias(name='PydanticSchemaError')],
+      level=0),
+    ClassDef(
+      name='VirtualReviewerPersonaAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Persona-specialized reviewer that interprets human feedback.')),
+        Assign(
+          targets=[
+            Name(id='PersonaPrompt', ctx=Store())],
+          value=Constant(value='\n    You are acting as the {persona} reviewer.\n    Specialty focus: {focus}\n    Human feedback:\n    {human_feedback}\n\n    Clustered intents summary:\n    {intent_summary}\n\n    Provide a JSON object with keys:\n    - persona (string)\n    - approval (boolean)\n    - confidence (0-1 float)\n    - key_concerns (list of strings)\n    - proposed_actions (list of strings)\n    - escalation_recommended (boolean)\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='WorkflowContext', ctx=Load())),
+              arg(
+                arg='persona',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='focus',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='persona',
+                  ctx=Store())],
+              value=Name(id='persona', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='focus',
+                  ctx=Store())],
+              value=Name(id='focus', ctx=Load()))]),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='human_feedback',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='intent_clusters',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='HILFeedbackIntent', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='client', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='get_model_client',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_model')])),
+            Assign(
+              targets=[
+                Name(id='intent_summary', ctx=Store())],
+              value=IfExp(
+                test=Name(id='intent_clusters', ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='json', ctx=Load()),
+                    attr='dumps',
+                    ctx=Load()),
+                  args=[
+                    ListComp(
+                      elt=Call(
+                        func=Attribute(
+                          value=Name(id='intent', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load())),
+                      generators=[
+                        comprehension(
+                          target=Name(id='intent', ctx=Store()),
+                          iter=Name(id='intent_clusters', ctx=Load()),
+                          is_async=0)])]),
+                orelse=Constant(value='[]'))),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='PersonaPrompt',
+                      ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='persona'),
+                        Constant(value='focus'),
+                        Constant(value='human_feedback'),
+                        Constant(value='intent_summary')],
+                      values=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='persona',
+                          ctx=Load()),
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='focus',
+                          ctx=Load()),
+                        Name(id='human_feedback', ctx=Load()),
+                        Name(id='intent_summary', ctx=Load())]),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='budget_manager',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='goal_state',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='top_failures',
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='response', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='client', ctx=Load()),
+                    attr='chat_completion_async',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='messages',
+                      value=List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='role'),
+                              Constant(value='content')],
+                            values=[
+                              Constant(value='user'),
+                              Name(id='prompt', ctx=Load())])],
+                        ctx=Load())),
+                    keyword(
+                      arg='temperature',
+                      value=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='model_config',
+                            ctx=Load()),
+                          attr='qa_model',
+                          ctx=Load()),
+                        attr='temperature',
+                        ctx=Load())),
+                    keyword(
+                      arg='response_format',
+                      value=Constant(value='json_object'))]))),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='validated_output', ctx=Store()),
+                    Name(id='error', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='validator',
+                    ctx=Load()),
+                  attr='validate',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='response', ctx=Load()),
+                    slice=Constant(value='content'),
+                    ctx=Load()),
+                  Name(id='PersonaReviewDecision', ctx=Load())])),
+            If(
+              test=Name(id='error', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Persona '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='persona',
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' validation failed: '),
+                          FormattedValue(
+                            value=Name(id='error', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='. Using fallback decision.')])])),
+                Assign(
+                  targets=[
+                    Name(id='fallback', ctx=Store())],
+                  value=Call(
+                    func=Name(id='PersonaReviewDecision', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='persona',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='persona',
+                          ctx=Load())),
+                      keyword(
+                        arg='approval',
+                        value=Constant(value=False)),
+                      keyword(
+                        arg='confidence',
+                        value=Constant(value=0.0)),
+                      keyword(
+                        arg='key_concerns',
+                        value=List(
+                          elts=[
+                            Constant(value='Unable to parse persona feedback')],
+                          ctx=Load())),
+                      keyword(
+                        arg='proposed_actions',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='escalation_recommended',
+                        value=Constant(value=True))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_feedback',
+                      ctx=Load()),
+                    args=[
+                      Name(id='workflow_id', ctx=Load()),
+                      Constant(value='virtual_persona_decision'),
+                      Constant(value='error'),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='fallback', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load()))])),
+                Return(
+                  value=Name(id='fallback', ctx=Load()))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='virtual_persona_decision'),
+                  Constant(value='success'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='validated_output', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load()))])),
+            Return(
+              value=Name(id='validated_output', ctx=Load()))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_virtual_reviewer_persona')])],
+          returns=Name(id='PersonaReviewDecision', ctx=Load()))]),
+    ClassDef(
+      name='VirtualReviewerCouncilAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Coordinates persona reviewers to negotiate a consensus.')),
+        Assign(
+          targets=[
+            Name(id='DEFAULT_PERSONAS', ctx=Store())],
+          value=List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='focus')],
+                values=[
+                  Constant(value='Legal'),
+                  Constant(value='Ensure compliance, risk mitigation, and policy adherence.')]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='focus')],
+                values=[
+                  Constant(value='Brand'),
+                  Constant(value='Protect voice, tone, and reputation considerations.')]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='focus')],
+                values=[
+                  Constant(value='SME'),
+                  Constant(value='Validate technical accuracy and subject-matter fidelity.')])],
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='human_feedback',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='intent_clusters',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='HILFeedbackIntent', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='persona_tasks', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='persona', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='DEFAULT_PERSONAS',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='persona_agent', ctx=Store())],
+                  value=Call(
+                    func=Name(id='VirtualReviewerPersonaAgent', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='context',
+                        ctx=Load()),
+                      Subscript(
+                        value=Name(id='persona', ctx=Load()),
+                        slice=Constant(value='name'),
+                        ctx=Load()),
+                      Subscript(
+                        value=Name(id='persona', ctx=Load()),
+                        slice=Constant(value='focus'),
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='debug_mode',
+                        ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='persona_tasks', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='persona_agent', ctx=Load()),
+                          attr='run_async',
+                          ctx=Load()),
+                        args=[
+                          Name(id='human_feedback', ctx=Load()),
+                          Name(id='intent_clusters', ctx=Load()),
+                          Name(id='workflow_id', ctx=Load())])]))]),
+            Assign(
+              targets=[
+                Name(id='persona_decisions', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='gather',
+                    ctx=Load()),
+                  args=[
+                    Starred(
+                      value=Name(id='persona_tasks', ctx=Load()),
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='approvals', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Constant(value=1),
+                    generators=[
+                      comprehension(
+                        target=Name(id='decision', ctx=Store()),
+                        iter=Name(id='persona_decisions', ctx=Load()),
+                        ifs=[
+                          Attribute(
+                            value=Name(id='decision', ctx=Load()),
+                            attr='approval',
+                            ctx=Load())],
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='escalations', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Attribute(
+                      value=Name(id='decision', ctx=Load()),
+                      attr='escalation_recommended',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='decision', ctx=Store()),
+                        iter=Name(id='persona_decisions', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='approved', ctx=Store())],
+              value=Compare(
+                left=Name(id='approvals', ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='math', ctx=Load()),
+                      attr='ceil',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='persona_decisions', ctx=Load())]),
+                        op=Div(),
+                        right=Constant(value=2))])])),
+            AnnAssign(
+              target=Name(id='negotiated_actions', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='decision', ctx=Store()),
+              iter=Name(id='persona_decisions', ctx=Load()),
+              body=[
+                For(
+                  target=Name(id='action', ctx=Store()),
+                  iter=Attribute(
+                    value=Name(id='decision', ctx=Load()),
+                    attr='proposed_actions',
+                    ctx=Load()),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='action', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='negotiated_actions', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='negotiated_actions', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='action', ctx=Load())]))])])]),
+            Assign(
+              targets=[
+                Name(id='rationale', ctx=Store())],
+              value=IfExp(
+                test=Name(id='approved', ctx=Load()),
+                body=Constant(value='Consensus approved'),
+                orelse=Constant(value='Consensus blocked by persona concerns'))),
+            Assign(
+              targets=[
+                Name(id='consensus', ctx=Store())],
+              value=Call(
+                func=Name(id='PersonaConsensus', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='approved',
+                    value=Name(id='approved', ctx=Load())),
+                  keyword(
+                    arg='persona_decisions',
+                    value=Name(id='persona_decisions', ctx=Load())),
+                  keyword(
+                    arg='negotiated_actions',
+                    value=Name(id='negotiated_actions', ctx=Load())),
+                  keyword(
+                    arg='rationale',
+                    value=Name(id='rationale', ctx=Load())),
+                  keyword(
+                    arg='escalation_recommended',
+                    value=Name(id='escalations', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='virtual_council_consensus'),
+                  Constant(value='success'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='consensus', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load()))])),
+            Return(
+              value=Name(id='consensus', ctx=Load()))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_virtual_reviewer_council')])],
+          returns=Name(id='PersonaConsensus', ctx=Load()))]),
+    ClassDef(
+      name='HILFeedbackSummarizerAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Clusters human edits into reusable intents for downstream routing.')),
+        ClassDef(
+          name='SummarizerOutput',
+          bases=[
+            Name(id='BaseModel', ctx=Load())],
+          body=[
+            AnnAssign(
+              target=Name(id='intent_clusters', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='HILFeedbackIntent', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='Field', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='default_factory',
+                    value=Name(id='list', ctx=Load()))]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='delegation_score', ctx=Store()),
+              annotation=Name(id='float', ctx=Load()),
+              value=Call(
+                func=Name(id='Field', ctx=Load()),
+                args=[
+                  Constant(value=0.0)],
+                keywords=[
+                  keyword(
+                    arg='ge',
+                    value=Constant(value=0.0)),
+                  keyword(
+                    arg='le',
+                    value=Constant(value=1.0))]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='recommended_node', ctx=Store()),
+              annotation=Name(id='str', ctx=Load()),
+              value=Call(
+                func=Name(id='Field', ctx=Load()),
+                args=[
+                  Constant(value='DRAFTING')]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='recommended_specialists', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='Field', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='default_factory',
+                    value=Name(id='list', ctx=Load()))]),
+              simple=1)]),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='human_feedback',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='state_snapshot',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='human_feedback', ctx=Load()),
+                    attr='strip',
+                    ctx=Load()))),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='SummarizerOutput',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='client', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='get_model_client',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_model')])),
+            Assign(
+              targets=[
+                Name(id='prompt_body', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='human_feedback'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Name(id='human_feedback', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      BoolOp(
+                        op=Or(),
+                        values=[
+                          Name(id='state_snapshot', ctx=Load()),
+                          Dict()])],
+                    keywords=[
+                      keyword(
+                        arg='default',
+                        value=Name(id='str', ctx=Load()))])])),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+                  args=[
+                    Constant(value='Cluster human edits into intents and recommend routing.'),
+                    Name(id='prompt_body', ctx=Load()),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='budget_manager',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='goal_state',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='top_failures',
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='response', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='client', ctx=Load()),
+                    attr='chat_completion_async',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='messages',
+                      value=List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='role'),
+                              Constant(value='content')],
+                            values=[
+                              Constant(value='user'),
+                              Name(id='prompt', ctx=Load())])],
+                        ctx=Load())),
+                    keyword(
+                      arg='temperature',
+                      value=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='model_config',
+                            ctx=Load()),
+                          attr='qa_model',
+                          ctx=Load()),
+                        attr='temperature',
+                        ctx=Load())),
+                    keyword(
+                      arg='response_format',
+                      value=Constant(value='json_object'))]))),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='validated_output', ctx=Store()),
+                    Name(id='error', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='validator',
+                    ctx=Load()),
+                  attr='validate',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='response', ctx=Load()),
+                    slice=Constant(value='content'),
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='SummarizerOutput',
+                    ctx=Load())])),
+            If(
+              test=Name(id='error', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Summarizer validation failed: '),
+                          FormattedValue(
+                            value=Name(id='error', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='. Using default routing.')])])),
+                Assign(
+                  targets=[
+                    Name(id='output', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='SummarizerOutput',
+                      ctx=Load())))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='output', ctx=Store())],
+                  value=Name(id='validated_output', ctx=Load()))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='hil_intent_summary'),
+                  IfExp(
+                    test=UnaryOp(
+                      op=Not(),
+                      operand=Name(id='error', ctx=Load())),
+                    body=Constant(value='success'),
+                    orelse=Constant(value='warning')),
+                  Dict(
+                    keys=[
+                      Constant(value='delegation_score'),
+                      Constant(value='recommended_node'),
+                      Constant(value='intent_count')],
+                    values=[
+                      Attribute(
+                        value=Name(id='output', ctx=Load()),
+                        attr='delegation_score',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='output', ctx=Load()),
+                        attr='recommended_node',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='output', ctx=Load()),
+                            attr='intent_clusters',
+                            ctx=Load())])])])),
+            Return(
+              value=Name(id='output', ctx=Load()))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_hil_feedback_summarizer')])],
+          returns=Name(id='SummarizerOutput', ctx=Load()))]),
+    ClassDef(
+      name='HILReconciliationAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Integrates specialist human feedback back into the draft.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='draft_sections',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='specialist_feedback',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='persona_consensus',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='PersonaConsensus', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='specialist_feedback', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='empty_result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='HILReconciliationResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='integrated_text',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='dumps',
+                            ctx=Load()),
+                          args=[
+                            Name(id='draft_sections', ctx=Load())])),
+                      keyword(
+                        arg='change_log',
+                        value=List(
+                          elts=[
+                            Constant(value='No specialist feedback provided')],
+                          ctx=Load())),
+                      keyword(
+                        arg='unresolved_questions',
+                        value=List(ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_feedback',
+                      ctx=Load()),
+                    args=[
+                      Name(id='workflow_id', ctx=Load()),
+                      Constant(value='hil_reconciliation'),
+                      Constant(value='warning'),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='empty_result', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load()))])),
+                Return(
+                  value=Name(id='empty_result', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='client', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='get_model_client',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_model')])),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+                  args=[
+                    Constant(value='\n            Integrate the following specialist feedback into the draft.\n            Draft sections:\n            {draft}\n            Specialist feedback entries:\n            {feedback}\n            Persona consensus summary:\n            {consensus}\n\n            Respond as JSON with keys: integrated_text (string), change_log (list of strings), unresolved_questions (list).\n            '),
+                    Dict(
+                      keys=[
+                        Constant(value='draft'),
+                        Constant(value='feedback'),
+                        Constant(value='consensus')],
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='dumps',
+                            ctx=Load()),
+                          args=[
+                            Name(id='draft_sections', ctx=Load())],
+                          keywords=[
+                            keyword(
+                              arg='default',
+                              value=Name(id='str', ctx=Load()))]),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='dumps',
+                            ctx=Load()),
+                          args=[
+                            Name(id='specialist_feedback', ctx=Load())],
+                          keywords=[
+                            keyword(
+                              arg='default',
+                              value=Name(id='str', ctx=Load()))]),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='dumps',
+                            ctx=Load()),
+                          args=[
+                            IfExp(
+                              test=Name(id='persona_consensus', ctx=Load()),
+                              body=Call(
+                                func=Attribute(
+                                  value=Name(id='persona_consensus', ctx=Load()),
+                                  attr='model_dump',
+                                  ctx=Load())),
+                              orelse=Dict())],
+                          keywords=[
+                            keyword(
+                              arg='default',
+                              value=Name(id='str', ctx=Load()))])]),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='budget_manager',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='goal_state',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='top_failures',
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='response', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='client', ctx=Load()),
+                    attr='chat_completion_async',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='messages',
+                      value=List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='role'),
+                              Constant(value='content')],
+                            values=[
+                              Constant(value='user'),
+                              Name(id='prompt', ctx=Load())])],
+                        ctx=Load())),
+                    keyword(
+                      arg='temperature',
+                      value=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='model_config',
+                            ctx=Load()),
+                          attr='qa_model',
+                          ctx=Load()),
+                        attr='temperature',
+                        ctx=Load())),
+                    keyword(
+                      arg='response_format',
+                      value=Constant(value='json_object'))]))),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='validated_output', ctx=Store()),
+                    Name(id='error', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='validator',
+                    ctx=Load()),
+                  attr='validate',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='response', ctx=Load()),
+                    slice=Constant(value='content'),
+                    ctx=Load()),
+                  Name(id='HILReconciliationResult', ctx=Load())])),
+            If(
+              test=Name(id='error', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Reconciliation validation failed: '),
+                          FormattedValue(
+                            value=Name(id='error', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='. Returning fallback.')])])),
+                Assign(
+                  targets=[
+                    Name(id='fallback', ctx=Store())],
+                  value=Call(
+                    func=Name(id='HILReconciliationResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='integrated_text',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='dumps',
+                            ctx=Load()),
+                          args=[
+                            Name(id='draft_sections', ctx=Load())])),
+                      keyword(
+                        arg='change_log',
+                        value=List(
+                          elts=[
+                            JoinedStr(
+                              values=[
+                                Constant(value='Reconciliation failed validation: '),
+                                FormattedValue(
+                                  value=Name(id='error', ctx=Load()),
+                                  conversion=-1)])],
+                          ctx=Load())),
+                      keyword(
+                        arg='unresolved_questions',
+                        value=Name(id='specialist_feedback', ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_feedback',
+                      ctx=Load()),
+                    args=[
+                      Name(id='workflow_id', ctx=Load()),
+                      Constant(value='hil_reconciliation'),
+                      Constant(value='error'),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='fallback', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load()))])),
+                Return(
+                  value=Name(id='fallback', ctx=Load()))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='hil_reconciliation'),
+                  Constant(value='success'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='validated_output', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load()))])),
+            Return(
+              value=Name(id='validated_output', ctx=Load()))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_hil_reconciliation')])],
+          returns=Name(id='HILReconciliationResult', ctx=Load()))]),
+    ClassDef(
+      name='HILAmbiguityDetectorAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Detects ambiguity in strategy outputs.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='strategy',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Detecting ambiguity (v10.7)...')])),
+            Assign(
+              targets=[
+                Name(id='client', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='get_model_client',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_model')])),
+            Assign(
+              targets=[
+                Name(id='prompt_template', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='prompt_manager',
+                    ctx=Load()),
+                  attr='get_template',
+                  ctx=Load()),
+                args=[
+                  Constant(value='hil_ambiguity_detector')])),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+                  args=[
+                    Name(id='prompt_template', ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='strategy')],
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='strategy', ctx=Load()),
+                            attr='model_dump_json',
+                            ctx=Load()))]),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='budget_manager',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='goal_state',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='top_failures',
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='response', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='client', ctx=Load()),
+                    attr='chat_completion_async',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='messages',
+                      value=List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='role'),
+                              Constant(value='content')],
+                            values=[
+                              Constant(value='user'),
+                              Name(id='prompt', ctx=Load())])],
+                        ctx=Load())),
+                    keyword(
+                      arg='temperature',
+                      value=Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='model_config',
+                            ctx=Load()),
+                          attr='qa_model',
+                          ctx=Load()),
+                        attr='temperature',
+                        ctx=Load())),
+                    keyword(
+                      arg='response_format',
+                      value=Constant(value='json_object'))]))),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='validated_output', ctx=Store()),
+                    Name(id='error', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='validator',
+                    ctx=Load()),
+                  attr='validate',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='response', ctx=Load()),
+                    slice=Constant(value='content'),
+                    ctx=Load()),
+                  Name(id='HILAmbiguityReport', ctx=Load())])),
+            If(
+              test=Name(id='error', ctx=Load()),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='PydanticSchemaError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='HILAmbiguityDetector failed validation: '),
+                          FormattedValue(
+                            value=Name(id='error', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='ambiguity_detection'),
+                  Constant(value='success'),
+                  Dict(
+                    keys=[
+                      Constant(value='detected')],
+                    values=[
+                      Attribute(
+                        value=Name(id='validated_output', ctx=Load()),
+                        attr='ambiguity_detected',
+                        ctx=Load())])])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='ambiguity_report')],
+                values=[
+                  Name(id='validated_output', ctx=Load())]))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_ambiguity_detector')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='HILFeedbackRouterAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Routes human feedback with persona negotiation and delegation.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='human_feedback',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='state_snapshot',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Routing human feedback with persona council...')])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='log_path', ctx=Store())],
+                  value=Attribute(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='meta_loop_config',
+                      ctx=Load()),
+                    attr='preference_log_path',
+                    ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='os', ctx=Load()),
+                      attr='makedirs',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='os', ctx=Load()),
+                            attr='path',
+                            ctx=Load()),
+                          attr='dirname',
+                          ctx=Load()),
+                        args=[
+                          Name(id='log_path', ctx=Load())])],
+                    keywords=[
+                      keyword(
+                        arg='exist_ok',
+                        value=Constant(value=True))])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='log_path', ctx=Load()),
+                          Constant(value='a')]),
+                      optional_vars=Name(id='log_file', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Dict(
+                            keys=[
+                              Constant(value='timestamp'),
+                              Constant(value='workflow_id'),
+                              Constant(value='feedback')],
+                            values=[
+                              Call(
+                                func=Attribute(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='datetime', ctx=Load()),
+                                      attr='now',
+                                      ctx=Load())),
+                                  attr='isoformat',
+                                  ctx=Load())),
+                              Name(id='workflow_id', ctx=Load()),
+                              Name(id='human_feedback', ctx=Load())]),
+                          Name(id='log_file', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='log_file', ctx=Load()),
+                          attr='write',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='\n')]))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='log_error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to log HIL preference feedback: '),
+                              FormattedValue(
+                                value=Name(id='exc', ctx=Load()),
+                                conversion=-1)])]))])]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='human_feedback', ctx=Load()),
+                    attr='strip',
+                    ctx=Load()))),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_warning',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='No human feedback supplied. Defaulting to drafting continuation.')])),
+                Assign(
+                  targets=[
+                    Name(id='default_route', ctx=Store())],
+                  value=Call(
+                    func=Name(id='HILFeedbackRoute', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='next_step',
+                        value=Constant(value='DRAFTING')),
+                      keyword(
+                        arg='payload',
+                        value=Constant(value=None))])),
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='default_route', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='summarizer', ctx=Store())],
+              value=Call(
+                func=Name(id='HILFeedbackSummarizerAgent', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='debug_mode',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='summary_output', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='summarizer', ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='human_feedback', ctx=Load()),
+                    Name(id='state_snapshot', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='intent_clusters', ctx=Store())],
+              value=Attribute(
+                value=Name(id='summary_output', ctx=Load()),
+                attr='intent_clusters',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='council', ctx=Store())],
+              value=Call(
+                func=Name(id='VirtualReviewerCouncilAgent', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='debug_mode',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='persona_consensus', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='council', ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='human_feedback', ctx=Load()),
+                    Name(id='intent_clusters', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='delegated_specialists', ctx=Store())],
+              value=Attribute(
+                value=Name(id='summary_output', ctx=Load()),
+                attr='recommended_specialists',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='delegation_score', ctx=Store())],
+              value=Attribute(
+                value=Name(id='summary_output', ctx=Load()),
+                attr='delegation_score',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='delegation_threshold', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='agent_stacks',
+                    ctx=Load()),
+                  Constant(value='hil_delegation_threshold'),
+                  Constant(value=0.65)])),
+            Assign(
+              targets=[
+                Name(id='strategy_threshold', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='agent_stacks',
+                    ctx=Load()),
+                  Constant(value='hil_strategy_threshold'),
+                  Constant(value=0.45)])),
+            Assign(
+              targets=[
+                Name(id='next_step', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Name(id='summary_output', ctx=Load()),
+                    attr='recommended_node',
+                    ctx=Load()),
+                  Constant(value='DRAFTING')])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='persona_consensus', ctx=Load()),
+                  attr='approved',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_info',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Persona consensus blocked. Routing to strategy for clarification.')])),
+                Assign(
+                  targets=[
+                    Name(id='next_step', ctx=Store())],
+                  value=Constant(value='STRATEGY'))],
+              orelse=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='delegation_score', ctx=Load()),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Name(id='delegation_threshold', ctx=Load())]),
+                      Name(id='delegated_specialists', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='log_info',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='Delegation threshold met (%s >= %s). Escalating to specialists.'),
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Name(id='delegation_score', ctx=Load()),
+                                conversion=-1,
+                                format_spec=JoinedStr(
+                                  values=[
+                                    Constant(value='.2f')]))]),
+                          Name(id='delegation_threshold', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='next_step', ctx=Store())],
+                      value=Constant(value='DELEGATE_SPECIALIST'))],
+                  orelse=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Name(id='delegation_score', ctx=Load()),
+                            ops=[
+                              GtE()],
+                            comparators=[
+                              Name(id='strategy_threshold', ctx=Load())]),
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='summary_output', ctx=Load()),
+                              attr='recommended_node',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='STRATEGY')])]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='log_info',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='Strategy adjustments recommended based on delegation score.')])),
+                        Assign(
+                          targets=[
+                            Name(id='next_step', ctx=Store())],
+                          value=Constant(value='STRATEGY'))])])]),
+            Assign(
+              targets=[
+                Name(id='payload', ctx=Store())],
+              value=Constant(value=None)),
+            If(
+              test=Name(id='intent_clusters', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='payload', ctx=Store())],
+                  value=Attribute(
+                    value=Subscript(
+                      value=Name(id='intent_clusters', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    attr='summary',
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='route', ctx=Store())],
+              value=Call(
+                func=Name(id='HILFeedbackRoute', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='next_step',
+                    value=Name(id='next_step', ctx=Load())),
+                  keyword(
+                    arg='payload',
+                    value=Name(id='payload', ctx=Load())),
+                  keyword(
+                    arg='intent_clusters',
+                    value=Name(id='intent_clusters', ctx=Load())),
+                  keyword(
+                    arg='delegated_specialists',
+                    value=Name(id='delegated_specialists', ctx=Load())),
+                  keyword(
+                    arg='persona_consensus',
+                    value=Name(id='persona_consensus', ctx=Load()))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='route', ctx=Load()),
+                  attr='model_dump',
+                  ctx=Load())))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_feedback_router')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))])])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\agent_boundary.yaml",
+    "rel_path": "agent_boundary.yaml",
+    "root_name": "config",
+    "file_hash": "dbbda1d89ff938e2c5239b8254cdb1428c347904362b9c8df288ec1e1fc88179",
+    "file_size": 19562,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.1643124
+}

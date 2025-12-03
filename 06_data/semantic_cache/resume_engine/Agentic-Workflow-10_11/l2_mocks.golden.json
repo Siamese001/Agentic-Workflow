@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L2 Execution Layer Mocks.\"\"\"\n\nclass MockToolExecutor:\n    \"\"\"Mock tool executor for testing.\"\"\"\n    \n    def __init__(self):\n        self.calls = []\n    \n    def execute(self, tool_name, params):\n        \"\"\"Mock execute method.\"\"\"\n        self.calls.append((tool_name, params))\n        return {\"status\": \"success\", \"result\": \"mock_result\"}\n\nclass MockExecutionContext:\n    \"\"\"Mock execution context for testing.\"\"\"\n    \n    def __init__(self):\n        self.user_id = \"test_user\"\n        self.session_id = \"test_session\"\n        self.profile_name = \"test_profile\"\n",
+  "full_hash": "d42975de8df8869c4e5c99debf5a64ee24cc1166bc065e86f0b5d511b3e143e9",
+  "generated_at": 1764728226.959588,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\mocks\\l2_mocks.py"
+}

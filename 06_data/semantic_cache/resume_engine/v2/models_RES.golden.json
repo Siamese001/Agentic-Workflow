@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: models.py\n# Data Models module for Resume Workflow\n# Contains all data structures, enumerations, model classes, and custom exceptions\n\nimport logging\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum, auto\nfrom typing import Any, ClassVar, Dict, List, Optional, Set\nimport copy\n\n# ============================================================================\n# CUSTOM EXCEPTIONS\n# ============================================================================\n\nclass HopExecutionError(Exception):\n    \"\"\"Raised when a hop fails to execute successfully.\"\"\"\n    pass\n\nclass StagingBufferError(Exception):\n    \"\"\"Raised when staging buffer encounters data integrity issues.\"\"\"\n    pass\n\nclass CircuitBreakerOpenError(Exception):\n    \"\"\"Raised when circuit breaker is open and rejects requests.\"\"\"\n    pass\n\nclass PhaseTimeoutError(Exception):\n    \"\"\"Raised when a RAG phase execution exceeds timeout.\"\"\"\n    pass\n\nclass FactualFailureException(Exception):",
+  "full_hash": "9ffe7ee4bef30a07d118c931755afd53357a3992d11047a46ef972454af645ce",
+  "generated_at": 1764728327.1319559,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\models_RES.py"
+}

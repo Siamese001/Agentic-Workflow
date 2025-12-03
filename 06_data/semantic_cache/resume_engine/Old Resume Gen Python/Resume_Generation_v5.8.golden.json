@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.8 - APPLICATION TRACKER OUTPUT\n===============================================================================\nPATCH NOTES v5.8 (October 2025):\n\u2713 Output 5: Application tracker with all App_Schema_v4 fields populated\n\u2713 Previous v5.7 features maintained\n\nPATCH NOTES v5.7 (October 2025):\n\u2713 Section length constraints: TraderSense, EY, Early Career \u00b110% of master resume words\n\u2713 Word distribution rules: (Unify + IBM words) = 35-45% of total resume words\n\u2713 Unify words/IBM words ratio: 1.1 - 1.3\n\u2713 Signal/temperature optimization: Maximize signal while maintaining highest temperature\n\u2713 Headline constraints: 60-90 characters, maximized signal and temperature\n\u2713 Output limit: Exactly 4 files (Resume, Cover Letter, QA Report, CoC Ledger)\n\u2713 Copy requirements: Competencies, education, name, contact info from master resume\n\u2713 Word counting: Intro sentences + bullets only\n\nFULL IMPLEMENTATION - ALL 499 TESTS + ALL VALIDATION GATES + 10-HOP ARCHITECTURE\n\nThis version imple",
+  "full_hash": "ec7bb2b7ba2e5676e2f1544d59d26df099f80d4f536876aae88b46ae8c9c83bb",
+  "generated_at": 1764728299.1547985,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.8.py"
+}

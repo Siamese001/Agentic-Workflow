@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Workflow context for managing state and safety across L3, L4, and L5.\"\"\"\nfrom __future__ import annotations\n\nimport asyncio\nfrom dataclasses import dataclass\nfrom datetime import datetime, UTC\nfrom typing import Any, Awaitable, Callable, Dict, Optional, Type, TypeVar, Generic\n\nfrom l4.manager import StateManager\nfrom l4.types import StateSnapshot\nfrom l5 import SafetySystem\nfrom l5.types import PolicyDecision, SafetyContext, Verdict\n\nfrom .errors import (\n    ErrorSeverity,\n    NodeExecutionError,\n    SafetyViolationError,\n    StateTransitionError,\n    WorkflowError,\n)\nfrom .models.dag_models import DAGResult, NodeExecutionResult, NodeStatus\n\n\nTState = TypeVar(\"TState\")\n\n\n@dataclass\nclass RetryConfig:\n    \"\"\"Configuration for retrying failed operations.\"\"\"\n\n    max_attempts: int = 3\n    initial_delay: float = 0.1  # seconds\n    max_delay: float = 5.0  # seconds\n    backoff_factor: float = 2.0\n\n    def get_delay(self, attempt: int) -> float:\n        delay = self.initial_delay * (self",
+  "full_hash": "32dd99624ed360db5dc1d2fc0456c46b58350c1f4e2c1efda69bf3547c2524e2",
+  "generated_at": 1764728225.9565716,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\workflow_context.py"
+}

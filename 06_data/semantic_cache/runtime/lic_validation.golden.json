@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: validation_LIC.py\n# Description: Validation & QA agents (HOP-6, HOP-8) for v13.0 architecture\n# REFACTOR: v13.0 - Implements state-based I/O and externalized rule engine\n\n__version__ = \"13.0\"\n\nimport json\nimport os\nfrom pathlib import Path\nfrom datetime import datetime\nfrom typing import Dict, List, Any, Tuple\n\nfrom models_LIC import AgentStatus\nfrom state_manager_LIC import StateManager\nfrom tools_LIC import ValidationToolkit, CodeInterpreterTool\n\n# ============================================================================\n# HOP-6: VALIDATION AGENT\n# ============================================================================\n\nclass HOP6_ValidationAgent:\n    \"\"\"\n    v13.0: HOP-6 Validation Agent - Rule-based validation from config.\n    \n    CRITICAL ENHANCEMENTS:\n    - Enhancement 1: Loads all rules from `validator_rules_LIC.json`.\n    - Enhancement 3: Uses StateManager for all I/O. Reads HOP-2, 3, 5. Writes HOP-6.\n    - Enhancement 5: Uses ValidationToolkit/CodeInterpreterT",
+  "full_hash": "3f2f91c467b6fba48113e34d5c825b806df3a2a4ec09cb31d115b285445b5a7f",
+  "generated_at": 1764728346.6681442,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\budget-manager-layer\\aggregate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\lic_validation.py"
+}

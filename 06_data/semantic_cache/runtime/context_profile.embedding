@@ -1,0 +1,1 @@
+{"from":3,"__future__":1,"import":3,"annotations":1,"pydantic":1,"basemodel,":1,"field":1,"core.models.models":1,"contextbudget":2,"class":1,"contextprofile(basemodel):":1,"\"\"\"profile":1,"capturing":1,"context":1,"budget":1,"hints":1,"used":1,"by":1,"planning":1,"and":1,"routing.\"\"\"":1,"context_budget:":1,"=":1,"field(default_factory=contextbudget)":1}

@@ -1,0 +1,417 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL2 Factual QA for resume temporal fact verification.\n\nAnswers factual questions about temporal career facts using Neo4j\nto ensure resume accuracy and job alignment.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='graph_store_neo4j',
+          names=[
+            alias(name='Neo4jGraphStore')],
+          level=0),
+        AnnAssign(
+          target=Name(id='_graph', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Neo4jGraphStore', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Neo4jGraphStore', ctx=Load())),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='_NEO4J_AVAILABLE', ctx=Store())],
+          value=Constant(value=True))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='_graph', ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='_NEO4J_AVAILABLE', ctx=Store())],
+              value=Constant(value=False))])]),
+    FunctionDef(
+      name='factual_qa',
+      args=arguments(
+        args=[
+          arg(
+            arg='entity',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='start_date_range',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='end_date_range',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='predicate',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Queries temporal facts for resume verification.\n\n    Ensures resume timeline accuracy for improved job alignment.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='_NEO4J_AVAILABLE', ctx=Load())),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value="Unable to query data for '"),
+                  FormattedValue(
+                    value=Name(id='entity', ctx=Load()),
+                    conversion=-1),
+                  Constant(value="' with predicate '"),
+                  FormattedValue(
+                    value=Name(id='predicate', ctx=Load()),
+                    conversion=-1),
+                  Constant(value="' in the specified date range ("),
+                  FormattedValue(
+                    value=Name(id='start_date_range', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' to '),
+                  FormattedValue(
+                    value=Name(id='end_date_range', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='). Neo4j driver not installed. Install with: pip install neo4j>=5.22.0')]))]),
+        Try(
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='_graph', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='rows', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='_graph', ctx=Load()),
+                      attr='query_factual_temporal',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='entity_name',
+                        value=Name(id='entity', ctx=Load())),
+                      keyword(
+                        arg='predicate',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='predicate', ctx=Load()),
+                            attr='upper',
+                            ctx=Load()))),
+                      keyword(
+                        arg='start',
+                        value=Name(id='start_date_range', ctx=Load())),
+                      keyword(
+                        arg='end',
+                        value=Name(id='end_date_range', ctx=Load()))]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='rows', ctx=Store())],
+                  value=List(ctx=Load()))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='rows', ctx=Load())),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      Constant(value="No data found for '"),
+                      FormattedValue(
+                        value=Name(id='entity', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' with predicate '"),
+                      FormattedValue(
+                        value=Name(id='predicate', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' in the specified date range ("),
+                      FormattedValue(
+                        value=Name(id='start_date_range', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' to '),
+                      FormattedValue(
+                        value=Name(id='end_date_range', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=').')]))]),
+            AnnAssign(
+              target=Name(id='lines', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='record', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='rows', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='start',
+                    value=Constant(value=1))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='s', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='record', ctx=Load()),
+                    slice=Constant(value='s'),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='r', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='record', ctx=Load()),
+                    slice=Constant(value='r'),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='o', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='record', ctx=Load()),
+                    slice=Constant(value='o'),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='valid_at', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='r', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='valid_at')])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='valid_at', ctx=Load()),
+                      Call(
+                        func=Name(id='hasattr', ctx=Load()),
+                        args=[
+                          Name(id='valid_at', ctx=Load()),
+                          Constant(value='iso_format')])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='valid_str', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='valid_at', ctx=Load()),
+                          attr='iso_format',
+                          ctx=Load())))],
+                  orelse=[
+                    If(
+                      test=Name(id='valid_at', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='valid_str', ctx=Store())],
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='valid_at', ctx=Load())]))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='valid_str', ctx=Store())],
+                          value=Constant(value='n/a'))])]),
+                Assign(
+                  targets=[
+                    Name(id='triplet', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='s', ctx=Load()),
+                          slice=Constant(value='name'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' – '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='r', ctx=Load()),
+                          slice=Constant(value='predicate'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' – '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='o', ctx=Load()),
+                          slice=Constant(value='name'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' [Valid-from: '),
+                      FormattedValue(
+                        value=Name(id='valid_str', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=']')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='i', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='. '),
+                          FormattedValue(
+                            value=Name(id='triplet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      Constant(value="Unable to query data for '"),
+                      FormattedValue(
+                        value=Name(id='entity', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' with predicate '"),
+                      FormattedValue(
+                        value=Name(id='predicate', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' in the specified date range ("),
+                      FormattedValue(
+                        value=Name(id='start_date_range', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' to '),
+                      FormattedValue(
+                        value=Name(id='end_date_range', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='). Graph database temporarily unavailable.')]))])])],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='trend_analysis',
+      args=arguments(
+        args=[
+          arg(
+            arg='companies',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='topics',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='start_date_range',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='end_date_range',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Analyzes career trends for resume optimization.\n\n    Identifies patterns to improve resume job alignment.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='_NEO4J_AVAILABLE', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value='Neo4j driver not installed. Install with: pip install neo4j>=5.22.0'))]),
+        AnnAssign(
+          target=Name(id='lines', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='company', ctx=Store()),
+          iter=Name(id='companies', ctx=Load()),
+          body=[
+            For(
+              target=Name(id='topic', ctx=Store()),
+              iter=Name(id='topics', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='\n=== '),
+                          FormattedValue(
+                            value=Name(id='company', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' - '),
+                          FormattedValue(
+                            value=Name(id='topic', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' ===')])])),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='factual_qa', ctx=Load()),
+                    args=[
+                      Name(id='company', ctx=Load()),
+                      Name(id='start_date_range', ctx=Load()),
+                      Name(id='end_date_range', ctx=Load()),
+                      Name(id='topic', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='result', ctx=Load())]))])]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='lines', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load()))])

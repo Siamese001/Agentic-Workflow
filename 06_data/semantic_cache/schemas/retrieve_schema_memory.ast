@@ -1,0 +1,181 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for memory-based schema retrieval operations.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='MemoryType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of memory storage for schemas.')),
+        Assign(
+          targets=[
+            Name(id='EPISODIC', ctx=Store())],
+          value=Constant(value='episodic')),
+        Assign(
+          targets=[
+            Name(id='SEMANTIC', ctx=Store())],
+          value=Constant(value='semantic')),
+        Assign(
+          targets=[
+            Name(id='WORKING', ctx=Store())],
+          value=Constant(value='working')),
+        Assign(
+          targets=[
+            Name(id='LONG_TERM', ctx=Store())],
+          value=Constant(value='long_term'))]),
+    ClassDef(
+      name='RetrievalStrategy',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Memory retrieval strategies.')),
+        Assign(
+          targets=[
+            Name(id='EXACT_MATCH', ctx=Store())],
+          value=Constant(value='exact_match')),
+        Assign(
+          targets=[
+            Name(id='SEMANTIC_SIMILARITY', ctx=Store())],
+          value=Constant(value='semantic_similarity')),
+        Assign(
+          targets=[
+            Name(id='TEMPORAL_PROXIMITY', ctx=Store())],
+          value=Constant(value='temporal_proximity')),
+        Assign(
+          targets=[
+            Name(id='ASSOCIATIVE', ctx=Store())],
+          value=Constant(value='associative'))]),
+    ClassDef(
+      name='MemoryQuery',
+      body=[
+        Expr(
+          value=Constant(value='Schema for memory query parameters.')),
+        AnnAssign(
+          target=Name(id='query_type', ctx=Store()),
+          annotation=Name(id='MemoryType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='strategy', ctx=Store()),
+          annotation=Name(id='RetrievalStrategy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='search_terms', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='filters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_results', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=10),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MemoryEntry',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual memory entry.')),
+        AnnAssign(
+          target=Name(id='entry_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='relevance_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MemoryRetrievalResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for memory retrieval results.')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entries', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='MemoryEntry', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_found', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

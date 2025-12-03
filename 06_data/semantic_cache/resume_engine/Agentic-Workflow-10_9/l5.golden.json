@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: l5.py\n\"\"\"\nUnified L5 Safety & Policy Layer (v10_9) \u2014 PURE SAFETY / POLICY (META-AWARE, RESTORED)\n\nThis module implements ALL high-level safety, policy, arbitration, and\nmodel-routing responsibilities for the v10_9 agentic workflow.\n\nResponsibilities (L5 only):\n    \u2022 SafetyEngine           (aggregated safety report from content).\n    \u2022 PolicyEngine           (allow / retry / replan / block, mode-aware).\n    \u2022 ArbitrationEngine      (normalize L5 action \u2192 L3 orchestrator hint).\n    \u2022 Lightweight model-routing hints (delegated to routing.py for execution).\n\nL5 consumes, but does NOT own:\n    \u2022 L2 safety outputs (SafetyExecutionPayload).\n    \u2022 L4 state (read-only views).\n    \u2022 meta_profile biases (SafetyBias, PlanningBias, RoutingBias, etc.).\n    \u2022 L1 plan metadata (audience, risk level, surfaces).\n\nLayer constraints (Agentic Guardrails):\n    \u2022 NO L1 planning (no PlanObject creation).\n    \u2022 NO L2 execution (no tool/LLM calls).\n    \u2022 NO L3 DAG/orchestration.\n    \u2022 NO L4 state mutati",
+  "full_hash": "973da81f3d9acbcc2075f23d17656e406b46e295c52f907e4dd17c222559239a",
+  "generated_at": 1764728228.6415792,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l5.py"
+}

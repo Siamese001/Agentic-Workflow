@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Layer-5 resilience stack that centralizes retry logic.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport random\nfrom typing import Any, Awaitable, Callable, Dict, Optional\n\n\nclass RobustnessStack:\n    \"\"\"Implements workflow-wide retry and backoff heuristics.\"\"\"\n\n    def __init__(\n        self,\n        context: Any,\n        debug_mode: bool = False,\n        *,\n        max_retries: Optional[int] = None,\n        base_backoff: Optional[float] = None,\n        max_backoff: Optional[float] = None,\n    ) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        config = getattr(context, \"config\", None)\n        stack_config = getattr(config, \"agent_stacks\", None) if config else None\n        perf_config = getattr(config, \"performance_config\", None) if config else None\n\n        self.max_retries = (\n            max_retries\n            if max_retries is not None\n            else getattr(stack_config, \"max_local_retries\", 1)\n        )\n        self.base_backo",
+  "full_hash": "fcbf641e01e132996d550bf98dbf65f8f24f0c169a05bd1dd17219cdd4051a14",
+  "generated_at": 1764728229.9918716,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\robustness_stack.py"
+}

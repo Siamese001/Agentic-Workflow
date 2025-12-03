@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\fixtures\\common_fixtures.py",
+    "rel_path": "common_fixtures.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "17b94d3341c5404d7407f2fc11b2b76464c7d4353f3187f352ac6770d46ff203",
+    "file_size": 555,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.5530756
+}

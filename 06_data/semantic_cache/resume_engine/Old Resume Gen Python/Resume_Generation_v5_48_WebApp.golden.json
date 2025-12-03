@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.48 - REFACTORED & SIMPLIFIED\n\nv5.48 CHANGES - CODE QUALITY REFACTORING:\n\u2713 REMOVED: 759 lines of unnecessary complexity (-10.6% total size)\n\u2713 REMOVED: Fake API layer (_call_claude_api, _call_gemini_api methods)\n\u2713 REMOVED: Unused parameters (temperature, max_tokens, reasoning_config)\n\u2713 ADDED: from __future__ import annotations (fixes forward reference issues)\n\u2713 ADDED: ResumeContentGenerator class for direct template-based generation\n\u2713 SIMPLIFIED: All 12 generator methods from 30-85 lines to 4-5 lines each\n\u2713 RESULT: Clearer code, honest naming, faster execution, easier maintenance\n\nv5.47 CHANGES - QA ENHANCEMENTS & TOKEN TRACKING:\n\u2713 QA Provenance Category column (Verbatim/Synthesized/Transformed) - mandatory\n\u2713 QA Table 2 repurposed for Token Usage & Temperature Tracking\n\u2713 Enhanced Signal Compliance tracking by section (not just total)\n\u2713 Blocking validation - output rejected if QA tables incomplete\n\u2713 Complete QA audit trail, verified LLM usage, section-level",
+  "full_hash": "af886939ce8c465d49676e423365969ae774a9e020353004c8cbe7f3047271c5",
+  "generated_at": 1764728305.2333694,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_48_WebApp.py"
+}

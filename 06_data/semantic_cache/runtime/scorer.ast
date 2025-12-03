@@ -1,0 +1,156 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Iterable')],
+      level=0),
+    ImportFrom(
+      module='eval.golden_state.models',
+      names=[
+        alias(name='JudgeVerdict')],
+      level=0),
+    FunctionDef(
+      name='aggregate_scores',
+      args=arguments(
+        args=[
+          arg(
+            arg='verdicts',
+            annotation=Subscript(
+              value=Name(id='Iterable', ctx=Load()),
+              slice=Name(id='JudgeVerdict', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Aggregate judge verdicts into simple metrics.\n\n    Returns a dict with:\n        - avg_score\n        - pass_count\n        - fail_count\n        - total\n    ')),
+        Assign(
+          targets=[
+            Name(id='vs', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Name(id='verdicts', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='total', ctx=Store())],
+          value=Call(
+            func=Name(id='len', ctx=Load()),
+            args=[
+              Name(id='vs', ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='total', ctx=Load())),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='avg_score'),
+                  Constant(value='pass_count'),
+                  Constant(value='fail_count'),
+                  Constant(value='total')],
+                values=[
+                  Constant(value=0.0),
+                  Constant(value=0.0),
+                  Constant(value=0.0),
+                  Constant(value=0.0)]))]),
+        Assign(
+          targets=[
+            Name(id='total_score', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Attribute(
+                  value=Name(id='v', ctx=Load()),
+                  attr='score',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='v', ctx=Store()),
+                    iter=Name(id='vs', ctx=Load()),
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='pass_count', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='v', ctx=Store()),
+                    iter=Name(id='vs', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='v', ctx=Load()),
+                          attr='rating',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='pass')])],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='fail_count', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='v', ctx=Store()),
+                    iter=Name(id='vs', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='v', ctx=Load()),
+                          attr='rating',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='fail')])],
+                    is_async=0)])])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='avg_score'),
+              Constant(value='pass_count'),
+              Constant(value='fail_count'),
+              Constant(value='total')],
+            values=[
+              BinOp(
+                left=Name(id='total_score', ctx=Load()),
+                op=Div(),
+                right=Name(id='total', ctx=Load())),
+              Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  Name(id='pass_count', ctx=Load())]),
+              Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  Name(id='fail_count', ctx=Load())]),
+              Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  Name(id='total', ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='float', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

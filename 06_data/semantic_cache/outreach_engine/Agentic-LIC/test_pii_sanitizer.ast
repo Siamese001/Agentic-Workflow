@@ -1,0 +1,186 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.safety.pii_sanitizer',
+      names=[
+        alias(name='SanitizedInputs'),
+        alias(name='sanitize_pii')],
+      level=0),
+    ClassDef(
+      name='_Inputs',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='company_id',
+                annotation=BinOp(
+                  left=Name(id='str', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None))),
+              arg(
+                arg='contact_id',
+                annotation=BinOp(
+                  left=Name(id='str', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='prompt',
+                  ctx=Store())],
+              value=Name(id='prompt', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='company_id',
+                  ctx=Store())],
+              value=Name(id='company_id', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='contact_id',
+                  ctx=Store())],
+              value=Name(id='contact_id', ctx=Load()))])]),
+    FunctionDef(
+      name='test_email_and_phone_masking',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Constant(value='Reach out to alice@example.com or call +1 555 123 4567 for help')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='sanitized', ctx=Store()),
+                Name(id='mapping', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Name(id='sanitize_pii', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_Inputs', ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='company_id',
+                    value=Constant(value='ACME')),
+                  keyword(
+                    arg='contact_id',
+                    value=Constant(value='C1'))])])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='sanitized', ctx=Load()),
+              Name(id='SanitizedInputs', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='sanitized', ctx=Load()),
+                  attr='prompt',
+                  ctx=Load()),
+                attr='count',
+                ctx=Load()),
+              args=[
+                Constant(value='<PII_')]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=2)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='sanitized', ctx=Load()),
+              attr='company_id',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='ACME')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='sanitized', ctx=Load()),
+              attr='contact_id',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='C1')])),
+        Assert(
+          test=Call(
+            func=Name(id='all', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='value', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='prompt', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='value', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='mapping', ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    is_async=0)])]))]),
+    FunctionDef(
+      name='test_no_pii_returns_original_prompt',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Constant(value='Hello team')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='sanitized', ctx=Store()),
+                Name(id='mapping', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Name(id='sanitize_pii', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_Inputs', ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load())])])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='sanitized', ctx=Load()),
+              attr='prompt',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='prompt', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Name(id='mapping', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Dict()]))])])

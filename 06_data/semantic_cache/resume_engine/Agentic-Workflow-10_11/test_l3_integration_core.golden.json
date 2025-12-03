@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L3 Orchestration Integration Tests.\"\"\"\n\nclass TestL3OrchestrationIntegration:\n    \"\"\"Integration tests for L3 orchestration layer.\"\"\"\n    \n    def test_dag_execution_flow(self):\n        \"\"\"Test DAG execution flow.\"\"\"\n        nodes = [\"plan\", \"execute\", \"validate\"]\n        executed = []\n        for node in nodes:\n            executed.append(node)\n        assert executed == nodes\n    \n    def test_multi_agent_coordination(self):\n        \"\"\"Test multi-agent coordination.\"\"\"\n        agents = [\"planner\", \"executor\", \"reviewer\"]\n        results = {a: \"done\" for a in agents}\n        assert all(v == \"done\" for v in results.values())\n    \n    def test_workflow_state_transitions(self):\n        \"\"\"Test workflow state transitions.\"\"\"\n        states = [\"init\", \"running\", \"completed\"]\n        current = 0\n        for _ in range(2):\n            current += 1\n        assert states[current] == \"completed\"\n    \n    def test_error_propagation(self):\n        \"\"\"Test error propagation in orchestration.\"\"\"",
+  "full_hash": "85fe4d502d3a824b2607265856e60315704a093499be0c1d493b7feda981ea90",
+  "generated_at": 1764728227.021824,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\integration\\test_l3_integration_core.py"
+}

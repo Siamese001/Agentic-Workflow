@@ -1,7 +1,7 @@
-# Ignore all generated semantic cache artifacts
-*
+# Ignore only temporary/control files
+.phase05_checkpoint.json
+*.log
+*.tmp
 
-# But keep control/docs files tracked
-!.gitignore
-!README.md
-!semantic_cache_leaf_map.yaml
+# Track all semantic cache artifacts
+# (These are static based on unchanging archives)

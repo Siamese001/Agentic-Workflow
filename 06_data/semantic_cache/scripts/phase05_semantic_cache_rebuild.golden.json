@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nPHASE 0.5 - Semantic Lineage Cache Rebuild v3\nZERO-LOSS OVERWRITE - FINAL IMPLEMENTATION\n\nProcesses 30+ input roots to generate complete semantic cache with 45+ validation keys.\nAll outputs strictly confined to 06_data/semantic_cache/\n\"\"\"\n\nimport os\nimport json\nimport hashlib\nimport ast\nimport time\nimport traceback\nfrom pathlib import Path\nfrom typing import Dict, List, Set, Tuple, Optional, Any\nfrom dataclasses import dataclass, asdict\nfrom enum import Enum\nimport logging\n\n# Configure logging\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')\nlogger = logging.getLogger(__name__)\n\nclass ValidationStatus(Enum):\n    PASS = \"PASS\"\n    FAIL = \"FAIL\"\n\n@dataclass\nclass FileInventory:\n    \"\"\"Inventory record for a single file\"\"\"\n    abs_path: str\n    rel_path: str\n    root_name: str\n    file_hash: str\n    file_size: int\n    is_eligible: bool\n    file_type: str\n    depth: int\n\n@dataclass\nclass ArtifactCounters:\n    \"\"\"Global c",
+  "full_hash": "3a31d9eccd39270ca5c6bfc8619f0b9bb31f1fd05b103f0eb1cd4d82bde09258",
+  "generated_at": 1764728352.077601,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\phase05_semantic_cache_rebuild.py"
+}

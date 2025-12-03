@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\LIC_V2_FILES_SUMMARY.md",
+    "rel_path": "LIC_V2_FILES_SUMMARY.md",
+    "root_name": "outreach_engine/Agentic LIC",
+    "file_hash": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
+    "file_size": 6852,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.3846676
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_hypothesis_generation.py",
+    "rel_path": "test_hypothesis_generation.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "3297ea87f0bc6bc3a4806b154159d2b58fe02d234d1f3140745aeaae5133ab5b",
+    "file_size": 978,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.247001
+}

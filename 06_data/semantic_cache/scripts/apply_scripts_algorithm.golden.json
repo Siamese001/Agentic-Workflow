@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - apply_scripts_algorithm\nImplements L1 Cognitive Planning Layer for apply scripts algorithm operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ApplyScriptsAlgorithmPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ApplyScriptsAlgorithmPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ApplyScriptsAlgorithmPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    ",
+  "full_hash": "bf7d1fbadaa3fcae1a033bbc7e6f01b5d3c3a456479c2dde12d524775faeadb5",
+  "generated_at": 1764728352.2486713,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\general\\understand-request\\apply_scripts_algorithm.py"
+}

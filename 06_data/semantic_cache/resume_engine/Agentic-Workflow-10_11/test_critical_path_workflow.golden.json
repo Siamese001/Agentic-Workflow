@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nCritical Path E2E Workflow Tests\n\nTests the essential L1\u2192L2\u2192L3 workflow: planning \u2192 execution \u2192 orchestration.\nUses working mocks from unit test foundation to validate layer contracts.\n\"\"\"\n\nimport pytest\nfrom typing import Dict, Any, List, Optional\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom unittest.mock import Mock\nimport time\n\n# Mark all tests as E2E workflow tests\npytestmark = [pytest.mark.end_to_end, pytest.mark.integration, pytest.mark.l1, pytest.mark.l2, pytest.mark.l3]\n\n\nclass TaskStatus(Enum):\n    \"\"\"Status of tasks in workflow.\"\"\"\n    PENDING = \"pending\"\n    RUNNING = \"running\"\n    COMPLETED = \"completed\"\n    FAILED = \"failed\"\n    CANCELLED = \"cancelled\"\n\n\nclass WorkflowPhase(Enum):\n    \"\"\"Phases of critical path workflow.\"\"\"\n    PLANNING = \"planning\"\n    EXECUTION = \"execution\"\n    ORCHESTRATION = \"orchestration\"\n    COMPLETED = \"completed\"\n\n\n@dataclass(frozen=True)\nclass MockWorkflowPlan:\n    \"\"\"Mock workflow plan for E2E testing.\"\"\"\n    plan_id: str\n  ",
+  "full_hash": "990b0e33d97bcde80a5e87464106e83c8a77acad80e12a50437008927d30dd2c",
+  "generated_at": 1764728226.6250842,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\e2e\\test_critical_path_workflow.py"
+}

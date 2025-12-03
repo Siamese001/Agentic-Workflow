@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_tool_middleware_vm_integration.py",
+    "rel_path": "test_tool_middleware_vm_integration.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "6f91530e9da244a1779aa4271cb78c39a1548e8f8a6b16a385a340933f6b2913",
+    "file_size": 553,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.5083861
+}

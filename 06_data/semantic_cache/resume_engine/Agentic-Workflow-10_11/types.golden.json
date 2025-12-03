@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 safety and policy types for resume job alignment workflows.\n\nDefines fundamental types for safety and policy enforcement in resume enhancement.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, List, Optional, Union, TypeVar\nfrom dataclasses import dataclass, field\nfrom datetime import datetime, timezone\nfrom enum import Enum\nfrom typing_extensions import Protocol, runtime_checkable\n\nT = TypeVar('T')\n\n@runtime_checkable\nclass SafetyPolicy(Protocol):\n    \"\"\"Protocol that resume workflow safety policies must implement.\"\"\"\n    \n    @property\n    def policy_id(self) -> str:\n        \"\"\"Unique identifier for resume workflow safety policy.\"\"\"\n        ...\n    \n    @property\n    def description(self) -> str:\n        \"\"\"Human-readable description of resume workflow safety policy.\"\"\"\n        ...\n    \n    def evaluate(self, context: SafetyContext) -> PolicyDecision:\n        \"\"\"Evaluates resume workflow context against safety policy.\"\"\"\n        ...\n\nclass Severity(str, Enu",
+  "full_hash": "a355da515dba6ff1a605b4dc211dff18311516efbf3c3ad26f57d61b320f9325",
+  "generated_at": 1764728225.5261097,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\types.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom types import MethodType\n\nfrom core_v10_7 import (\n    AdvancedMetaLearner,\n    ConfigV10_7,\n    GeneratedPrompts,\n    MetricsCollector,\n    StrategyPlan,\n)\nfrom agent_stacks_v10_8.components.prompting import PromptEngineerAgent\n\n\n@pytest.mark.asyncio\nasync def test_advanced_meta_learner_reports_when_enabled():\n    config = ConfigV10_7(\"master_config_v10_7.json\")\n    metrics = MetricsCollector()\n    learner = AdvancedMetaLearner(config=config, metrics=metrics)\n\n    assert learner.enabled() is False\n\n    config.meta_learning_advanced_config.enabled = True\n    assert learner.enabled() is True\n    assert learner.analyze(\"wf-meta\") == {\"prune_boost\": True}\n\n\n@pytest.mark.asyncio\nasync def test_prompt_stack_receives_meta_hints(workflow_context):\n    workflow_context.config.meta_learning_advanced_config.enabled = True\n    workflow_context.advanced_meta_learner.config.meta_learning_advanced_config.enabled = True\n\n    agent = PromptEngineerAgent(workflow_context)\n\n    strateg",
+  "full_hash": "77f93a5fb245172dfcf05415f8a55740a9f9fcc0f445ce5ee0c2663b5b596b35",
+  "generated_at": 1764728231.515317,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\meta\\test_advanced_meta.py"
+}

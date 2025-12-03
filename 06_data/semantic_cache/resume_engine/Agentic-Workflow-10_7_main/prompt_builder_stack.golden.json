@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Prompt building stack for v10.8 that wraps the legacy prompt engineer.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, Optional\n\nfrom agent_stacks_v10_8.components.prompting import PromptEngineerAgent\n\n\nclass PromptBuilderStack:\n    \"\"\"Layer-isolated facade for prompt engineering.\"\"\"\n\n    def __init__(self, context: Any, debug_mode: bool = False) -> None:\n        self.context = context\n        self.debug_mode = debug_mode\n        self._prompt_agent = PromptEngineerAgent(context, debug_mode)\n\n    async def run_async(\n        self,\n        strategy_plan: Any,\n        complexity: str,\n        workflow_id: str,\n        state: Optional[Dict[str, Any]] = None,\n    ) -> Dict[str, Any]:\n        \"\"\"Execute prompt engineering and emit a structured state patch.\"\"\"\n\n        prompts_result = await self._prompt_agent.run_async(\n            strategy_plan,\n            complexity,\n            workflow_id,\n            state,\n        )\n\n        prompts_payload: Dict[str, Any] = {",
+  "full_hash": "6d4bf1d1c24ee2185376ca7c63de3769585e3fe475b2d2201b0811e4d346bdad",
+  "generated_at": 1764728229.8632257,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\prompt_builder_stack.py"
+}

@@ -1,0 +1,188 @@
+Module(
+  body=[
+    ClassDef(
+      name='ValidationError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Pass()]),
+    FunctionDef(
+      name='Field',
+      args=arguments(
+        args=[
+          arg(arg='default')],
+        kwarg=arg(arg='kwargs'),
+        defaults=[
+          Constant(value=Ellipsis)]),
+      body=[
+        Return(
+          value=Name(id='default', ctx=Load()))]),
+    ClassDef(
+      name='BaseModel',
+      body=[
+        Expr(
+          value=Constant(value='Minimal stand-in for pydantic.BaseModel used in tests.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwarg=arg(arg='data')),
+          body=[
+            Assign(
+              targets=[
+                Name(id='annotations', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='self', ctx=Load()),
+                  Constant(value='__annotations__'),
+                  Dict()])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='name', ctx=Store()),
+                  Name(id='annotation', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='annotations', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='name', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='data', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='value', ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='data', ctx=Load()),
+                        slice=Name(id='name', ctx=Load()),
+                        ctx=Load()))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='hasattr', ctx=Load()),
+                        args=[
+                          Name(id='self', ctx=Load()),
+                          Name(id='name', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='value', ctx=Store())],
+                          value=Call(
+                            func=Name(id='getattr', ctx=Load()),
+                            args=[
+                              Name(id='self', ctx=Load()),
+                              Name(id='name', ctx=Load())])),
+                        If(
+                          test=Compare(
+                            left=Name(id='value', ctx=Load()),
+                            ops=[
+                              Is()],
+                            comparators=[
+                              Constant(value=Ellipsis)]),
+                          body=[
+                            Raise(
+                              exc=Call(
+                                func=Name(id='ValidationError', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value="Field '"),
+                                      FormattedValue(
+                                        value=Name(id='name', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value="' is required")])]))])],
+                      orelse=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='ValidationError', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value="Field '"),
+                                  FormattedValue(
+                                    value=Name(id='name', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value="' is required")])]))])]),
+                Expr(
+                  value=Call(
+                    func=Name(id='setattr', ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      Name(id='name', ctx=Load()),
+                      Name(id='value', ctx=Load())]))]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='extra_key', ctx=Store()),
+                  Name(id='extra_value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='data', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='extra_key', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='annotations', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='setattr', ctx=Load()),
+                        args=[
+                          Name(id='self', ctx=Load()),
+                          Name(id='extra_key', ctx=Load()),
+                          Name(id='extra_value', ctx=Load())]))])])]),
+        FunctionDef(
+          name='dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='annotations', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='self', ctx=Load()),
+                  Constant(value='__annotations__'),
+                  Dict()])),
+            Return(
+              value=DictComp(
+                key=Name(id='name', ctx=Load()),
+                value=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='self', ctx=Load()),
+                    Name(id='name', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='name', ctx=Store()),
+                    iter=Name(id='annotations', ctx=Load()),
+                    is_async=0)]))]),
+        FunctionDef(
+          name='model_dump',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='dict',
+                  ctx=Load())))])])])

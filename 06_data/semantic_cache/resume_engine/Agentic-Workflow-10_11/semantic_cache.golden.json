@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import Any, Optional\n\nfrom core.models.models import RetrievalConfig\nfrom meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache\n\n\ndef read_semantic_cache(key: str, cfg: RetrievalConfig) -> Optional[Any]:\n    \"\"\"Read a value from the semantic cache if enabled.\n\n    Currently this delegates to the generic Redis cache using the\n    RetrievalConfig.redis_cache settings.\n    \"\"\"\n\n    redis_cfg = getattr(cfg, \"redis_cache\", None)\n    if not redis_cfg or not redis_cfg.enabled:\n        return None\n\n    client = init_redis_client(url=redis_cfg.url)\n    return get_llm_cache(client, key)\n\n\ndef write_semantic_cache(key: str, value: Any, cfg: RetrievalConfig) -> None:\n    \"\"\"Write a value to the semantic cache if enabled.\"\"\"\n\n    redis_cfg = getattr(cfg, \"redis_cache\", None)\n    if not redis_cfg or not redis_cfg.enabled:\n        return\n\n    client = init_redis_client(url=redis_cfg.url)\n    set_llm_cache(client, key, value, ttl_",
+  "full_hash": "af09452b43d677bb5c6add158a2b32ed2ee9f5697664d0df6b6ed310ac20b6f3",
+  "generated_at": 1764728225.6778653,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\retrieval\\semantic_cache.py"
+}

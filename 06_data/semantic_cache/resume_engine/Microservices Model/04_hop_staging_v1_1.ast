@@ -1,0 +1,1642 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nHop 4: Staging and Sanitization with Signal Score Calculation\n\nThis hop:\n1. Cleans and sanitizes LLM output\n2. Validates structural integrity\n3. Calculates per-section signal scores using ThematicAnalysis\n4. Creates ImmutableStagingBuffer\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='argparse')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Union')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='project_root', ctx=Store())],
+      value=Attribute(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parent',
+          ctx=Load()),
+        attr='parent',
+        ctx=Load())),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Name(id='project_root', ctx=Load())])])),
+    ImportFrom(
+      module='helpers',
+      names=[
+        alias(name='setup_workflow_logging'),
+        alias(name='HopExecutionError'),
+        alias(name='default_serializer'),
+        alias(name='ImmutableStagingBuffer'),
+        alias(name='ResumeSection'),
+        alias(name='ThematicAnalysis'),
+        alias(name='calculate_signal_score')],
+      level=0),
+    ClassDef(
+      name='ContentSanitizer',
+      body=[
+        Expr(
+          value=Constant(value='\n    Robust sanitizer that cleans LLM output and calculates signal quality scores\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='artist_specs',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='thematic_analysis',
+                annotation=Name(id='ThematicAnalysis', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='artist_specs',
+                  ctx=Store())],
+              value=Name(id='artist_specs', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='thematic_analysis',
+                  ctx=Store())],
+              value=Name(id='thematic_analysis', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='artifact_patterns',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value="^(Here's the generated content:|Here is the summary:|Certainly!|Here's the [a-zA-Z\\s]+:)\\s*"),
+                  BinOp(
+                    left=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='IGNORECASE',
+                      ctx=Load()),
+                    op=BitOr(),
+                    right=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='MULTILINE',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='markdown_patterns',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='^(#+\\s*|\\*+\\s*|-\\s*)'),
+                  Attribute(
+                    value=Name(id='re', ctx=Load()),
+                    attr='MULTILINE',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='placeholder_pattern',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\[(INSERT|PLACEHOLDER|TODO|FILL IN).*?\\]'),
+                  Attribute(
+                    value=Name(id='re', ctx=Load()),
+                    attr='IGNORECASE',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='_clean_text_artifacts',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Remove conversational intros and markdown')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='text', ctx=Load()),
+                    Name(id='str', ctx=Load())])),
+              body=[
+                Return(
+                  value=Name(id='text', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='artifact_patterns',
+                    ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Name(id='text', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='markdown_patterns',
+                    ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Name(id='text', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='strip',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_find_placeholders',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Find remaining placeholders')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='text', ctx=Load()),
+                    Name(id='str', ctx=Load())])),
+              body=[
+                Return(
+                  value=List(ctx=Load()))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='placeholder_pattern',
+                    ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_unify_structure',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='section_key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='content',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Ensure content structure matches spec\n        ')),
+            Assign(
+              targets=[
+                Name(id='list_sections', ctx=Store())],
+              value=List(
+                elts=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K2_UNIFY_BULLETS',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K3_IBM_BULLETS',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Constant(value='K.2_Unify_Bullets'),
+                  Constant(value='K.3_IBM_Bullets')],
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Name(id='section_key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='list_sections', ctx=Load())]),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load()),
+                      Name(id='list', ctx=Load())]),
+                  body=[
+                    Return(
+                      value=ListComp(
+                        elt=Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_clean_text_artifacts',
+                            ctx=Load()),
+                          args=[
+                            Name(id='item', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='item', ctx=Store()),
+                            iter=Name(id='content', ctx=Load()),
+                            ifs=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='item', ctx=Load()),
+                                  attr='strip',
+                                  ctx=Load()))],
+                            is_async=0)]))]),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='warning',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Structural mismatch for '),
+                              FormattedValue(
+                                value=Name(id='section_key', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': Expected List, got String. Splitting.')])])),
+                    Assign(
+                      targets=[
+                        Name(id='bullets', ctx=Store())],
+                      value=ListComp(
+                        elt=Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_clean_text_artifacts',
+                            ctx=Load()),
+                          args=[
+                            Name(id='line', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='line', ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Name(id='content', ctx=Load()),
+                                attr='split',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='\n')]),
+                            ifs=[
+                              BoolOp(
+                                op=And(),
+                                values=[
+                                  Call(
+                                    func=Attribute(
+                                      value=Name(id='line', ctx=Load()),
+                                      attr='strip',
+                                      ctx=Load())),
+                                  UnaryOp(
+                                    op=Not(),
+                                    operand=Call(
+                                      func=Attribute(
+                                        value=Call(
+                                          func=Attribute(
+                                            value=Name(id='line', ctx=Load()),
+                                            attr='strip',
+                                            ctx=Load())),
+                                        attr='startswith',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value='-')]))])],
+                            is_async=0)])),
+                    Return(
+                      value=ListComp(
+                        elt=Name(id='b', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='b', ctx=Store()),
+                            iter=Name(id='bullets', ctx=Load()),
+                            ifs=[
+                              Name(id='b', ctx=Load())],
+                            is_async=0)]))])]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load()),
+                  Name(id='str', ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_clean_text_artifacts',
+                      ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())]))]),
+            Return(
+              value=Name(id='content', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Union', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_calculate_section_signal_score',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Calculate signal quality score for section content using ThematicAnalysis\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='content', ctx=Load())),
+              body=[
+                Return(
+                  value=Constant(value=0.0))]),
+            Assign(
+              targets=[
+                Name(id='score', ctx=Store())],
+              value=Call(
+                func=Name(id='calculate_signal_score', ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='thematic_analysis',
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='debug',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Section signal score: '),
+                      FormattedValue(
+                        value=Name(id='score', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])])),
+            Return(
+              value=Name(id='score', ctx=Load()))],
+          returns=Name(id='float', ctx=Load())),
+        FunctionDef(
+          name='sanitize_and_stage',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='artist_output',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Sanitize content, calculate signal scores, and create staging buffer\n        \n        Returns:\n            - ImmutableStagingBuffer with cleaned content\n            - Metadata dict with section stats and signal scores\n        ')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Starting content sanitization and signal scoring...')])),
+            Assign(
+              targets=[
+                Name(id='staging_buffer', ctx=Store())],
+              value=Call(
+                func=Name(id='ImmutableStagingBuffer', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='output_metadata', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='sections_staged'),
+                  Constant(value='placeholders_found'),
+                  Constant(value='structural_corrections'),
+                  Constant(value='signal_scores'),
+                  Constant(value='average_signal_score')],
+                values=[
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0),
+                  Dict(),
+                  Constant(value=0.0)])),
+            Assign(
+              targets=[
+                Name(id='signal_scores', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='section_key', ctx=Store()),
+                  Name(id='content', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='artist_output', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='content', ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='warning',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Skipping empty content for section '),
+                              FormattedValue(
+                                value=Name(id='section_key', ctx=Load()),
+                                conversion=-1)])])),
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='original_type', ctx=Store())],
+                  value=Call(
+                    func=Name(id='type', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='clean_content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_unify_structure',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section_key', ctx=Load()),
+                      Name(id='content', ctx=Load())])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='original_type', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Name(id='str', ctx=Load())]),
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='clean_content', ctx=Load()),
+                          Name(id='list', ctx=Load())])]),
+                  body=[
+                    AugAssign(
+                      target=Subscript(
+                        value=Name(id='output_metadata', ctx=Load()),
+                        slice=Constant(value='structural_corrections'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Corrected structure for '),
+                              FormattedValue(
+                                value=Name(id='section_key', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': str -> list')])]))]),
+                Assign(
+                  targets=[
+                    Name(id='section_signal_score', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_calculate_section_signal_score',
+                      ctx=Load()),
+                    args=[
+                      Name(id='clean_content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='output_metadata', ctx=Load()),
+                        slice=Constant(value='signal_scores'),
+                        ctx=Load()),
+                      slice=Name(id='section_key', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='section_signal_score', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signal_scores', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section_signal_score', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='section_meta', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='signal_score')],
+                    values=[
+                      Name(id='section_signal_score', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='placeholders', ctx=Store())],
+                  value=List(ctx=Load())),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='clean_content', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='section_meta', ctx=Load()),
+                          slice=Constant(value='word_count'),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='clean_content', ctx=Load()),
+                              attr='split',
+                              ctx=Load()))])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='section_meta', ctx=Load()),
+                          slice=Constant(value='char_count'),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='clean_content', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='placeholders', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_find_placeholders',
+                          ctx=Load()),
+                        args=[
+                          Name(id='clean_content', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='clean_content', ctx=Load()),
+                          Name(id='list', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='section_meta', ctx=Load()),
+                              slice=Constant(value='bullet_count'),
+                              ctx=Store())],
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='clean_content', ctx=Load())])),
+                        For(
+                          target=Name(id='item', ctx=Store()),
+                          iter=Name(id='clean_content', ctx=Load()),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='placeholders', ctx=Load()),
+                                  attr='extend',
+                                  ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='_find_placeholders',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='item', ctx=Load())])]))])])]),
+                If(
+                  test=Name(id='placeholders', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='CRITICAL: Found placeholders in '),
+                              FormattedValue(
+                                value=Name(id='section_key', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Name(id='placeholders', ctx=Load()),
+                                conversion=-1)])])),
+                    AugAssign(
+                      target=Subscript(
+                        value=Name(id='output_metadata', ctx=Load()),
+                        slice=Constant(value='placeholders_found'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='placeholders', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='section_meta', ctx=Load()),
+                          slice=Constant(value='placeholders'),
+                          ctx=Store())],
+                      value=Name(id='placeholders', ctx=Load()))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='staging_buffer', ctx=Load()),
+                      attr='set',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section_key', ctx=Load()),
+                      Name(id='clean_content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='output_metadata', ctx=Load()),
+                      slice=Name(id='section_key', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='section_meta', ctx=Load())),
+                AugAssign(
+                  target=Subscript(
+                    value=Name(id='output_metadata', ctx=Load()),
+                    slice=Constant(value='sections_staged'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            If(
+              test=Name(id='signal_scores', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='output_metadata', ctx=Load()),
+                      slice=Constant(value='average_signal_score'),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Name(id='sum', ctx=Load()),
+                      args=[
+                        Name(id='signal_scores', ctx=Load())]),
+                    op=Div(),
+                    right=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='signal_scores', ctx=Load())]))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Average signal score across all sections: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='output_metadata', ctx=Load()),
+                              slice=Constant(value='average_signal_score'),
+                              ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.3f')]))])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='No signal scores calculated')]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='staging_buffer', ctx=Load()),
+                  attr='lock',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Staging buffer locked. Placeholders: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='output_metadata', ctx=Load()),
+                          slice=Constant(value='placeholders_found'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', Corrections: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='output_metadata', ctx=Load()),
+                          slice=Constant(value='structural_corrections'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', Avg Signal: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='output_metadata', ctx=Load()),
+                          slice=Constant(value='average_signal_score'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='output_metadata', ctx=Load()),
+                  slice=Constant(value='locked'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='staging_buffer', ctx=Load()),
+                  attr='is_locked',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='output_metadata', ctx=Load()),
+                  slice=Constant(value='lock_timestamp'),
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='staging_buffer', ctx=Load()),
+                attr='_lock_timestamp',
+                ctx=Load())),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='staging_buffer', ctx=Load()),
+                  Name(id='output_metadata', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='ImmutableStagingBuffer', ctx=Load()),
+                Name(id='Dict', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='run_hop_4',
+      args=arguments(
+        args=[
+          arg(
+            arg='args',
+            annotation=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='Namespace',
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Execute HOP-4 staging and sanitization with signal scoring')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='logger', ctx=Store()),
+                Name(id='_', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Name(id='setup_workflow_logging', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='workflow_id',
+                ctx=Load())],
+            keywords=[
+              keyword(
+                arg='log_file_dir',
+                value=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='run_dir',
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='--- Starting HOP-4: Staging with Signal Scoring [v-HighSignal] ---')])),
+        Assign(
+          targets=[
+            Name(id='start_time', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='datetime', ctx=Load()),
+              attr='now',
+              ctx=Load()))),
+        Try(
+          body=[
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='input_path_artist_output',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='artist_data', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Name(id='artist_output', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='artist_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='artist_output'),
+                      Dict()])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Loaded artist output from '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='args', ctx=Load()),
+                              attr='input_path_artist_output',
+                              ctx=Load()),
+                            conversion=-1)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load artist output: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='input_path_thematic_analysis',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='thematic_data', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Name(id='thematic_analysis', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ThematicAnalysis', ctx=Load()),
+                      attr='from_dict',
+                      ctx=Load()),
+                    args=[
+                      Name(id='thematic_data', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Loaded thematic analysis for signal scoring')])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load thematic analysis: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='artist_specs_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='artist_specs', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Loaded artist specs from '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='args', ctx=Load()),
+                              attr='artist_specs_path',
+                              ctx=Load()),
+                            conversion=-1)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load artist specs: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='sanitizer', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentSanitizer', ctx=Load()),
+                args=[
+                  Name(id='artist_specs', ctx=Load()),
+                  Name(id='thematic_analysis', ctx=Load())])),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='staging_buffer', ctx=Store()),
+                    Name(id='staging_metadata', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sanitizer', ctx=Load()),
+                  attr='sanitize_and_stage',
+                  ctx=Load()),
+                args=[
+                  Name(id='artist_output', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='staging_metadata', ctx=Load()),
+                  slice=Constant(value='placeholders_found'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Sanitization failed: Placeholders were found in generated text')]))]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='staging_metadata', ctx=Load()),
+                  slice=Constant(value='average_signal_score'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.3)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Low average signal score: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='staging_metadata', ctx=Load()),
+                              slice=Constant(value='average_signal_score'),
+                              ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.3f')]))])]))]),
+            Assign(
+              targets=[
+                Name(id='output_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='staging_buffer_data'),
+                  Constant(value='staging_metadata')],
+                values=[
+                  Attribute(
+                    value=Name(id='staging_buffer', ctx=Load()),
+                    attr='data',
+                    ctx=Load()),
+                  Name(id='staging_metadata', ctx=Load())])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='output_path_staging_buffer',
+                        ctx=Load())])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='output_path', ctx=Load()),
+                          Constant(value='w')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Name(id='output_data', ctx=Load()),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='default',
+                            value=Name(id='default_serializer', ctx=Load()))]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Successfully wrote staging buffer to '),
+                          FormattedValue(
+                            value=Name(id='output_path', ctx=Load()),
+                            conversion=-1)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to write output JSON: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='duration', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())),
+                    op=Sub(),
+                    right=Name(id='start_time', ctx=Load())),
+                  attr='total_seconds',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='--- HOP-4 Finished Successfully ('),
+                      FormattedValue(
+                        value=Name(id='duration', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='s) ---')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='API Calls Made: 0')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='HopExecutionError', ctx=Load()),
+              name='he',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='HOP-4 HALTED: '),
+                          FormattedValue(
+                            value=Name(id='he', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=False))])),
+                Assign(
+                  targets=[
+                    Name(id='duration', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        op=Sub(),
+                        right=Name(id='start_time', ctx=Load())),
+                      attr='total_seconds',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='--- HOP-4 Finished with HALT ('),
+                          FormattedValue(
+                            value=Name(id='duration', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value='s) ---')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='API Calls Made: 0')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='exit', ctx=Load()),
+                    args=[
+                      Constant(value=1)]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='HOP-4 FAILED with unexpected error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=True))])),
+                Assign(
+                  targets=[
+                    Name(id='duration', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        op=Sub(),
+                        right=Name(id='start_time', ctx=Load())),
+                      attr='total_seconds',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='--- HOP-4 Finished with FAILURE ('),
+                          FormattedValue(
+                            value=Name(id='duration', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value='s) ---')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='API Calls Made: 0')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='exit', ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='HOP-4: Staging with Signal Scoring [v-HighSignal]'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--workflow-id')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--run-dir')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--config-path')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--artist-specs-path')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--input-path-artist-output')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--input-path-thematic-analysis')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--output-path-staging-buffer')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='run_hop_4', ctx=Load()),
+            args=[
+              Name(id='args', ctx=Load())]))])])

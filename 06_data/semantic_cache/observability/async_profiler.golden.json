@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Integration tests for the async conductor.\"\"\"\nfrom __future__ import annotations\n\nfrom src.lic_agentic.orchestration import Conductor\n\n\ndef test_conductor_preserves_order_under_concurrency():\n    conductor = Conductor(concurrency=2, seed=11)\n    factories = [\n        conductor.wrap_tool_call(i, lambda value=value, index=i: (value * 2, 25 + index * 5))\n        for i, value in enumerate((2, 3, 5))\n    ]\n    results = conductor.run(factories)\n    assert results == [(0, 4), (1, 6), (2, 10)]\n\n\ndef test_conductor_artifact_ids_are_deterministic():\n    conductor = Conductor(seed=5)\n    first = conductor.make_artifact_id(\"outreach\", \"ACME\")\n    second = conductor.make_artifact_id(\"outreach\", \"ACME\")\n    conductor.reset()\n    replay = conductor.make_artifact_id(\"outreach\", \"ACME\")\n    assert first != second\n    assert first == replay\n",
+  "full_hash": "222cb29736f984d411c9abb8a55c5058a2f051749bc131736b2b755d35ec7fdd",
+  "generated_at": 1764728350.4275022,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\retriever-microagent-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\async_profiler.py"
+}

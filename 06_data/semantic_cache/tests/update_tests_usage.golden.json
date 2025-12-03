@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - update_tests_usage\nImplements L5 Safety/Policy Layer for update tests usage operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass UpdateTestsUsageSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass UpdateTestsUsageSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass UpdateTestsUsageSafetyResult:\n    \"\"\"L5 Safety result with full type saf",
+  "full_hash": "bf52225992ccf5f7b079697aeb1e32bea4030d28364e1e7182f32591eeda9eb5",
+  "generated_at": 1764728355.030611,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\safe-layer\\safety-phase\\manage-tests-costs\\general\\update-memory\\update_tests_usage.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\", \"context\"],\n    \"version\": \"v10.7\",\n    \"notes\": \"Extended context to include orchestration metadata\"\n  },\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\", \"issues\"],\n    \"version\": \"v10.7\",\n    \"notes\": \"Includes structured issue reporting\"\n  }\n}\n",
+  "full_hash": "17dbea375b57f7fcd05c69c9e1236624b832a8e32759ff1c34edfbff076e0d5a",
+  "generated_at": 1764728230.3432965,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\shared\\baselines\\baseline_outputs_v10_7.json"
+}

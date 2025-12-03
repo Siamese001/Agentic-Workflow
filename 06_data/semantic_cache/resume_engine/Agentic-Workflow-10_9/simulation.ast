@@ -1,0 +1,1732 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nUnified Simulation System (v10_9) — PURE META LAYER / CI HARNESS (REFINED)\n\nThis module provides a deterministic simulation harness for the v10_9\nagentic workflow.\n\nAll logic here is META-ONLY and therefore:\n\n    • NO planning (L1)\n    • NO execution (L2)\n    • NO orchestration (L3)\n    • NO state mutation (L4)\n    • NO safety decisions (L5)\n    • NO provider calls (Anthropic/Gemini/OpenAI/etc.)\n\nIt ONLY calls:\n    • main_v10_9.run_workflow_v10_9()\n    • constructs synthetic initial states\n    • returns structured results for CI/regression testing.\n\nScenarios (deterministic, end-to-end):\n\n    • strategy\n    • rag\n    • bullets\n    • drafting\n    • qa\n    • safety\n    • hil\n    • meta_learning\n\nEach scenario returns:\n\n    {\n      "scenario": <name>,\n      "workflow_id": <id>,\n      "phase": <final phase>,\n      "phase_history": [...],\n      "run_summary": {...},\n      "state_snapshot": {...},   # stable, trimmed L4 state\n    }\n\nAll scenarios are safe for CI and regression tests.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Callable'),
+        alias(name='Awaitable')],
+      level=0),
+    ImportFrom(
+      module='main_v10_9',
+      names=[
+        alias(name='run_workflow_v10_9')],
+      level=0),
+    FunctionDef(
+      name='_state_snapshot',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Trim the full L4 state to a stable subset suitable for deterministic testing.\n\n    We purposely include only the main L2 outputs and a few key\n    high-level fields. Volatile or heavy telemetry (e.g., route_trace,\n    patch_log, correction_journal) is omitted from the snapshot.\n\n    Snapshot shape:\n        {\n          "strategy_result": ...,\n          "rag_result": ...,\n          "bullet_result": ...,\n          "draft_result": ...,\n          "qa_result": ...,\n          "safety_result": ...,\n          "hil_result": ...,\n          "meta_learning_result": ...,\n          "multi_agent": ...,\n          "self_correction": ...,\n          "summary": ...,\n        }\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='strategy_result'),
+              Constant(value='rag_result'),
+              Constant(value='bullet_result'),
+              Constant(value='draft_result'),
+              Constant(value='qa_result'),
+              Constant(value='safety_result'),
+              Constant(value='hil_result'),
+              Constant(value='meta_learning_result'),
+              Constant(value='multi_agent'),
+              Constant(value='self_correction'),
+              Constant(value='summary')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='strategy_result')]),
+              BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='rag_history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='rag_result')])]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='bullet_result')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='draft_result')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_result')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='safety_result')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='hil_result')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='meta_learning_result')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='multi_agent')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='self_correction')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary')])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='Scenarios',
+      body=[
+        Expr(
+          value=Constant(value='\n    Houses all simulation scenarios used for deterministic CI testing.\n\n    Each scenario:\n        • Builds an initial_state dict.\n        • Invokes run_workflow_v10_9(initial_state).\n        • Returns an object with top-level fields + trimmed state snapshot.\n    ')),
+        AsyncFunctionDef(
+          name='strategy',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        Strategy planning scenario:\n            - Exercises L1 strategy planner\n            - Ensures L2.StrategyExecutor + L3/L4 integration\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages'),
+                  Constant(value='job')],
+                values=[
+                  Constant(value='Create a high-level plan for improving my VP-level resume.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='Help me plan my resume rewrite for a VP-level job.')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='job_title'),
+                      Constant(value='company'),
+                      Constant(value='summary'),
+                      Constant(value='top_requirements')],
+                    values=[
+                      Constant(value='Vice President, Product'),
+                      Constant(value='AcmeCorp'),
+                      Constant(value='Executive leadership role driving product strategy.'),
+                      List(
+                        elts=[
+                          Constant(value='leadership'),
+                          Constant(value='enterprise SaaS'),
+                          Constant(value='strategic partnerships')],
+                        ctx=Load())])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='strategy'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='rag',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        Retrieval scenario:\n            - Exercises L1 RAG planning (multi-query)\n            - Exercises L2.RAGExecutor + retrieval/ranking/RAGUtils\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages'),
+                  Constant(value='job'),
+                  Constant(value='resume')],
+                values=[
+                  Constant(value='Retrieve evidence for my leadership experience.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='What evidence supports my leadership background?')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='job_title'),
+                      Constant(value='company'),
+                      Constant(value='skills')],
+                    values=[
+                      Constant(value='Engineering Manager'),
+                      Constant(value='TechCorp'),
+                      List(
+                        elts=[
+                          Constant(value='leadership'),
+                          Constant(value='team scaling'),
+                          Constant(value='cloud')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='master_resume')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='summary'),
+                          Constant(value='professional_experience')],
+                        values=[
+                          Constant(value='Led teams building cloud-native systems.'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='title'),
+                                  Constant(value='company'),
+                                  Constant(value='impact_summary')],
+                                values=[
+                                  Constant(value='Engineering Manager'),
+                                  Constant(value='TechCorp'),
+                                  Constant(value='Led a team of 10 delivering multi-region SaaS.')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='title'),
+                                  Constant(value='company'),
+                                  Constant(value='impact_summary')],
+                                values=[
+                                  Constant(value='Tech Lead'),
+                                  Constant(value='DataWorks'),
+                                  Constant(value='Architected real-time data platform.')])],
+                            ctx=Load())])])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='rag'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='bullets',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        Bullet-generation scenario:\n            - Exercises L1 bullet framework planning\n            - Exercises L2.BulletExecutor + RAG interactions (via state)\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages'),
+                  Constant(value='resume')],
+                values=[
+                  Constant(value='Generate high-impact bullets for my last two roles.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='Create resume bullets for my past leadership roles.')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='master_resume')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='summary'),
+                          Constant(value='professional_experience')],
+                        values=[
+                          Constant(value='Senior leader with multi-role leadership experience.'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='title'),
+                                  Constant(value='company'),
+                                  Constant(value='impact_summary'),
+                                  Constant(value='bullet_pool')],
+                                values=[
+                                  Constant(value='Chief AI Officer'),
+                                  Constant(value='Unify Consulting'),
+                                  Constant(value='Led AI practice & GTM partnerships.'),
+                                  List(
+                                    elts=[
+                                      Constant(value='Built AI automation reducing costs 40%.'),
+                                      Constant(value='Scaled AI practice from 5 to 20 engineers.')],
+                                    ctx=Load())]),
+                              Dict(
+                                keys=[
+                                  Constant(value='title'),
+                                  Constant(value='company'),
+                                  Constant(value='impact_summary'),
+                                  Constant(value='bullet_pool')],
+                                values=[
+                                  Constant(value='Lead Client Partner'),
+                                  Constant(value='IBM'),
+                                  Constant(value='Drove cloud/AI transformations.'),
+                                  List(
+                                    elts=[
+                                      Constant(value='Delivered $30M analytics transformation.'),
+                                      Constant(value='Standardized global AI workflows across 5 regions.')],
+                                    ctx=Load())])],
+                            ctx=Load())])])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='bullets'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='drafting',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        Drafting scenario:\n            - Exercises L1 drafting planning (sections/tone)\n            - Exercises L2.DraftingExecutor + RAG evidence usage\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='tone'),
+                  Constant(value='audience'),
+                  Constant(value='messages'),
+                  Constant(value='job'),
+                  Constant(value='resume')],
+                values=[
+                  Constant(value='Draft a professional summary for a VP of Growth.'),
+                  Constant(value='professional'),
+                  Constant(value='recruiter'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='Draft my executive summary for a VP Growth role.')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='job_title'),
+                      Constant(value='company'),
+                      Constant(value='top_requirements')],
+                    values=[
+                      Constant(value='VP, Growth & Strategic Partnerships'),
+                      Constant(value='Neo4j'),
+                      List(
+                        elts=[
+                          Constant(value='strategic partnerships'),
+                          Constant(value='M&A experience')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='master_resume')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='summary'),
+                          Constant(value='professional_experience')],
+                        values=[
+                          Constant(value='Enterprise leader driving AI and growth strategy.'),
+                          List(ctx=Load())])])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='drafting'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='qa',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        QA scenario:\n            - Exercises L1 QA planning (checks, hints)\n            - Exercises L2.QAExecutor over a simple content block\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages'),
+                  Constant(value='draft_result')],
+                values=[
+                  Constant(value='Validate the quality of a drafted summary.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='Validate the quality of this content.')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='draft')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='This is a polished summary aligned with job requirements.')],
+                        ctx=Load())])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='qa'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='safety',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        Safety scenario:\n            - Exercises L1 safety planning\n            - Exercises L2.SafetyExecutor and L5.SafetyEngine\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages'),
+                  Constant(value='draft_result')],
+                values=[
+                  Constant(value='Safety check content that contains PII.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='Please review this for safety issues.')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='draft')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='Contact me at person@example.com or +1-555-123-4567 for details.')],
+                        ctx=Load())])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='safety'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='hil',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        HIL scenario:\n            - Exercises HIL planning + L2.HILExecutor\n            - Ensures HIL prompts and responses are wired correctly\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages'),
+                  Constant(value='draft_result'),
+                  Constant(value='qa_result')],
+                values=[
+                  Constant(value='Perform a human review of critical content.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='Please have a human review this before sending.')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='draft')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='This is a critical executive summary that will be sent to the board.')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='report')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='issues'),
+                          Constant(value='passed')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value='tone_mismatch'),
+                              Constant(value='missing_metric')],
+                            ctx=Load()),
+                          Constant(value=False)])])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='hil'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='meta_learning',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        Meta-learning scenario:\n            - Exercises L1 meta-learning planning\n            - Exercises L2.MetaLearningExecutor and state snapshot wiring\n        ')),
+            AnnAssign(
+              target=Name(id='state', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages'),
+                  Constant(value='qa_result'),
+                  Constant(value='safety_result')],
+                values=[
+                  Constant(value='Analyze recent QA + Safety outcomes for meta-learning.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='system'),
+                          Constant(value='Trigger a meta-learning pass over recent runs.')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='report')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='issues'),
+                          Constant(value='passed')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value='inconsistent_narrative'),
+                              Constant(value='weak_evidence_linkage')],
+                            ctx=Load()),
+                          Constant(value=False)])]),
+                  Dict(
+                    keys=[
+                      Constant(value='report')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='issues'),
+                          Constant(value='blocked')],
+                        values=[
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='issue_id'),
+                                  Constant(value='category'),
+                                  Constant(value='message')],
+                                values=[
+                                  Constant(value='pii_redacted'),
+                                  Constant(value='pii'),
+                                  Constant(value='Found email address.')])],
+                            ctx=Load()),
+                          Constant(value=False)])])]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='run_workflow_v10_9', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='wf_state', ctx=Store())],
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load())),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario'),
+                  Constant(value='workflow_id'),
+                  Constant(value='phase'),
+                  Constant(value='phase_history'),
+                  Constant(value='run_summary'),
+                  Constant(value='state_snapshot')],
+                values=[
+                  Constant(value='meta_learning'),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='workflow_id'),
+                    ctx=Load()),
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phase'),
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phase_metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='history')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='run_summary'),
+                      Dict()]),
+                  Call(
+                    func=Name(id='_state_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='wf_state', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    AnnAssign(
+      target=Name(id='SCENARIOS', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Subscript(
+              value=Name(id='Callable', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  List(ctx=Load()),
+                  Subscript(
+                    value=Name(id='Awaitable', ctx=Load()),
+                    slice=Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Dict(
+        keys=[
+          Constant(value='strategy'),
+          Constant(value='rag'),
+          Constant(value='bullets'),
+          Constant(value='draft'),
+          Constant(value='drafting'),
+          Constant(value='qa'),
+          Constant(value='safety'),
+          Constant(value='hil'),
+          Constant(value='meta_learning')],
+        values=[
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='strategy',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='rag',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='bullets',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='drafting',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='drafting',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='qa',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='safety',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='hil',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Scenarios', ctx=Load()),
+            attr='meta_learning',
+            ctx=Load())]),
+      simple=1),
+    ClassDef(
+      name='Engine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Simulation execution engine.\n\n    Provides:\n        • run(name, overrides=None)\n        • run_all()\n        • list()\n        • sync wrappers\n\n    This is a META-level test harness for CI and regression scenarios.\n    ')),
+        AsyncFunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='overrides',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='SCENARIOS', ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Unknown simulation scenario: '),
+                          FormattedValue(
+                            value=Name(id='name', ctx=Load()),
+                            conversion=114)])]))]),
+            Assign(
+              targets=[
+                Name(id='base', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Subscript(
+                    value=Name(id='SCENARIOS', ctx=Load()),
+                    slice=Name(id='name', ctx=Load()),
+                    ctx=Load())))),
+            If(
+              test=Name(id='overrides', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='merged', ctx=Store())],
+                  value=Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Name(id='base', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='merged', ctx=Load()),
+                      attr='update',
+                      ctx=Load()),
+                    args=[
+                      Name(id='overrides', ctx=Load())])),
+                Return(
+                  value=Name(id='merged', ctx=Load()))]),
+            Return(
+              value=Name(id='base', ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='run_all',
+          args=arguments(),
+          body=[
+            AnnAssign(
+              target=Name(id='results', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='name', ctx=Store()),
+                  Name(id='fn', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='SCENARIOS', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Name(id='fn', ctx=Load()))))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='list',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='Return a mapping of scenario_name → docstring (1-line description).')),
+            Return(
+              value=DictComp(
+                key=Name(id='name', ctx=Load()),
+                value=Call(
+                  func=Attribute(
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Attribute(
+                          value=Name(id='fn', ctx=Load()),
+                          attr='__doc__',
+                          ctx=Load()),
+                        Constant(value='')]),
+                    attr='strip',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='name', ctx=Store()),
+                        Name(id='fn', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='SCENARIOS', ctx=Load()),
+                        attr='items',
+                        ctx=Load())),
+                    is_async=0)]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='run_sync',
+          args=arguments(
+            args=[
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='overrides',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='Engine', ctx=Load()),
+                      attr='run',
+                      ctx=Load()),
+                    args=[
+                      Name(id='name', ctx=Load()),
+                      Name(id='overrides', ctx=Load())])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='run_all_sync',
+          args=arguments(),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='Engine', ctx=Load()),
+                      attr='run_all',
+                      ctx=Load()))]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='=== v10_9 Simulation Harness (META) ===')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Available Scenarios:')])),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='name', ctx=Store()),
+              Name(id='desc', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='Engine', ctx=Load()),
+                  attr='list',
+                  ctx=Load())),
+              attr='items',
+              ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  - '),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=': '),
+                      FormattedValue(
+                        value=BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='desc', ctx=Load()),
+                            Constant(value='(no description)')]),
+                        conversion=-1)])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n=== Running All Scenarios ===')])),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='Engine', ctx=Load()),
+              attr='run_all_sync',
+              ctx=Load()))),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='name', ctx=Store()),
+              Name(id='result', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='results', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\n[SCENARIO: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='name', ctx=Load()),
+                            attr='upper',
+                            ctx=Load())),
+                        conversion=-1),
+                      Constant(value=']')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Workflow ID: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='workflow_id')]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Phase      : '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='phase')]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Phase Hist.: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='phase_history')]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Issues     : '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='run_summary'),
+                                Dict()]),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='issues'),
+                            Dict()]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='State Snapshot:')])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='state_snapshot')])]))])])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "from src.lic_agentic.agents.k7_validator_agent import ValidatorAgent\n\n\ndef test_retry_brings_to_pass():\n    agent = ValidatorAgent(max_retries=1)\n    initial_draft = \"\"\"Subject: Hello\\n\\nHello there\\nBest regards,\\nLIC Outreach Bot\"\"\"\n    artifacts = {\"aid\": \"Grounded insight\"}\n    verdict = agent.check(\n        initial_draft,\n        route_decision=None,\n        pii_map={},\n        artifacts=artifacts,\n    )\n    assert verdict.passed\n    assert \"CTA:\" in verdict.final_draft\n    assert \"[artifact_id:aid]\" in verdict.final_draft\n",
+  "full_hash": "9a044e272d01173e2c8f616533512f6519cf2f72b95f92ebf5a1d7312110914c",
+  "generated_at": 1764728350.3969564,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\observer-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\time_profiler.py"
+}

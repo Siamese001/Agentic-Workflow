@@ -1,0 +1,6 @@
+{
+  "golden_content": "from orchestration.control_plane import SafetyContext, run_safety_pipeline\n\n\ndef test_control_plane_allows_safe_text():\n    ctx = SafetyContext(input_text=\"This is a benign sentence.\")\n\n    decision, trace = run_safety_pipeline(ctx, execution_profile=None)\n\n    assert decision.action == \"allow\"\n    assert decision.verdict == \"safe\"\n    assert trace.rules_engine[\"match_count\"] == 0\n\n\n\n\n\n\n",
+  "full_hash": "6dd37c8256fc13ae97a2983b45f9e75dbfd29a4083fe054fcf29a39e1ee35234",
+  "generated_at": 1764728226.5015001,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\control_plane\\test_routing_and_pipeline.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import asyncio\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7 import PromptEnvelope\nfrom stacks_v10_8.prompt_renderer_stack import PromptRendererStack\n\n\nclass _StubDecision:\n    def __init__(self, payload):\n        self._payload = payload\n\n    def dict(self):  # pragma: no cover - simple passthrough\n        return dict(self._payload)\n\n\nclass DummyContext:\n    def __init__(self):\n        config = SimpleNamespace()\n        prompt_manager = SimpleNamespace()\n        response_validator = SimpleNamespace()\n        context_budget_manager = SimpleNamespace()\n        metrics_collector = SimpleNamespace()\n        self.config = config\n        self.prompt_manager = prompt_manager\n        self.response_validator = response_validator\n        self.context_budget_manager = context_budget_manager\n        self.metrics_collector = metrics_collector\n        self.self_correction_manager = None\n        self.policy_stack = SimpleNamespace(guard_output=lambda payload: _StubDecision({\"allow",
+  "full_hash": "13abd1c22955f087936bddae337337160da7a39c1587809ceca489659a3e5763",
+  "generated_at": 1764728231.5370483,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\prompting\\test_prompt_renderer_integration.py"
+}

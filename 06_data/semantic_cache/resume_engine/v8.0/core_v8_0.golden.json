@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: core_v8_0.py\n# Overwrites: core_v7_5.py\n# Version: 8.0 (Agentic Upgrade)\n# Zero-Loss Consolidation - The Foundation\n# Merges: models_RES.py \u2192 config_RES.py \u2192 utils_RES.py \u2192 prompts_RES.py\n# v8.0: Pointing CONFIG_PATH to master_config_v8_0.json\n# v8.0: Added new prompt constants for v8.0 agentic agents (ReAct, MoE conductors, bullet generation)\n#\n# v6.4 (Corrected V3) CHANGES:\n# - Renamed ImmutableStagingBuffer 'metadata' field to 'sections' to match\n#   the semantic expectations of the ValidationContext.\n# v6.4 (Corrected V2) CHANGES:\n# - Added master_resume and job_input to WorkflowBlackboard dataclass\n#   to fix TypeError during Governor initialization.\n#\n# GEMINI REVIEW (v6.4 FINAL):\n# - Removed unused import 'TYPE_CHECKING'.\n# - Removed unused/uncalled function 'build_atomic_agent_prompt'.\n# - Removed unused/uncalled class 'WorkflowLogFilter'.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n# ================",
+  "full_hash": "b2fbf3b53b179f64a2935a00bc1ea522bd612d05eae79fa6f6ef1f23bc02189b",
+  "generated_at": 1764728327.9019425,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v8.0\\core_v8_0.py"
+}

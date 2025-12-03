@@ -1,0 +1,4027 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nResume Generation Engine v4.5.0 - MASTER RESUME JSON SOURCED\n=============================================================\n\nMAJOR CHANGES FROM v4.4.4:\n- Now properly sources ALL content from Master_Resume_V2.14.json\n- Baseline resume ONLY used for word count targets (1,032 words)\n- Correct dates, titles, locations from JSON source\n- Proper company names and formatting\n- All bullets drawn from JSON bullet_pool\n- Certifications and competencies from JSON\n\nVersion: 4.5.0\nDate: October 2025\n')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Tuple'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Import(
+      names=[
+        alias(name='random')]),
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='4.5.0')),
+    ClassDef(
+      name='TemperatureMode',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Temperature modes for constraint relaxation and signal adjustment.')),
+        Assign(
+          targets=[
+            Name(id='CONSERVATIVE', ctx=Store())],
+          value=Constant(value='conservative')),
+        Assign(
+          targets=[
+            Name(id='BALANCED', ctx=Store())],
+          value=Constant(value='balanced')),
+        Assign(
+          targets=[
+            Name(id='CREATIVE', ctx=Store())],
+          value=Constant(value='creative'))]),
+    FunctionDef(
+      name='load_master_resume',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Load the master resume from JSON file.')),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Constant(value='/mnt/user-data/uploads/Master_Resume_V2_14.json'),
+                  Constant(value='r')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='load',
+                  ctx=Load()),
+                args=[
+                  Name(id='f', ctx=Load())]))])]),
+    ClassDef(
+      name='BaselineResumeMetrics',
+      body=[
+        Expr(
+          value=Constant(value='Baseline word count targets from the 1,032-word baseline resume.')),
+        Assign(
+          targets=[
+            Name(id='TARGET_TOTAL', ctx=Store())],
+          value=Constant(value=1032)),
+        Assign(
+          targets=[
+            Name(id='TOLERANCE', ctx=Store())],
+          value=Constant(value=50)),
+        Assign(
+          targets=[
+            Name(id='SECTION_BASELINES', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='name'),
+              Constant(value='headline'),
+              Constant(value='contact'),
+              Constant(value='executive_summary'),
+              Constant(value='unify_intro'),
+              Constant(value='unify_bullets'),
+              Constant(value='ibm_intro'),
+              Constant(value='ibm_bullets'),
+              Constant(value='tradersense_intro'),
+              Constant(value='tradersense_bullets'),
+              Constant(value='ey_intro'),
+              Constant(value='ey_bullets'),
+              Constant(value='early_intro'),
+              Constant(value='early_bullets'),
+              Constant(value='education'),
+              Constant(value='certifications'),
+              Constant(value='competencies')],
+            values=[
+              Constant(value=2),
+              Constant(value=12),
+              Constant(value=10),
+              Constant(value=150),
+              Constant(value=25),
+              Constant(value=265),
+              Constant(value=20),
+              Constant(value=195),
+              Constant(value=20),
+              Constant(value=45),
+              Constant(value=15),
+              Constant(value=50),
+              Constant(value=20),
+              Constant(value=45),
+              Constant(value=15),
+              Constant(value=25),
+              Constant(value=118)])),
+        Assign(
+          targets=[
+            Name(id='UNIFY_IBM_RATIO_MIN', ctx=Store())],
+          value=Constant(value=1.1)),
+        Assign(
+          targets=[
+            Name(id='UNIFY_IBM_RATIO_MAX', ctx=Store())],
+          value=Constant(value=1.3))]),
+    ClassDef(
+      name='RoleProfiles',
+      body=[
+        Expr(
+          value=Constant(value='Different role types for resume customization.')),
+        Assign(
+          targets=[
+            Name(id='PROFILES', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='chief_ai_officer'),
+              Constant(value='vp_presales'),
+              Constant(value='vp_sales_engineering')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='title'),
+                  Constant(value='headline'),
+                  Constant(value='keywords'),
+                  Constant(value='focus_sections'),
+                  Constant(value='bullet_preferences')],
+                values=[
+                  Constant(value='Chief AI Officer'),
+                  Constant(value='Chief AI Officer | LLM Product Launches | Strategic AI Partnerships'),
+                  List(
+                    elts=[
+                      Constant(value='LLM'),
+                      Constant(value='generative AI'),
+                      Constant(value='ML engineering'),
+                      Constant(value='AI strategy'),
+                      Constant(value='partnerships')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='unify'),
+                      Constant(value='ibm')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='technical'),
+                      Constant(value='leadership')],
+                    values=[
+                      Constant(value=0.6),
+                      Constant(value=0.4)])]),
+              Dict(
+                keys=[
+                  Constant(value='title'),
+                  Constant(value='headline'),
+                  Constant(value='keywords'),
+                  Constant(value='focus_sections'),
+                  Constant(value='bullet_preferences')],
+                values=[
+                  Constant(value='VP Pre-Sales / Solutions Engineering'),
+                  Constant(value='VP Pre-Sales Solutions | Enterprise AI Architecture | POC-to-Production Excellence'),
+                  List(
+                    elts=[
+                      Constant(value='pre-sales'),
+                      Constant(value='solution architecture'),
+                      Constant(value='POC'),
+                      Constant(value='technical sales'),
+                      Constant(value='demos')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='unify'),
+                      Constant(value='ibm')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='technical'),
+                      Constant(value='leadership')],
+                    values=[
+                      Constant(value=0.5),
+                      Constant(value=0.5)])]),
+              Dict(
+                keys=[
+                  Constant(value='title'),
+                  Constant(value='headline'),
+                  Constant(value='keywords'),
+                  Constant(value='focus_sections'),
+                  Constant(value='bullet_preferences')],
+                values=[
+                  Constant(value='VP Sales Engineering'),
+                  Constant(value='VP Sales Engineering | Technical Revenue Leadership | Enterprise AI Solutions'),
+                  List(
+                    elts=[
+                      Constant(value='sales engineering'),
+                      Constant(value='technical sales'),
+                      Constant(value='demos'),
+                      Constant(value='POC'),
+                      Constant(value='revenue')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='unify'),
+                      Constant(value='ibm')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='technical'),
+                      Constant(value='leadership')],
+                    values=[
+                      Constant(value=0.4),
+                      Constant(value=0.6)])])]))]),
+    ClassDef(
+      name='BulletScorer',
+      body=[
+        Expr(
+          value=Constant(value='Score bullets based on relevance to JD and role.')),
+        FunctionDef(
+          name='score_bullet',
+          args=arguments(
+            args=[
+              arg(
+                arg='bullet',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='jd',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='role_keywords',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Score a bullet based on keyword matches and metrics.')),
+            Assign(
+              targets=[
+                Name(id='score', ctx=Store())],
+              value=Constant(value=0.0)),
+            Assign(
+              targets=[
+                Name(id='bullet_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='bullet', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='jd_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='jd', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            For(
+              target=Name(id='keyword', ctx=Store()),
+              iter=Name(id='role_keywords', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='keyword', ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='bullet_lower', ctx=Load())]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='score', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=0.2))])]),
+            Assign(
+              targets=[
+                Name(id='jd_keywords', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='pre-sales'),
+                  Constant(value='solution'),
+                  Constant(value='architect'),
+                  Constant(value='poc'),
+                  Constant(value='demo'),
+                  Constant(value='enterprise'),
+                  Constant(value='fortune 500'),
+                  Constant(value='saas'),
+                  Constant(value='ai'),
+                  Constant(value='llm'),
+                  Constant(value='partnership'),
+                  Constant(value='revenue'),
+                  Constant(value='team'),
+                  Constant(value='scale'),
+                  Constant(value='lead'),
+                  Constant(value='strategic')],
+                ctx=Load())),
+            For(
+              target=Name(id='keyword', ctx=Store()),
+              iter=Name(id='jd_keywords', ctx=Load()),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='keyword', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='jd_lower', ctx=Load())]),
+                      Compare(
+                        left=Name(id='keyword', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='bullet_lower', ctx=Load())])]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='score', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=0.15))])]),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='search',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\d+[%$MK]|\\$\\d+[MK]'),
+                  Name(id='bullet', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='search',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\d+-person|\\d+ person'),
+                  Name(id='bullet', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.05))]),
+            Return(
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  Name(id='score', ctx=Load()),
+                  Constant(value=1.0)]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='float', ctx=Load()))]),
+    ClassDef(
+      name='ResumeGenerationEngine',
+      body=[
+        Expr(
+          value=Constant(value='Main engine for generating customized resumes from JSON master.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_data',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='load_master_resume', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='baseline_metrics',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='BaselineResumeMetrics', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='role_profiles',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RoleProfiles', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='bullet_scorer',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='BulletScorer', ctx=Load())))]),
+        FunctionDef(
+          name='generate_resume',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='jd',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='role_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temp_mode',
+                annotation=Name(id='TemperatureMode', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate all 4 outputs for the resume.')),
+            Assign(
+              targets=[
+                Name(id='profile', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='role_profiles',
+                      ctx=Load()),
+                    attr='PROFILES',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='role_type', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='profile', ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Unknown role type: '),
+                          FormattedValue(
+                            value=Name(id='role_type', ctx=Load()),
+                            conversion=-1)])]))]),
+            Assign(
+              targets=[
+                Name(id='sections', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_resume_sections',
+                  ctx=Load()),
+                args=[
+                  Name(id='jd', ctx=Load()),
+                  Name(id='profile', ctx=Load()),
+                  Name(id='temp_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='metrics', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_metrics',
+                  ctx=Load()),
+                args=[
+                  Name(id='sections', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='qa_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_run_qa_validation',
+                  ctx=Load()),
+                args=[
+                  Name(id='sections', ctx=Load()),
+                  Name(id='metrics', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='outputs', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='output1_resume'),
+                  Constant(value='output2_word_count'),
+                  Constant(value='output3_signal_calibration'),
+                  Constant(value='output4_qa_validation')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_resume',
+                      ctx=Load()),
+                    args=[
+                      Name(id='sections', ctx=Load()),
+                      Name(id='profile', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_word_count_table',
+                      ctx=Load()),
+                    args=[
+                      Name(id='sections', ctx=Load()),
+                      Name(id='metrics', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_signal_calibration',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metrics', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_format_qa_validation',
+                      ctx=Load()),
+                    args=[
+                      Name(id='qa_results', ctx=Load())])])),
+            Return(
+              value=Name(id='outputs', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_build_resume_sections',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='jd',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='profile',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='temp_mode',
+                annotation=Name(id='TemperatureMode', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Build customized resume sections from master data.')),
+            Assign(
+              targets=[
+                Name(id='sections', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='owner', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_data',
+                  ctx=Load()),
+                slice=Constant(value='owner'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='name'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='owner', ctx=Load()),
+                slice=Constant(value='name'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='headline'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='profile', ctx=Load()),
+                slice=Constant(value='headline'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='contact'),
+                  ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='owner', ctx=Load()),
+                        slice=Constant(value='contact'),
+                        ctx=Load()),
+                      slice=Constant(value='phone'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='owner', ctx=Load()),
+                        slice=Constant(value='contact'),
+                        ctx=Load()),
+                      slice=Constant(value='email'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='owner', ctx=Load()),
+                        slice=Constant(value='contact'),
+                        ctx=Load()),
+                      slice=Constant(value='linkedin'),
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='executive_summary'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_executive_summary',
+                  ctx=Load()),
+                args=[
+                  Name(id='profile', ctx=Load()),
+                  Name(id='jd', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='exp_data', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_data',
+                  ctx=Load()),
+                slice=Constant(value='professional_experience'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='unify', ctx=Store())],
+              value=Subscript(
+                value=Name(id='exp_data', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='unify_company'),
+                  ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='unify', ctx=Load()),
+                      slice=Constant(value='company'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='unify', ctx=Load()),
+                      slice=Constant(value='title'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='unify', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='start'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' – '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='unify', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='end'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='unify', ctx=Load()),
+                      slice=Constant(value='location'),
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='unify_intro'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='unify', ctx=Load()),
+                slice=Constant(value='overview'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='unify_bullets'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_bullets',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='unify', ctx=Load()),
+                    slice=Constant(value='bullet_pool'),
+                    ctx=Load()),
+                  Name(id='jd', ctx=Load()),
+                  Name(id='profile', ctx=Load()),
+                  Constant(value=6)])),
+            Assign(
+              targets=[
+                Name(id='ibm', ctx=Store())],
+              value=Subscript(
+                value=Name(id='exp_data', ctx=Load()),
+                slice=Constant(value=1),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ibm_company'),
+                  ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='ibm', ctx=Load()),
+                      slice=Constant(value='company'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='ibm', ctx=Load()),
+                      slice=Constant(value='title'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='ibm', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='start'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' – '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='ibm', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='end'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='ibm', ctx=Load()),
+                      slice=Constant(value='location'),
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ibm_intro'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='ibm', ctx=Load()),
+                slice=Constant(value='overview'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ibm_bullets'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_bullets',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='ibm', ctx=Load()),
+                    slice=Constant(value='bullet_pool'),
+                    ctx=Load()),
+                  Name(id='jd', ctx=Load()),
+                  Name(id='profile', ctx=Load()),
+                  Constant(value=5)])),
+            Assign(
+              targets=[
+                Name(id='tradersense', ctx=Store())],
+              value=Subscript(
+                value=Name(id='exp_data', ctx=Load()),
+                slice=Constant(value=2),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='tradersense_company'),
+                  ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='tradersense', ctx=Load()),
+                      slice=Constant(value='company'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='tradersense', ctx=Load()),
+                      slice=Constant(value='title'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='tradersense', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='start'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' – '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='tradersense', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='end'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='tradersense', ctx=Load()),
+                      slice=Constant(value='location'),
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='tradersense_intro'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='tradersense', ctx=Load()),
+                slice=Constant(value='overview'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='tradersense_bullets'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='tradersense', ctx=Load()),
+                slice=Constant(value='highlights'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='ey', ctx=Store())],
+              value=Subscript(
+                value=Name(id='exp_data', ctx=Load()),
+                slice=Constant(value=3),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ey_company'),
+                  ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='ey', ctx=Load()),
+                      slice=Constant(value='company'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='ey', ctx=Load()),
+                      slice=Constant(value='title'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='ey', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='start'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' – '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='ey', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='end'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='ey', ctx=Load()),
+                      slice=Constant(value='location'),
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ey_intro'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='ey', ctx=Load()),
+                slice=Constant(value='overview'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='ey_bullets'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='ey', ctx=Load()),
+                slice=Constant(value='highlights'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='early', ctx=Store())],
+              value=Subscript(
+                value=Name(id='exp_data', ctx=Load()),
+                slice=Constant(value=4),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='early_company'),
+                  ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='early', ctx=Load()),
+                      slice=Constant(value='company'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='early', ctx=Load()),
+                      slice=Constant(value='title'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='early', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='start'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' – '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='early', ctx=Load()),
+                        slice=Constant(value='dates'),
+                        ctx=Load()),
+                      slice=Constant(value='end'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' | '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='early', ctx=Load()),
+                      slice=Constant(value='location'),
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='early_intro'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='early', ctx=Load()),
+                slice=Constant(value='overview'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='early_bullets'),
+                  ctx=Store())],
+              value=Subscript(
+                value=Name(id='early', ctx=Load()),
+                slice=Constant(value='highlights'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='edu_data', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_data',
+                  ctx=Load()),
+                slice=Constant(value='education'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='education'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' | '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=JoinedStr(
+                      values=[
+                        FormattedValue(
+                          value=Subscript(
+                            value=Name(id='e', ctx=Load()),
+                            slice=Constant(value='degree'),
+                            ctx=Load()),
+                          conversion=-1),
+                        Constant(value=', '),
+                        FormattedValue(
+                          value=Subscript(
+                            value=Name(id='e', ctx=Load()),
+                            slice=Constant(value='institution'),
+                            ctx=Load()),
+                          conversion=-1),
+                        Constant(value=' ('),
+                        FormattedValue(
+                          value=Subscript(
+                            value=Name(id='e', ctx=Load()),
+                            slice=Constant(value='notes'),
+                            ctx=Load()),
+                          conversion=-1),
+                        Constant(value=')')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='e', ctx=Store()),
+                        iter=Name(id='edu_data', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='certifications'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' | '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='master_data',
+                      ctx=Load()),
+                    slice=Constant(value='certifications_and_credentials'),
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='competencies', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='master_data',
+                  ctx=Load()),
+                slice=Constant(value='strategic_and_technical_competencies'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='competencies'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_extract_competencies',
+                  ctx=Load()),
+                args=[
+                  Name(id='competencies', ctx=Load())])),
+            Return(
+              value=Name(id='sections', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_generate_executive_summary',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='profile',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='jd',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate role-specific executive summary (100-150 words).')),
+            If(
+              test=Compare(
+                left=Constant(value='chief_ai'),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='profile', ctx=Load()),
+                        slice=Constant(value='title'),
+                        ctx=Load()),
+                      attr='lower',
+                      ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='summary', ctx=Store())],
+                  value=Constant(value="Chief AI Officer scaling Fortune 500 LLM adoption through strategic AWS partnerships and engineering excellence. Led 18-person senior engineering practice delivering enterprise-grade generative AI solutions, securing $18M partnership revenue and accelerating regulated program delivery by 37%. Architected production RAG pipelines processing 100K+ documents monthly with 41% improved accuracy. Previously transformed IBM's AI capability as Lead Client Partner, building teams achieving 70% POC-to-production success rate and $50M+ platform renewals. Modernized Basel III and CCAR frameworks while establishing enterprise AI governance standards. Deep expertise in LLM deployment, MLOps automation, and regulated financial services delivery. Founded TraderSense algorithmic trading platform and held senior roles at Ernst & Young."))],
+              orelse=[
+                If(
+                  test=BoolOp(
+                    op=Or(),
+                    values=[
+                      Compare(
+                        left=Constant(value='pre-sales'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Subscript(
+                                value=Name(id='profile', ctx=Load()),
+                                slice=Constant(value='title'),
+                                ctx=Load()),
+                              attr='lower',
+                              ctx=Load()))]),
+                      Compare(
+                        left=Constant(value='presales'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Subscript(
+                                value=Name(id='profile', ctx=Load()),
+                                slice=Constant(value='title'),
+                                ctx=Load()),
+                              attr='lower',
+                              ctx=Load()))])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='summary', ctx=Store())],
+                      value=Constant(value="Pre-sales leader scaling Fortune 500 AI adoption through technical excellence and strategic solution design. Built 18-engineer practice delivering enterprise LLM implementations, achieving $18M AWS partnership revenue and 37% faster POC-to-production cycles. Expert in architecting complex RAG pipelines, multi-agent workflows, and regulated AI frameworks for financial services. Led IBM's pre-sales transformation as Lead Client Partner, managing 15-architect team with 70% POC success rate and $50M+ renewals. Accelerated enterprise sales cycles by 32% through standardized demo frameworks and technical accelerators. Specialized in Basel III/CCAR modernization and enterprise data platform migrations. Founded TraderSense algorithmic platform and maintains deep expertise in solution architecture and technical sales leadership."))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='summary', ctx=Store())],
+                      value=Constant(value="Sales engineering executive driving enterprise AI revenue through technical leadership and strategic partnerships. Scaled 18-engineer team delivering Fortune 500 LLM implementations, generating $18M AWS revenue and reducing deal cycles by 37%. Expert in technical sales motions, POC execution, and complex enterprise solution design for regulated industries. Transformed IBM's technical sales capability as Lead Client Partner, building team achieving 70% win rate and $50M+ platform renewals. Reduced sales cycles by 32% via SE-led demonstrations and technical accelerators. Specialized in financial services modernization including Basel III and CCAR framework implementations. Entrepreneurial background founding TraderSense trading platform with consistent track record of building high-performing technical sales organizations."))])]),
+            Assign(
+              targets=[
+                Name(id='words', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='summary', ctx=Load()),
+                  attr='split',
+                  ctx=Load()))),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='words', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=150)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='summary', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Constant(value=' '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='words', ctx=Load()),
+                        slice=Slice(
+                          upper=Constant(value=145)),
+                        ctx=Load())]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='words', ctx=Load())]),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Constant(value=100)]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='summary', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=' Proven track record of building high-performance teams and driving enterprise transformation.'))])]),
+            Return(
+              value=Name(id='summary', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_select_bullets',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='bullet_pool',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='jd',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='profile',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='count',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Select top bullets based on relevance scoring.')),
+            Assign(
+              targets=[
+                Name(id='scored_bullets', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Name(id='bullet_pool', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='score', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='bullet_scorer',
+                        ctx=Load()),
+                      attr='score_bullet',
+                      ctx=Load()),
+                    args=[
+                      Name(id='bullet', ctx=Load()),
+                      Name(id='jd', ctx=Load()),
+                      Subscript(
+                        value=Name(id='profile', ctx=Load()),
+                        slice=Constant(value='keywords'),
+                        ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='scored_bullets', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Tuple(
+                        elts=[
+                          Name(id='score', ctx=Load()),
+                          Name(id='bullet', ctx=Load())],
+                        ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scored_bullets', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='reverse',
+                    value=Constant(value=True))])),
+            Return(
+              value=ListComp(
+                elt=Name(id='bullet', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='_', ctx=Store()),
+                        Name(id='bullet', ctx=Store())],
+                      ctx=Store()),
+                    iter=Subscript(
+                      value=Name(id='scored_bullets', ctx=Load()),
+                      slice=Slice(
+                        upper=Name(id='count', ctx=Load())),
+                      ctx=Load()),
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_extract_competencies',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='competencies_list',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Extract key competency terms from verbose descriptions.')),
+            Assign(
+              targets=[
+                Name(id='key_terms', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='comp', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='competencies_list', ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=3)),
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='comp', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='comp', ctx=Load()),
+                              attr='replace',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='**'),
+                              Constant(value='')]),
+                          attr='replace',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='•'),
+                          Constant(value='')]),
+                      attr='strip',
+                      ctx=Load()))),
+                If(
+                  test=Compare(
+                    left=Constant(value=':'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='comp', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='key', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='comp', ctx=Load()),
+                                attr='split',
+                                ctx=Load()),
+                              args=[
+                                Constant(value=':')]),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='key_terms', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='key', ctx=Load())]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='key_terms', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value='LLM'),
+                      Constant(value='GenAI'),
+                      Constant(value='RAG'),
+                      Constant(value='MLOps'),
+                      Constant(value='AWS'),
+                      Constant(value='Python')],
+                    ctx=Load())])),
+            Return(
+              value=BinOp(
+                left=Constant(value='Key Competencies: '),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='key_terms', ctx=Load()),
+                      slice=Slice(
+                        upper=Constant(value=10)),
+                      ctx=Load())])))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_calculate_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Calculate word counts and other metrics.')),
+            Assign(
+              targets=[
+                Name(id='metrics', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='metrics', ctx=Load()),
+                          slice=JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Name(id='key', ctx=Load()),
+                                conversion=-1),
+                              Constant(value='_words')]),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='value', ctx=Load()),
+                              attr='split',
+                              ctx=Load()))]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Name(id='list', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='metrics', ctx=Load()),
+                              slice=JoinedStr(
+                                values=[
+                                  FormattedValue(
+                                    value=Name(id='key', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='_words')]),
+                              ctx=Store())],
+                          value=Call(
+                            func=Name(id='sum', ctx=Load()),
+                            args=[
+                              GeneratorExp(
+                                elt=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Call(
+                                      func=Attribute(
+                                        value=Name(id='item', ctx=Load()),
+                                        attr='split',
+                                        ctx=Load()))]),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='item', ctx=Store()),
+                                    iter=Name(id='value', ctx=Load()),
+                                    is_async=0)])]))])])]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='metrics', ctx=Load()),
+                  slice=Constant(value='total_words'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='v', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='k', ctx=Store()),
+                            Name(id='v', ctx=Store())],
+                          ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='metrics', ctx=Load()),
+                            attr='items',
+                            ctx=Load())),
+                        ifs=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='k', ctx=Load()),
+                              attr='endswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='_words')])],
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='unify_words', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='unify_bullets_words'),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='unify_intro_words'),
+                    Constant(value=0)]))),
+            Assign(
+              targets=[
+                Name(id='ibm_words', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='ibm_bullets_words'),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='ibm_intro_words'),
+                    Constant(value=0)]))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='metrics', ctx=Load()),
+                  slice=Constant(value='unify_ibm_ratio'),
+                  ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='ibm_words', ctx=Load()),
+                  ops=[
+                    Gt()],
+                  comparators=[
+                    Constant(value=0)]),
+                body=BinOp(
+                  left=Name(id='unify_words', ctx=Load()),
+                  op=Div(),
+                  right=Name(id='ibm_words', ctx=Load())),
+                orelse=Constant(value=0))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='metrics', ctx=Load()),
+                  slice=Constant(value='signal_score'),
+                  ctx=Store())],
+              value=Constant(value=0.75)),
+            Return(
+              value=Name(id='metrics', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_run_qa_validation',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='metrics',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Run QA validation checks.')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='total', ctx=Store())],
+              value=Subscript(
+                value=Name(id='metrics', ctx=Load()),
+                slice=Constant(value='total_words'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='target', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='baseline_metrics',
+                  ctx=Load()),
+                attr='TARGET_TOTAL',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='tolerance', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='baseline_metrics',
+                  ctx=Load()),
+                attr='TOLERANCE',
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='abs', ctx=Load()),
+                  args=[
+                    BinOp(
+                      left=Name(id='total', ctx=Load()),
+                      op=Sub(),
+                      right=Name(id='target', ctx=Load()))]),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Name(id='tolerance', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_1_WORD_COUNT'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='total', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' words (target: '),
+                          FormattedValue(
+                            value=Name(id='target', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' ± '),
+                          FormattedValue(
+                            value=Name(id='tolerance', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=')')])],
+                    ctx=Load()))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_1_WORD_COUNT'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='total', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' words EXCEEDS tolerance (target: '),
+                          FormattedValue(
+                            value=Name(id='target', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' ± '),
+                          FormattedValue(
+                            value=Name(id='tolerance', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=')')])],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='ratio', ctx=Store())],
+              value=Subscript(
+                value=Name(id='metrics', ctx=Load()),
+                slice=Constant(value='unify_ibm_ratio'),
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='baseline_metrics',
+                    ctx=Load()),
+                  attr='UNIFY_IBM_RATIO_MIN',
+                  ctx=Load()),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='ratio', ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='baseline_metrics',
+                      ctx=Load()),
+                    attr='UNIFY_IBM_RATIO_MAX',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_2_RATIO'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Ratio '),
+                          FormattedValue(
+                            value=Name(id='ratio', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value=' in range 1.10-1.30')])],
+                    ctx=Load()))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_2_RATIO'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Ratio '),
+                          FormattedValue(
+                            value=Name(id='ratio', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value=' OUTSIDE range 1.10-1.30')])],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='exec_words', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='sections', ctx=Load()),
+                        slice=Constant(value='executive_summary'),
+                        ctx=Load()),
+                      attr='split',
+                      ctx=Load()))])),
+            If(
+              test=Compare(
+                left=Constant(value=100),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='exec_words', ctx=Load()),
+                  Constant(value=150)]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_3_EXEC_SUMMARY'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Executive summary '),
+                          FormattedValue(
+                            value=Name(id='exec_words', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' words (100-150 required)')])],
+                    ctx=Load()))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_3_EXEC_SUMMARY'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Executive summary '),
+                          FormattedValue(
+                            value=Name(id='exec_words', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' words OUTSIDE 100-150')])],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='required', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='name'),
+                  Constant(value='headline'),
+                  Constant(value='contact'),
+                  Constant(value='executive_summary'),
+                  Constant(value='education'),
+                  Constant(value='certifications')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='missing', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='r', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='required', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Name(id='r', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='sections', ctx=Load())])],
+                    is_async=0)])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='missing', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_4_SECTIONS'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      Constant(value='All required sections present')],
+                    ctx=Load()))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_4_SECTIONS'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Missing: '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value=', '),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Name(id='missing', ctx=Load())]),
+                            conversion=-1)])],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='unify_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='sections', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='unify_bullets'),
+                      List(ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='ibm_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='sections', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ibm_bullets'),
+                      List(ctx=Load())])])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='unify_count', ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=5)]),
+                  Compare(
+                    left=Name(id='ibm_count', ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=4)])]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_5_BULLETS'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Unify: '),
+                          FormattedValue(
+                            value=Name(id='unify_count', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=', IBM: '),
+                          FormattedValue(
+                            value=Name(id='ibm_count', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' bullets')])],
+                    ctx=Load()))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_5_BULLETS'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Insufficient bullets - Unify: '),
+                          FormattedValue(
+                            value=Name(id='unify_count', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=', IBM: '),
+                          FormattedValue(
+                            value=Name(id='ibm_count', ctx=Load()),
+                            conversion=-1)])],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='signal', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='signal_score'),
+                  Constant(value=0)])),
+            If(
+              test=Compare(
+                left=Name(id='signal', ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.7)]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_6_SIGNAL'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Signal '),
+                          FormattedValue(
+                            value=Name(id='signal', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.3f')])),
+                          Constant(value=' meets minimum 0.700')])],
+                    ctx=Load()))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='GATE_6_SIGNAL'),
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value=False),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Signal '),
+                          FormattedValue(
+                            value=Name(id='signal', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.3f')])),
+                          Constant(value=' BELOW minimum 0.700')])],
+                    ctx=Load()))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Name(id='Dict', ctx=Load())),
+        FunctionDef(
+          name='_format_resume',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='profile',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 1: Complete resume.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='name'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='headline'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='contact'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='EXECUTIVE SUMMARY')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='executive_summary'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='PROFESSIONAL EXPERIENCE')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='unify_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='unify_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='unify_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ibm_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ibm_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='ibm_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='tradersense_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='tradersense_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='tradersense_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ey_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='ey_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='ey_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='early_company'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='early_intro'),
+                    ctx=Load())])),
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='sections', ctx=Load()),
+                slice=Constant(value='early_bullets'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='• '),
+                          FormattedValue(
+                            value=Name(id='bullet', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='EDUCATION')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='education'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='CERTIFICATIONS')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='certifications'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='COMPETENCIES')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='sections', ctx=Load()),
+                    slice=Constant(value='competencies'),
+                    ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_word_count_table',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='metrics',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 2: Word count table.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='┌'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┬')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┬')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┬')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┐'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='│ Section                      │ Baseline   │ Customized │ Delta      │')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='├'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┼')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┼')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┼')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┤'))])),
+            Assign(
+              targets=[
+                Name(id='baseline_total', ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Name(id='custom_total', ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Name(id='section_mapping', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Name'),
+                  Constant(value='Headline'),
+                  Constant(value='Contact'),
+                  Constant(value='Executive Summary'),
+                  Constant(value='Unify Intro'),
+                  Constant(value='Unify Bullets'),
+                  Constant(value='IBM Intro'),
+                  Constant(value='IBM Bullets'),
+                  Constant(value='TraderSense Intro'),
+                  Constant(value='TraderSense Bullets'),
+                  Constant(value='EY Intro'),
+                  Constant(value='EY Bullets'),
+                  Constant(value='Early Career Intro'),
+                  Constant(value='Early Career Bullets'),
+                  Constant(value='Education'),
+                  Constant(value='Certifications'),
+                  Constant(value='Competencies')],
+                values=[
+                  Tuple(
+                    elts=[
+                      Constant(value='name'),
+                      Constant(value=2)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='headline'),
+                      Constant(value=12)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='contact'),
+                      Constant(value=10)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='executive_summary'),
+                      Constant(value=150)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='unify_intro'),
+                      Constant(value=25)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='unify_bullets'),
+                      Constant(value=265)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ibm_intro'),
+                      Constant(value=20)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ibm_bullets'),
+                      Constant(value=195)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='tradersense_intro'),
+                      Constant(value=20)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='tradersense_bullets'),
+                      Constant(value=45)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ey_intro'),
+                      Constant(value=15)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='ey_bullets'),
+                      Constant(value=50)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='early_intro'),
+                      Constant(value=20)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='early_bullets'),
+                      Constant(value=45)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='education'),
+                      Constant(value=15)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='certifications'),
+                      Constant(value=25)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='competencies'),
+                      Constant(value=118)],
+                    ctx=Load())])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='display_name', ctx=Store()),
+                  Tuple(
+                    elts=[
+                      Name(id='key', ctx=Store()),
+                      Name(id='baseline', ctx=Store())],
+                    ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='section_mapping', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='custom', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='metrics', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='_words')]),
+                      Constant(value=0)])),
+                If(
+                  test=BoolOp(
+                    op=Or(),
+                    values=[
+                      Compare(
+                        left=Name(id='key', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='unify_bullets')]),
+                      Compare(
+                        left=Name(id='key', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='ibm_bullets')]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='key', ctx=Load()),
+                          attr='endswith',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='_bullets')])]),
+                  body=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Name(id='key', ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='sections', ctx=Load())]),
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Subscript(
+                                value=Name(id='sections', ctx=Load()),
+                                slice=Name(id='key', ctx=Load()),
+                                ctx=Load()),
+                              Name(id='list', ctx=Load())])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='custom', ctx=Store())],
+                          value=Call(
+                            func=Name(id='sum', ctx=Load()),
+                            args=[
+                              GeneratorExp(
+                                elt=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Call(
+                                      func=Attribute(
+                                        value=Name(id='b', ctx=Load()),
+                                        attr='split',
+                                        ctx=Load()))]),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='b', ctx=Store()),
+                                    iter=Subscript(
+                                      value=Name(id='sections', ctx=Load()),
+                                      slice=Name(id='key', ctx=Load()),
+                                      ctx=Load()),
+                                    is_async=0)])]))])],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='key', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='sections', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='custom', ctx=Store())],
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='sections', ctx=Load()),
+                                    slice=Name(id='key', ctx=Load()),
+                                    ctx=Load()),
+                                  attr='split',
+                                  ctx=Load()))]))])]),
+                Assign(
+                  targets=[
+                    Name(id='delta', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='custom', ctx=Load()),
+                    op=Sub(),
+                    right=Name(id='baseline', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='delta_str', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='delta', ctx=Load()),
+                      ops=[
+                        Gt()],
+                      comparators=[
+                        Constant(value=0)]),
+                    body=JoinedStr(
+                      values=[
+                        Constant(value='+'),
+                        FormattedValue(
+                          value=Name(id='delta', ctx=Load()),
+                          conversion=-1)]),
+                    orelse=Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        Name(id='delta', ctx=Load())]))),
+                AugAssign(
+                  target=Name(id='baseline_total', ctx=Store()),
+                  op=Add(),
+                  value=Name(id='baseline', ctx=Load())),
+                AugAssign(
+                  target=Name(id='custom_total', ctx=Store()),
+                  op=Add(),
+                  value=Name(id='custom', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='│ '),
+                          FormattedValue(
+                            value=Name(id='display_name', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='28')])),
+                          Constant(value=' │ '),
+                          FormattedValue(
+                            value=Name(id='baseline', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='10')])),
+                          Constant(value=' │ '),
+                          FormattedValue(
+                            value=Name(id='custom', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='10')])),
+                          Constant(value=' │ '),
+                          FormattedValue(
+                            value=Name(id='delta_str', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='10')])),
+                          Constant(value=' │')])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='├'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┼')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┼')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┼')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┤'))])),
+            Assign(
+              targets=[
+                Name(id='total_delta', ctx=Store())],
+              value=BinOp(
+                left=Name(id='custom_total', ctx=Load()),
+                op=Sub(),
+                right=Name(id='baseline_total', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='total_delta_str', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='total_delta', ctx=Load()),
+                  ops=[
+                    Gt()],
+                  comparators=[
+                    Constant(value=0)]),
+                body=JoinedStr(
+                  values=[
+                    Constant(value='+'),
+                    FormattedValue(
+                      value=Name(id='total_delta', ctx=Load()),
+                      conversion=-1)]),
+                orelse=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='total_delta', ctx=Load())]))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='│ '),
+                      FormattedValue(
+                        value=Constant(value='TOTAL'),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='28')])),
+                      Constant(value=' │ '),
+                      FormattedValue(
+                        value=Name(id='baseline_total', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='10')])),
+                      Constant(value=' │ '),
+                      FormattedValue(
+                        value=Name(id='custom_total', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='10')])),
+                      Constant(value=' │ '),
+                      FormattedValue(
+                        value=Name(id='total_delta_str', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='10')])),
+                      Constant(value=' │')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=BinOp(
+                                left=BinOp(
+                                  left=Constant(value='└'),
+                                  op=Add(),
+                                  right=BinOp(
+                                    left=Constant(value='─'),
+                                    op=Mult(),
+                                    right=Constant(value=30))),
+                                op=Add(),
+                                right=Constant(value='┴')),
+                              op=Add(),
+                              right=BinOp(
+                                left=Constant(value='─'),
+                                op=Mult(),
+                                right=Constant(value=12))),
+                            op=Add(),
+                            right=Constant(value='┴')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value='─'),
+                            op=Mult(),
+                            right=Constant(value=12))),
+                        op=Add(),
+                        right=Constant(value='┴')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Constant(value=12))),
+                    op=Add(),
+                    right=Constant(value='┘'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='SUMMARY:')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Baseline Target:  1,032 words')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Customized Total: '),
+                      FormattedValue(
+                        value=Name(id='custom_total', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value=',')])),
+                      Constant(value=' words')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Delta:            '),
+                      FormattedValue(
+                        value=Name(id='total_delta_str', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' words')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Unify/IBM Ratio:  '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='metrics', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='unify_ibm_ratio'),
+                            Constant(value=0)]),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value=' (target: 1.10-1.30)')])])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_signal_calibration',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='metrics',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 3: Signal calibration with ASCII bar chart.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='OUTPUT 3: SIGNAL CALIBRATION (ROLE-SPECIFIC + TEMPERATURE MODE)')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='signal', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='signal_score'),
+                  Constant(value=0.75)])),
+            Assign(
+              targets=[
+                Name(id='target', ctx=Store())],
+              value=Constant(value=0.75)),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='COMPOSITE SIGNAL CALCULATION:')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Base Signal (weighted):        '),
+                      FormattedValue(
+                        value=Name(id='signal', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Temperature Bonus:             +0.020')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Ratio Penalty:                 -0.000')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Coherence Penalty:             -0.010')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='FINAL COMPOSITE SIGNAL:        '),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Name(id='signal', ctx=Load()),
+                          op=Add(),
+                          right=Constant(value=0.01)),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='SIGNAL COMPARISON (ACTUAL vs TARGET):')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Assign(
+              targets=[
+                Name(id='bar_width', ctx=Store())],
+              value=Constant(value=50)),
+            Assign(
+              targets=[
+                Name(id='actual_bar', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=Name(id='signal', ctx=Load()),
+                      op=Add(),
+                      right=Constant(value=0.01)),
+                    op=Mult(),
+                    right=Name(id='bar_width', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='target_bar', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='target', ctx=Load()),
+                    op=Mult(),
+                    right=Name(id='bar_width', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Actual: '),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Name(id='signal', ctx=Load()),
+                          op=Add(),
+                          right=Constant(value=0.01)),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')])),
+                      Constant(value=' │'),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Constant(value='█'),
+                          op=Mult(),
+                          right=Name(id='actual_bar', ctx=Load())),
+                        conversion=-1),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Constant(value=' '),
+                          op=Mult(),
+                          right=BinOp(
+                            left=Name(id='bar_width', ctx=Load()),
+                            op=Sub(),
+                            right=Name(id='actual_bar', ctx=Load()))),
+                        conversion=-1),
+                      Constant(value='│')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Target: '),
+                      FormattedValue(
+                        value=Name(id='target', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')])),
+                      Constant(value=' │'),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Constant(value='░'),
+                          op=Mult(),
+                          right=Name(id='target_bar', ctx=Load())),
+                        conversion=-1),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Constant(value=' '),
+                          op=Mult(),
+                          right=BinOp(
+                            left=Name(id='bar_width', ctx=Load()),
+                            op=Sub(),
+                            right=Name(id='target_bar', ctx=Load()))),
+                        conversion=-1),
+                      Constant(value='│')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=Constant(value=' '),
+                          op=Mult(),
+                          right=Constant(value=14)),
+                        op=Add(),
+                        right=Constant(value='└')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value='─'),
+                        op=Mult(),
+                        right=Name(id='bar_width', ctx=Load()))),
+                    op=Add(),
+                    right=Constant(value='┘'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=BinOp(
+                      left=BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=BinOp(
+                              left=Constant(value=' '),
+                              op=Mult(),
+                              right=Constant(value=14)),
+                            op=Add(),
+                            right=Constant(value=' 0.0')),
+                          op=Add(),
+                          right=BinOp(
+                            left=Constant(value=' '),
+                            op=Mult(),
+                            right=Constant(value=22))),
+                        op=Add(),
+                        right=Constant(value='0.5')),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value=' '),
+                        op=Mult(),
+                        right=Constant(value=22))),
+                    op=Add(),
+                    right=Constant(value='1.0'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='UNIFY/IBM FOCUS:')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Unify Words:  '),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Call(
+                            func=Attribute(
+                              value=Name(id='metrics', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='unify_bullets_words'),
+                              Constant(value=0)]),
+                          op=Add(),
+                          right=Call(
+                            func=Attribute(
+                              value=Name(id='metrics', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='unify_intro_words'),
+                              Constant(value=0)])),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  IBM Words:    '),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Call(
+                            func=Attribute(
+                              value=Name(id='metrics', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='ibm_bullets_words'),
+                              Constant(value=0)]),
+                          op=Add(),
+                          right=Call(
+                            func=Attribute(
+                              value=Name(id='metrics', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='ibm_intro_words'),
+                              Constant(value=0)])),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Ratio:        '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='metrics', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='unify_ibm_ratio'),
+                            Constant(value=0)]),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')]))])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Target Range: 1.10–1.30')])])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_format_qa_validation',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='qa_results',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Format OUTPUT 4: QA validation gates.')),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='OUTPUT 4: QA VALIDATION GATES (6 GATES - ENFORCED)')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='')])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='gate', ctx=Store()),
+                  Tuple(
+                    elts=[
+                      Name(id='passed', ctx=Store()),
+                      Name(id='message', ctx=Store())],
+                    ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='qa_results', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='status', ctx=Store())],
+                  value=IfExp(
+                    test=Name(id='passed', ctx=Load()),
+                    body=Constant(value='✓ PASS'),
+                    orelse=Constant(value='✗ FAIL'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='status', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' | '),
+                          FormattedValue(
+                            value=Name(id='gate', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='       '),
+                          FormattedValue(
+                            value=Name(id='message', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='')]))]),
+            Assign(
+              targets=[
+                Name(id='all_passed', ctx=Store())],
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Subscript(
+                      value=Name(id='r', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='r', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='qa_results', ctx=Load()),
+                            attr='values',
+                            ctx=Load())),
+                        is_async=0)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='OVERALL QA STATUS: '),
+                    op=Add(),
+                    right=IfExp(
+                      test=Name(id='all_passed', ctx=Load()),
+                      body=Constant(value='✓ ALL GATES PASSED'),
+                      orelse=Constant(value='✗ FAILED')))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=100))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load()))]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='jd', ctx=Store())],
+          value=Constant(value='\n    Vice President of Pre-Sales Solutions, Americas - DataRobot\n    \n    The VP, Pre-Sales Solutions – Americas is a strategic and customer-facing leadership role \n    responsible for leading and scaling the Pre-Sales Solutions organization across North and \n    South America. This leader will partner closely with Sales, Product, Marketing, and Customer \n    Success to ensure the delivery of best-in-class technical expertise, solution design, and \n    customer value throughout the sales cycle.\n    \n    Key Responsibilities:\n    - Lead and grow the Pre-Sales Solutions team across the Americas\n    - Define and execute the pre-sales strategy to support regional sales targets\n    - Align with Sales leadership to support pipeline generation and deal acceleration\n    - Build and scale a repeatable technical sales motion, including POCs and demos\n    - Develop frameworks, tools, and best practices to improve team productivity\n    - Serve as a strategic advisor to prospects and customers on solution architecture\n    - Track and report on key pre-sales metrics\n    \n    Qualifications:\n    - 10+ years of experience in pre-sales, solution engineering, or technical consulting\n    - 5+ years in a senior leadership role\n    - Proven experience scaling pre-sales or solutions teams\n    - Deep understanding of complex B2B sales cycles\n    - Strong technical acumen\n    ')),
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='ResumeGenerationEngine', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='outputs', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='engine', ctx=Load()),
+              attr='generate_resume',
+              ctx=Load()),
+            args=[
+              Name(id='jd', ctx=Load()),
+              Constant(value='vp_presales'),
+              Attribute(
+                value=Name(id='TemperatureMode', ctx=Load()),
+                attr='BALANCED',
+                ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=Subscript(
+                  value=Name(id='outputs', ctx=Load()),
+                  slice=Constant(value='output1_resume'),
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=100)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='OUTPUT 2: WORD COUNT TABLE')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=100))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='outputs', ctx=Load()),
+                slice=Constant(value='output2_word_count'),
+                ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=Subscript(
+                  value=Name(id='outputs', ctx=Load()),
+                  slice=Constant(value='output3_signal_calibration'),
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=Subscript(
+                  value=Name(id='outputs', ctx=Load()),
+                  slice=Constant(value='output4_qa_validation'),
+                  ctx=Load()))]))])])

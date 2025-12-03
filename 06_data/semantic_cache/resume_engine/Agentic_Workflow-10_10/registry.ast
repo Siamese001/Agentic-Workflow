@@ -1,0 +1,232 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRegistry Layer (v10_10 · Phase 3)\n===================================\n\nThis module defines:\n    • RAG strategy registry\n    • RetrievalConfig factories\n    • Static mappings for BM25 / DENSE / HYBRID / HYDE / RRF\n\nResponsibilities:\n    • Provide read-only strategy definitions\n    • Produce RetrievalConfig objects for the RAG pipeline\n\nNon-Responsibilities:\n    • No retrieval\n    • No ranking\n    • No LLM calls\n    • No orchestration\n    • No state mutation\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='RetrievalConfig')],
+      level=0),
+    ClassDef(
+      name='RAGStrategyDefinition',
+      body=[
+        Expr(
+          value=Constant(value='\n    Canonical definition of a RAG strategy used by the registry.\n\n    Fields:\n        name: Human-readable name of the strategy.\n        description: Short description.\n        retrieval_mode: "bm25" | "dense" | "hybrid"\n        use_hyde: Whether HYDE expansion should be used.\n        use_rrf: Whether RRF fusion should be applied.\n        top_k: Max hits to retrieve.\n    ')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_mode', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='use_hyde', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='use_rrf', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='top_k', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    AnnAssign(
+      target=Name(id='_RAG_STRATEGIES', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='RAGStrategyDefinition', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Dict(
+        keys=[
+          Constant(value='bm25_basic'),
+          Constant(value='dense_basic'),
+          Constant(value='hybrid_balanced'),
+          Constant(value='hybrid_hyde')],
+        values=[
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='bm25_basic')),
+              keyword(
+                arg='description',
+                value=Constant(value='Pure BM25 lexical retrieval, no HYDE, no dense.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='bm25')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=False)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=20))]),
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='dense_basic')),
+              keyword(
+                arg='description',
+                value=Constant(value='Dense semantic retrieval only.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='dense')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=False)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=20))]),
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='hybrid_balanced')),
+              keyword(
+                arg='description',
+                value=Constant(value='Balanced hybrid: BM25 + dense with RRF fusion.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='hybrid')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=True)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=30))]),
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='hybrid_hyde')),
+              keyword(
+                arg='description',
+                value=Constant(value='Hybrid retrieval with HYDE expansion and RRF fusion.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='hybrid')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=True)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=True)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=40))])]),
+      simple=1),
+    FunctionDef(
+      name='get_rag_strategy',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Return a RAGStrategyDefinition by name.\n    ')),
+        Return(
+          value=Subscript(
+            value=Name(id='_RAG_STRATEGIES', ctx=Load()),
+            slice=Name(id='name', ctx=Load()),
+            ctx=Load()))],
+      returns=Name(id='RAGStrategyDefinition', ctx=Load())),
+    FunctionDef(
+      name='build_retrieval_config',
+      args=arguments(
+        args=[
+          arg(
+            arg='strategy',
+            annotation=Name(id='RAGStrategyDefinition', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convert a RAGStrategyDefinition → RetrievalConfig (Phase 3).\n\n    Mapping:\n        retrieval_mode → RetrievalConfig.strategy\n        use_hyde      → RetrievalConfig.allow_hyde\n        use_rrf       → RetrievalConfig.use_rrf\n        top_k         → RetrievalConfig.max_hits\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='retrieval_mode',
+                  ctx=Load())),
+              keyword(
+                arg='use_rrf',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='use_rrf',
+                  ctx=Load())),
+              keyword(
+                arg='max_hits',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='top_k',
+                  ctx=Load())),
+              keyword(
+                arg='bm25_k1',
+                value=Constant(value=1.2)),
+              keyword(
+                arg='bm25_b',
+                value=Constant(value=0.75)),
+              keyword(
+                arg='rrf_weights',
+                value=Constant(value=None)),
+              keyword(
+                arg='allow_hyde',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='use_hyde',
+                  ctx=Load())),
+              keyword(
+                arg='qa_council_size',
+                value=Constant(value=1)),
+              keyword(
+                arg='qa_council_mode',
+                value=Constant(value='simple'))]))],
+      returns=Name(id='RetrievalConfig', ctx=Load()))])

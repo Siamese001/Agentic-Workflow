@@ -1,0 +1,6 @@
+{
+  "golden_content": "import copy\n\nimport pytest\n\nfrom agent_stacks_v10_8.state_adapter_stack import StateAdapterStack\nfrom core_v10_7 import MainGraphState\n\n\n@pytest.fixture\ndef base_state_dict() -> dict:\n    state = MainGraphState()\n    state.resume.master_resume = {\"summary\": \"base\"}\n    state.resume.highlights = [\"impact\", \"quality\"]\n    state.memory.episodic.conversation = [\n        {\"role\": \"user\", \"content\": \"hello\"},\n        {\"role\": \"assistant\", \"content\": \"hi\"},\n    ]\n    return state.to_dict()\n\n\n@pytest.mark.state\ndef test_apply_patch_merges_without_deleting(base_state_dict):\n    adapter = StateAdapterStack(context=None)\n    patch = {\"resume\": {\"highlights\": [\"new\"], \"skills\": [\"python\"]}}\n\n    updated = adapter.apply_patch(copy.deepcopy(base_state_dict), patch)\n\n    assert updated[\"resume\"][\"highlights\"] == [\"new\"]\n    assert updated[\"resume\"][\"skills\"] == [\"python\"]\n    assert updated[\"resume\"][\"master_resume\"] == {\"summary\": \"base\"}\n    assert updated[\"memory\"][\"episodic\"][\"conversation\"][-1][",
+  "full_hash": "b44e6ffd375524c87e2e3b510e706a8f309429ec18a91eb7478a042a31345fee",
+  "generated_at": 1764728231.6581068,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state_v10_8\\test_state_patch_merge.py"
+}

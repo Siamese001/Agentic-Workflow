@@ -1,0 +1,259 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='time')]),
+    Import(
+      names=[
+        alias(name='uuid')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='TelemetryEvent')],
+      level=0),
+    ImportFrom(
+      module='runtime.observability.collectors',
+      names=[
+        alias(name='append_event'),
+        alias(name='push_span'),
+        alias(name='pop_span')],
+      level=0),
+    FunctionDef(
+      name='_now_ms',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='int', ctx=Load()),
+            args=[
+              BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='time', ctx=Load()),
+                    attr='time',
+                    ctx=Load())),
+                op=Mult(),
+                right=Constant(value=1000))]))],
+      returns=Name(id='int', ctx=Load())),
+    FunctionDef(
+      name='start_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Create a uniquely identified span and record the start time.')),
+        Assign(
+          targets=[
+            Name(id='span_id', ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='uuid', ctx=Load()),
+                  attr='uuid4',
+                  ctx=Load()))])),
+        AnnAssign(
+          target=Name(id='record', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(
+            keys=[
+              Constant(value='span_id'),
+              Constant(value='name'),
+              Constant(value='start_ms'),
+              Constant(value='ctx')],
+            values=[
+              Name(id='span_id', ctx=Load()),
+              Name(id='name', ctx=Load()),
+              Call(
+                func=Name(id='_now_ms', ctx=Load())),
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='ctx', ctx=Load()),
+                  Dict()])]),
+          simple=1),
+        Expr(
+          value=Call(
+            func=Name(id='push_span', ctx=Load()),
+            args=[
+              Name(id='record', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='append_event', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='span_id',
+                    value=Name(id='span_id', ctx=Load())),
+                  keyword(
+                    arg='ts_ms',
+                    value=Subscript(
+                      value=Name(id='record', ctx=Load()),
+                      slice=Constant(value='start_ms'),
+                      ctx=Load())),
+                  keyword(
+                    arg='attributes',
+                    value=Dict(
+                      keys=[
+                        Constant(value='event_type'),
+                        Constant(value='span_id'),
+                        Constant(value='ctx')],
+                      values=[
+                        Constant(value='span_start'),
+                        Name(id='span_id', ctx=Load()),
+                        BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='ctx', ctx=Load()),
+                            Dict()])]))])])),
+        Return(
+          value=Name(id='record', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='end_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='span_record',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Close a previously-started span; no-op if unknown.')),
+        ImportFrom(
+          module='runtime.observability.collectors',
+          names=[
+            alias(name='span_stack')],
+          level=0),
+        If(
+          test=Compare(
+            left=Name(id='span_record', ctx=Load()),
+            ops=[
+              NotIn()],
+            comparators=[
+              Call(
+                func=Name(id='span_stack', ctx=Load()))]),
+          body=[
+            Return()]),
+        Expr(
+          value=Call(
+            func=Name(id='pop_span', ctx=Load()),
+            args=[
+              Name(id='span_record', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='end_ms', ctx=Store())],
+          value=Call(
+            func=Name(id='_now_ms', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='duration', ctx=Store())],
+          value=BinOp(
+            left=Name(id='end_ms', ctx=Load()),
+            op=Sub(),
+            right=Subscript(
+              value=Name(id='span_record', ctx=Load()),
+              slice=Constant(value='start_ms'),
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='append_event', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Subscript(
+                      value=Name(id='span_record', ctx=Load()),
+                      slice=Constant(value='name'),
+                      ctx=Load())),
+                  keyword(
+                    arg='span_id',
+                    value=Subscript(
+                      value=Name(id='span_record', ctx=Load()),
+                      slice=Constant(value='span_id'),
+                      ctx=Load())),
+                  keyword(
+                    arg='ts_ms',
+                    value=Name(id='end_ms', ctx=Load())),
+                  keyword(
+                    arg='attributes',
+                    value=Dict(
+                      keys=[
+                        Constant(value='event_type'),
+                        Constant(value='span_id'),
+                        Constant(value='duration_ms'),
+                        Constant(value='ctx')],
+                      values=[
+                        Constant(value='span_end'),
+                        Subscript(
+                          value=Name(id='span_record', ctx=Load()),
+                          slice=Constant(value='span_id'),
+                          ctx=Load()),
+                        Name(id='duration', ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='span_record', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='ctx'),
+                            Dict()])]))])]))],
+      returns=Constant(value=None))])

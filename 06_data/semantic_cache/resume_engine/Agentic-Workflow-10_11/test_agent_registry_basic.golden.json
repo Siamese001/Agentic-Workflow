@@ -1,0 +1,6 @@
+{
+  "golden_content": "from orchestration.agent_registry import AgentRegistry\nfrom config.agent_profile import AgentCard\nfrom core.models.models import AgentRole  # normalized import\n\n\ndef test_agent_registry_register_and_lookup():\n    registry = AgentRegistry()\n\n    a1 = AgentCard(agent_id=\"planner-1\", role=AgentRole.PLANNER)\n    a2 = AgentCard(agent_id=\"qa-1\", role=AgentRole.QA)\n\n    registry.register_agent(a1)\n    registry.register_agent(a2)\n\n    assert registry.get_agent(\"planner-1\") is a1\n    assert registry.get_agent(\"qa-1\") is a2\n\n    planners = registry.find_agents_by_type(\"planner\")\n    assert a1 in planners\n\n\ndef test_agent_registry_find_by_capability():\n    registry = AgentRegistry()\n\n    a1 = AgentCard(agent_id=\"agent-a\", role=AgentRole.EXECUTION, capabilities=[\"write\"], agent_type=\"drafter\")\n    a2 = AgentCard(agent_id=\"agent-b\", role=AgentRole.EXECUTION, capabilities=[\"review\"], agent_type=\"qa\")\n\n    registry.register_agent(a1)\n    registry.register_agent(a2)\n\n    writers = registry.find_agents",
+  "full_hash": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f",
+  "generated_at": 1764728227.7138984,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_agent_registry_basic.py"
+}

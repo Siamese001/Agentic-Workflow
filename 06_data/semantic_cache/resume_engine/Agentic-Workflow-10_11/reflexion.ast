@@ -1,0 +1,202 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nReflexion self-critique framework for résumé processing workflows.\n\nProvides deterministic output evaluation and revision for comprehensive résumé enhancement.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Tuple')],
+      level=0),
+    ClassDef(
+      name='Critique',
+      body=[
+        Expr(
+          value=Constant(value='\n    Represents critique result for résumé processing output evaluation.\n\n    Enables systematic quality assessment for résumé improvement workflows.\n    ')),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='critique_output',
+      args=arguments(
+        args=[
+          arg(
+            arg='output',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Evaluates résumé processing output for quality improvements.\n\n    Identifies areas for enhancement in comprehensive résumé analysis results.\n    ')),
+        Assign(
+          targets=[
+            Name(id='output', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='output', ctx=Load()),
+                  Constant(value='')]),
+              attr='strip',
+              ctx=Load()))),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='output', ctx=Load())),
+          body=[
+            Return(
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='Critique', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='message',
+                        value=Constant(value='Output is empty')),
+                      keyword(
+                        arg='severity',
+                        value=Constant(value='error'))])],
+                ctx=Load()))]),
+        AnnAssign(
+          target=Name(id='critiques', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Critique', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='output', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=50)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='critiques', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='Critique', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='message',
+                        value=Constant(value='Output may be too short')),
+                      keyword(
+                        arg='severity',
+                        value=Constant(value='warning'))])]))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='output', ctx=Load()),
+                attr='endswith',
+                ctx=Load()),
+              args=[
+                Constant(value='.')])),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='critiques', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='Critique', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='message',
+                        value=Constant(value='Output does not end with a period')),
+                      keyword(
+                        arg='severity',
+                        value=Constant(value='info'))])]))]),
+        Return(
+          value=Name(id='critiques', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Critique', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='apply_reflexion',
+      args=arguments(
+        args=[
+          arg(
+            arg='output',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Applies reflexion revision process to résumé processing outputs.\n\n    Ensures quality enhancement through systematic critique and revision.\n    ')),
+        Assign(
+          targets=[
+            Name(id='critiques', ctx=Store())],
+          value=Call(
+            func=Name(id='critique_output', ctx=Load()),
+            args=[
+              Name(id='output', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='revised', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='output', ctx=Load()),
+              attr='strip',
+              ctx=Load()))),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='revised', ctx=Load()),
+              UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='revised', ctx=Load()),
+                    attr='endswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='.')]))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='revised', ctx=Store())],
+              value=BinOp(
+                left=Name(id='revised', ctx=Load()),
+                op=Add(),
+                right=Constant(value='.')))]),
+        Return(
+          value=Tuple(
+            elts=[
+              Name(id='revised', ctx=Load()),
+              Name(id='critiques', ctx=Load())],
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='Critique', ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\optimize_data_order.py",
+    "rel_path": "optimize_data_order.py",
+    "root_name": "data_source",
+    "file_hash": "a6852e5478f6baf19e3dacd3c1481d1644eaa572b56f9d126f58d98865ce1eb5",
+    "file_size": 6646,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728350.051461
+}

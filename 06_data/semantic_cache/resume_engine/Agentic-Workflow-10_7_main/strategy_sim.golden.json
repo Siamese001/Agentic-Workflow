@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Synthetic strategy simulator.\"\"\"\n\nimport random\nfrom typing import Any\n\nfrom simulations.models.strategy_simulation import (\n    StrategySimMetrics,\n    StrategySimRequest,\n    StrategySimResult,\n)\nfrom simulations.utils import model_to_payload\n\n\nclass StrategySimulator:\n    \"\"\"Runs a lightweight strategy simulation.\"\"\"\n\n    async def run(self, request: StrategySimRequest) -> StrategySimResult:\n        metrics = StrategySimMetrics(\n            clarity_score=round(random.uniform(0.5, 1.0), 3),\n            alignment_score=round(random.uniform(0.3, 1.0), 3),\n            risk_score=round(random.uniform(0.0, 0.7), 3),\n            notes=[\"synthetic simulation only\"],\n        )\n        strategy_name = None\n        strategy_plan: Any = request.strategy_plan or {}\n        if isinstance(strategy_plan, dict):\n            strategy_name = strategy_plan.get(\"strategy_name\")\n        return StrategySimResult(\n            simulation_id=request.simulation_id,\n            success=True,\n            met",
+  "full_hash": "1751d351ad7124d62f0fdc1420a6cc20c8f032815b44625bfdc05a4f34c33f4f",
+  "generated_at": 1764728230.3101037,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\strategy_sim.py"
+}

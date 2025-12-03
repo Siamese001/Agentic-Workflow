@@ -1,0 +1,11 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Configuration to prevent pytest from collecting deprecated tests.')),
+    Assign(
+      targets=[
+        Name(id='collect_ignore_glob', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='*.py')],
+        ctx=Load()))])

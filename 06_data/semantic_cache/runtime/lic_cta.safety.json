@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 128,
+  "generated_at": 1764728346.8940141,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\executor-microagent-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\lic_cta.py"
+}

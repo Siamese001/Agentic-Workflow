@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v20\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-10-01T16:00:00Z\",\n    \"sources\": \"v19 complete with message type transition handling + JW v18.8 output patterns\",\n    \"notes\": \"Production version: K.3-K.4 regeneration for SHORT_NEW\u2192SENIOR_TA transitions, simplified reasoning mode, clean Section 5 deliverables\",\n    \"sha256\": \"pending_calculation\",\n    \"changelog_v19_to_v20\": [\n      \"Added message_type_transition_detection system for K.3-K.4 regeneration\",\n      \"Implemented JW v18.8 simplified output pattern when SHOW_DETAILED_REASONING=OFF\",\n      \"Added dynamic K-node modification for message type changes\",\n      \"K.3 expansion from 280 chars to 40-120 words for transitions\",\n      \"K.4 attachment logic for previously blocked resume inclusion\",\n      \"Section 5 clean plain text deliverables for copy-paste\",\n      \"Mini QA tables with pass/fail indicators per K-node\",\n      \"Tracking fields output f",
+  "full_hash": "ca153c63de674ef5f7220adf8444c3b61d789b3eeca30c0ca8c6cdf8c5a9c787",
+  "generated_at": 1764728331.777178,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-01-2025_v1.json"
+}

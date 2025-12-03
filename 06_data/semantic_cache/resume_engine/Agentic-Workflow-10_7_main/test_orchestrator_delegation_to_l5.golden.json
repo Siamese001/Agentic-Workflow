@@ -1,0 +1,6 @@
+{
+  "golden_content": "from types import SimpleNamespace\n\nimport pytest\n\nfrom stacks_v10_8.rag_orchestration import RAGOrchestratorStack\nfrom stacks_v10_8.draft_orchestration import DraftOrchestratorStack\n\n\nclass _SpySafety:\n    def __init__(self):\n        self.calls = 0\n\n    def evaluate_node(self, node_output):\n        self.calls += 1\n        return SimpleNamespace(\n            is_safe=True, findings=[], dict=lambda: {\"is_safe\": True, \"findings\": []}\n        )\n\n    def evaluate_text(self, node_output):\n        return self.evaluate_node(node_output)\n\n\nclass _SpyPolicy:\n    def __init__(self):\n        self.calls = 0\n\n    def guard_output(self, node_output):\n        self.calls += 1\n        return SimpleNamespace(\n            allowed=True, reason=None, dict=lambda: {\"allowed\": True, \"reason\": None}\n        )\n\n\nclass _SpyConstitution:\n    def __init__(self):\n        self.calls = 0\n\n    def review_node(self, node_output):\n        self.calls += 1\n        return SimpleNamespace(\n            passed=True, violations",
+  "full_hash": "7c05f2da7a24407a13fd57d8fe7ca0443a72ce80bf9013c2bdb85ac544a8a262",
+  "generated_at": 1764728231.5078847,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\layering\\test_orchestrator_delegation_to_l5.py"
+}

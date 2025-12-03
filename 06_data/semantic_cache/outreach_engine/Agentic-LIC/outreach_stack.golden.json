@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Primary orchestration stack for LIC outreach.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\n\nfrom ..agents.k1_router_agent import RouterAgent\nfrom ..agents.k3_message_architect import DraftPackage, MessageArchitect\nfrom ..agents.k5_cta_agent import CTAAgent\nfrom ..agents.k6_signature_agent import SignatureAgent\nfrom ..agents.k7_validator_agent import ValidationResult, ValidatorAgent\nfrom ..qa import QAValidator\nfrom ..reasoning.toggles import ReasoningToggles\nfrom ..safety.bias_auditor import audit_bias\nfrom ..safety.pii_sanitizer import sanitize_pii\nfrom ..safety.prompt_injection import detect_injection\nfrom ..telemetry import PolicyController\n\n\n@dataclass(frozen=True)\nclass StackInputs:\n    prompt: str\n    company_id: str | None = None\n    contact_id: str | None = None\n\n\nclass OutreachStack:\n    \"\"\"Coordinates the LIC outreach workflow.\"\"\"  # pragma: no cover\n\n    def __init__(self, toggles: ReasoningToggles):\n        self.toggles = toggles\n        self.",
+  "full_hash": "7442a6b3cb11d59912c70c7f9f3362e24a0df87415851980bf08a7e2f56ac4ca",
+  "generated_at": 1764728330.7247066,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\stacks\\outreach_stack.py"
+}

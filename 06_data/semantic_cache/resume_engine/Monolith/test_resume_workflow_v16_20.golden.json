@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nComprehensive Pytest Suite for Resume Workflow v16_00 Refactoring\nTests all three specification implementations:\n1. Spec 1: Dormant Retry Logic (Pre-flight + Failure Classification)\n2. Spec 2: Agentic RAG Feature Activation\n3. Spec 3: Code Cleanup Refactoring\n\"\"\"\n\nimport pytest\nimport json\nimport os\nimport sys\nfrom unittest.mock import Mock, MagicMock, patch, call\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom typing import Dict, List, Any\n\n# Add the module to path\nsys.path.insert(0, '/home/claude')\n\n# Import from the refactored workflow\nfrom resume_workflow_v16_20 import (\n    WorkflowOrchestrator,\n    ConstraintFailureClassifier,\n    ValidationResult,\n    ValidationSeverity,\n    ValidationEngine,\n    ValidationRule,\n    ArtistGenerator,\n    PreFlightValidator,\n    ResumeSection,\n    HopExecutionError,\n    AppTrackerQAValidator,\n    GeminiWebSearchClient,\n    WebSearchRAG,\n    RAGMission,\n    PhaseExecutor,\n    __version__\n)\n\n\n# ============================",
+  "full_hash": "ef8c2c8e074a87d6914bdc909714079dc44140182229b1e307e10f37e0e896a9",
+  "generated_at": 1764728233.148457,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Monolith\\test_resume_workflow_v16_20.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTest suite for semantic cache safety and policy validation\n\nTests safety signature extraction, policy compliance checking, and security pattern\ndetection for both Resume Engine (RG) and Outreach Engine (LIC) engines.\n\"\"\"\n\nimport json\nimport pytest\nimport tempfile\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, List\n\n# Add project paths for imports\nproject_root = Path(__file__).parent.parent\nsys.path.append(str(project_root / \"schemas\"))\nsys.path.append(str(project_root / \"runtime\"))\n\nfrom semantic_lineage import (\n    EngineType, SafetySignature, SemanticLineageValidator\n)\nfrom semantic_scanner import SafetyExtractor\n\n\nclass TestSafetyExtractor:\n    \"\"\"Test safety signature extraction functionality\"\"\"\n    \n    def test_extract_basic_safety_patterns(self):\n        \"\"\"Test extraction of basic safety patterns\"\"\"\n        safety_code = '''\ndef validate_input(data):\n    \"\"\"Validate user input\"\"\"\n    if not data:\n        return False\n    san",
+  "full_hash": "7e7f6a61efe16a51bf837d16e4d3940e2bd465361c005a57f1c0f19ea17d8e5b",
+  "generated_at": 1764728355.191204,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\test_semantic_cache_safety.py"
+}

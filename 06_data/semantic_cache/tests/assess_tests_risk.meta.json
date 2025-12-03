@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\safe-layer\\safety-phase\\check-tests-rules\\semantic\\adjust-scores\\assess_tests_risk.py",
+    "rel_path": "assess_tests_risk.py",
+    "root_name": "tests",
+    "file_hash": "677110f0616f831728080b71a5d88cc0b4140a6883d059e3d45685c455f12828",
+    "file_size": 11236,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.9701757
+}

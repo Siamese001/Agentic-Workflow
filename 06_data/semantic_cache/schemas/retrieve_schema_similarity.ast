@@ -1,0 +1,171 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema similarity retrieval and comparison.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='SimilarityRetrievalMethod',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Similarity retrieval methods.')),
+        Assign(
+          targets=[
+            Name(id='K_NEAREST', ctx=Store())],
+          value=Constant(value='k_nearest')),
+        Assign(
+          targets=[
+            Name(id='RADIUS_SEARCH', ctx=Store())],
+          value=Constant(value='radius_search')),
+        Assign(
+          targets=[
+            Name(id='THRESHOLD_FILTER', ctx=Store())],
+          value=Constant(value='threshold_filter')),
+        Assign(
+          targets=[
+            Name(id='RANKED_LIST', ctx=Store())],
+          value=Constant(value='ranked_list'))]),
+    ClassDef(
+      name='ComparisonDimension',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Similarity comparison dimensions.')),
+        Assign(
+          targets=[
+            Name(id='STRUCTURAL', ctx=Store())],
+          value=Constant(value='structural')),
+        Assign(
+          targets=[
+            Name(id='SEMANTIC', ctx=Store())],
+          value=Constant(value='semantic')),
+        Assign(
+          targets=[
+            Name(id='BEHAVIORAL', ctx=Store())],
+          value=Constant(value='behavioral')),
+        Assign(
+          targets=[
+            Name(id='CONTEXTUAL', ctx=Store())],
+          value=Constant(value='contextual'))]),
+    ClassDef(
+      name='SimilarityRetrievalQuery',
+      body=[
+        Expr(
+          value=Constant(value='Schema for similarity retrieval query.')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_method', ctx=Store()),
+          annotation=Name(id='SimilarityRetrievalMethod', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dimensions', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ComparisonDimension', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.7),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_results', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=10),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SimilarityMatch',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual similarity match.')),
+        AnnAssign(
+          target=Name(id='match_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='similarity_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dimension_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='ComparisonDimension', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='match_reasoning', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SimilarityRetrievalResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for similarity retrieval results.')),
+        AnnAssign(
+          target=Name(id='retrieval_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query', ctx=Store()),
+          annotation=Name(id='SimilarityRetrievalQuery', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='matches', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SimilarityMatch', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='processing_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_candidates_evaluated', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

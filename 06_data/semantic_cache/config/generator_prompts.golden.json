@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"rag_phase_1\": \"You are a Tier-1 Job Market Intelligence Analyst. Your sole purpose is to analyze strategic context and execute precise search queries to build a structured intelligence report.\\n\\n<SYSTEM_INSTRUCTIONS>\\n1.  **Analyze Context:** Review all provided context blocks.\\n2.  **Execute Searches:** Execute the *exact* search queries provided in the <SEARCH_QUERIES> block.\\n3.  **Synthesize:** Analyze the search results to synthesize the `thematic_analysis` and `role_classification`.\\n4.  **Output:** Your *entire* response must be *only* the valid JSON object specified in <OUTPUT_FORMAT>. Do not include any text, preamble, or markdown fences before or after the JSON object.\\n</SYSTEM_INSTRUCTIONS>\\n\\n<STRATEGIC_CONTEXT>\\n  <TARGET_COMPANY>{target_company_name}</TARGET_COMPANY>\\n  <KEY_TECHNOLOGIES>{key_technologies}</KEY_TECHNOLOGIES>\\n  <CANDIDATE_CONTEXT>{candidate_context}</CANDIDATE_CONTEXT>\\n  <STRATEGIC_PRIORITIES>{strategic_context}</STRATEGIC_PRIORITIES>\\n</STRATEGIC",
+  "full_hash": "ffaca6eacc7e5e87156dd5a30112e641b1922c79b918ec6c5aef28764b66e022",
+  "generated_at": 1764728348.5827968,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\generator_prompts.yaml"
+}

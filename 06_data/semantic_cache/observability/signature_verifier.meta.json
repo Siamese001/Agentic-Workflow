@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\observer-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\signature_verifier.py",
+    "rel_path": "signature_verifier.py",
+    "root_name": "observability",
+    "file_hash": "dc92b7ed6af33852b1ec5ab4b3090d231f168891e57ede798572db1969047be9",
+    "file_size": 277,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728350.7582116
+}

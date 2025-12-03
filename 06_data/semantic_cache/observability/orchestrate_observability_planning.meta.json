@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\orc-layer\\plan-phase\\get-observability-info\\general\\understand-request\\orchestrate_observability_planning.py",
+    "rel_path": "orchestrate_observability_planning.py",
+    "root_name": "observability",
+    "file_hash": "9c73741906fb4b29b13dad238d3d9f59296e9ee23ddc56ab76fc20109af7ad59",
+    "file_size": 7158,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728350.8760774
+}

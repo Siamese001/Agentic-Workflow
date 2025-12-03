@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 0,
+  "generated_at": 1764728341.8903809,
+  "source_file": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\plan-layer\\plan-phase\\get-core-info\\utility\\prepare-information\\prepare_core_payload.py"
+}

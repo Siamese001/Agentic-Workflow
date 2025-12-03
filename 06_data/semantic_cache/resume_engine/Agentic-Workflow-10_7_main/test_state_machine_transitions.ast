@@ -1,0 +1,118 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='agent_stacks_v10_8.state_adapter_stack',
+      names=[
+        alias(name='StateAdapterStack')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='MainGraphState'),
+        alias(name='WorkflowPhase')],
+      level=0),
+    FunctionDef(
+      name='test_legal_transition_succeeds',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='adapter', ctx=Store())],
+          value=Call(
+            func=Name(id='StateAdapterStack', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None))])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Call(
+            func=Name(id='MainGraphState', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='updated', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='adapter', ctx=Load()),
+              attr='set_phase',
+              ctx=Load()),
+            args=[
+              Name(id='state', ctx=Load()),
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='SAFETY',
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='updated', ctx=Load()),
+              attr='phase',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Attribute(
+                value=Name(id='WorkflowPhase', ctx=Load()),
+                attr='SAFETY',
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_illegal_transition_raises',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='adapter', ctx=Store())],
+          value=Call(
+            func=Name(id='StateAdapterStack', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None))])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Call(
+            func=Name(id='MainGraphState', ctx=Load()))),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='ValueError', ctx=Load())]))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='adapter', ctx=Load()),
+                  attr='set_phase',
+                  ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load()),
+                  Attribute(
+                    value=Name(id='WorkflowPhase', ctx=Load()),
+                    attr='QA',
+                    ctx=Load())]))])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())])])

@@ -1,0 +1,1717 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nShared Test Data Fixtures\n\nProvides common test data, mock objects, and fixtures used across all test layers.\nEnsures consistency and reduces duplication in test implementations.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='timedelta')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='uuid')]),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='shared',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='fixture',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='ResumeTestData',
+      body=[
+        Expr(
+          value=Constant(value='Standard resume test data fixture.')),
+        AnnAssign(
+          target=Name(id='candidate_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='contact_info', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='experience', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='education', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='skills', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='certifications', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='projects', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='JobDescriptionTestData',
+      body=[
+        Expr(
+          value=Constant(value='Standard job description test data fixture.')),
+        AnnAssign(
+          target=Name(id='job_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='title', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='company', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='location', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='requirements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='responsibilities', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qualifications', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='WorkflowTestData',
+      body=[
+        Expr(
+          value=Constant(value='Standard workflow test data fixture.')),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='mission', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='input_data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_steps', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='configuration', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='TestResumeFixtures',
+      body=[
+        Expr(
+          value=Constant(value='Test resume data fixtures.')),
+        FunctionDef(
+          name='sample_resume_software_engineer',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample software engineer resume for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='ResumeTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='candidate_name',
+                    value=Constant(value='John Doe')),
+                  keyword(
+                    arg='contact_info',
+                    value=Dict(
+                      keys=[
+                        Constant(value='email'),
+                        Constant(value='phone'),
+                        Constant(value='linkedin')],
+                      values=[
+                        Constant(value='john.doe@email.com'),
+                        Constant(value='+1-555-1234'),
+                        Constant(value='https://linkedin.com/in/johndoe')])),
+                  keyword(
+                    arg='experience',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='title'),
+                            Constant(value='company'),
+                            Constant(value='location'),
+                            Constant(value='dates'),
+                            Constant(value='bullet_points')],
+                          values=[
+                            Constant(value='Senior Software Engineer'),
+                            Constant(value='TechCorp'),
+                            Constant(value='San Francisco, CA'),
+                            Dict(
+                              keys=[
+                                Constant(value='start'),
+                                Constant(value='end')],
+                              values=[
+                                Constant(value='2020-01'),
+                                Constant(value='2024-12')]),
+                            List(
+                              elts=[
+                                Constant(value='Developed scalable microservices using Python and AWS'),
+                                Constant(value='Led team of 5 engineers on major product launch'),
+                                Constant(value='Improved system performance by 40%')],
+                              ctx=Load())]),
+                        Dict(
+                          keys=[
+                            Constant(value='title'),
+                            Constant(value='company'),
+                            Constant(value='location'),
+                            Constant(value='dates'),
+                            Constant(value='bullet_points')],
+                          values=[
+                            Constant(value='Software Engineer'),
+                            Constant(value='StartupXYZ'),
+                            Constant(value='Austin, TX'),
+                            Dict(
+                              keys=[
+                                Constant(value='start'),
+                                Constant(value='end')],
+                              values=[
+                                Constant(value='2018-06'),
+                                Constant(value='2019-12')]),
+                            List(
+                              elts=[
+                                Constant(value='Built REST APIs using Django and PostgreSQL'),
+                                Constant(value='Implemented CI/CD pipelines'),
+                                Constant(value='Collaborated with cross-functional teams')],
+                              ctx=Load())])],
+                      ctx=Load())),
+                  keyword(
+                    arg='education',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='degree'),
+                            Constant(value='field'),
+                            Constant(value='university'),
+                            Constant(value='location'),
+                            Constant(value='graduation')],
+                          values=[
+                            Constant(value='Bachelor of Science'),
+                            Constant(value='Computer Science'),
+                            Constant(value='State University'),
+                            Constant(value='Boston, MA'),
+                            Constant(value='2018-05')])],
+                      ctx=Load())),
+                  keyword(
+                    arg='skills',
+                    value=List(
+                      elts=[
+                        Constant(value='Python'),
+                        Constant(value='Django'),
+                        Constant(value='AWS'),
+                        Constant(value='PostgreSQL'),
+                        Constant(value='Docker'),
+                        Constant(value='Kubernetes'),
+                        Constant(value='JavaScript'),
+                        Constant(value='React')],
+                      ctx=Load())),
+                  keyword(
+                    arg='certifications',
+                    value=List(
+                      elts=[
+                        Constant(value='AWS Certified Solutions Architect'),
+                        Constant(value='Docker Certified Associate')],
+                      ctx=Load())),
+                  keyword(
+                    arg='projects',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='name'),
+                            Constant(value='description'),
+                            Constant(value='technologies'),
+                            Constant(value='highlights')],
+                          values=[
+                            Constant(value='E-commerce Platform'),
+                            Constant(value='Built full-stack e-commerce platform'),
+                            List(
+                              elts=[
+                                Constant(value='Python'),
+                                Constant(value='Django'),
+                                Constant(value='React'),
+                                Constant(value='PostgreSQL')],
+                              ctx=Load()),
+                            List(
+                              elts=[
+                                Constant(value='Handled 10k+ concurrent users'),
+                                Constant(value='95% uptime')],
+                              ctx=Load())])],
+                      ctx=Load()))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())]),
+        FunctionDef(
+          name='sample_resume_data_scientist',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample data scientist resume for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='ResumeTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='candidate_name',
+                    value=Constant(value='Jane Smith')),
+                  keyword(
+                    arg='contact_info',
+                    value=Dict(
+                      keys=[
+                        Constant(value='email'),
+                        Constant(value='phone'),
+                        Constant(value='linkedin')],
+                      values=[
+                        Constant(value='jane.smith@email.com'),
+                        Constant(value='+1-555-5678'),
+                        Constant(value='https://linkedin.com/in/janesmith')])),
+                  keyword(
+                    arg='experience',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='title'),
+                            Constant(value='company'),
+                            Constant(value='location'),
+                            Constant(value='dates'),
+                            Constant(value='bullet_points')],
+                          values=[
+                            Constant(value='Senior Data Scientist'),
+                            Constant(value='DataCorp'),
+                            Constant(value='New York, NY'),
+                            Dict(
+                              keys=[
+                                Constant(value='start'),
+                                Constant(value='end')],
+                              values=[
+                                Constant(value='2019-03'),
+                                Constant(value='2024-12')]),
+                            List(
+                              elts=[
+                                Constant(value='Developed machine learning models for fraud detection'),
+                                Constant(value='Analyzed large datasets using Python and R'),
+                                Constant(value='Improved prediction accuracy by 25%')],
+                              ctx=Load())])],
+                      ctx=Load())),
+                  keyword(
+                    arg='education',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='degree'),
+                            Constant(value='field'),
+                            Constant(value='university'),
+                            Constant(value='location'),
+                            Constant(value='graduation')],
+                          values=[
+                            Constant(value='Master of Science'),
+                            Constant(value='Data Science'),
+                            Constant(value='Tech Institute'),
+                            Constant(value='Stanford, CA'),
+                            Constant(value='2019-02')])],
+                      ctx=Load())),
+                  keyword(
+                    arg='skills',
+                    value=List(
+                      elts=[
+                        Constant(value='Python'),
+                        Constant(value='R'),
+                        Constant(value='TensorFlow'),
+                        Constant(value='PyTorch'),
+                        Constant(value='SQL'),
+                        Constant(value='Machine Learning'),
+                        Constant(value='Statistics')],
+                      ctx=Load())),
+                  keyword(
+                    arg='certifications',
+                    value=List(
+                      elts=[
+                        Constant(value='Google Cloud ML Engineer'),
+                        Constant(value='TensorFlow Developer Certificate')],
+                      ctx=Load())),
+                  keyword(
+                    arg='projects',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='name'),
+                            Constant(value='description'),
+                            Constant(value='technologies'),
+                            Constant(value='highlights')],
+                          values=[
+                            Constant(value='Customer Churn Prediction'),
+                            Constant(value='ML model to predict customer churn'),
+                            List(
+                              elts=[
+                                Constant(value='Python'),
+                                Constant(value='TensorFlow'),
+                                Constant(value='Pandas')],
+                              ctx=Load()),
+                            List(
+                              elts=[
+                                Constant(value='Reduced churn by 15%'),
+                                Constant(value='Deployed to production')],
+                              ctx=Load())])],
+                      ctx=Load()))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())]),
+        FunctionDef(
+          name='sample_resume_career_changer',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample career changer resume for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='ResumeTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='candidate_name',
+                    value=Constant(value='Michael Chen')),
+                  keyword(
+                    arg='contact_info',
+                    value=Dict(
+                      keys=[
+                        Constant(value='email'),
+                        Constant(value='phone'),
+                        Constant(value='linkedin')],
+                      values=[
+                        Constant(value='michael.chen@email.com'),
+                        Constant(value='+1-555-9012'),
+                        Constant(value='https://linkedin.com/in/michaelchen')])),
+                  keyword(
+                    arg='experience',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='title'),
+                            Constant(value='company'),
+                            Constant(value='location'),
+                            Constant(value='dates'),
+                            Constant(value='bullet_points')],
+                          values=[
+                            Constant(value='Senior Software Engineer'),
+                            Constant(value='SoftwareInc'),
+                            Constant(value='Seattle, WA'),
+                            Dict(
+                              keys=[
+                                Constant(value='start'),
+                                Constant(value='end')],
+                              values=[
+                                Constant(value='2016-08'),
+                                Constant(value='2024-12')]),
+                            List(
+                              elts=[
+                                Constant(value='Led development of enterprise software solutions'),
+                                Constant(value='Managed technical team of 8 engineers'),
+                                Constant(value='Coordinated with product management on roadmap planning')],
+                              ctx=Load())])],
+                      ctx=Load())),
+                  keyword(
+                    arg='education',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='degree'),
+                            Constant(value='field'),
+                            Constant(value='university'),
+                            Constant(value='location'),
+                            Constant(value='graduation')],
+                          values=[
+                            Constant(value='Bachelor of Science'),
+                            Constant(value='Computer Engineering'),
+                            Constant(value='Engineering University'),
+                            Constant(value='Los Angeles, CA'),
+                            Constant(value='2016-05')]),
+                        Dict(
+                          keys=[
+                            Constant(value='degree'),
+                            Constant(value='field'),
+                            Constant(value='university'),
+                            Constant(value='location'),
+                            Constant(value='graduation')],
+                          values=[
+                            Constant(value='MBA (In Progress)'),
+                            Constant(value='Business Administration'),
+                            Constant(value='Business School'),
+                            Constant(value='Online'),
+                            Constant(value='2025-12')])],
+                      ctx=Load())),
+                  keyword(
+                    arg='skills',
+                    value=List(
+                      elts=[
+                        Constant(value='Java'),
+                        Constant(value='Spring Boot'),
+                        Constant(value='Python'),
+                        Constant(value='Leadership'),
+                        Constant(value='Product Strategy'),
+                        Constant(value='Agile'),
+                        Constant(value='Stakeholder Management')],
+                      ctx=Load())),
+                  keyword(
+                    arg='certifications',
+                    value=List(
+                      elts=[
+                        Constant(value='PMP Certification'),
+                        Constant(value='Scrum Master')],
+                      ctx=Load())),
+                  keyword(
+                    arg='projects',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='name'),
+                            Constant(value='description'),
+                            Constant(value='technologies'),
+                            Constant(value='highlights')],
+                          values=[
+                            Constant(value='Product Launch Coordination'),
+                            Constant(value='Led cross-functional team for product launch'),
+                            List(
+                              elts=[
+                                Constant(value='Project Management'),
+                                Constant(value='Stakeholder Communication')],
+                              ctx=Load()),
+                            List(
+                              elts=[
+                                Constant(value='Launched on time'),
+                                Constant(value='20% user adoption increase')],
+                              ctx=Load())])],
+                      ctx=Load()))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())])]),
+    ClassDef(
+      name='TestJobDescriptionFixtures',
+      body=[
+        Expr(
+          value=Constant(value='Test job description data fixtures.')),
+        FunctionDef(
+          name='sample_job_software_engineer',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample software engineer job description for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='JobDescriptionTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job_id',
+                    value=Constant(value='job_001')),
+                  keyword(
+                    arg='title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='location',
+                    value=Constant(value='San Francisco, CA')),
+                  keyword(
+                    arg='requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='5+ years of software development experience'),
+                        Constant(value='Proficiency in Python and JavaScript'),
+                        Constant(value='Experience with cloud platforms (AWS preferred)'),
+                        Constant(value='Strong problem-solving skills'),
+                        Constant(value="Bachelor's degree in Computer Science or related field")],
+                      ctx=Load())),
+                  keyword(
+                    arg='responsibilities',
+                    value=List(
+                      elts=[
+                        Constant(value='Design and develop scalable software solutions'),
+                        Constant(value='Collaborate with cross-functional teams'),
+                        Constant(value='Participate in code reviews and mentorship'),
+                        Constant(value='Troubleshoot and optimize application performance')],
+                      ctx=Load())),
+                  keyword(
+                    arg='qualifications',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_experience_years'),
+                        Constant(value='required_skills'),
+                        Constant(value='preferred_skills'),
+                        Constant(value='education_level'),
+                        Constant(value='remote_work')],
+                      values=[
+                        Constant(value=5),
+                        List(
+                          elts=[
+                            Constant(value='Python'),
+                            Constant(value='JavaScript'),
+                            Constant(value='AWS')],
+                          ctx=Load()),
+                        List(
+                          elts=[
+                            Constant(value='Docker'),
+                            Constant(value='Kubernetes'),
+                            Constant(value='React')],
+                          ctx=Load()),
+                        Constant(value="Bachelor's"),
+                        Constant(value=True)])),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='We are looking for a Senior Software Engineer to join our growing team. \n            You will be responsible for developing high-quality software solutions, \n            working with modern technologies, and contributing to our product roadmap.'))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())]),
+        FunctionDef(
+          name='sample_job_data_scientist',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample data scientist job description for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='JobDescriptionTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job_id',
+                    value=Constant(value='job_002')),
+                  keyword(
+                    arg='title',
+                    value=Constant(value='Senior Data Scientist')),
+                  keyword(
+                    arg='company',
+                    value=Constant(value='DataCorp')),
+                  keyword(
+                    arg='location',
+                    value=Constant(value='New York, NY')),
+                  keyword(
+                    arg='requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='4+ years of data science experience'),
+                        Constant(value='Strong programming skills in Python and R'),
+                        Constant(value='Experience with machine learning frameworks'),
+                        Constant(value='Advanced degree in quantitative field preferred'),
+                        Constant(value='Excellent communication skills')],
+                      ctx=Load())),
+                  keyword(
+                    arg='responsibilities',
+                    value=List(
+                      elts=[
+                        Constant(value='Develop and deploy machine learning models'),
+                        Constant(value='Analyze complex datasets to derive insights'),
+                        Constant(value='Collaborate with business stakeholders'),
+                        Constant(value='Present findings to executive leadership')],
+                      ctx=Load())),
+                  keyword(
+                    arg='qualifications',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_experience_years'),
+                        Constant(value='required_skills'),
+                        Constant(value='preferred_skills'),
+                        Constant(value='education_level'),
+                        Constant(value='remote_work')],
+                      values=[
+                        Constant(value=4),
+                        List(
+                          elts=[
+                            Constant(value='Python'),
+                            Constant(value='R'),
+                            Constant(value='Machine Learning')],
+                          ctx=Load()),
+                        List(
+                          elts=[
+                            Constant(value='TensorFlow'),
+                            Constant(value='PyTorch'),
+                            Constant(value='SQL')],
+                          ctx=Load()),
+                        Constant(value="Master's"),
+                        Constant(value=False)])),
+                  keyword(
+                    arg='description',
+                    value=Constant(value="Join our data science team to work on challenging problems \n            in fraud detection and customer analytics. You'll have the opportunity \n            to work with cutting-edge ML technologies and large-scale datasets."))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())]),
+        FunctionDef(
+          name='sample_job_product_manager',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample product manager job description for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='JobDescriptionTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job_id',
+                    value=Constant(value='job_003')),
+                  keyword(
+                    arg='title',
+                    value=Constant(value='Product Manager')),
+                  keyword(
+                    arg='company',
+                    value=Constant(value='ProductInc')),
+                  keyword(
+                    arg='location',
+                    value=Constant(value='Remote')),
+                  keyword(
+                    arg='requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='3+ years of product management experience'),
+                        Constant(value='Technical background or experience'),
+                        Constant(value='Strong analytical and communication skills'),
+                        Constant(value='Experience with agile development methodologies'),
+                        Constant(value='MBA or equivalent experience preferred')],
+                      ctx=Load())),
+                  keyword(
+                    arg='responsibilities',
+                    value=List(
+                      elts=[
+                        Constant(value='Define product roadmap and strategy'),
+                        Constant(value='Work with engineering teams on product development'),
+                        Constant(value='Gather and analyze customer feedback'),
+                        Constant(value='Present product vision to stakeholders')],
+                      ctx=Load())),
+                  keyword(
+                    arg='qualifications',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_experience_years'),
+                        Constant(value='required_skills'),
+                        Constant(value='preferred_skills'),
+                        Constant(value='education_level'),
+                        Constant(value='remote_work')],
+                      values=[
+                        Constant(value=3),
+                        List(
+                          elts=[
+                            Constant(value='Product Strategy'),
+                            Constant(value='Stakeholder Management'),
+                            Constant(value='Agile')],
+                          ctx=Load()),
+                        List(
+                          elts=[
+                            Constant(value='Technical Background'),
+                            Constant(value='Data Analysis'),
+                            Constant(value='Leadership')],
+                          ctx=Load()),
+                        Constant(value='MBA'),
+                        Constant(value=True)])),
+                  keyword(
+                    arg='description',
+                    value=Constant(value="We're seeking a Product Manager to drive our product strategy \n            and work closely with engineering and design teams. Ideal candidate has \n            technical background and strong business acumen."))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())])]),
+    ClassDef(
+      name='TestWorkflowFixtures',
+      body=[
+        Expr(
+          value=Constant(value='Test workflow data fixtures.')),
+        FunctionDef(
+          name='sample_workflow_resume_analysis',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample resume analysis workflow for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='WorkflowTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_id',
+                    value=Constant(value='workflow_001')),
+                  keyword(
+                    arg='mission',
+                    value=Constant(value='Analyze resume against job requirements and provide improvement suggestions')),
+                  keyword(
+                    arg='input_data',
+                    value=Dict(
+                      keys=[
+                        Constant(value='resume_content'),
+                        Constant(value='job_description'),
+                        Constant(value='analysis_type')],
+                      values=[
+                        Constant(value='Sample resume content...'),
+                        Constant(value='Sample job description...'),
+                        Constant(value='comprehensive')])),
+                  keyword(
+                    arg='expected_steps',
+                    value=List(
+                      elts=[
+                        Constant(value='extract_job_requirements'),
+                        Constant(value='parse_resume_content'),
+                        Constant(value='analyze_skill_match'),
+                        Constant(value='identify_gaps'),
+                        Constant(value='generate_improvements')],
+                      ctx=Load())),
+                  keyword(
+                    arg='configuration',
+                    value=Dict(
+                      keys=[
+                        Constant(value='analysis_depth'),
+                        Constant(value='include_suggestions'),
+                        Constant(value='safety_checks'),
+                        Constant(value='telemetry_enabled')],
+                      values=[
+                        Constant(value='detailed'),
+                        Constant(value=True),
+                        Constant(value=True),
+                        Constant(value=True)]))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())]),
+        FunctionDef(
+          name='sample_workflow_batch_processing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Sample batch processing workflow for testing.')),
+            Return(
+              value=Call(
+                func=Name(id='WorkflowTestData', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_id',
+                    value=Constant(value='workflow_batch_001')),
+                  keyword(
+                    arg='mission',
+                    value=Constant(value='Process multiple job applications in batch')),
+                  keyword(
+                    arg='input_data',
+                    value=Dict(
+                      keys=[
+                        Constant(value='jobs'),
+                        Constant(value='resume_content'),
+                        Constant(value='batch_config')],
+                      values=[
+                        List(
+                          elts=[
+                            Dict(
+                              keys=[
+                                Constant(value='job_id'),
+                                Constant(value='description')],
+                              values=[
+                                Constant(value='job_1'),
+                                Constant(value='Job 1 description')]),
+                            Dict(
+                              keys=[
+                                Constant(value='job_id'),
+                                Constant(value='description')],
+                              values=[
+                                Constant(value='job_2'),
+                                Constant(value='Job 2 description')]),
+                            Dict(
+                              keys=[
+                                Constant(value='job_id'),
+                                Constant(value='description')],
+                              values=[
+                                Constant(value='job_3'),
+                                Constant(value='Job 3 description')])],
+                          ctx=Load()),
+                        Constant(value='Sample resume content...'),
+                        Dict(
+                          keys=[
+                            Constant(value='parallel_processing'),
+                            Constant(value='max_workers')],
+                          values=[
+                            Constant(value=True),
+                            Constant(value=3)])])),
+                  keyword(
+                    arg='expected_steps',
+                    value=List(
+                      elts=[
+                        Constant(value='validate_batch_input'),
+                        Constant(value='process_jobs_parallel'),
+                        Constant(value='aggregate_results'),
+                        Constant(value='generate_batch_report')],
+                      ctx=Load())),
+                  keyword(
+                    arg='configuration',
+                    value=Dict(
+                      keys=[
+                        Constant(value='parallel_execution'),
+                        Constant(value='max_concurrent_jobs'),
+                        Constant(value='error_handling'),
+                        Constant(value='timeout_per_job')],
+                      values=[
+                        Constant(value=True),
+                        Constant(value=3),
+                        Constant(value='continue_on_error'),
+                        Constant(value=300)]))]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())])]),
+    ClassDef(
+      name='TestMockResponseFixtures',
+      body=[
+        Expr(
+          value=Constant(value='Test mock response fixtures for external services.')),
+        FunctionDef(
+          name='mock_llm_responses',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Mock LLM responses for testing.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='analysis_response'),
+                  Constant(value='improvement_response'),
+                  Constant(value='safety_check_response')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='requirements'),
+                      Constant(value='skills_matched'),
+                      Constant(value='skills_missing'),
+                      Constant(value='match_score'),
+                      Constant(value='confidence')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='AWS'),
+                          Constant(value='5+ years experience')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='AWS')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Experience duration')],
+                        ctx=Load()),
+                      Constant(value=0.75),
+                      Constant(value=0.85)]),
+                  Dict(
+                    keys=[
+                      Constant(value='suggested_additions'),
+                      Constant(value='recommended_skills'),
+                      Constant(value='priority_areas')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='Add specific project metrics'),
+                          Constant(value='Highlight leadership experience'),
+                          Constant(value='Include cloud deployment examples')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Kubernetes'),
+                          Constant(value='DevOps practices')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Experience quantification'),
+                          Constant(value='Technical depth')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='is_safe'),
+                      Constant(value='risk_level'),
+                      Constant(value='concerns'),
+                      Constant(value='recommendations')],
+                    values=[
+                      Constant(value=True),
+                      Constant(value='low'),
+                      List(ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Standard review sufficient')],
+                        ctx=Load())])]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())]),
+        FunctionDef(
+          name='mock_api_responses',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Mock API responses for external services.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='job_parsing_api'),
+                  Constant(value='resume_parsing_api'),
+                  Constant(value='similarity_api')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='status'),
+                      Constant(value='parsed_requirements'),
+                      Constant(value='confidence')],
+                    values=[
+                      Constant(value='success'),
+                      Dict(
+                        keys=[
+                          Constant(value='skills'),
+                          Constant(value='experience'),
+                          Constant(value='education')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value='Python'),
+                              Constant(value='AWS'),
+                              Constant(value='SQL')],
+                            ctx=Load()),
+                          Constant(value='5+ years'),
+                          Constant(value="Bachelor's degree")]),
+                      Constant(value=0.92)]),
+                  Dict(
+                    keys=[
+                      Constant(value='status'),
+                      Constant(value='parsed_resume'),
+                      Constant(value='confidence')],
+                    values=[
+                      Constant(value='success'),
+                      Dict(
+                        keys=[
+                          Constant(value='personal_info'),
+                          Constant(value='experience'),
+                          Constant(value='skills'),
+                          Constant(value='education')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='name'),
+                              Constant(value='contact')],
+                            values=[
+                              Constant(value='John Doe'),
+                              Constant(value='john@email.com')]),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='title'),
+                                  Constant(value='years')],
+                                values=[
+                                  Constant(value='Software Engineer'),
+                                  Constant(value=6)])],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value='Python'),
+                              Constant(value='Django'),
+                              Constant(value='AWS'),
+                              Constant(value='SQL')],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='degree')],
+                                values=[
+                                  Constant(value='BS Computer Science')])],
+                            ctx=Load())]),
+                      Constant(value=0.88)]),
+                  Dict(
+                    keys=[
+                      Constant(value='status'),
+                      Constant(value='similarity_score'),
+                      Constant(value='skill_match_score'),
+                      Constant(value='experience_match_score'),
+                      Constant(value='detailed_analysis')],
+                    values=[
+                      Constant(value='success'),
+                      Constant(value=0.78),
+                      Constant(value=0.85),
+                      Constant(value=0.7),
+                      Dict(
+                        keys=[
+                          Constant(value='matching_skills'),
+                          Constant(value='missing_skills'),
+                          Constant(value='experience_gap')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value='Python'),
+                              Constant(value='AWS'),
+                              Constant(value='SQL')],
+                            ctx=Load()),
+                          List(
+                            elts=[
+                              Constant(value='Docker'),
+                              Constant(value='Kubernetes')],
+                            ctx=Load()),
+                          Constant(value='1 year short of requirement')])])]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())])]),
+    ClassDef(
+      name='TestConfigurationFixtures',
+      body=[
+        Expr(
+          value=Constant(value='Test configuration fixtures.')),
+        FunctionDef(
+          name='test_configurations',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Standard test configurations.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='execution_config'),
+                  Constant(value='safety_config'),
+                  Constant(value='memory_config'),
+                  Constant(value='telemetry_config')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='timeout_seconds'),
+                      Constant(value='max_retries'),
+                      Constant(value='retry_delay'),
+                      Constant(value='circuit_breaker_threshold')],
+                    values=[
+                      Constant(value=300),
+                      Constant(value=3),
+                      Constant(value=1.0),
+                      Constant(value=5)]),
+                  Dict(
+                    keys=[
+                      Constant(value='enable_content_filtering'),
+                      Constant(value='enable_injection_detection'),
+                      Constant(value='max_risk_level'),
+                      Constant(value='strict_mode')],
+                    values=[
+                      Constant(value=True),
+                      Constant(value=True),
+                      Constant(value='medium'),
+                      Constant(value=False)]),
+                  Dict(
+                    keys=[
+                      Constant(value='enable_temporal_kg'),
+                      Constant(value='cache_ttl_seconds'),
+                      Constant(value='max_triplets_per_query'),
+                      Constant(value='enable_deduplication')],
+                    values=[
+                      Constant(value=True),
+                      Constant(value=3600),
+                      Constant(value=100),
+                      Constant(value=True)]),
+                  Dict(
+                    keys=[
+                      Constant(value='enable_tracing'),
+                      Constant(value='log_level'),
+                      Constant(value='metrics_collection'),
+                      Constant(value='cost_tracking')],
+                    values=[
+                      Constant(value=True),
+                      Constant(value='INFO'),
+                      Constant(value=True),
+                      Constant(value=True)])]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())]),
+        FunctionDef(
+          name='edge_case_configurations',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Edge case test configurations.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='minimal_config'),
+                  Constant(value='maximal_config'),
+                  Constant(value='stress_test_config')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='timeout_seconds'),
+                      Constant(value='max_retries'),
+                      Constant(value='safety_checks')],
+                    values=[
+                      Constant(value=30),
+                      Constant(value=1),
+                      Constant(value='basic_only')]),
+                  Dict(
+                    keys=[
+                      Constant(value='timeout_seconds'),
+                      Constant(value='max_retries'),
+                      Constant(value='safety_checks'),
+                      Constant(value='enable_all_features')],
+                    values=[
+                      Constant(value=1800),
+                      Constant(value=10),
+                      Constant(value='comprehensive'),
+                      Constant(value=True)]),
+                  Dict(
+                    keys=[
+                      Constant(value='timeout_seconds'),
+                      Constant(value='max_retries'),
+                      Constant(value='high_concurrency'),
+                      Constant(value='resource_limits')],
+                    values=[
+                      Constant(value=60),
+                      Constant(value=0),
+                      Constant(value=True),
+                      Constant(value='strict')])]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())])]),
+    ClassDef(
+      name='TestErrorScenarioFixtures',
+      body=[
+        Expr(
+          value=Constant(value='Test error scenario fixtures.')),
+        FunctionDef(
+          name='error_scenarios',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Common error scenarios for testing.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='network_timeout'),
+                  Constant(value='api_rate_limit'),
+                  Constant(value='invalid_input'),
+                  Constant(value='service_unavailable'),
+                  Constant(value='safety_violation')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='error_type'),
+                      Constant(value='message'),
+                      Constant(value='retryable'),
+                      Constant(value='expected_recovery')],
+                    values=[
+                      Constant(value='timeout'),
+                      Constant(value='Request timed out after 30 seconds'),
+                      Constant(value=True),
+                      Constant(value='retry_with_backoff')]),
+                  Dict(
+                    keys=[
+                      Constant(value='error_type'),
+                      Constant(value='message'),
+                      Constant(value='retryable'),
+                      Constant(value='expected_recovery')],
+                    values=[
+                      Constant(value='rate_limit'),
+                      Constant(value='API rate limit exceeded'),
+                      Constant(value=True),
+                      Constant(value='exponential_backoff')]),
+                  Dict(
+                    keys=[
+                      Constant(value='error_type'),
+                      Constant(value='message'),
+                      Constant(value='retryable'),
+                      Constant(value='expected_recovery')],
+                    values=[
+                      Constant(value='validation'),
+                      Constant(value='Input validation failed: missing required field'),
+                      Constant(value=False),
+                      Constant(value='request_user_correction')]),
+                  Dict(
+                    keys=[
+                      Constant(value='error_type'),
+                      Constant(value='message'),
+                      Constant(value='retryable'),
+                      Constant(value='expected_recovery')],
+                    values=[
+                      Constant(value='service_down'),
+                      Constant(value='External service temporarily unavailable'),
+                      Constant(value=True),
+                      Constant(value='use_fallback_service')]),
+                  Dict(
+                    keys=[
+                      Constant(value='error_type'),
+                      Constant(value='message'),
+                      Constant(value='retryable'),
+                      Constant(value='expected_recovery')],
+                    values=[
+                      Constant(value='safety_policy'),
+                      Constant(value='Content blocked by safety policy'),
+                      Constant(value=False),
+                      Constant(value='block_execution')])]))],
+          decorator_list=[
+            Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='fixture',
+              ctx=Load())])]),
+    FunctionDef(
+      name='generate_test_resume',
+      args=arguments(
+        args=[
+          arg(
+            arg='customizations',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Generate a test resume with optional customizations.')),
+        Assign(
+          targets=[
+            Name(id='base_resume', ctx=Store())],
+          value=Call(
+            func=Name(id='ResumeTestData', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='candidate_name',
+                value=Constant(value='Test Candidate')),
+              keyword(
+                arg='contact_info',
+                value=Dict(
+                  keys=[
+                    Constant(value='email'),
+                    Constant(value='phone')],
+                  values=[
+                    Constant(value='test@example.com'),
+                    Constant(value='+1-555-0000')])),
+              keyword(
+                arg='experience',
+                value=List(ctx=Load())),
+              keyword(
+                arg='education',
+                value=List(ctx=Load())),
+              keyword(
+                arg='skills',
+                value=List(ctx=Load())),
+              keyword(
+                arg='certifications',
+                value=List(ctx=Load())),
+              keyword(
+                arg='projects',
+                value=List(ctx=Load()))])),
+        If(
+          test=Name(id='customizations', ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Constant(value='skills'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='customizations', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='base_resume', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='base_resume', ctx=Load()),
+                      attr='_replace',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='skills',
+                        value=Subscript(
+                          value=Name(id='customizations', ctx=Load()),
+                          slice=Constant(value='skills'),
+                          ctx=Load()))]))]),
+            If(
+              test=Compare(
+                left=Constant(value='experience_years'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='customizations', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='base_resume', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='base_resume', ctx=Load()),
+                      attr='_replace',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='experience',
+                        value=List(
+                          elts=[
+                            Dict(
+                              keys=[
+                                Constant(value='title'),
+                                Constant(value='company'),
+                                Constant(value='dates'),
+                                Constant(value='bullet_points')],
+                              values=[
+                                Constant(value='Software Engineer'),
+                                Constant(value='Test Company'),
+                                Dict(
+                                  keys=[
+                                    Constant(value='start'),
+                                    Constant(value='end')],
+                                  values=[
+                                    JoinedStr(
+                                      values=[
+                                        FormattedValue(
+                                          value=BinOp(
+                                            left=Constant(value=2024),
+                                            op=Sub(),
+                                            right=Subscript(
+                                              value=Name(id='customizations', ctx=Load()),
+                                              slice=Constant(value='experience_years'),
+                                              ctx=Load())),
+                                          conversion=-1),
+                                        Constant(value='-01')]),
+                                    Constant(value='2024-12')]),
+                                List(
+                                  elts=[
+                                    Constant(value='Test experience')],
+                                  ctx=Load())])],
+                          ctx=Load()))]))])]),
+        Return(
+          value=Name(id='base_resume', ctx=Load()))],
+      returns=Name(id='ResumeTestData', ctx=Load())),
+    FunctionDef(
+      name='generate_test_job',
+      args=arguments(
+        args=[
+          arg(
+            arg='difficulty',
+            annotation=Name(id='str', ctx=Load()))],
+        defaults=[
+          Constant(value='medium')]),
+      body=[
+        Expr(
+          value=Constant(value='Generate a test job description with specified difficulty.')),
+        If(
+          test=Compare(
+            left=Name(id='difficulty', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='easy')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='requirements', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Basic programming skills')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='qualifications', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='min_experience_years'),
+                  Constant(value='required_skills')],
+                values=[
+                  Constant(value=0),
+                  List(
+                    elts=[
+                      Constant(value='Python')],
+                    ctx=Load())]))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Name(id='difficulty', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='hard')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='requirements', ctx=Store())],
+                  value=List(
+                    elts=[
+                      Constant(value='10+ years experience'),
+                      Constant(value='PhD preferred'),
+                      Constant(value='Multiple certifications')],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='qualifications', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='min_experience_years'),
+                      Constant(value='required_skills')],
+                    values=[
+                      Constant(value=10),
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='AWS'),
+                          Constant(value='ML'),
+                          Constant(value='Leadership')],
+                        ctx=Load())]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='requirements', ctx=Store())],
+                  value=List(
+                    elts=[
+                      Constant(value='3-5 years experience'),
+                      Constant(value="Bachelor's degree")],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='qualifications', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='min_experience_years'),
+                      Constant(value='required_skills')],
+                    values=[
+                      Constant(value=3),
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='SQL')],
+                        ctx=Load())]))])]),
+        Return(
+          value=Call(
+            func=Name(id='JobDescriptionTestData', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='job_id',
+                value=JoinedStr(
+                  values=[
+                    Constant(value='test_job_'),
+                    FormattedValue(
+                      value=Name(id='difficulty', ctx=Load()),
+                      conversion=-1)])),
+              keyword(
+                arg='title',
+                value=JoinedStr(
+                  values=[
+                    Constant(value='Test Position ('),
+                    FormattedValue(
+                      value=Name(id='difficulty', ctx=Load()),
+                      conversion=-1),
+                    Constant(value=')')])),
+              keyword(
+                arg='company',
+                value=Constant(value='Test Company')),
+              keyword(
+                arg='location',
+                value=Constant(value='Remote')),
+              keyword(
+                arg='requirements',
+                value=Name(id='requirements', ctx=Load())),
+              keyword(
+                arg='responsibilities',
+                value=List(
+                  elts=[
+                    Constant(value='Test responsibilities')],
+                  ctx=Load())),
+              keyword(
+                arg='qualifications',
+                value=Name(id='qualifications', ctx=Load())),
+              keyword(
+                arg='description',
+                value=Constant(value='Test job description'))]))],
+      returns=Name(id='JobDescriptionTestData', ctx=Load()))])

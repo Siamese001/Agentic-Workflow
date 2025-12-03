@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Specialist planner ensemble and coordinator for v10.7 strategies.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import TYPE_CHECKING, Any, Dict, List, Optional\n\nfrom core_v10_7 import (\n    BaseAgent,\n    StrategyPlan,\n    PlannerAssessment,\n    ScenarioSimulationResult,\n)\n\nif TYPE_CHECKING:\n    from core_v10_7 import WorkflowContext\n\n\ndef _truncate(text: str, limit: int = 160) -> str:\n    if len(text) <= limit:\n        return text\n    return text[: limit - 3] + \"...\"\n\n\nclass DomainPlannerAgent(BaseAgent):\n    \"\"\"Evaluates strategic alignment with the job domain.\"\"\"\n\n    async def run_async(\n        self,\n        plan: StrategyPlan,\n        job_context: Dict[str, Any],\n        workflow_id: str,\n    ) -> PlannerAssessment:\n        job_title = (job_context.get(\"job_title\") or \"\").lower()\n        company = (job_context.get(\"company\") or \"\").lower()\n\n        focus_matches = 0\n        for focus in plan.focus_areas:\n            normalized_focus = focus.lower()\n       ",
+  "full_hash": "ac50beb02d17c6f8a41542022f6862a1cbfcdf69cce5ad1fd123e4314895c744",
+  "generated_at": 1764728330.9025257,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\strategy_ensemble_v10_7.py"
+}

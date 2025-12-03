@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - validate_data_quality\nImplements L1 Cognitive Planning Layer for validate data quality operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ValidateDataQualityPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ValidateDataQualityPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ValidateDataQualityPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: b",
+  "full_hash": "321a2157c953c221aa0adf8614eeb3d0eed43444c92224b00d090c905972dbb4",
+  "generated_at": 1764728350.1218958,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\validate-phase\\check-data-structure\\semantic\\adjust-scores\\validate_data_quality.py"
+}

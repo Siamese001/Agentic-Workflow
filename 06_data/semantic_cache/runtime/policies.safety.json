@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 160,
+  "generated_at": 1764728347.623073,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\planner-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\policies.py"
+}

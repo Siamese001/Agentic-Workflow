@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\Archive\\05_hop_validation.py",
+    "rel_path": "05_hop_validation.py",
+    "root_name": "resume_engine/Microservices Model",
+    "file_hash": "fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f",
+    "file_size": 16601,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728232.1065917
+}

@@ -1,0 +1,2403 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='13.0')),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Any'),
+        alias(name='Tuple'),
+        alias(name='Optional'),
+        alias(name='Callable')],
+      level=0),
+    ImportFrom(
+      module='sklearn.feature_extraction.text',
+      names=[
+        alias(name='TfidfVectorizer')],
+      level=0),
+    ImportFrom(
+      module='sklearn.metrics.pairwise',
+      names=[
+        alias(name='cosine_similarity')],
+      level=0),
+    Import(
+      names=[
+        alias(name='numpy', asname='np')]),
+    ClassDef(
+      name='CodeInterpreterTool',
+      body=[
+        Expr(
+          value=Constant(value='\n    v13.0: Safe code execution environment for deterministic evaluation\n    \n    Provides a "Fast Loop" for validation and scoring before committing\n    to expensive LLM calls. Used by HOP-6 (ValidationAgent) to:\n    - Score message drafts for similarity to strategic brief\n    - Rank N candidates without LLM synthesis\n    - Run deterministic validation checks\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize code interpreter with safe function registry')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='functions',
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='run_similarity_check'),
+                  Constant(value='run_scoring_competition'),
+                  Constant(value='extract_keywords'),
+                  Constant(value='calculate_overlap'),
+                  Constant(value='rank_by_metric'),
+                  Constant(value='validate_structure')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='run_similarity_check',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='run_scoring_competition',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='extract_keywords',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='calculate_overlap',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rank_by_metric',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='validate_structure',
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='[CodeInterpreter] Initialized with safe function registry')]))]),
+        FunctionDef(
+          name='execute',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='function_name',
+                annotation=Name(id='str', ctx=Load()))],
+            kwarg=arg(arg='kwargs')),
+          body=[
+            Expr(
+              value=Constant(value='\n        Execute a registered function safely\n        \n        Args:\n            function_name: Name of function to execute\n            **kwargs: Function arguments\n        \n        Returns:\n            Function result\n        \n        Raises:\n            ValueError: If function not registered\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='function_name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='functions',
+                    ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value="Function '"),
+                          FormattedValue(
+                            value=Name(id='function_name', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="' not registered. Available: "),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='list', ctx=Load()),
+                              args=[
+                                Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='functions',
+                                      ctx=Load()),
+                                    attr='keys',
+                                    ctx=Load()))]),
+                            conversion=-1)])]))]),
+            Assign(
+              targets=[
+                Name(id='func', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='functions',
+                  ctx=Load()),
+                slice=Name(id='function_name', ctx=Load()),
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[CodeInterpreter] Executing: '),
+                      FormattedValue(
+                        value=Name(id='function_name', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Call(
+                func=Name(id='func', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Name(id='kwargs', ctx=Load()))]))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='run_similarity_check',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text1',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='text2',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='method',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='cosine')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Calculate similarity between two texts\n        \n        Args:\n            text1: First text\n            text2: Second text\n            method: Similarity method ("cosine", "jaccard")\n        \n        Returns:\n            Similarity score (0.0 to 1.0)\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='method', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cosine')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='vectorizer', ctx=Store())],
+                  value=Call(
+                    func=Name(id='TfidfVectorizer', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='vectors', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='vectorizer', ctx=Load()),
+                      attr='fit_transform',
+                      ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Name(id='text1', ctx=Load()),
+                          Name(id='text2', ctx=Load())],
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='similarity', ctx=Store())],
+                  value=Subscript(
+                    value=Subscript(
+                      value=Call(
+                        func=Name(id='cosine_similarity', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='vectors', ctx=Load()),
+                            slice=Slice(
+                              lower=Constant(value=0),
+                              upper=Constant(value=1)),
+                            ctx=Load()),
+                          Subscript(
+                            value=Name(id='vectors', ctx=Load()),
+                            slice=Slice(
+                              lower=Constant(value=1),
+                              upper=Constant(value=2)),
+                            ctx=Load())]),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load())),
+                Return(
+                  value=Call(
+                    func=Name(id='float', ctx=Load()),
+                    args=[
+                      Name(id='similarity', ctx=Load())]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='method', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='jaccard')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='words1', ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='text1', ctx=Load()),
+                                  attr='lower',
+                                  ctx=Load())),
+                              attr='split',
+                              ctx=Load()))])),
+                    Assign(
+                      targets=[
+                        Name(id='words2', ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='text2', ctx=Load()),
+                                  attr='lower',
+                                  ctx=Load())),
+                              attr='split',
+                              ctx=Load()))])),
+                    Assign(
+                      targets=[
+                        Name(id='intersection', ctx=Store())],
+                      value=BinOp(
+                        left=Name(id='words1', ctx=Load()),
+                        op=BitAnd(),
+                        right=Name(id='words2', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='union', ctx=Store())],
+                      value=BinOp(
+                        left=Name(id='words1', ctx=Load()),
+                        op=BitOr(),
+                        right=Name(id='words2', ctx=Load()))),
+                    If(
+                      test=Compare(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='union', ctx=Load())]),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value=0)]),
+                      body=[
+                        Return(
+                          value=Constant(value=0.0))]),
+                    Return(
+                      value=BinOp(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='intersection', ctx=Load())]),
+                        op=Div(),
+                        right=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='union', ctx=Load())])))],
+                  orelse=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Unknown similarity method: '),
+                              FormattedValue(
+                                value=Name(id='method', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Name(id='float', ctx=Load())),
+        FunctionDef(
+          name='run_scoring_competition',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='candidates',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='strategic_brief',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='criteria',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='float', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Score N candidate messages against strategic brief\n        \n        This is the "Fast Loop" that replaces LLM synthesis for C_LEVEL.\n        Instead of using an LLM to synthesize 3 drafts, we score them\n        deterministically and select the winner.\n        \n        Args:\n            candidates: List of candidate message texts\n            strategic_brief: Strategic brief text to align with\n            criteria: Optional scoring weights (defaults to equal)\n        \n        Returns:\n            List of scored candidates, sorted by score (highest first)\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='criteria', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='criteria', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='strategic_alignment'),
+                      Constant(value='keyword_density'),
+                      Constant(value='readability')],
+                    values=[
+                      Constant(value=0.5),
+                      Constant(value=0.3),
+                      Constant(value=0.2)]))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[CodeInterpreter] Scoring '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='candidates', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' candidates')])])),
+            Assign(
+              targets=[
+                Name(id='scored', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='candidate', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='candidates', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='scores', ctx=Store())],
+                  value=Dict()),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='scores', ctx=Load()),
+                      slice=Constant(value='strategic_alignment'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='run_similarity_check',
+                      ctx=Load()),
+                    args=[
+                      Name(id='candidate', ctx=Load()),
+                      Name(id='strategic_brief', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='method',
+                        value=Constant(value='cosine'))])),
+                Assign(
+                  targets=[
+                    Name(id='brief_keywords', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='extract_keywords',
+                      ctx=Load()),
+                    args=[
+                      Name(id='strategic_brief', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='top_n',
+                        value=Constant(value=20))])),
+                Assign(
+                  targets=[
+                    Name(id='candidate_words', ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='candidate', ctx=Load()),
+                              attr='lower',
+                              ctx=Load())),
+                          attr='split',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='keyword_matches', ctx=Store())],
+                  value=Call(
+                    func=Name(id='sum', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Constant(value=1),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Name(id='brief_keywords', ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Name(id='kw', ctx=Load()),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='candidate_words', ctx=Load())])],
+                            is_async=0)])])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='scores', ctx=Load()),
+                      slice=Constant(value='keyword_density'),
+                      ctx=Store())],
+                  value=IfExp(
+                    test=Name(id='brief_keywords', ctx=Load()),
+                    body=BinOp(
+                      left=Name(id='keyword_matches', ctx=Load()),
+                      op=Div(),
+                      right=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='brief_keywords', ctx=Load())])),
+                    orelse=Constant(value=0.0))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='scores', ctx=Load()),
+                      slice=Constant(value='readability'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_calculate_readability',
+                      ctx=Load()),
+                    args=[
+                      Name(id='candidate', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='total_score', ctx=Store())],
+                  value=Call(
+                    func=Name(id='sum', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=BinOp(
+                          left=Subscript(
+                            value=Name(id='scores', ctx=Load()),
+                            slice=Name(id='criterion', ctx=Load()),
+                            ctx=Load()),
+                          op=Mult(),
+                          right=Name(id='weight', ctx=Load())),
+                        generators=[
+                          comprehension(
+                            target=Tuple(
+                              elts=[
+                                Name(id='criterion', ctx=Store()),
+                                Name(id='weight', ctx=Store())],
+                              ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Name(id='criteria', ctx=Load()),
+                                attr='items',
+                                ctx=Load())),
+                            ifs=[
+                              Compare(
+                                left=Name(id='criterion', ctx=Load()),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='scores', ctx=Load())])],
+                            is_async=0)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='scored', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='candidate_index'),
+                          Constant(value='candidate_text'),
+                          Constant(value='scores'),
+                          Constant(value='total_score')],
+                        values=[
+                          Name(id='i', ctx=Load()),
+                          Name(id='candidate', ctx=Load()),
+                          Name(id='scores', ctx=Load()),
+                          Name(id='total_score', ctx=Load())])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scored', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='x')]),
+                      body=Subscript(
+                        value=Name(id='x', ctx=Load()),
+                        slice=Constant(value='total_score'),
+                        ctx=Load()))),
+                  keyword(
+                    arg='reverse',
+                    value=Constant(value=True))])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[CodeInterpreter] Winner: candidate '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='scored', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          slice=Constant(value='candidate_index'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' (score: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='scored', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          slice=Constant(value='total_score'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')])),
+                      Constant(value=')')])])),
+            Return(
+              value=Name(id='scored', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_keywords',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='top_n',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='min_length',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=10),
+              Constant(value=4)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Extract top keywords from text using TF-IDF\n        \n        Args:\n            text: Input text\n            top_n: Number of keywords to return\n            min_length: Minimum word length\n        \n        Returns:\n            List of keywords\n        ')),
+            Assign(
+              targets=[
+                Name(id='words', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='w', ctx=Load()),
+                    attr='lower',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='w', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='text', ctx=Load()),
+                        attr='split',
+                        ctx=Load())),
+                    ifs=[
+                      BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='w', ctx=Load())]),
+                            ops=[
+                              GtE()],
+                            comparators=[
+                              Name(id='min_length', ctx=Load())]),
+                          Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='w', ctx=Load()),
+                                attr='lower',
+                                ctx=Load())),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_get_stopwords',
+                                  ctx=Load()))])])],
+                    is_async=0)])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='words', ctx=Load())),
+              body=[
+                Return(
+                  value=List(ctx=Load()))]),
+            ImportFrom(
+              module='collections',
+              names=[
+                alias(name='Counter')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='word_counts', ctx=Store())],
+              value=Call(
+                func=Name(id='Counter', ctx=Load()),
+                args=[
+                  Name(id='words', ctx=Load())])),
+            Return(
+              value=ListComp(
+                elt=Name(id='word', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='word', ctx=Store()),
+                        Name(id='count', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='word_counts', ctx=Load()),
+                        attr='most_common',
+                        ctx=Load()),
+                      args=[
+                        Name(id='top_n', ctx=Load())]),
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='calculate_overlap',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='keyword_set',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='min_word_length',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=4)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Calculate keyword overlap between text and keyword set\n        \n        Args:\n            text: Input text\n            keyword_set: List of keywords to check for\n            min_word_length: Minimum word length to consider\n        \n        Returns:\n            Dictionary with overlap statistics\n        ')),
+            Assign(
+              targets=[
+                Name(id='text_words', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='w', ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        attr='strip',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='.,!?;:')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='w', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='text', ctx=Load()),
+                            attr='split',
+                            ctx=Load())),
+                        ifs=[
+                          Compare(
+                            left=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='w', ctx=Load())]),
+                            ops=[
+                              GtE()],
+                            comparators=[
+                              Name(id='min_word_length', ctx=Load())])],
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='keywords', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='kw', ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=Name(id='keyword_set', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='overlap', ctx=Store())],
+              value=BinOp(
+                left=Name(id='text_words', ctx=Load()),
+                op=BitAnd(),
+                right=Name(id='keywords', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='overlap_ratio', ctx=Store())],
+              value=IfExp(
+                test=Name(id='keywords', ctx=Load()),
+                body=BinOp(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='overlap', ctx=Load())]),
+                  op=Div(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='keywords', ctx=Load())])),
+                orelse=Constant(value=0.0))),
+            Assign(
+              targets=[
+                Name(id='coverage_ratio', ctx=Store())],
+              value=IfExp(
+                test=Name(id='text_words', ctx=Load()),
+                body=BinOp(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='overlap', ctx=Load())]),
+                  op=Div(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='text_words', ctx=Load())])),
+                orelse=Constant(value=0.0))),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='overlap_count'),
+                  Constant(value='overlap_keywords'),
+                  Constant(value='overlap_ratio'),
+                  Constant(value='coverage_ratio'),
+                  Constant(value='total_keywords'),
+                  Constant(value='total_words')],
+                values=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='overlap', ctx=Load())]),
+                  Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Name(id='overlap', ctx=Load())]),
+                  Name(id='overlap_ratio', ctx=Load()),
+                  Name(id='coverage_ratio', ctx=Load()),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='keywords', ctx=Load())]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='text_words', ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='rank_by_metric',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='items',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='metric_key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='descending',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=True)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Rank items by a metric value\n        \n        Args:\n            items: List of item dictionaries\n            metric_key: Key to sort by\n            descending: Sort descending (highest first)\n        \n        Returns:\n            Sorted list of items\n        ')),
+            Assign(
+              targets=[
+                Name(id='sorted_items', ctx=Store())],
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  Name(id='items', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='x')]),
+                      body=Call(
+                        func=Attribute(
+                          value=Name(id='x', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Name(id='metric_key', ctx=Load()),
+                          Constant(value=0)]))),
+                  keyword(
+                    arg='reverse',
+                    value=Name(id='descending', ctx=Load()))])),
+            Return(
+              value=Name(id='sorted_items', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_structure',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='expected_sections',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='section_patterns',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='str', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validate message structure against expected sections\n        \n        Args:\n            text: Message text\n            expected_sections: List of required section names\n            section_patterns: Optional regex patterns for each section\n        \n        Returns:\n            Validation results\n        ')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='valid'),
+                  Constant(value='found_sections'),
+                  Constant(value='missing_sections'),
+                  Constant(value='section_analysis')],
+                values=[
+                  Constant(value=True),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  Dict()])),
+            If(
+              test=Compare(
+                left=Name(id='section_patterns', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='section_patterns', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_get_default_section_patterns',
+                      ctx=Load())))]),
+            For(
+              target=Name(id='section', ctx=Store()),
+              iter=Name(id='expected_sections', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='pattern', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='section_patterns', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section', ctx=Load())])),
+                If(
+                  test=Name(id='pattern', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='matches', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='re', ctx=Load()),
+                          attr='findall',
+                          ctx=Load()),
+                        args=[
+                          Name(id='pattern', ctx=Load()),
+                          Name(id='text', ctx=Load()),
+                          BinOp(
+                            left=Attribute(
+                              value=Name(id='re', ctx=Load()),
+                              attr='IGNORECASE',
+                              ctx=Load()),
+                            op=BitOr(),
+                            right=Attribute(
+                              value=Name(id='re', ctx=Load()),
+                              attr='MULTILINE',
+                              ctx=Load()))])),
+                    Assign(
+                      targets=[
+                        Name(id='found', ctx=Store())],
+                      value=Compare(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='matches', ctx=Load())]),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Constant(value=0)]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='found', ctx=Store())],
+                      value=Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='section', ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='text', ctx=Load()),
+                              attr='lower',
+                              ctx=Load()))]))]),
+                If(
+                  test=Name(id='found', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='results', ctx=Load()),
+                            slice=Constant(value='found_sections'),
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='section', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Subscript(
+                            value=Name(id='results', ctx=Load()),
+                            slice=Constant(value='section_analysis'),
+                            ctx=Load()),
+                          slice=Name(id='section', ctx=Load()),
+                          ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='found'),
+                          Constant(value='match_count')],
+                        values=[
+                          Constant(value=True),
+                          IfExp(
+                            test=Name(id='pattern', ctx=Load()),
+                            body=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='matches', ctx=Load())]),
+                            orelse=Constant(value=1))]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='results', ctx=Load()),
+                            slice=Constant(value='missing_sections'),
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='section', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Subscript(
+                            value=Name(id='results', ctx=Load()),
+                            slice=Constant(value='section_analysis'),
+                            ctx=Load()),
+                          slice=Name(id='section', ctx=Load()),
+                          ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='found')],
+                        values=[
+                          Constant(value=False)])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='valid'),
+                          ctx=Store())],
+                      value=Constant(value=False))])]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_calculate_readability',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Calculate simple readability score\n        \n        Based on:\n        - Word count in reasonable range\n        - Average sentence length\n        - Vocabulary diversity\n        \n        Returns:\n            Readability score (0.0 to 1.0)\n        ')),
+            Assign(
+              targets=[
+                Name(id='words', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='split',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='word_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='words', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Constant(value=180),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='word_count', ctx=Load()),
+                  Constant(value=270)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='word_count_score', ctx=Store())],
+                  value=Constant(value=1.0))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Constant(value=150),
+                    ops=[
+                      LtE(),
+                      LtE()],
+                    comparators=[
+                      Name(id='word_count', ctx=Load()),
+                      Constant(value=300)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='word_count_score', ctx=Store())],
+                      value=Constant(value=0.8))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='word_count_score', ctx=Store())],
+                      value=Constant(value=0.5))])]),
+            Assign(
+              targets=[
+                Name(id='sentences', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='split',
+                  ctx=Load()),
+                args=[
+                  Constant(value='[.!?]+'),
+                  Name(id='text', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='sentences', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='s', ctx=Load()),
+                    attr='strip',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='s', ctx=Store()),
+                    iter=Name(id='sentences', ctx=Load()),
+                    ifs=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))],
+                    is_async=0)])),
+            If(
+              test=Name(id='sentences', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='avg_sentence_length', ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Name(id='sum', ctx=Load()),
+                      args=[
+                        GeneratorExp(
+                          elt=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='s', ctx=Load()),
+                                  attr='split',
+                                  ctx=Load()))]),
+                          generators=[
+                            comprehension(
+                              target=Name(id='s', ctx=Store()),
+                              iter=Name(id='sentences', ctx=Load()),
+                              is_async=0)])]),
+                    op=Div(),
+                    right=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='sentences', ctx=Load())]))),
+                If(
+                  test=Compare(
+                    left=Constant(value=15),
+                    ops=[
+                      LtE(),
+                      LtE()],
+                    comparators=[
+                      Name(id='avg_sentence_length', ctx=Load()),
+                      Constant(value=25)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='sentence_score', ctx=Store())],
+                      value=Constant(value=1.0))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Constant(value=10),
+                        ops=[
+                          LtE(),
+                          LtE()],
+                        comparators=[
+                          Name(id='avg_sentence_length', ctx=Load()),
+                          Constant(value=30)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='sentence_score', ctx=Store())],
+                          value=Constant(value=0.8))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='sentence_score', ctx=Store())],
+                          value=Constant(value=0.6))])])],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='sentence_score', ctx=Store())],
+                  value=Constant(value=0.5))]),
+            Assign(
+              targets=[
+                Name(id='unique_words', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='w', ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    generators=[
+                      comprehension(
+                        target=Name(id='w', ctx=Store()),
+                        iter=Name(id='words', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='diversity_ratio', ctx=Store())],
+              value=IfExp(
+                test=Name(id='words', ctx=Load()),
+                body=BinOp(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='unique_words', ctx=Load())]),
+                  op=Div(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='words', ctx=Load())])),
+                orelse=Constant(value=0.0))),
+            If(
+              test=Compare(
+                left=Constant(value=0.6),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='diversity_ratio', ctx=Load()),
+                  Constant(value=0.8)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='diversity_score', ctx=Store())],
+                  value=Constant(value=1.0))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Constant(value=0.5),
+                    ops=[
+                      LtE(),
+                      LtE()],
+                    comparators=[
+                      Name(id='diversity_ratio', ctx=Load()),
+                      Constant(value=0.85)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='diversity_score', ctx=Store())],
+                      value=Constant(value=0.8))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='diversity_score', ctx=Store())],
+                      value=Constant(value=0.6))])]),
+            Assign(
+              targets=[
+                Name(id='readability', ctx=Store())],
+              value=BinOp(
+                left=BinOp(
+                  left=BinOp(
+                    left=Name(id='word_count_score', ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=0.4)),
+                  op=Add(),
+                  right=BinOp(
+                    left=Name(id='sentence_score', ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=0.3))),
+                op=Add(),
+                right=BinOp(
+                  left=Name(id='diversity_score', ctx=Load()),
+                  op=Mult(),
+                  right=Constant(value=0.3)))),
+            Return(
+              value=Name(id='readability', ctx=Load()))],
+          returns=Name(id='float', ctx=Load())),
+        FunctionDef(
+          name='_get_stopwords',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get common English stop words')),
+            Return(
+              value=Set(
+                elts=[
+                  Constant(value='a'),
+                  Constant(value='an'),
+                  Constant(value='and'),
+                  Constant(value='are'),
+                  Constant(value='as'),
+                  Constant(value='at'),
+                  Constant(value='be'),
+                  Constant(value='by'),
+                  Constant(value='for'),
+                  Constant(value='from'),
+                  Constant(value='has'),
+                  Constant(value='he'),
+                  Constant(value='in'),
+                  Constant(value='is'),
+                  Constant(value='it'),
+                  Constant(value='its'),
+                  Constant(value='of'),
+                  Constant(value='on'),
+                  Constant(value='that'),
+                  Constant(value='the'),
+                  Constant(value='to'),
+                  Constant(value='was'),
+                  Constant(value='will'),
+                  Constant(value='with'),
+                  Constant(value='the'),
+                  Constant(value='this'),
+                  Constant(value='but'),
+                  Constant(value='they'),
+                  Constant(value='have'),
+                  Constant(value='had'),
+                  Constant(value='what'),
+                  Constant(value='when'),
+                  Constant(value='where'),
+                  Constant(value='who'),
+                  Constant(value='which'),
+                  Constant(value='why'),
+                  Constant(value='how')]))],
+          returns=Name(id='set', ctx=Load())),
+        FunctionDef(
+          name='_get_default_section_patterns',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get default regex patterns for message sections')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='greeting'),
+                  Constant(value='opening'),
+                  Constant(value='body'),
+                  Constant(value='cta'),
+                  Constant(value='signature')],
+                values=[
+                  Constant(value='^(Hi|Hello|Dear|Good morning|Good afternoon)'),
+                  Constant(value="(I\\'m reaching out|I wanted to connect|Following up)"),
+                  Constant(value='.{100,}'),
+                  Constant(value="(Would you|Could we|I\\'d welcome|Would you be open)"),
+                  Constant(value='(Best regards|Sincerely|Thanks|Best)')]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='ValidationToolkit',
+      body=[
+        Expr(
+          value=Constant(value='\n    Collection of deterministic validation tools\n    Used for "Fast Loop" validation before expensive LLM calls\n    ')),
+        FunctionDef(
+          name='check_word_count_range',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='target',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='tolerance',
+                annotation=Name(id='float', ctx=Load()))],
+            defaults=[
+              Constant(value=0.15)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Check if text is within word count range\n        \n        Args:\n            text: Input text\n            target: Target word count\n            tolerance: Tolerance as fraction (0.15 = ±15%)\n        \n        Returns:\n            (is_valid, details_dict)\n        ')),
+            Assign(
+              targets=[
+                Name(id='word_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='text', ctx=Load()),
+                      attr='split',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='min_words', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='target', ctx=Load()),
+                    op=Mult(),
+                    right=BinOp(
+                      left=Constant(value=1),
+                      op=Sub(),
+                      right=Name(id='tolerance', ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='max_words', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='target', ctx=Load()),
+                    op=Mult(),
+                    right=BinOp(
+                      left=Constant(value=1),
+                      op=Add(),
+                      right=Name(id='tolerance', ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='is_valid', ctx=Store())],
+              value=Compare(
+                left=Name(id='min_words', ctx=Load()),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='word_count', ctx=Load()),
+                  Name(id='max_words', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='word_count'),
+                  Constant(value='target'),
+                  Constant(value='min_words'),
+                  Constant(value='max_words'),
+                  Constant(value='tolerance'),
+                  Constant(value='is_valid'),
+                  Constant(value='deviation')],
+                values=[
+                  Name(id='word_count', ctx=Load()),
+                  Name(id='target', ctx=Load()),
+                  Name(id='min_words', ctx=Load()),
+                  Name(id='max_words', ctx=Load()),
+                  Name(id='tolerance', ctx=Load()),
+                  Name(id='is_valid', ctx=Load()),
+                  BinOp(
+                    left=Name(id='word_count', ctx=Load()),
+                    op=Sub(),
+                    right=Name(id='target', ctx=Load()))])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='is_valid', ctx=Load()),
+                  Name(id='details', ctx=Load())],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='check_forbidden_patterns',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='forbidden_patterns',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Check for forbidden patterns in text\n        \n        Args:\n            text: Input text\n            forbidden_patterns: List of regex patterns to check\n        \n        Returns:\n            (is_clean, list_of_violations)\n        ')),
+            Assign(
+              targets=[
+                Name(id='violations', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='pattern', ctx=Store()),
+              iter=Name(id='forbidden_patterns', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='matches', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='findall',
+                      ctx=Load()),
+                    args=[
+                      Name(id='pattern', ctx=Load()),
+                      Name(id='text', ctx=Load()),
+                      Attribute(
+                        value=Name(id='re', ctx=Load()),
+                        attr='IGNORECASE',
+                        ctx=Load())])),
+                If(
+                  test=Name(id='matches', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='violations', ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          Name(id='matches', ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='is_clean', ctx=Store())],
+              value=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='violations', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='is_clean', ctx=Load()),
+                  Name(id='violations', ctx=Load())],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='check_required_keywords',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='required_keywords',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='min_count',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=1)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Check if required keywords appear in text\n        \n        Args:\n            text: Input text\n            required_keywords: List of keywords that must appear\n            min_count: Minimum occurrences per keyword\n        \n        Returns:\n            (all_present, keyword_counts_dict)\n        ')),
+            Assign(
+              targets=[
+                Name(id='text_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='keyword_counts', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Name(id='keyword', ctx=Store()),
+              iter=Name(id='required_keywords', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='count', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='text_lower', ctx=Load()),
+                      attr='count',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='keyword', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='keyword_counts', ctx=Load()),
+                      slice=Name(id='keyword', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='count', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='all_present', ctx=Store())],
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='count', ctx=Load()),
+                      ops=[
+                        GtE()],
+                      comparators=[
+                        Name(id='min_count', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='count', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='keyword_counts', ctx=Load()),
+                            attr='values',
+                            ctx=Load())),
+                        is_async=0)])])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='all_present', ctx=Load()),
+                  Name(id='keyword_counts', ctx=Load())],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='int', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='check_ascii_only',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Check if text contains only ASCII characters\n        \n        Args:\n            text: Input text\n        \n        Returns:\n            (is_ascii_only, list_of_non_ascii_chars)\n        ')),
+            Assign(
+              targets=[
+                Name(id='non_ascii', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='char', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='ord', ctx=Load()),
+                      args=[
+                        Name(id='char', ctx=Load())]),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=127)]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='non_ascii', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Tuple(
+                            elts=[
+                              Name(id='i', ctx=Load()),
+                              Name(id='char', ctx=Load())],
+                            ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='is_ascii_only', ctx=Store())],
+              value=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='non_ascii', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='is_ascii_only', ctx=Load()),
+                  Name(id='non_ascii', ctx=Load())],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Tuple', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='int', ctx=Load()),
+                        Name(id='str', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='test_code_interpreter',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Test the code interpreter tool\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n=== Testing Code Interpreter Tool ===\n')])),
+        Assign(
+          targets=[
+            Name(id='tool', ctx=Store())],
+          value=Call(
+            func=Name(id='CodeInterpreterTool', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='--- Test 1: Similarity Check ---')])),
+        Assign(
+          targets=[
+            Name(id='text1', ctx=Store())],
+          value=Constant(value='AI platform for enterprise scalability and cloud migration')),
+        Assign(
+          targets=[
+            Name(id='text2', ctx=Store())],
+          value=Constant(value='Enterprise AI solutions with scalable cloud infrastructure')),
+        Assign(
+          targets=[
+            Name(id='similarity', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tool', ctx=Load()),
+              attr='execute',
+              ctx=Load()),
+            args=[
+              Constant(value='run_similarity_check')],
+            keywords=[
+              keyword(
+                arg='text1',
+                value=Name(id='text1', ctx=Load())),
+              keyword(
+                arg='text2',
+                value=Name(id='text2', ctx=Load())),
+              keyword(
+                arg='method',
+                value=Constant(value='cosine'))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Cosine similarity: '),
+                  FormattedValue(
+                    value=Name(id='similarity', ctx=Load()),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='.3f')]))])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Test 2: Scoring Competition ---')])),
+        Assign(
+          targets=[
+            Name(id='strategic_brief', ctx=Store())],
+          value=Constant(value='Focus on AI platform scalability, cloud migration, and enterprise adoption')),
+        Assign(
+          targets=[
+            Name(id='candidates', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value="I'm reaching out about AI platform opportunities. My background in scalability and cloud can help your enterprise adoption goals."),
+              Constant(value='Hello! Wanted to connect about potential collaboration on technology projects in the industry.'),
+              Constant(value='Given your focus on AI platform scalability and cloud migration, I believe my experience with enterprise adoption could add value to your initiatives.')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tool', ctx=Load()),
+              attr='execute',
+              ctx=Load()),
+            args=[
+              Constant(value='run_scoring_competition')],
+            keywords=[
+              keyword(
+                arg='candidates',
+                value=Name(id='candidates', ctx=Load())),
+              keyword(
+                arg='strategic_brief',
+                value=Name(id='strategic_brief', ctx=Load()))])),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='i', ctx=Store()),
+              Name(id='result', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='results', ctx=Load())]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\nCandidate '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='candidate_index'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' (Score: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='total_score'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')])),
+                      Constant(value='):')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Strategic alignment: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='scores'),
+                            ctx=Load()),
+                          slice=Constant(value='strategic_alignment'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Keyword density: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='scores'),
+                            ctx=Load()),
+                          slice=Constant(value='keyword_density'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Readability: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='scores'),
+                            ctx=Load()),
+                          slice=Constant(value='readability'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.3f')]))])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n✓ Winner: Candidate '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load()),
+                      slice=Constant(value='candidate_index'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Test 3: Keyword Extraction ---')])),
+        Assign(
+          targets=[
+            Name(id='keywords', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tool', ctx=Load()),
+              attr='execute',
+              ctx=Load()),
+            args=[
+              Constant(value='extract_keywords')],
+            keywords=[
+              keyword(
+                arg='text',
+                value=Name(id='strategic_brief', ctx=Load())),
+              keyword(
+                arg='top_n',
+                value=Constant(value=5))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Top keywords: '),
+                  FormattedValue(
+                    value=Name(id='keywords', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Test 4: Overlap Calculation ---')])),
+        Assign(
+          targets=[
+            Name(id='overlap', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tool', ctx=Load()),
+              attr='execute',
+              ctx=Load()),
+            args=[
+              Constant(value='calculate_overlap')],
+            keywords=[
+              keyword(
+                arg='text',
+                value=Subscript(
+                  value=Name(id='candidates', ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load())),
+              keyword(
+                arg='keyword_set',
+                value=Name(id='keywords', ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Overlap count: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='overlap', ctx=Load()),
+                      slice=Constant(value='overlap_count'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Overlap ratio: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='overlap', ctx=Load()),
+                      slice=Constant(value='overlap_ratio'),
+                      ctx=Load()),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='.3f')]))])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Matching keywords: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='overlap', ctx=Load()),
+                      slice=Constant(value='overlap_keywords'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nTest complete\n')]))]),
+    FunctionDef(
+      name='test_validation_toolkit',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Test the validation toolkit\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n=== Testing Validation Toolkit ===\n')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='--- Test 1: Word Count Range ---')])),
+        Assign(
+          targets=[
+            Name(id='text', ctx=Store())],
+          value=Constant(value='This is a test message with exactly twenty words to check if the word count validation works correctly.')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='is_valid', ctx=Store()),
+                Name(id='details', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='ValidationToolkit', ctx=Load()),
+              attr='check_word_count_range',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='text',
+                value=Name(id='text', ctx=Load())),
+              keyword(
+                arg='target',
+                value=Constant(value=20)),
+              keyword(
+                arg='tolerance',
+                value=Constant(value=0.15))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Valid: '),
+                  FormattedValue(
+                    value=Name(id='is_valid', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Word count: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='details', ctx=Load()),
+                      slice=Constant(value='word_count'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' (target: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='details', ctx=Load()),
+                      slice=Constant(value='target'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=', range: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='details', ctx=Load()),
+                      slice=Constant(value='min_words'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='-'),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='details', ctx=Load()),
+                      slice=Constant(value='max_words'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=')')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Test 2: Forbidden Patterns ---')])),
+        Assign(
+          targets=[
+            Name(id='text_with_forbidden', ctx=Store())],
+          value=Constant(value='I hope this finds you well. I wanted to reach out and leverage our synergy.')),
+        Assign(
+          targets=[
+            Name(id='forbidden', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='\\bi hope\\b'),
+              Constant(value='\\bwanted to\\b'),
+              Constant(value='\\bleverage\\b')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='is_clean', ctx=Store()),
+                Name(id='violations', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='ValidationToolkit', ctx=Load()),
+              attr='check_forbidden_patterns',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='text',
+                value=Name(id='text_with_forbidden', ctx=Load())),
+              keyword(
+                arg='forbidden_patterns',
+                value=Name(id='forbidden', ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Clean: '),
+                  FormattedValue(
+                    value=Name(id='is_clean', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Violations: '),
+                  FormattedValue(
+                    value=Name(id='violations', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Test 3: Required Keywords ---')])),
+        Assign(
+          targets=[
+            Name(id='text_with_keywords', ctx=Store())],
+          value=Constant(value='Our AI platform helps with cloud migration and enterprise adoption.')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='all_present', ctx=Store()),
+                Name(id='counts', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='ValidationToolkit', ctx=Load()),
+              attr='check_required_keywords',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='text',
+                value=Name(id='text_with_keywords', ctx=Load())),
+              keyword(
+                arg='required_keywords',
+                value=List(
+                  elts=[
+                    Constant(value='platform'),
+                    Constant(value='cloud'),
+                    Constant(value='enterprise')],
+                  ctx=Load())),
+              keyword(
+                arg='min_count',
+                value=Constant(value=1))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='All present: '),
+                  FormattedValue(
+                    value=Name(id='all_present', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Keyword counts: '),
+                  FormattedValue(
+                    value=Name(id='counts', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nTest complete\n')]))]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Test the tool-augmented agents\n    \n    Usage:\n        python tools_LIC.py\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='test_code_interpreter', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_validation_toolkit', ctx=Load())))])])

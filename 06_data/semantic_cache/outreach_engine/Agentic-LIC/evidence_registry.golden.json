@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Registry for retrieval evidence artifacts.\"\"\"  # pragma: no cover\nfrom __future__ import annotations\n\nimport uuid\nfrom dataclasses import dataclass\nfrom typing import Dict, List, Optional\n\n\n@dataclass\nclass EvidenceRecord:\n    artifact_id: str\n    scope: str\n    company_id: str | None\n    source_url: str\n    summary: str\n    anchor_date: str\n    confidence: float\n    used_in_section: str\n\n\nclass EvidenceRegistry:\n    \"\"\"Track evidence artifacts referenced in outreach drafts.\"\"\"\n\n    def __init__(self) -> None:\n        self._records: Dict[str, EvidenceRecord] = {}\n\n    def upsert(  # pragma: no cover\n        self,  # pragma: no cover\n        scope: str,\n        company_id: str | None,\n        source_url: str,\n        summary: str,\n        anchor_date: str,\n        confidence: float,\n        used_in_section: str,\n        artifact_id: Optional[str] = None,\n    ) -> str:\n        record_id = artifact_id or str(uuid.uuid4())\n        self._records[record_id] = EvidenceRecord(\n            a",
+  "full_hash": "1e7312ee4ae32c190869edd1bda945eeb9b6c1cb5d69f5314ffc5515ddaed312",
+  "generated_at": 1764728330.5963764,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\rag\\evidence_registry.py"
+}

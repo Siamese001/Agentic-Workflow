@@ -1,0 +1,176 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Expr(
+      value=Constant(value='AIS health metrics helpers.\n\nSimple aggregation utilities over error / success events that can be\nused by tests or higher-level evaluation code.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Any')],
+      level=0),
+    FunctionDef(
+      name='compute_error_rate',
+      args=arguments(
+        args=[
+          arg(
+            arg='events',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Return fraction of events marked as errors.\n\n    Events are dicts with an optional "event_type" == "error" flag.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='events', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=0.0))]),
+        Assign(
+          targets=[
+            Name(id='errors', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='evt', ctx=Store()),
+                    iter=Name(id='events', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='evt', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='event_type')]),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='error')])],
+                    is_async=0)])])),
+        Return(
+          value=BinOp(
+            left=Name(id='errors', ctx=Load()),
+            op=Div(),
+            right=Call(
+              func=Name(id='float', ctx=Load()),
+              args=[
+                Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='events', ctx=Load())])])))],
+      returns=Name(id='float', ctx=Load())),
+    FunctionDef(
+      name='count_failures_by_code',
+      args=arguments(
+        args=[
+          arg(
+            arg='events',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Aggregate error events by their error_code field.')),
+        AnnAssign(
+          target=Name(id='counts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='int', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        For(
+          target=Name(id='evt', ctx=Store()),
+          iter=Name(id='events', ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='evt', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='event_type')]),
+                ops=[
+                  NotEq()],
+                comparators=[
+                  Constant(value='error')]),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='code', ctx=Store())],
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='evt', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='error_code')]),
+                      Constant(value='unknown')])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='counts', ctx=Load()),
+                  slice=Name(id='code', ctx=Load()),
+                  ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='counts', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='code', ctx=Load()),
+                    Constant(value=0)]),
+                op=Add(),
+                right=Constant(value=1)))]),
+        Return(
+          value=Name(id='counts', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='int', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

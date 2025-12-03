@@ -1,0 +1,78 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='infra.sandbox.microvm',
+      names=[
+        alias(name='MicroVM'),
+        alias(name='create_vm'),
+        alias(name='teardown_vm'),
+        alias(name='exec_in_vm')],
+      level=0),
+    ImportFrom(
+      module='infra.sandbox.models',
+      names=[
+        alias(name='ToolCallRequest'),
+        alias(name='ToolCallResult')],
+      level=0),
+    FunctionDef(
+      name='run_in_ephemeral_vm',
+      args=arguments(
+        args=[
+          arg(
+            arg='request',
+            annotation=Name(id='ToolCallRequest', ctx=Load())),
+          arg(
+            arg='resource_limits',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Convenience helper to run a single tool call in an ephemeral VM.\n\n    This creates a VM, executes the request, and tears the VM down,\n    ensuring cleanup even on errors.\n    ')),
+        Assign(
+          targets=[
+            Name(id='vm', ctx=Store())],
+          value=Call(
+            func=Name(id='create_vm', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='resource_limits', ctx=Load()),
+                  Dict()])])),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='exec_in_vm', ctx=Load()),
+                args=[
+                  Name(id='vm', ctx=Load()),
+                  Name(id='request', ctx=Load())]))],
+          finalbody=[
+            Expr(
+              value=Call(
+                func=Name(id='teardown_vm', ctx=Load()),
+                args=[
+                  Name(id='vm', ctx=Load())]))])],
+      returns=Name(id='ToolCallResult', ctx=Load()))])

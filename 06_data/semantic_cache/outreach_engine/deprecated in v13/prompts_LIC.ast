@@ -1,0 +1,144 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='12.0')),
+    ImportFrom(
+      module='models_LIC',
+      names=[
+        alias(name='Route'),
+        alias(name='Archetype')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='CTA_TEMPLATES', ctx=Store())],
+      value=Dict(
+        keys=[
+          Attribute(
+            value=Name(id='Route', ctx=Load()),
+            attr='CONNECTION_REQ',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Route', ctx=Load()),
+            attr='INMAIL',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Route', ctx=Load()),
+            attr='EMAIL',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Route', ctx=Load()),
+            attr='FOLLOW_UP',
+            ctx=Load())],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='default')],
+            values=[
+              Constant(value=None)]),
+          Dict(
+            keys=[
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='C_LEVEL',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='EXECUTIVE',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='SENIOR_TA',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='RECRUITER',
+                ctx=Load())],
+            values=[
+              Constant(value='Would you be open to a brief conversation about how [TOPIC] might align with your strategic priorities?'),
+              Constant(value="I'd welcome the chance to discuss how [TOPIC] could support your team's objectives."),
+              Dict(
+                keys=[
+                  Constant(value='direct'),
+                  Constant(value='deferential')],
+                values=[
+                  Constant(value='Would you have 15 minutes to discuss [TECHNICAL_TOPIC]?'),
+                  Constant(value="If this aligns with your team's direction, I'd appreciate any guidance you could share.")]),
+              Constant(value="Would you be open to a conversation about roles that might match your team's needs?")]),
+          Dict(
+            keys=[
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='C_LEVEL',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='EXECUTIVE',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='SENIOR_TA',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='Archetype', ctx=Load()),
+                attr='RECRUITER',
+                ctx=Load())],
+            values=[
+              Constant(value="I'd value the opportunity to explore how [TOPIC] aligns with your vision for [COMPANY]."),
+              Constant(value='Would you be open to a brief call to discuss [TOPIC]?'),
+              Dict(
+                keys=[
+                  Constant(value='direct'),
+                  Constant(value='deferential')],
+                values=[
+                  Constant(value='Could we schedule 20 minutes to dive into [TECHNICAL_TOPIC]?'),
+                  Constant(value="If this resonates with your team's roadmap, I'd be grateful for any insights you could offer.")]),
+              Constant(value="I'd welcome a conversation about potential opportunities that could benefit your team.")]),
+          Dict(
+            keys=[
+              Constant(value='default')],
+            values=[
+              Constant(value='Following up on my previous message - would you have time for a brief conversation this week?')])])),
+    Assign(
+      targets=[
+        Name(id='ARCHETYPE_PROMPT_TEMPLATES', ctx=Store())],
+      value=Dict(
+        keys=[
+          Attribute(
+            value=Name(id='Archetype', ctx=Load()),
+            attr='C_LEVEL',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Archetype', ctx=Load()),
+            attr='EXECUTIVE',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Archetype', ctx=Load()),
+            attr='SENIOR_TA',
+            ctx=Load()),
+          Attribute(
+            value=Name(id='Archetype', ctx=Load()),
+            attr='RECRUITER',
+            ctx=Load())],
+        values=[
+          Constant(value='\nYou are crafting an executive-level message that demonstrates thought leadership and strategic alignment.\n\nTONE: Strategic, confident, focused on business impact and organizational transformation.\nAPPROACH: Lead with macro trends, demonstrate understanding of strategic challenges, position yourself as a peer with complementary expertise.\nAVOID: Tactical details, overt sales language, assumptions about their specific pain points.\n\nKEY PRINCIPLES:\n- Speak to business outcomes, not features\n- Use industry context and market trends\n- Demonstrate strategic thinking\n- Position as a peer conversation, not a pitch\n- Reference organizational transformation and competitive advantage\n    '),
+          Constant(value="\nYou are crafting a professional message that emphasizes collaboration and mutual value.\n\nTONE: Professional, collaborative, focused on team objectives and operational excellence.\nAPPROACH: Reference their role and responsibilities, demonstrate understanding of their team's challenges, offer concrete value.\nAVOID: Overly formal language, generic value propositions, excessive deference.\n\nKEY PRINCIPLES:\n- Focus on team impact and operational outcomes\n- Demonstrate understanding of their domain\n- Offer specific, actionable value\n- Balance professionalism with warmth\n- Show respect for their time and priorities\n    "),
+          Constant(value='\nYou are crafting a technical message for a senior technical authority (architect, principal engineer, tech lead).\n\nTONE: Technical peer, respectful but confident, focused on architectural decisions and technical excellence.\nAPPROACH: Reference specific technologies or patterns, demonstrate technical credibility, respect their authority on technical direction.\nAVOID: Marketing language, oversimplification of technical concepts, challenging their technical decisions.\n\nKEY PRINCIPLES:\n- Use appropriate technical terminology\n- Reference specific technologies, frameworks, or patterns\n- Demonstrate deep technical understanding\n- Position as a technical peer, not a subordinate\n- Show respect for their architectural decisions\n- Focus on technical challenges and solutions\n    '),
+          Constant(value='\nYou are crafting a job-focused message that centers on role fit and candidate qualifications.\n\nTONE: Warm, professional, focused on alignment between candidate skills and role requirements.\nAPPROACH: Lead with relevant experience, highlight specific skills that match job description, emphasize career growth potential.\nAVOID: Generic qualifications, vague interest statements, over-selling unrelated experience.\n\nKEY PRINCIPLES:\n- Lead with most relevant experience\n- Connect specific skills to job requirements\n- Show enthusiasm for the role and company\n- Demonstrate understanding of the position\n- Focus on mutual fit, not just interest\n- Be concise and scannable\n    ')])),
+    Assign(
+      targets=[
+        Name(id='SENDER_VOICE_PROFILE_TEMPLATE', ctx=Store())],
+      value=Constant(value='\nSENDER PERSONA: {persona}\n\nSTYLE ATTRIBUTES:\n{style_attributes}\n\nPREFERRED LANGUAGE:\n{preferred_phrases}\n\nFORBIDDEN PHRASES (NEVER USE):\n{forbidden_phrases}\n\nCOMMUNICATION PRINCIPLES:\n- Write as a peer, not a supplicant\n- Lead with value, not need\n- Use active voice and confident phrasing\n- Avoid hedging language ("I think", "maybe", "perhaps")\n- Be direct but respectful\n- Focus on outcomes, not activities\n')),
+    Assign(
+      targets=[
+        Name(id='RAG_CRITIQUE_PROMPT', ctx=Store())],
+      value=Constant(value='\nYou are a research quality assessor. Evaluate the following research findings for gaps and weaknesses.\n\nRESEARCH FINDINGS:\n{rag_summary}\n\nASSESSMENT CRITERIA:\n1. Recency: Are findings current (< 90 days preferred)?\n2. Specificity: Do we have recipient-specific insights vs. generic company info?\n3. Signal Quality: Are sources authoritative (LinkedIn, blog posts, press releases)?\n4. Coverage: Do we have insights across multiple dimensions (role, company, recent activity)?\n5. Actionability: Can these findings inform personalized outreach?\n\nIDENTIFY:\n- Critical gaps in research coverage\n- Weak or outdated sources\n- Missing recipient-specific insights\n- Areas requiring refinement\n\nOUTPUT FORMAT:\nCONFIDENCE_SCORE: [0.0-1.0]\nGAPS: [list specific gaps]\nREFINEMENT_TASKS: [specific searches to run]\nIS_SUFFICIENT: [true/false]\nREASONING: [brief explanation]\n')),
+    Assign(
+      targets=[
+        Name(id='ADVERSARIAL_CRITIQUE_PROMPT', ctx=Store())],
+      value=Constant(value='\nYou are a skeptical research auditor. Your job is to find weaknesses in the research findings.\n\nRESEARCH CONTEXT:\n{research_summary}\n\nADVERSARIAL REVIEW:\nChallenge these findings by identifying:\n1. Unsupported claims or logical leaps\n2. Outdated information that may no longer be relevant\n3. Generic statements that could apply to any company/person\n4. Missing critical context for personalization\n5. Gaps where additional research would significantly improve message quality\n\nBe ruthless. If something seems weak, call it out. If a claim needs more support, flag it.\n\nOUTPUT FORMAT (one finding per line):\n- [Finding 1]\n- [Finding 2]\n- [Finding 3]\n')),
+    Assign(
+      targets=[
+        Name(id='GENERATION_SYSTEM_PROMPT', ctx=Store())],
+      value=Constant(value='\nYou are an expert at crafting personalized, high-signal professional outreach messages.\n\nCORE PRINCIPLES:\n1. Every word must count - no filler, no generic statements\n2. Ground all claims in research evidence\n3. Write as a peer, not a supplicant\n4. Lead with value, not need\n5. Be specific and concrete, never vague\n6. Use active voice and confident phrasing\n\nFORBIDDEN:\n- Placeholder text like [TOPIC], [COMPANY], etc.\n- Weak phrases: "I hope", "I wanted to", "just reaching out"\n- Corporate clichés: "spearheaded", "leveraged", "synergized"\n- Generic statements that could apply to anyone\n- Unsupported claims about sender capabilities\n\nREQUIRED:\n- Specific references to recipient\'s work, role, or recent activity\n- Clear connection between sender experience and recipient needs\n- Concrete value proposition\n- Natural, conversational tone\n- Perfect grammar and professional formatting\n'))])

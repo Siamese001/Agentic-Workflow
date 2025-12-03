@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Shared constants and helpers for core v10.7.\"\"\"\nfrom __future__ import annotations\n\nLEGACY_MODEL_ALIASES = {\n    \"gemini-2.5-pro\": \"gemini-pro\",\n    \"gemini-2.5-flash\": \"gemini-flash\",\n}\n\nLEGACY_MODEL_REVERSE = {alias: original for original, alias in LEGACY_MODEL_ALIASES.items()}\n\n\ndef legacy_model_alias(model_name: str) -> str:\n    \"\"\"Return the canonical alias for legacy Gemini model names.\"\"\"\n\n    return LEGACY_MODEL_ALIASES.get(model_name, model_name)\n\n\ndef canonical_model_name(model_name: str) -> str:\n    \"\"\"Map aliased model names back to the canonical identifier.\"\"\"\n\n    return LEGACY_MODEL_REVERSE.get(model_name, model_name)\n\n\n__all__ = [\n    \"LEGACY_MODEL_ALIASES\",\n    \"LEGACY_MODEL_REVERSE\",\n    \"legacy_model_alias\",\n    \"canonical_model_name\",\n]\n",
+  "full_hash": "c3fd74cfb71353e3b47f2caf522c95b82f66361fda72ea81cad44284d2a53265",
+  "generated_at": 1764728328.3820086,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\constants.py"
+}

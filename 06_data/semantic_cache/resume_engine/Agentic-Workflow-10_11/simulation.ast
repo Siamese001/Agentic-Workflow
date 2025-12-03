@@ -1,0 +1,3004 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nPhase-3 Simulation Harness (v10_10) — Batch D (Testing & Simulation)\n====================================================================\n\nThis module provides a meta-level simulation system for the v10_10 stack.\n\nIt focuses on:\n\n  • Exercising the Phase-3 knobs across multiple scenarios:\n        - HYDE enabled vs disabled\n        - RRF strategies\n        - QA council size\n        - Correction-loop depth\n        - Telemetry routing modes\n\n  • Using the real entrypoints:\n        - main_v10_10.run_workflow (single-job)\n        - run_batch_v10_10.run_batch (optional batch helper)\n\n  • Producing deterministic, machine-verifiable artefacts:\n        - Per-scenario summaries\n        - Outcome statistics (success/failure, corrections, council behaviour)\n        - Telemetry/event counts\n        - Optional golden evaluation reports (via golden_eval)\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='itertools',
+      names=[
+        alias(name='product')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Mapping'),
+        alias(name='Optional'),
+        alias(name='Sequence'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='tools.main_v10_10',
+      names=[
+        alias(name='run_workflow'),
+        alias(name='RRFStrategy'),
+        alias(name='TelemetryRoutingMode')],
+      level=0),
+    ImportFrom(
+      module='tools.golden_eval',
+      names=[
+        alias(name='GOLDEN_SCENARIOS'),
+        alias(name='GoldenScenario'),
+        alias(name='ScenarioKnobs'),
+        alias(name='EvalReport'),
+        alias(name='evaluate_patch')],
+      level=0),
+    ImportFrom(
+      module='observability',
+      names=[
+        alias(name='emit_scenario_start_event'),
+        alias(name='emit_scenario_end_event'),
+        alias(name='emit_scenario_simulation_event')],
+      level=0),
+    ImportFrom(
+      module='tools.run_batch_v10_10',
+      names=[
+        alias(name='run_batch'),
+        alias(name='BatchJobResult'),
+        alias(name='BatchTelemetrySummary')],
+      level=0),
+    FunctionDef(
+      name='_as_mapping',
+      args=arguments(
+        args=[
+          arg(
+            arg='obj',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Best-effort conversion of arbitrary objects into a mapping view.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='obj', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(value=Dict())]),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Name(id='Mapping', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='obj', ctx=Load()))]),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Constant(value='model_dump')]),
+          body=[
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='obj', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load())))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='TypeError', ctx=Load()),
+                  body=[
+                    Pass()])])]),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Constant(value='dict')]),
+          body=[
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='obj', ctx=Load()),
+                      attr='dict',
+                      ctx=Load())))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='TypeError', ctx=Load()),
+                  body=[
+                    Pass()])])]),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Constant(value='__dict__')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='obj', ctx=Load()),
+                    attr='__dict__',
+                    ctx=Load())]))]),
+        Return(value=Dict())],
+      returns=Subscript(
+        value=Name(id='Mapping', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_extract_state_patch',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Try to recover the final state patch from a WorkflowOutput-like object.\n\n    We intentionally support multiple shapes to keep this resilient to\n    small refactors in the runtime layer.\n    ')),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='state_patch')])),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='patch', ctx=Load()),
+              Name(id='Mapping', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='patch', ctx=Load()))]),
+        For(
+          target=Name(id='key', ctx=Store()),
+          iter=Tuple(
+            elts=[
+              Constant(value='final_state_patch'),
+              Constant(value='l4_state_patch'),
+              Constant(value='workflow_state')],
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='candidate', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='candidate', ctx=Load()),
+                  Name(id='Mapping', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='nested', ctx=Store())],
+                  value=IfExp(
+                    test=Call(
+                      func=Name(id='isinstance', ctx=Load()),
+                      args=[
+                        Name(id='candidate', ctx=Load()),
+                        Name(id='Mapping', ctx=Load())]),
+                    body=Call(
+                      func=Attribute(
+                        value=Name(id='candidate', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='state_patch')]),
+                    orelse=Constant(value=None))),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='nested', ctx=Load()),
+                      Name(id='Mapping', ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Name(id='nested', ctx=Load()))]),
+                Return(
+                  value=Name(id='candidate', ctx=Load()))])]),
+        Return(value=Dict())],
+      returns=Subscript(
+        value=Name(id='Mapping', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_extract_l2_results',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='l2', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='l2_results')])),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='l2', ctx=Load()),
+              Name(id='Mapping', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='l2', ctx=Load()))]),
+        Return(value=Dict())],
+      returns=Subscript(
+        value=Name(id='Mapping', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_build_snapshot',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build a trimmed, stable snapshot from a workflow result for CI output.\n    ')),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Call(
+            func=Name(id='_extract_state_patch', ctx=Load()),
+            args=[
+              Name(id='result', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='l2', ctx=Store())],
+          value=Call(
+            func=Name(id='_extract_l2_results', ctx=Load()),
+            args=[
+              Name(id='result', ctx=Load())])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='state_patch'),
+              Constant(value='l2_results')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='strategy_text'),
+                  Constant(value='rag_evidence'),
+                  Constant(value='drafted_sections'),
+                  Constant(value='qa_findings'),
+                  Constant(value='safety_findings'),
+                  Constant(value='correction_signals'),
+                  Constant(value='safety_passed')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='strategy_text')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='rag_evidence')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='drafted_sections')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='qa_findings')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety_findings')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='correction_signals')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety_passed')])]),
+              Dict(
+                keys=[
+                  Constant(value='strategy'),
+                  Constant(value='rag'),
+                  Constant(value='drafting'),
+                  Constant(value='qa'),
+                  Constant(value='safety')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='l2', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='strategy')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='l2', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='rag')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='l2', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='drafting')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='l2', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='qa')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='l2', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety')])])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_summarise_telemetry',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='patch',
+            annotation=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Approximate telemetry summary: presence + simple counts.\n    ')),
+        Assign(
+          targets=[
+            Name(id='events', ctx=Store())],
+          value=Constant(value=None)),
+        For(
+          target=Name(id='container', ctx=Store()),
+          iter=Tuple(
+            elts=[
+              Name(id='result', ctx=Load()),
+              Name(id='patch', ctx=Load())],
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cand', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='container', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='telemetry_events')])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='cand', ctx=Load()),
+                  Name(id='list', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='events', ctx=Store())],
+                  value=Name(id='cand', ctx=Load())),
+                Break()])]),
+        Assign(
+          targets=[
+            Name(id='num_events', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='events', ctx=Load()),
+                Name(id='list', ctx=Load())]),
+            body=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='events', ctx=Load())]),
+            orelse=Constant(value=0))),
+        Assign(
+          targets=[
+            Name(id='observability', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='observability')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='observability')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='counts', ctx=Store())],
+          value=Dict()),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='observability', ctx=Load()),
+              Name(id='Mapping', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='counts_obj', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='observability', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='telemetry_counts')])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='counts_obj', ctx=Load()),
+                  Name(id='Mapping', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='counts', ctx=Store())],
+                  value=Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Name(id='counts_obj', ctx=Load())]))])]),
+        Assign(
+          targets=[
+            Name(id='has_telemetry', ctx=Store())],
+          value=Call(
+            func=Name(id='bool', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='num_events', ctx=Load()),
+                  Name(id='counts', ctx=Load())])])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='has_telemetry'),
+              Constant(value='num_events'),
+              Constant(value='counts')],
+            values=[
+              Name(id='has_telemetry', ctx=Load()),
+              Name(id='num_events', ctx=Load()),
+              Name(id='counts', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_summarise_outcome',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='patch',
+            annotation=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='eval_report',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='EvalReport', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='council_size',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='correction_max_iterations',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Collate outcome-level statistics used by tests and CI dashboards.\n    ')),
+        Assign(
+          targets=[
+            Name(id='safety_passed', ctx=Store())],
+          value=Call(
+            func=Name(id='bool', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='safety_passed'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='patch', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety_passed'),
+                      Constant(value=True)])])])),
+        Assign(
+          targets=[
+            Name(id='corrected', ctx=Store())],
+          value=Call(
+            func=Name(id='bool', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='corrected'),
+                  Constant(value=False)])])),
+        Assign(
+          targets=[
+            Name(id='qa_findings', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_findings')]),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='qa_findings', ctx=Load()),
+                Name(id='list', ctx=Load())])),
+          body=[
+            Assign(
+              targets=[
+                Name(id='qa_findings', ctx=Store())],
+              value=List(ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='num_qa_failed', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='f', ctx=Store()),
+                    iter=Name(id='qa_findings', ctx=Load()),
+                    ifs=[
+                      UnaryOp(
+                        op=Not(),
+                        operand=Call(
+                          func=Name(id='bool', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Call(
+                                  func=Name(id='_as_mapping', ctx=Load()),
+                                  args=[
+                                    Name(id='f', ctx=Load())]),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='passed'),
+                                Constant(value=False)])]))],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='safety_findings', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='safety_findings')]),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='safety_findings', ctx=Load()),
+                Name(id='list', ctx=Load())])),
+          body=[
+            Assign(
+              targets=[
+                Name(id='safety_findings', ctx=Store())],
+              value=List(ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='num_blocking_safety', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='f', ctx=Store()),
+                    iter=Name(id='safety_findings', ctx=Load()),
+                    ifs=[
+                      Call(
+                        func=Name(id='bool', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Name(id='_as_mapping', ctx=Load()),
+                                args=[
+                                  Name(id='f', ctx=Load())]),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='blocking'),
+                              Constant(value=False)])])],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='correction_state', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='correction_loop_state')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='correction_state')]),
+              Dict()])),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='correction_state', ctx=Load()),
+              Name(id='Mapping', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='corr_iteration', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='correction_state', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='iteration'),
+                          Constant(value=0)]),
+                      Constant(value=0)])])),
+            Assign(
+              targets=[
+                Name(id='corr_reason', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='correction_state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='terminated_reason')]))],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='corr_iteration', ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Name(id='corr_reason', ctx=Store())],
+              value=Constant(value=None))]),
+        Assign(
+          targets=[
+            Name(id='eval_passed', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='eval_report', ctx=Load()),
+              ops=[
+                IsNot()],
+              comparators=[
+                Constant(value=None)]),
+            body=Attribute(
+              value=Name(id='eval_report', ctx=Load()),
+              attr='passed',
+              ctx=Load()),
+            orelse=Constant(value=None))),
+        Assign(
+          targets=[
+            Name(id='eval_score', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='eval_report', ctx=Load()),
+              ops=[
+                IsNot()],
+              comparators=[
+                Constant(value=None)]),
+            body=Attribute(
+              value=Name(id='eval_report', ctx=Load()),
+              attr='total_score',
+              ctx=Load()),
+            orelse=Constant(value=None))),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='safety_passed'),
+              Constant(value='corrected'),
+              Constant(value='num_qa_failed'),
+              Constant(value='num_blocking_safety_findings'),
+              Constant(value='correction_iterations'),
+              Constant(value='correction_terminated_reason'),
+              Constant(value='council_size'),
+              Constant(value='correction_max_iterations'),
+              Constant(value='golden_eval_passed'),
+              Constant(value='golden_eval_score')],
+            values=[
+              Name(id='safety_passed', ctx=Load()),
+              Name(id='corrected', ctx=Load()),
+              Name(id='num_qa_failed', ctx=Load()),
+              Name(id='num_blocking_safety', ctx=Load()),
+              Name(id='corr_iteration', ctx=Load()),
+              Name(id='corr_reason', ctx=Load()),
+              Name(id='council_size', ctx=Load()),
+              Name(id='correction_max_iterations', ctx=Load()),
+              Name(id='eval_passed', ctx=Load()),
+              Name(id='eval_score', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='SimulationKnobs',
+      body=[
+        Expr(
+          value=Constant(value='\n    Concrete knob settings used for a simulation run.\n\n    This mirrors Phase3Knobs but stays local to the simulation layer.\n    ')),
+        AnnAssign(
+          target=Name(id='hyde_enabled', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rrf_strategy', ctx=Store()),
+          annotation=Name(id='RRFStrategy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rrf_weights', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Mapping', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='council_size', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='correction_loop_max_iterations', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='telemetry_routing_mode', ctx=Store()),
+          annotation=Name(id='TelemetryRoutingMode', ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='from_scenario_knobs',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='knobs',
+                annotation=Name(id='ScenarioKnobs', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='cls', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='hyde_enabled',
+                    value=Call(
+                      func=Name(id='bool', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='knobs', ctx=Load()),
+                          attr='hyde_enabled',
+                          ctx=Load())])),
+                  keyword(
+                    arg='rrf_strategy',
+                    value=Call(
+                      func=Name(id='RRFStrategy', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='knobs', ctx=Load()),
+                          attr='rrf_strategy',
+                          ctx=Load())])),
+                  keyword(
+                    arg='rrf_weights',
+                    value=Attribute(
+                      value=Name(id='knobs', ctx=Load()),
+                      attr='rrf_weights',
+                      ctx=Load())),
+                  keyword(
+                    arg='council_size',
+                    value=Call(
+                      func=Name(id='int', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='knobs', ctx=Load()),
+                          attr='council_size',
+                          ctx=Load())])),
+                  keyword(
+                    arg='correction_loop_max_iterations',
+                    value=Call(
+                      func=Name(id='int', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='knobs', ctx=Load()),
+                          attr='correction_loop_max_iterations',
+                          ctx=Load())])),
+                  keyword(
+                    arg='telemetry_routing_mode',
+                    value=Call(
+                      func=Name(id='TelemetryRoutingMode', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='knobs', ctx=Load()),
+                          attr='telemetry_routing_mode',
+                          ctx=Load())]))]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Constant(value='SimulationKnobs')),
+        FunctionDef(
+          name='to_kwargs',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='hyde_enabled'),
+                  Constant(value='rrf_strategy'),
+                  Constant(value='rrf_weights'),
+                  Constant(value='council_size'),
+                  Constant(value='correction_loop_max_iterations'),
+                  Constant(value='telemetry_routing_mode')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='hyde_enabled',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rrf_strategy',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rrf_weights',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='council_size',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='correction_loop_max_iterations',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry_routing_mode',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SimulationResult',
+      body=[
+        Expr(
+          value=Constant(value='\n    Structured result for a single simulation run.\n    ')),
+        AnnAssign(
+          target=Name(id='scenario_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='knobs', ctx=Store()),
+          annotation=Name(id='SimulationKnobs', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='outcome', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='telemetry', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='eval_report', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='EvalReport', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='state_patch', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Mapping', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='snapshot', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Mapping', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='scenario_id'),
+                  Constant(value='description'),
+                  Constant(value='workflow_id'),
+                  Constant(value='knobs'),
+                  Constant(value='outcome'),
+                  Constant(value='telemetry'),
+                  Constant(value='eval_report'),
+                  Constant(value='state_patch'),
+                  Constant(value='snapshot')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='scenario_id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='description',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='workflow_id',
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='hyde_enabled'),
+                      Constant(value='rrf_strategy'),
+                      Constant(value='rrf_weights'),
+                      Constant(value='council_size'),
+                      Constant(value='correction_loop_max_iterations'),
+                      Constant(value='telemetry_routing_mode')],
+                    values=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='knobs',
+                          ctx=Load()),
+                        attr='hyde_enabled',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='knobs',
+                            ctx=Load()),
+                          attr='rrf_strategy',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      IfExp(
+                        test=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='knobs',
+                            ctx=Load()),
+                          attr='rrf_weights',
+                          ctx=Load()),
+                        body=Call(
+                          func=Name(id='dict', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='knobs',
+                                ctx=Load()),
+                              attr='rrf_weights',
+                              ctx=Load())]),
+                        orelse=Constant(value=None)),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='knobs',
+                          ctx=Load()),
+                        attr='council_size',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='knobs',
+                          ctx=Load()),
+                        attr='correction_loop_max_iterations',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='knobs',
+                            ctx=Load()),
+                          attr='telemetry_routing_mode',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='outcome',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='telemetry',
+                    ctx=Load()),
+                  IfExp(
+                    test=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='eval_report',
+                      ctx=Load()),
+                    body=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='eval_report',
+                          ctx=Load()),
+                        attr='model_dump',
+                        ctx=Load())),
+                    orelse=Constant(value=None)),
+                  Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='state_patch',
+                        ctx=Load())]),
+                  Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='snapshot',
+                        ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    AsyncFunctionDef(
+      name='_run_with_golden_scenario',
+      args=arguments(
+        args=[
+          arg(
+            arg='golden',
+            annotation=Name(id='GoldenScenario', ctx=Load())),
+          arg(
+            arg='overrides',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Run a single GoldenScenario through the real entrypoint and evaluate it.\n    ')),
+        Assign(
+          targets=[
+            Name(id='overrides', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='overrides', ctx=Load()),
+              Dict()])),
+        AnnAssign(
+          target=Name(id='user_request', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='overrides', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='user_request')]),
+              Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='scenario_id'),
+                  Constant(value='description')],
+                values=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Golden scenario '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='golden', ctx=Load()),
+                          attr='scenario_id',
+                          ctx=Load()),
+                        conversion=-1)]),
+                  Attribute(
+                    value=Name(id='golden', ctx=Load()),
+                    attr='scenario_id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='golden', ctx=Load()),
+                    attr='description',
+                    ctx=Load())])]),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='execution_profile_name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='overrides', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='execution_profile_name'),
+              Constant(value='default')])),
+        Assign(
+          targets=[
+            Name(id='routing_policy_name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='overrides', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='routing_policy_name'),
+              Constant(value='default')])),
+        Assign(
+          targets=[
+            Name(id='sandbox_profile_name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='overrides', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='sandbox_profile_name'),
+              Constant(value='default')])),
+        Assign(
+          targets=[
+            Name(id='meta_profile_name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='overrides', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='meta_profile_name'),
+              Constant(value='default')])),
+        Assign(
+          targets=[
+            Name(id='extra_workflow_metadata', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='overrides', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='extra_workflow_metadata')])),
+        Assign(
+          targets=[
+            Name(id='sim_knobs', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='SimulationKnobs', ctx=Load()),
+              attr='from_scenario_knobs',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='golden', ctx=Load()),
+                attr='knobs',
+                ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='emit_scenario_start_event', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='workflow_id',
+                value=Constant(value=None)),
+              keyword(
+                arg='scenario_id',
+                value=Attribute(
+                  value=Name(id='golden', ctx=Load()),
+                  attr='scenario_id',
+                  ctx=Load())),
+              keyword(
+                arg='description',
+                value=Attribute(
+                  value=Name(id='golden', ctx=Load()),
+                  attr='description',
+                  ctx=Load()))])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='raw_output', ctx=Store())],
+              value=Call(
+                func=Name(id='run_workflow', ctx=Load()),
+                args=[
+                  Name(id='user_request', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='execution_profile_name',
+                    value=Name(id='execution_profile_name', ctx=Load())),
+                  keyword(
+                    arg='routing_policy_name',
+                    value=Name(id='routing_policy_name', ctx=Load())),
+                  keyword(
+                    arg='sandbox_profile_name',
+                    value=Name(id='sandbox_profile_name', ctx=Load())),
+                  keyword(
+                    arg='meta_profile_name',
+                    value=Name(id='meta_profile_name', ctx=Load())),
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='sim_knobs', ctx=Load()),
+                        attr='to_kwargs',
+                        ctx=Load()))),
+                  keyword(
+                    arg='extra_workflow_metadata',
+                    value=Name(id='extra_workflow_metadata', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='result_map', ctx=Store())],
+              value=Call(
+                func=Name(id='_as_mapping', ctx=Load()),
+                args=[
+                  Name(id='raw_output', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='patch', ctx=Store())],
+              value=Call(
+                func=Name(id='_extract_state_patch', ctx=Load()),
+                args=[
+                  Name(id='result_map', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='snapshot', ctx=Store())],
+              value=Call(
+                func=Name(id='_build_snapshot', ctx=Load()),
+                args=[
+                  Name(id='result_map', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='eval_report', ctx=Store())],
+              value=Call(
+                func=Name(id='evaluate_patch', ctx=Load()),
+                args=[
+                  Name(id='patch', ctx=Load()),
+                  Attribute(
+                    value=Name(id='golden', ctx=Load()),
+                    attr='expectation',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='telemetry', ctx=Store())],
+              value=Call(
+                func=Name(id='_summarise_telemetry', ctx=Load()),
+                args=[
+                  Name(id='result_map', ctx=Load()),
+                  Name(id='patch', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='outcome', ctx=Store())],
+              value=Call(
+                func=Name(id='_summarise_outcome', ctx=Load()),
+                args=[
+                  Name(id='result_map', ctx=Load()),
+                  Name(id='patch', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='eval_report',
+                    value=Name(id='eval_report', ctx=Load())),
+                  keyword(
+                    arg='council_size',
+                    value=Attribute(
+                      value=Name(id='sim_knobs', ctx=Load()),
+                      attr='council_size',
+                      ctx=Load())),
+                  keyword(
+                    arg='correction_max_iterations',
+                    value=Attribute(
+                      value=Name(id='sim_knobs', ctx=Load()),
+                      attr='correction_loop_max_iterations',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='workflow_id', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='result_map', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='workflow_id')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='exc',
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='patch', ctx=Store())],
+                  value=Dict()),
+                Assign(
+                  targets=[
+                    Name(id='snapshot', ctx=Store())],
+                  value=Dict()),
+                Assign(
+                  targets=[
+                    Name(id='telemetry', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='has_telemetry'),
+                      Constant(value='num_events'),
+                      Constant(value='counts')],
+                    values=[
+                      Constant(value=False),
+                      Constant(value=0),
+                      Dict()])),
+                Assign(
+                  targets=[
+                    Name(id='outcome', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='safety_passed'),
+                      Constant(value='corrected'),
+                      Constant(value='num_qa_failed'),
+                      Constant(value='num_blocking_safety_findings'),
+                      Constant(value='correction_iterations'),
+                      Constant(value='correction_terminated_reason'),
+                      Constant(value='council_size'),
+                      Constant(value='correction_max_iterations'),
+                      Constant(value='golden_eval_passed'),
+                      Constant(value='golden_eval_score')],
+                    values=[
+                      Constant(value=False),
+                      Constant(value=False),
+                      Constant(value=0),
+                      Constant(value=0),
+                      Constant(value=0),
+                      JoinedStr(
+                        values=[
+                          Constant(value='error:'),
+                          FormattedValue(
+                            value=Name(id='exc', ctx=Load()),
+                            conversion=-1)]),
+                      Attribute(
+                        value=Name(id='sim_knobs', ctx=Load()),
+                        attr='council_size',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='sim_knobs', ctx=Load()),
+                        attr='correction_loop_max_iterations',
+                        ctx=Load()),
+                      Constant(value=False),
+                      Constant(value=0.0)])),
+                Assign(
+                  targets=[
+                    Name(id='eval_report', ctx=Store())],
+                  value=Constant(value=None)),
+                Assign(
+                  targets=[
+                    Name(id='workflow_id', ctx=Store())],
+                  value=Constant(value=None))])]),
+        Assign(
+          targets=[
+            Name(id='sim_result', ctx=Store())],
+          value=Call(
+            func=Name(id='SimulationResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='scenario_id',
+                value=Attribute(
+                  value=Name(id='golden', ctx=Load()),
+                  attr='scenario_id',
+                  ctx=Load())),
+              keyword(
+                arg='description',
+                value=Attribute(
+                  value=Name(id='golden', ctx=Load()),
+                  attr='description',
+                  ctx=Load())),
+              keyword(
+                arg='workflow_id',
+                value=Name(id='workflow_id', ctx=Load())),
+              keyword(
+                arg='knobs',
+                value=Name(id='sim_knobs', ctx=Load())),
+              keyword(
+                arg='outcome',
+                value=Name(id='outcome', ctx=Load())),
+              keyword(
+                arg='telemetry',
+                value=Name(id='telemetry', ctx=Load())),
+              keyword(
+                arg='eval_report',
+                value=Name(id='eval_report', ctx=Load())),
+              keyword(
+                arg='state_patch',
+                value=Name(id='patch', ctx=Load())),
+              keyword(
+                arg='snapshot',
+                value=Name(id='snapshot', ctx=Load()))])),
+        Try(
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='emit_scenario_end_event', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_id',
+                    value=Attribute(
+                      value=Name(id='sim_result', ctx=Load()),
+                      attr='workflow_id',
+                      ctx=Load())),
+                  keyword(
+                    arg='scenario_id',
+                    value=Attribute(
+                      value=Name(id='sim_result', ctx=Load()),
+                      attr='scenario_id',
+                      ctx=Load())),
+                  keyword(
+                    arg='passed',
+                    value=IfExp(
+                      test=Attribute(
+                        value=Name(id='sim_result', ctx=Load()),
+                        attr='eval_report',
+                        ctx=Load()),
+                      body=Attribute(
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='eval_report',
+                          ctx=Load()),
+                        attr='passed',
+                        ctx=Load()),
+                      orelse=Constant(value=None))),
+                  keyword(
+                    arg='score',
+                    value=IfExp(
+                      test=Attribute(
+                        value=Name(id='sim_result', ctx=Load()),
+                        attr='eval_report',
+                        ctx=Load()),
+                      body=Attribute(
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='eval_report',
+                          ctx=Load()),
+                        attr='total_score',
+                        ctx=Load()),
+                      orelse=Constant(value=None)))])),
+            Expr(
+              value=Call(
+                func=Name(id='emit_scenario_simulation_event', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_id',
+                    value=Attribute(
+                      value=Name(id='sim_result', ctx=Load()),
+                      attr='workflow_id',
+                      ctx=Load())),
+                  keyword(
+                    arg='scenario_id',
+                    value=Attribute(
+                      value=Name(id='sim_result', ctx=Load()),
+                      attr='scenario_id',
+                      ctx=Load())),
+                  keyword(
+                    arg='outcome',
+                    value=Attribute(
+                      value=Name(id='sim_result', ctx=Load()),
+                      attr='outcome',
+                      ctx=Load())),
+                  keyword(
+                    arg='telemetry',
+                    value=Attribute(
+                      value=Name(id='sim_result', ctx=Load()),
+                      attr='telemetry',
+                      ctx=Load())),
+                  keyword(
+                    arg='error_taxonomy',
+                    value=Constant(value=None))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Pass()])]),
+        Return(
+          value=Name(id='sim_result', ctx=Load()))],
+      returns=Name(id='SimulationResult', ctx=Load())),
+    AsyncFunctionDef(
+      name='_run_knob_matrix_async',
+      args=arguments(
+        args=[
+          arg(
+            arg='user_request',
+            annotation=Name(id='Any', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='hyde_values',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='bool', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='council_sizes',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='correction_depths',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='telemetry_modes',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='execution_profile_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='routing_policy_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='sandbox_profile_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='meta_profile_name',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Tuple(
+            elts=[
+              Constant(value=False),
+              Constant(value=True)],
+            ctx=Load()),
+          Tuple(
+            elts=[
+              Constant(value=1),
+              Constant(value=3)],
+            ctx=Load()),
+          Tuple(
+            elts=[
+              Constant(value=0),
+              Constant(value=1),
+              Constant(value=2)],
+            ctx=Load()),
+          Tuple(
+            elts=[
+              Constant(value='log_only'),
+              Constant(value='enforced')],
+            ctx=Load()),
+          Constant(value='default'),
+          Constant(value='default'),
+          Constant(value='default'),
+          Constant(value='default')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Run a matrix of simulations across the HYDE / council / correction /\n    telemetry dimensions.\n\n    This uses the same run_workflow entrypoint as the golden scenarios but\n    does not attach a GoldenExpectation. It is intended for stress-testing\n    and diagnostics (e.g., ensuring no combination explodes).\n    ')),
+        AnnAssign(
+          target=Name(id='results', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='SimulationResult', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='hyde_enabled', ctx=Store()),
+              Name(id='council_size', ctx=Store()),
+              Name(id='depth', ctx=Store()),
+              Name(id='telemetry_mode', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='product', ctx=Load()),
+            args=[
+              Name(id='hyde_values', ctx=Load()),
+              Name(id='council_sizes', ctx=Load()),
+              Name(id='correction_depths', ctx=Load()),
+              Name(id='telemetry_modes', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='scenario_id', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='matrix_hyde_'),
+                  FormattedValue(
+                    value=IfExp(
+                      test=Name(id='hyde_enabled', ctx=Load()),
+                      body=Constant(value='on'),
+                      orelse=Constant(value='off')),
+                    conversion=-1),
+                  Constant(value='__council_'),
+                  FormattedValue(
+                    value=Name(id='council_size', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='__corr_'),
+                  FormattedValue(
+                    value=Name(id='depth', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='__telemetry_'),
+                  FormattedValue(
+                    value=Name(id='telemetry_mode', ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Name(id='sim_knobs', ctx=Store())],
+              value=Call(
+                func=Name(id='SimulationKnobs', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='hyde_enabled',
+                    value=Call(
+                      func=Name(id='bool', ctx=Load()),
+                      args=[
+                        Name(id='hyde_enabled', ctx=Load())])),
+                  keyword(
+                    arg='rrf_strategy',
+                    value=Attribute(
+                      value=Name(id='RRFStrategy', ctx=Load()),
+                      attr='SIMPLE',
+                      ctx=Load())),
+                  keyword(
+                    arg='rrf_weights',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='council_size',
+                    value=Call(
+                      func=Name(id='int', ctx=Load()),
+                      args=[
+                        Name(id='council_size', ctx=Load())])),
+                  keyword(
+                    arg='correction_loop_max_iterations',
+                    value=Call(
+                      func=Name(id='int', ctx=Load()),
+                      args=[
+                        Name(id='depth', ctx=Load())])),
+                  keyword(
+                    arg='telemetry_routing_mode',
+                    value=Call(
+                      func=Name(id='TelemetryRoutingMode', ctx=Load()),
+                      args=[
+                        Name(id='telemetry_mode', ctx=Load())]))])),
+            Expr(
+              value=Call(
+                func=Name(id='emit_scenario_start_event', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_id',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='scenario_id',
+                    value=Name(id='scenario_id', ctx=Load())),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='HYDE/council/correction/telemetry matrix scenario'))])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='raw_output', ctx=Store())],
+                  value=Call(
+                    func=Name(id='run_workflow', ctx=Load()),
+                    args=[
+                      Name(id='user_request', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='execution_profile_name',
+                        value=Name(id='execution_profile_name', ctx=Load())),
+                      keyword(
+                        arg='routing_policy_name',
+                        value=Name(id='routing_policy_name', ctx=Load())),
+                      keyword(
+                        arg='sandbox_profile_name',
+                        value=Name(id='sandbox_profile_name', ctx=Load())),
+                      keyword(
+                        arg='meta_profile_name',
+                        value=Name(id='meta_profile_name', ctx=Load())),
+                      keyword(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='sim_knobs', ctx=Load()),
+                            attr='to_kwargs',
+                            ctx=Load())))])),
+                Assign(
+                  targets=[
+                    Name(id='result_map', ctx=Store())],
+                  value=Call(
+                    func=Name(id='_as_mapping', ctx=Load()),
+                    args=[
+                      Name(id='raw_output', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='patch', ctx=Store())],
+                  value=Call(
+                    func=Name(id='_extract_state_patch', ctx=Load()),
+                    args=[
+                      Name(id='result_map', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='snapshot', ctx=Store())],
+                  value=Call(
+                    func=Name(id='_build_snapshot', ctx=Load()),
+                    args=[
+                      Name(id='result_map', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='telemetry', ctx=Store())],
+                  value=Call(
+                    func=Name(id='_summarise_telemetry', ctx=Load()),
+                    args=[
+                      Name(id='result_map', ctx=Load()),
+                      Name(id='patch', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='outcome', ctx=Store())],
+                  value=Call(
+                    func=Name(id='_summarise_outcome', ctx=Load()),
+                    args=[
+                      Name(id='result_map', ctx=Load()),
+                      Name(id='patch', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='eval_report',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='council_size',
+                        value=Attribute(
+                          value=Name(id='sim_knobs', ctx=Load()),
+                          attr='council_size',
+                          ctx=Load())),
+                      keyword(
+                        arg='correction_max_iterations',
+                        value=Attribute(
+                          value=Name(id='sim_knobs', ctx=Load()),
+                          attr='correction_loop_max_iterations',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='workflow_id', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='result_map', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='workflow_id')]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='patch', ctx=Store())],
+                      value=Dict()),
+                    Assign(
+                      targets=[
+                        Name(id='snapshot', ctx=Store())],
+                      value=Dict()),
+                    Assign(
+                      targets=[
+                        Name(id='telemetry', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='has_telemetry'),
+                          Constant(value='num_events'),
+                          Constant(value='counts')],
+                        values=[
+                          Constant(value=False),
+                          Constant(value=0),
+                          Dict()])),
+                    Assign(
+                      targets=[
+                        Name(id='outcome', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='safety_passed'),
+                          Constant(value='corrected'),
+                          Constant(value='num_qa_failed'),
+                          Constant(value='num_blocking_safety_findings'),
+                          Constant(value='correction_iterations'),
+                          Constant(value='correction_terminated_reason'),
+                          Constant(value='council_size'),
+                          Constant(value='correction_max_iterations'),
+                          Constant(value='golden_eval_passed'),
+                          Constant(value='golden_eval_score')],
+                        values=[
+                          Constant(value=False),
+                          Constant(value=False),
+                          Constant(value=0),
+                          Constant(value=0),
+                          Constant(value=0),
+                          JoinedStr(
+                            values=[
+                              Constant(value='error:'),
+                              FormattedValue(
+                                value=Name(id='exc', ctx=Load()),
+                                conversion=-1)]),
+                          Attribute(
+                            value=Name(id='sim_knobs', ctx=Load()),
+                            attr='council_size',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='sim_knobs', ctx=Load()),
+                            attr='correction_loop_max_iterations',
+                            ctx=Load()),
+                          Constant(value=None),
+                          Constant(value=None)])),
+                    Assign(
+                      targets=[
+                        Name(id='workflow_id', ctx=Store())],
+                      value=Constant(value=None))])]),
+            Assign(
+              targets=[
+                Name(id='sim_result', ctx=Store())],
+              value=Call(
+                func=Name(id='SimulationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Name(id='scenario_id', ctx=Load())),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='Matrix scenario for HYDE / council / correction / telemetry combination.')),
+                  keyword(
+                    arg='workflow_id',
+                    value=Name(id='workflow_id', ctx=Load())),
+                  keyword(
+                    arg='knobs',
+                    value=Name(id='sim_knobs', ctx=Load())),
+                  keyword(
+                    arg='outcome',
+                    value=Name(id='outcome', ctx=Load())),
+                  keyword(
+                    arg='telemetry',
+                    value=Name(id='telemetry', ctx=Load())),
+                  keyword(
+                    arg='eval_report',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='state_patch',
+                    value=Name(id='patch', ctx=Load())),
+                  keyword(
+                    arg='snapshot',
+                    value=Name(id='snapshot', ctx=Load()))])),
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='emit_scenario_end_event', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='workflow_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='scenario_id',
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='scenario_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='passed',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='score',
+                        value=Constant(value=None))])),
+                Expr(
+                  value=Call(
+                    func=Name(id='emit_scenario_simulation_event', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='workflow_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='scenario_id',
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='scenario_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='outcome',
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='outcome',
+                          ctx=Load())),
+                      keyword(
+                        arg='telemetry',
+                        value=Attribute(
+                          value=Name(id='sim_result', ctx=Load()),
+                          attr='telemetry',
+                          ctx=Load())),
+                      keyword(
+                        arg='error_taxonomy',
+                        value=Constant(value=None))]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='results', ctx=Load()),
+                  slice=Name(id='scenario_id', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='sim_result', ctx=Load()))]),
+        Return(
+          value=Name(id='results', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='SimulationResult', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='run_knob_matrix_sync',
+      args=arguments(
+        args=[
+          arg(
+            arg='user_request',
+            annotation=Name(id='Any', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='hyde_values',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='bool', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='council_sizes',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='correction_depths',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='telemetry_modes',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='execution_profile_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='routing_policy_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='sandbox_profile_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='meta_profile_name',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Tuple(
+            elts=[
+              Constant(value=False),
+              Constant(value=True)],
+            ctx=Load()),
+          Tuple(
+            elts=[
+              Constant(value=1),
+              Constant(value=3)],
+            ctx=Load()),
+          Tuple(
+            elts=[
+              Constant(value=0),
+              Constant(value=1),
+              Constant(value=2)],
+            ctx=Load()),
+          Tuple(
+            elts=[
+              Constant(value='log_only'),
+              Constant(value='enforced')],
+            ctx=Load()),
+          Constant(value='default'),
+          Constant(value='default'),
+          Constant(value='default'),
+          Constant(value='default')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Synchronous convenience wrapper for the knob-matrix simulation.\n    ')),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_run_knob_matrix_async', ctx=Load()),
+                args=[
+                  Name(id='user_request', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='hyde_values',
+                    value=Name(id='hyde_values', ctx=Load())),
+                  keyword(
+                    arg='council_sizes',
+                    value=Name(id='council_sizes', ctx=Load())),
+                  keyword(
+                    arg='correction_depths',
+                    value=Name(id='correction_depths', ctx=Load())),
+                  keyword(
+                    arg='telemetry_modes',
+                    value=Name(id='telemetry_modes', ctx=Load())),
+                  keyword(
+                    arg='execution_profile_name',
+                    value=Name(id='execution_profile_name', ctx=Load())),
+                  keyword(
+                    arg='routing_policy_name',
+                    value=Name(id='routing_policy_name', ctx=Load())),
+                  keyword(
+                    arg='sandbox_profile_name',
+                    value=Name(id='sandbox_profile_name', ctx=Load())),
+                  keyword(
+                    arg='meta_profile_name',
+                    value=Name(id='meta_profile_name', ctx=Load()))])])),
+        Return(
+          value=DictComp(
+            key=Name(id='sid', ctx=Load()),
+            value=Call(
+              func=Attribute(
+                value=Name(id='res', ctx=Load()),
+                attr='to_dict',
+                ctx=Load())),
+            generators=[
+              comprehension(
+                target=Tuple(
+                  elts=[
+                    Name(id='sid', ctx=Store()),
+                    Name(id='res', ctx=Store())],
+                  ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='results', ctx=Load()),
+                    attr='items',
+                    ctx=Load())),
+                is_async=0)]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    AnnAssign(
+      target=Name(id='SCENARIO_REGISTRY', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='GoldenScenario', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Call(
+        func=Name(id='dict', ctx=Load()),
+        args=[
+          Name(id='GOLDEN_SCENARIOS', ctx=Load())]),
+      simple=1),
+    ClassDef(
+      name='Engine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Simulation execution engine for v10_10.\n\n    Provides:\n        • run(name, overrides=None)\n        • run_all()\n        • list()\n        • synchronous wrappers\n    ')),
+        AsyncFunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='SCENARIO_REGISTRY', ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Unknown simulation scenario: '),
+                          FormattedValue(
+                            value=Name(id='name', ctx=Load()),
+                            conversion=114)])]))]),
+            Assign(
+              targets=[
+                Name(id='golden', ctx=Store())],
+              value=Subscript(
+                value=Name(id='SCENARIO_REGISTRY', ctx=Load()),
+                slice=Name(id='name', ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='_run_with_golden_scenario', ctx=Load()),
+                  args=[
+                    Name(id='golden', ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='overrides',
+                      value=Name(id='overrides', ctx=Load()))]))),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load())))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='run_all',
+          args=arguments(
+            args=[
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='overrides', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='overrides', ctx=Load()),
+                  Dict()])),
+            AnnAssign(
+              target=Name(id='results', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='name', ctx=Store()),
+                  Name(id='golden', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='SCENARIO_REGISTRY', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='sim_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Name(id='_run_with_golden_scenario', ctx=Load()),
+                      args=[
+                        Name(id='golden', ctx=Load())],
+                      keywords=[
+                        keyword(
+                          arg='overrides',
+                          value=Name(id='overrides', ctx=Load()))]))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sim_result', ctx=Load()),
+                      attr='to_dict',
+                      ctx=Load())))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='run_sync',
+          args=arguments(
+            args=[
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='Engine', ctx=Load()),
+                      attr='run',
+                      ctx=Load()),
+                    args=[
+                      Name(id='name', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='overrides',
+                        value=Name(id='overrides', ctx=Load()))])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='run_all_sync',
+          args=arguments(
+            args=[
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='Engine', ctx=Load()),
+                      attr='run_all',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='overrides',
+                        value=Name(id='overrides', ctx=Load()))])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='list',
+          args=arguments(),
+          body=[
+            Expr(
+              value=Constant(value='\n        Return a mapping of scenario_id → human-readable description.\n        ')),
+            Return(
+              value=DictComp(
+                key=Name(id='name', ctx=Load()),
+                value=Attribute(
+                  value=Name(id='golden', ctx=Load()),
+                  attr='description',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='name', ctx=Store()),
+                        Name(id='golden', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='SCENARIO_REGISTRY', ctx=Load()),
+                        attr='items',
+                        ctx=Load())),
+                    is_async=0)]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='run_batch_simulation',
+      args=arguments(
+        args=[
+          arg(
+            arg='jobs',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Mapping', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='execution_profile_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='routing_policy_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='sandbox_profile_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='meta_profile_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='knobs',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='SimulationKnobs', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          Constant(value='default'),
+          Constant(value='default'),
+          Constant(value='default'),
+          Constant(value='default'),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convenience wrapper around run_batch_v10_10.run_batch for tests.\n\n    It accepts a list of jobs (already structured for the main entrypoint)\n    and optional SimulationKnobs. It returns whatever the underlying\n    run_batch implementation returns, without modification.\n    ')),
+        AnnAssign(
+          target=Name(id='knob_kwargs', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        If(
+          test=Compare(
+            left=Name(id='knobs', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='knob_kwargs', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='knobs', ctx=Load()),
+                  attr='to_kwargs',
+                  ctx=Load())))]),
+        Return(
+          value=Call(
+            func=Name(id='run_batch', ctx=Load()),
+            args=[
+              Name(id='jobs', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='execution_profile_name',
+                value=Name(id='execution_profile_name', ctx=Load())),
+              keyword(
+                arg='routing_policy_name',
+                value=Name(id='routing_policy_name', ctx=Load())),
+              keyword(
+                arg='sandbox_profile_name',
+                value=Name(id='sandbox_profile_name', ctx=Load())),
+              keyword(
+                arg='meta_profile_name',
+                value=Name(id='meta_profile_name', ctx=Load())),
+              keyword(
+                value=Name(id='knob_kwargs', ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='BatchJobResult', ctx=Load()),
+              ctx=Load()),
+            Name(id='BatchTelemetrySummary', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_cli',
+      args=arguments(),
+      body=[
+        Import(
+          names=[
+            alias(name='argparse')]),
+        Import(
+          names=[
+            alias(name='json', asname='_json')]),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='v10_10 Phase-3 simulation harness (golden scenarios + knob matrix).'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--matrix')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Run the HYDE/council/correction/telemetry knob matrix instead of the golden scenarios.'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--prompt')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=False)),
+              keyword(
+                arg='help',
+                value=Constant(value='Optional free-form prompt/user_request text for simulations.'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        AnnAssign(
+          target=Name(id='user_request', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          simple=1),
+        If(
+          test=Attribute(
+            value=Name(id='args', ctx=Load()),
+            attr='prompt',
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='user_request', ctx=Store())],
+              value=Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='prompt',
+                ctx=Load()))],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='user_request', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='messages')],
+                values=[
+                  Constant(value='Run v10_10 Phase-3 simulation.'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Constant(value='Please run the v10_10 workflow for simulation.')])],
+                    ctx=Load())]))]),
+        If(
+          test=Attribute(
+            value=Name(id='args', ctx=Load()),
+            attr='matrix',
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Call(
+                func=Name(id='run_knob_matrix_sync', ctx=Load()),
+                args=[
+                  Name(id='user_request', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='_json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      Name(id='results', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2)),
+                      keyword(
+                        arg='sort_keys',
+                        value=Constant(value=True))])])),
+            Return()]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='=== v10_10 Simulation Harness (Golden Scenarios) ===')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Available Scenarios:')])),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='name', ctx=Store()),
+              Name(id='desc', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='Engine', ctx=Load()),
+                  attr='list',
+                  ctx=Load())),
+              attr='items',
+              ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  - '),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=': '),
+                      FormattedValue(
+                        value=BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='desc', ctx=Load()),
+                            Constant(value='(no description)')]),
+                        conversion=-1)])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n=== Running All Golden Scenarios ===')])),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='Engine', ctx=Load()),
+              attr='run_all_sync',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='_json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='indent',
+                    value=Constant(value=2)),
+                  keyword(
+                    arg='sort_keys',
+                    value=Constant(value=True))])]))],
+      returns=Constant(value=None)),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='_cli', ctx=Load())))])])

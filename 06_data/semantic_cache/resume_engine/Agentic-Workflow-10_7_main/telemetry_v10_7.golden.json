@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTelemetry helpers for v10.7.\n\nThis module provides a unified event envelope for:\n - LLM metrics\n - tool execution metrics\n - cache events (exact + semantic)\n - agent routing decisions\n - pruning outcomes\n - MCP-integrated telemetry streams\n\nAll telemetry events are emitted via MCP (if present) and mirrored to local logs.\nExisting calls to log_event(...) continue to work unchanged.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom datetime import datetime\nfrom typing import Any, Dict, Optional\n\nfrom mcp import emit_event\n\nlogger = logging.getLogger(\"telemetry_v10_7\")\n\n\ndef check_langgraph() -> Dict[str, Any]:\n    \"\"\"Capability-based LangGraph health check used by diagnostics.\"\"\"\n\n    try:\n        from langgraph.graph import StateGraph  # noqa: F401\n\n        return {\"ok\": True, \"info\": \"StateGraph import succeeded\"}\n    except Exception as exc:  # pragma: no cover - best-effort diagnostic\n        return {\"ok\": False, \"error\": str(exc)}\n\n\n# ---------------------------------",
+  "full_hash": "09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8",
+  "generated_at": 1764728230.329435,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\telemetry_v10_7.py"
+}

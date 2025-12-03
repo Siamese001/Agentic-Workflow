@@ -1,0 +1,35 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel'),
+        alias(name='Field')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='RetrievalConfig')],
+      level=0),
+    ClassDef(
+      name='RetrievalProfile',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Retrieval configuration profile wrapping RetrievalConfig.\n\n    Kept as a thin wrapper so that higher-level profiles can evolve\n    without changing the RetrievalConfig schema used by META.\n    ')),
+        AnnAssign(
+          target=Name(id='retrieval', ctx=Store()),
+          annotation=Name(id='RetrievalConfig', ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='RetrievalConfig', ctx=Load()))]),
+          simple=1)])])

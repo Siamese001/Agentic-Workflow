@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 30,
+  "generated_at": 1764728225.5614586,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\cognitive_agents.py"
+}

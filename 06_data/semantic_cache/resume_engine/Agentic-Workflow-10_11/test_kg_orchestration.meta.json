@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\unit\\test_kg_orchestration.py",
+    "rel_path": "test_kg_orchestration.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "e7ec563f71204aeaaa4d2743118ee9d3576e68b211ac36eed7d5bb8167772ab7",
+    "file_size": 2662,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.0393732
+}

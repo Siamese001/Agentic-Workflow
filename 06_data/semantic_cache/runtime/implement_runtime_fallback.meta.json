@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\act-phase\\use-runtime-tools\\routing\\retry-task\\implement_runtime_fallback.py",
+    "rel_path": "implement_runtime_fallback.py",
+    "root_name": "runtime",
+    "file_hash": "0c519fd84a186b709069a4aa56fd7a7adeee6e45c9bdd3a01ae2305178ee3186",
+    "file_size": 6959,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.0738187
+}

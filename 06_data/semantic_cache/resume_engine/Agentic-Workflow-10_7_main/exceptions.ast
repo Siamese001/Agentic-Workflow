@@ -1,0 +1,101 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Exception hierarchy for the core v10.7 workflow runtime.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='asyncio',
+      names=[
+        alias(name='TimeoutError', asname='AsyncTimeoutError')],
+      level=0),
+    ClassDef(
+      name='WorkflowError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Base exception for workflow failures.'))]),
+    ClassDef(
+      name='ModelAPIError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when an LLM provider call fails.'))]),
+    ClassDef(
+      name='JSONParsingError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when JSON parsing fails.'))]),
+    ClassDef(
+      name='ValidationError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when workflow validation fails.'))]),
+    ClassDef(
+      name='FileIOError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when file IO fails.'))]),
+    ClassDef(
+      name='CostCeilingExceededError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when a workflow exceeds the configured cost ceiling.'))]),
+    ClassDef(
+      name='CircuitBreakerOpenError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when the circuit breaker remains open.'))]),
+    ClassDef(
+      name='PydanticSchemaError',
+      bases=[
+        Name(id='ValidationError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when Pydantic validation fails.'))]),
+    ClassDef(
+      name='WorkflowTimeoutError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load()),
+        Name(id='AsyncTimeoutError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when async workflow execution exceeds its timeout.'))]),
+    ClassDef(
+      name='MCPClientInitializationError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when an MCP client fails to initialize.'))]),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='WorkflowError'),
+          Constant(value='ModelAPIError'),
+          Constant(value='JSONParsingError'),
+          Constant(value='ValidationError'),
+          Constant(value='FileIOError'),
+          Constant(value='CostCeilingExceededError'),
+          Constant(value='CircuitBreakerOpenError'),
+          Constant(value='PydanticSchemaError'),
+          Constant(value='WorkflowTimeoutError'),
+          Constant(value='MCPClientInitializationError')],
+        ctx=Load()))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/l4.py\n\"\"\"\nState Adapter \u00b7 L4 Mutation Layer (v10_10 \u00b7 Phase 3)\n====================================================\n\nResponsibilities:\n    \u2022 Sole legal mutation surface for WorkflowState.\n    \u2022 Apply StateTransitionEvent \u2192 updated WorkflowState.\n    \u2022 Implement checkpoint + rollback hooks (G34\u2013G36).\n    \u2022 Emit state-transition telemetry (G15).\n    \u2022 Must not:\n          \u2013 call LLMs,\n          \u2013 retrieve/rank,\n          \u2013 plan,\n          \u2013 enforce safety,\n          \u2013 orchestrate DAG.\n\nInputs:\n    \u2022 WorkflowState\n    \u2022 StateTransitionEvent  (typed, atomic)\n    \u2022 ExecutionContext      (read-only for telemetry/span)\n\nOutput:\n    \u2022 New WorkflowState (pure functional update)\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import replace\nfrom typing import Optional\n\nfrom models import (\n    WorkflowState,\n    StateTransitionEvent,\n    ExecutionContext,\n    Checkpoint,\n    RollbackRequest,\n    RollbackResult,\n)\nfrom observability import start_span, end_span, log_exceptio",
+  "full_hash": "80a46cfedad88c96a7fd9bc18efa46cc454af3dd5313ac054807e9f8c3e5cb70",
+  "generated_at": 1764728228.290367,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\l4.py"
+}

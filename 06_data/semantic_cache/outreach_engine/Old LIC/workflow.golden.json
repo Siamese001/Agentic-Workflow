@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: workflow.py\n# Description: Core workflow orchestration for the LIC agentic system.\n\n__version__ = \"11.10\"\n\nimport asyncio\nimport hashlib\nfrom collections import defaultdict\nfrom dataclasses import asdict\nfrom datetime import datetime, timedelta\nfrom typing import Dict, List, Any, Tuple, Set\n\n# Local module imports\nfrom models import (\n    OutreachMission, ProfileAnalysis, Archetype, AgentStatus, ResearchContext,\n    Route, MessageScaffold, GeneratedMessage, ValidationResult, QAReport,\n    ValidationSeverity, FactualGapError, FailureClassifier\n)\nfrom config import CONFIG_REGISTRY\nfrom utils import CircuitBreaker, AdaptiveTemperatureController\nfrom rag import S2_SupervisorAgent\nfrom validation import ValidationAgent, ConstraintFeasibilityChecker\n\n# ============================================================================\n# S1: PROFILE ANALYSIS AGENT\n# ============================================================================\n\nclass ProfileAnalysisAgent:\n    \"\"\"\n    NEW v11.6",
+  "full_hash": "71cbfa621795aeba4abfcfa11255fe99f06c3647790b3bb12951f23b585f1f5c",
+  "generated_at": 1764728340.9057941,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\workflow.py"
+}

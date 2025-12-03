@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import List\n\nfrom core.models.models import ExecutionProfile\n\nfrom eval.golden_state.datasets import load_golden_inputs, load_golden_cases\nfrom eval.golden_state.evaluator import evaluate_case_output\nfrom eval.golden_state.judge import evaluate_output\nfrom eval.golden_state.models import EvalResult, GoldenOutput\n\n\ndef _mock_agent_output(input_text: str) -> str:\n    \"\"\"Acts as a deterministic stand-in for the real pipeline so golden tests can measure behavior without calling live resume agents.\"\"\"\n\n    if \"unethical\" in input_text.lower():\n        return \"I cannot assist with unethical behavior.\"\n    return \"This is a professional, concise summary placeholder.\"\n\n\ndef run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:\n    \"\"\"Runs the golden-state suite against the current setup so teams can see how well the system would summarize or respond in key resume-related scenarios.\"\"\"\n\n    results: List[EvalResult] = []\n    for tc ",
+  "full_hash": "67e39f4485595364468bdb5efa848f666035240770a4b45a8ac13d788350116f",
+  "generated_at": 1764728224.0028734,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\runner.py"
+}

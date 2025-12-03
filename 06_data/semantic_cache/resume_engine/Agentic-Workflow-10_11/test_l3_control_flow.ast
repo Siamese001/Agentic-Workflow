@@ -1,0 +1,110 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L3 Orchestration Control Flow Tests.')),
+    ClassDef(
+      name='TestL3ControlFlow',
+      body=[
+        Expr(
+          value=Constant(value='Tests for L3 orchestration control flow.')),
+        FunctionDef(
+          name='test_sequential_control_flow',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test sequential control flow.')),
+            Assign(
+              targets=[
+                Name(id='steps', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='a'),
+                  Constant(value='b'),
+                  Constant(value='c')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='executed', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='step', ctx=Store()),
+              iter=Name(id='steps', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='executed', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='step', ctx=Load())]))]),
+            Assert(
+              test=Compare(
+                left=Name(id='executed', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='steps', ctx=Load())]))]),
+        FunctionDef(
+          name='test_conditional_branching',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test conditional branching.')),
+            Assign(
+              targets=[
+                Name(id='condition', ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Name(id='branch', ctx=Store())],
+              value=IfExp(
+                test=Name(id='condition', ctx=Load()),
+                body=Constant(value='true_branch'),
+                orelse=Constant(value='false_branch'))),
+            Assert(
+              test=Compare(
+                left=Name(id='branch', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='true_branch')]))]),
+        FunctionDef(
+          name='test_loop_control',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test loop control in workflow.')),
+            Assign(
+              targets=[
+                Name(id='iterations', ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Name(id='max_iter', ctx=Store())],
+              value=Constant(value=3)),
+            While(
+              test=Compare(
+                left=Name(id='iterations', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Name(id='max_iter', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='iterations', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            Assert(
+              test=Compare(
+                left=Name(id='iterations', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)]))])])])

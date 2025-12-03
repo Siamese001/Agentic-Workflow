@@ -1,0 +1,648 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest Strategy Planning\n\nTests comprehensive strategy planning functionality for résumé improvement,\nincluding strategy plan creation, drafting plan generation, and latent thinking planning.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock'),
+        alias(name='patch')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='l1.strategy_planning',
+          names=[
+            alias(name='generate_latent_thinking_plan'),
+            alias(name='StrategyPlan'),
+            alias(name='DraftPlan'),
+            alias(name='LatentThinkingPlan')],
+          level=0)],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='skip',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Strategy planning components not available')],
+                keywords=[
+                  keyword(
+                    arg='allow_module_level',
+                    value=Constant(value=True))]))])]),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='l1',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='planning',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='strategy',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='TestStrategyPlanning',
+      body=[
+        Expr(
+          value=Constant(value='Test strategy planning functionality.')),
+        FunctionDef(
+          name='test_generate_latent_thinking_plan_basic',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test basic latent thinking plan generation.')),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Store())],
+              value=Constant(value='default')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='ctx', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='profile_id',
+                  ctx=Store())],
+              value=Constant(value='default')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='generate_latent_thinking_plan', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load()),
+                  Name(id='ctx', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='LatentThinkingPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='default')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cot')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='depth',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='trace',
+                    ctx=Load()),
+                  Name(id='list', ctx=Load())]))]),
+        FunctionDef(
+          name='test_generate_latent_thinking_plan_with_profile_name',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test latent thinking plan with specific profile name.')),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Store())],
+              value=Constant(value='senior_engineer')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='ctx', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='profile_id',
+                  ctx=Store())],
+              value=Constant(value='senior_engineer')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='generate_latent_thinking_plan', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load()),
+                  Name(id='ctx', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='LatentThinkingPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='senior_engineer')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cot')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='depth',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_generate_latent_thinking_plan_with_config_fallback',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test latent thinking plan falls back to config profile_id.')),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='ctx', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='profile_id',
+                  ctx=Store())],
+              value=Constant(value='fallback_profile')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='generate_latent_thinking_plan', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load()),
+                  Name(id='ctx', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='LatentThinkingPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='fallback_profile')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cot')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='depth',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_generate_latent_thinking_plan_default_fallback',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test latent thinking plan with complete fallback to default.')),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Expr(
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load()),
+                    Constant(value='profile_name')]),
+                body=Call(
+                  func=Name(id='delattr', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load()),
+                    Constant(value='profile_name')]),
+                orelse=Constant(value=None))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Expr(
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    Constant(value='profile_id')]),
+                body=Call(
+                  func=Name(id='delattr', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    Constant(value='profile_id')]),
+                orelse=Constant(value=None))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='generate_latent_thinking_plan', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load()),
+                  Name(id='ctx', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='LatentThinkingPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='default')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cot')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='depth',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_strategy_plan_dataclass_structure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test StrategyPlan dataclass structure.')),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='prompt', ctx=Load()),
+                  attr='id',
+                  ctx=Store())],
+              value=Constant(value='test.strategy')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='prompt', ctx=Load()),
+                  attr='content',
+                  ctx=Store())],
+              value=Constant(value='Test strategy content')),
+            Assign(
+              targets=[
+                Name(id='strategy_plan', ctx=Store())],
+              value=Call(
+                func=Name(id='StrategyPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='prompt',
+                    value=Name(id='prompt', ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='strategy_plan', ctx=Load()),
+                  Constant(value='prompt')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='strategy_plan', ctx=Load()),
+                  attr='prompt',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='prompt', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='strategy_plan', ctx=Load()),
+                    attr='prompt',
+                    ctx=Load()),
+                  Name(id='Mock', ctx=Load())]))]),
+        FunctionDef(
+          name='test_draft_plan_dataclass_structure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test DraftPlan dataclass structure.')),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='prompt', ctx=Load()),
+                  attr='id',
+                  ctx=Store())],
+              value=Constant(value='test.draft')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='prompt', ctx=Load()),
+                  attr='content',
+                  ctx=Store())],
+              value=Constant(value='Test draft content')),
+            Assign(
+              targets=[
+                Name(id='draft_plan', ctx=Store())],
+              value=Call(
+                func=Name(id='DraftPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='prompt',
+                    value=Name(id='prompt', ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='draft_plan', ctx=Load()),
+                  Constant(value='prompt')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='draft_plan', ctx=Load()),
+                  attr='prompt',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='prompt', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='draft_plan', ctx=Load()),
+                    attr='prompt',
+                    ctx=Load()),
+                  Name(id='Mock', ctx=Load())]))]),
+        FunctionDef(
+          name='test_latent_thinking_plan_dataclass_structure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test LatentThinkingPlan dataclass structure.')),
+            Assign(
+              targets=[
+                Name(id='thinking_plan', ctx=Store())],
+              value=Call(
+                func=Name(id='LatentThinkingPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='profile_name',
+                    value=Constant(value='test_profile')),
+                  keyword(
+                    arg='reasoning_mode',
+                    value=Constant(value='cot')),
+                  keyword(
+                    arg='depth',
+                    value=Constant(value=2)),
+                  keyword(
+                    arg='trace',
+                    value=List(
+                      elts=[
+                        Constant(value='step1'),
+                        Constant(value='step2')],
+                      ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='thinking_plan', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_profile')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='thinking_plan', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cot')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='thinking_plan', ctx=Load()),
+                  attr='depth',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='thinking_plan', ctx=Load()),
+                  attr='trace',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='step1'),
+                      Constant(value='step2')],
+                    ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='thinking_plan', ctx=Load()),
+                    attr='trace',
+                    ctx=Load()),
+                  Name(id='list', ctx=Load())]))])])])

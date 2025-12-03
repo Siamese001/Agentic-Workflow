@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 287,
+  "generated_at": 1764728228.3539,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\observability.py"
+}

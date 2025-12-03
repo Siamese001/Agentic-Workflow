@@ -1,0 +1,1948 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest Workflow Planning\n\nTests comprehensive workflow planning functionality for résumé optimization,\nincluding profile inference, complexity classification, and workflow bundle creation.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock'),
+        alias(name='patch')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='l1.workflow_planning',
+          names=[
+            alias(name='build_workflow_plan_bundle'),
+            alias(name='_normalize_text'),
+            alias(name='_map_meta_profile_to_routing_hint'),
+            alias(name='_infer_seniority'),
+            alias(name='_infer_domains'),
+            alias(name='_infer_skill_clusters'),
+            alias(name='_classify_complexity'),
+            alias(name='_choose_reasoning_mode'),
+            alias(name='_to_execution_profile')],
+          level=0),
+        ImportFrom(
+          module='core.models.models',
+          names=[
+            alias(name='JobInput'),
+            alias(name='ResumeInput'),
+            alias(name='WorkflowConfig'),
+            alias(name='ComplexityLevel'),
+            alias(name='ReasoningMode'),
+            alias(name='SeniorityClassifierResult'),
+            alias(name='DomainClassifierResult'),
+            alias(name='SkillClusterResult'),
+            alias(name='ProfileInferenceResult'),
+            alias(name='WorkflowPlanBundle'),
+            alias(name='ExecutionProfile'),
+            alias(name='RetrievalConfig')],
+          level=0),
+        ImportFrom(
+          module='config.config_profiles_v10_10',
+          names=[
+            alias(name='ExecutionProfileSpec'),
+            alias(name='get_profile')],
+          level=0),
+        ImportFrom(
+          module='config.meta_profile',
+          names=[
+            alias(name='MetaProfileSnapshot')],
+          level=0)],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='skip',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Workflow planning components not available')],
+                keywords=[
+                  keyword(
+                    arg='allow_module_level',
+                    value=Constant(value=True))]))])]),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='l1',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='planning',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='workflow',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='TestWorkflowPlanning',
+      body=[
+        Expr(
+          value=Constant(value='Test workflow planning functionality.')),
+        FunctionDef(
+          name='test_normalize_text_basic',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test basic text normalization.')),
+            Assign(
+              targets=[
+                Name(id='dirty_text', ctx=Store())],
+              value=Constant(value='  Hello   World!  \n\n  This   has   extra   spaces.  ')),
+            Assign(
+              targets=[
+                Name(id='normalized', ctx=Store())],
+              value=Call(
+                func=Name(id='_normalize_text', ctx=Load()),
+                args=[
+                  Name(id='dirty_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='normalized', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Hello   World!  \n\n  This   has   extra   spaces.')])),
+            Assert(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='normalized', ctx=Load()),
+                    attr='startswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value=' ')]))),
+            Assert(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='normalized', ctx=Load()),
+                    attr='endswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value=' ')])))]),
+        FunctionDef(
+          name='test_normalize_text_none_handling',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test text normalization with None and empty inputs.')),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='_normalize_text', ctx=Load()),
+                  args=[
+                    Constant(value=None)]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='')])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='_normalize_text', ctx=Load()),
+                  args=[
+                    Constant(value='')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='')])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='_normalize_text', ctx=Load()),
+                  args=[
+                    Constant(value='   ')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='')]))]),
+        FunctionDef(
+          name='test_infer_seniority_executive',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test seniority inference for executive roles.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Chief Technology Officer role reporting to CEO')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='SVP of Engineering with executive leadership')),
+            Assign(
+              targets=[
+                Name(id='seniority', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_seniority', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='seniority', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='executive')]))]),
+        FunctionDef(
+          name='test_infer_seniority_director',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test seniority inference for director roles.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Director of Software Engineering')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Head of Development team')),
+            Assign(
+              targets=[
+                Name(id='seniority', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_seniority', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='seniority', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='director')]))]),
+        FunctionDef(
+          name='test_infer_seniority_manager',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test seniority inference for manager roles.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Engineering Manager position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Team Lead with management experience')),
+            Assign(
+              targets=[
+                Name(id='seniority', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_seniority', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='seniority', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='manager')]))]),
+        FunctionDef(
+          name='test_infer_seniority_senior_ic',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test seniority inference for senior individual contributor.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Senior Software Developer role')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Staff Engineer with technical expertise')),
+            Assign(
+              targets=[
+                Name(id='seniority', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_seniority', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='seniority', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='senior_ic')]))]),
+        FunctionDef(
+          name='test_infer_seniority_junior',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test seniority inference for junior roles.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Junior Developer position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Entry-level software engineer')),
+            Assign(
+              targets=[
+                Name(id='seniority', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_seniority', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='seniority', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='junior')]))]),
+        FunctionDef(
+          name='test_infer_seniority_default',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test seniority inference defaults to mid-level.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Software Developer position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Computer science graduate')),
+            Assign(
+              targets=[
+                Name(id='seniority', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_seniority', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='seniority', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='mid')]))]),
+        FunctionDef(
+          name='test_infer_domains_insurance',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test domain inference for insurance industry.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Actuarial analyst position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Insurance risk management experience')),
+            Assign(
+              targets=[
+                Name(id='domains', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_domains', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='insurance'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='domains', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_domains_financial_services',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test domain inference for financial services.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Investment banking role')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Credit analysis and trading experience')),
+            Assign(
+              targets=[
+                Name(id='domains', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_domains', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='financial_services'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='domains', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_domains_foundation_models',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test domain inference for foundation models.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='LLM research position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Large language model development')),
+            Assign(
+              targets=[
+                Name(id='domains', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_domains', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='foundation_models'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='domains', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_domains_machine_learning',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test domain inference for machine learning.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='ML Engineer position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Machine learning and deep learning expertise')),
+            Assign(
+              targets=[
+                Name(id='domains', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_domains', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='machine_learning'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='domains', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_domains_cloud',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test domain inference for cloud computing.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Cloud Architect role')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='AWS and Azure experience')),
+            Assign(
+              targets=[
+                Name(id='domains', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_domains', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='cloud'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='domains', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_domains_data_platform',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test domain inference for data platforms.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Data Platform Engineer')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Databricks and Snowflake experience')),
+            Assign(
+              targets=[
+                Name(id='domains', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_domains', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='data_platform'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='domains', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_skill_clusters_python_data',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test skill cluster inference for Python data stack.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Data Scientist position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Python, pandas, numpy expertise')),
+            Assign(
+              targets=[
+                Name(id='clusters', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_skill_clusters', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='python_data'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='clusters', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_skill_clusters_deep_learning',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test skill cluster inference for deep learning.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='AI Research position')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='PyTorch, TensorFlow, Keras experience')),
+            Assign(
+              targets=[
+                Name(id='clusters', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_skill_clusters', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='deep_learning'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='clusters', ctx=Load())]))]),
+        FunctionDef(
+          name='test_infer_skill_clusters_cloud_infra',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test skill cluster inference for cloud infrastructure.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='DevOps Engineer')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='AWS, Azure, GCP deployment experience')),
+            Assign(
+              targets=[
+                Name(id='clusters', ctx=Store())],
+              value=Call(
+                func=Name(id='_infer_skill_clusters', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='cloud_infra'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='clusters', ctx=Load())]))]),
+        FunctionDef(
+          name='test_classify_complexity_low',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test complexity classification for low content.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Short job description')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Brief resume')),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='min_complexity',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='complexity', ctx=Store())],
+              value=Call(
+                func=Name(id='_classify_complexity', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load()),
+                  Name(id='profile_spec', ctx=Load()),
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='LOW',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_classify_complexity_medium',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test complexity classification for medium content.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=List(
+                      elts=[
+                        Constant(value='word')],
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=500))])),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=List(
+                      elts=[
+                        Constant(value='word')],
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=500))])),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='min_complexity',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='complexity', ctx=Store())],
+              value=Call(
+                func=Name(id='_classify_complexity', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load()),
+                  Name(id='profile_spec', ctx=Load()),
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='MEDIUM',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_classify_complexity_high',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test complexity classification for high content.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=List(
+                      elts=[
+                        Constant(value='word')],
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=1500))])),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=List(
+                      elts=[
+                        Constant(value='word')],
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=1500))])),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='min_complexity',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='complexity', ctx=Store())],
+              value=Call(
+                func=Name(id='_classify_complexity', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load()),
+                  Name(id='profile_spec', ctx=Load()),
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='HIGH',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_classify_complexity_with_meta_profile_elevation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test complexity elevation with meta profile.')),
+            Assign(
+              targets=[
+                Name(id='job_text', ctx=Store())],
+              value=Constant(value='Short job description')),
+            Assign(
+              targets=[
+                Name(id='resume_text', ctx=Store())],
+              value=Constant(value='Brief resume')),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='min_complexity',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='meta_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='elevated_caution',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='correction_rate_last_10',
+                  ctx=Store())],
+              value=Constant(value=0.4)),
+            Assign(
+              targets=[
+                Name(id='complexity', ctx=Store())],
+              value=Call(
+                func=Name(id='_classify_complexity', ctx=Load()),
+                args=[
+                  Name(id='job_text', ctx=Load()),
+                  Name(id='resume_text', ctx=Load()),
+                  Name(id='profile_spec', ctx=Load()),
+                  Name(id='meta_profile', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='MEDIUM',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_choose_reasoning_mode_default',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test reasoning mode selection with defaults.')),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='ReasoningMode', ctx=Load()),
+                attr='CHAIN_OF_THOUGHT',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='mode', ctx=Store())],
+              value=Call(
+                func=Name(id='_choose_reasoning_mode', ctx=Load()),
+                args=[
+                  Name(id='profile_spec', ctx=Load()),
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='mode', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ReasoningMode', ctx=Load()),
+                    attr='CHAIN_OF_THOUGHT',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_choose_reasoning_mode_with_meta_hint',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test reasoning mode selection with meta profile hints.')),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='ReasoningMode', ctx=Load()),
+                attr='CHAIN_OF_THOUGHT',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='meta_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='reasoning_mode_hint',
+                  ctx=Store())],
+              value=Constant(value='tot')),
+            Assign(
+              targets=[
+                Name(id='mode', ctx=Store())],
+              value=Call(
+                func=Name(id='_choose_reasoning_mode', ctx=Load()),
+                args=[
+                  Name(id='profile_spec', ctx=Load()),
+                  Name(id='meta_profile', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='mode', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ReasoningMode', ctx=Load()),
+                    attr='TOT',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_to_execution_profile',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test conversion to execution profile.')),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='id',
+                  ctx=Store())],
+              value=Constant(value='test_profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='description',
+                  ctx=Store())],
+              value=Constant(value='Test profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='retrieval',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RetrievalConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='strategy',
+                    value=Constant(value='hybrid')),
+                  keyword(
+                    arg='max_hits',
+                    value=Constant(value=16))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='profile_spec', ctx=Load()),
+                    attr='safety_tier',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Store())],
+              value=Constant(value='standard')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='profile_spec', ctx=Load()),
+                    attr='model_tier',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Store())],
+              value=Constant(value='balanced')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_cost_usd',
+                  ctx=Store())],
+              value=Constant(value=1.0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_latency_ms',
+                  ctx=Store())],
+              value=Constant(value=5000)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='qa_council_size',
+                  ctx=Store())],
+              value=Constant(value=3)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='enable_correction_loop',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_corrections',
+                  ctx=Store())],
+              value=Constant(value=2)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='rag_allow_hyde',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='hyde_model_tier',
+                  ctx=Store())],
+              value=Constant(value='balanced')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='routing_telemetry_mode',
+                  ctx=Store())],
+              value=Constant(value='basic')),
+            Assign(
+              targets=[
+                Name(id='profile', ctx=Store())],
+              value=Call(
+                func=Name(id='_to_execution_profile', ctx=Load()),
+                args=[
+                  Name(id='profile_spec', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='profile', ctx=Load()),
+                  Name(id='ExecutionProfile', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='profile', ctx=Load()),
+                  attr='name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_profile')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='profile', ctx=Load()),
+                  attr='description',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Test profile')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='profile', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='safety_tier'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='standard')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='profile', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='model_tier'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='balanced')]))]),
+        FunctionDef(
+          name='test_map_meta_profile_to_routing_hint',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test meta profile to routing hint mapping.')),
+            Assign(
+              targets=[
+                Name(id='meta_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='active_profile_id',
+                  ctx=Store())],
+              value=Constant(value='test_profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='prefers_anthropic',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='prefers_openai',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='prefers_fast_models',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='reasoning_mode_hint',
+                  ctx=Store())],
+              value=Constant(value='cot')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='qa_failure_rate_last_10',
+                  ctx=Store())],
+              value=Constant(value=0.1)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='correction_rate_last_10',
+                  ctx=Store())],
+              value=Constant(value=0.2)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='extra_qa_passes',
+                  ctx=Store())],
+              value=Constant(value=1)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='reinforce_strictness',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='elevated_caution',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='hil_preferred',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='seniority_label',
+                  ctx=Store())],
+              value=Constant(value='senior_ic')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='domain_label',
+                  ctx=Store())],
+              value=Constant(value='software')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='skill_cluster_labels',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='python_data')])),
+            Assign(
+              targets=[
+                Name(id='routing_hint', ctx=Store())],
+              value=Call(
+                func=Name(id='_map_meta_profile_to_routing_hint', ctx=Load()),
+                args=[
+                  Name(id='meta_profile', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='routing_hint', ctx=Load()),
+                  slice=Constant(value='active_profile_id'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test_profile')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='routing_hint', ctx=Load()),
+                  slice=Constant(value='prefers_anthropic'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='routing_hint', ctx=Load()),
+                  slice=Constant(value='reasoning_mode_hint'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cot')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='routing_hint', ctx=Load()),
+                  slice=Constant(value='seniority_label'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='senior_ic')])),
+            Assert(
+              test=Compare(
+                left=Constant(value='python_data'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='routing_hint', ctx=Load()),
+                    slice=Constant(value='skill_cluster_labels'),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_map_meta_profile_to_routing_hint_none',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test routing hint mapping with None meta profile.')),
+            Assign(
+              targets=[
+                Name(id='routing_hint', ctx=Store())],
+              value=Call(
+                func=Name(id='_map_meta_profile_to_routing_hint', ctx=Load()),
+                args=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='routing_hint', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Dict()]))]),
+        FunctionDef(
+          name='test_build_workflow_plan_bundle_basic',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_get_profile')]),
+          body=[
+            Expr(
+              value=Constant(value='Test basic workflow plan bundle creation.')),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='id',
+                  ctx=Store())],
+              value=Constant(value='test_profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='description',
+                  ctx=Store())],
+              value=Constant(value='Test profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='qa_depth',
+                  ctx=Store())],
+              value=Constant(value=2)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='min_complexity',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='ReasoningMode', ctx=Load()),
+                attr='CHAIN_OF_THOUGHT',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='retrieval',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RetrievalConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='strategy',
+                    value=Constant(value='hybrid')),
+                  keyword(
+                    arg='max_hits',
+                    value=Constant(value=16))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='profile_spec', ctx=Load()),
+                    attr='safety_tier',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Store())],
+              value=Constant(value='standard')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='profile_spec', ctx=Load()),
+                    attr='model_tier',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Store())],
+              value=Constant(value='balanced')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_cost_usd',
+                  ctx=Store())],
+              value=Constant(value=1.0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_latency_ms',
+                  ctx=Store())],
+              value=Constant(value=5000)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='qa_council_size',
+                  ctx=Store())],
+              value=Constant(value=3)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='enable_correction_loop',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_corrections',
+                  ctx=Store())],
+              value=Constant(value=2)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='rag_allow_hyde',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='hyde_model_tier',
+                  ctx=Store())],
+              value=Constant(value='balanced')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='routing_telemetry_mode',
+                  ctx=Store())],
+              value=Constant(value='basic')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_get_profile', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Name(id='profile_spec', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='job', ctx=Store())],
+              value=Call(
+                func=Name(id='JobInput', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='title',
+                    value=Constant(value='Software Engineer')),
+                  keyword(
+                    arg='requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='Python'),
+                        Constant(value='AWS experience')],
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='resume', ctx=Store())],
+              value=Call(
+                func=Name(id='ResumeInput', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='summary',
+                    value=Constant(value='Python developer with AWS experience')),
+                  keyword(
+                    arg='experience_sections',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='skills',
+                    value=List(
+                      elts=[
+                        Constant(value='Python'),
+                        Constant(value='AWS')],
+                      ctx=Load())),
+                  keyword(
+                    arg='projects',
+                    value=List(ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='WorkflowConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='profile_id',
+                    value=Constant(value='default')),
+                  keyword(
+                    arg='enable_rag',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='enable_qa',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='bundle', ctx=Store())],
+              value=Call(
+                func=Name(id='build_workflow_plan_bundle', ctx=Load()),
+                args=[
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load()),
+                  Name(id='config', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='bundle', ctx=Load()),
+                  Name(id='WorkflowPlanBundle', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='bundle', ctx=Load()),
+                  Constant(value='strategy')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='bundle', ctx=Load()),
+                  Constant(value='prompt_meta')]))],
+          decorator_list=[
+            Call(
+              func=Name(id='patch', ctx=Load()),
+              args=[
+                Constant(value='l1.workflow_planning.get_profile')])]),
+        FunctionDef(
+          name='test_build_workflow_plan_bundle_with_meta_profile',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_get_profile')]),
+          body=[
+            Expr(
+              value=Constant(value='Test workflow plan bundle with meta profile.')),
+            Assign(
+              targets=[
+                Name(id='profile_spec', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='id',
+                  ctx=Store())],
+              value=Constant(value='test_profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='description',
+                  ctx=Store())],
+              value=Constant(value='Test profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='qa_depth',
+                  ctx=Store())],
+              value=Constant(value=2)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='min_complexity',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='reasoning_mode',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='ReasoningMode', ctx=Load()),
+                attr='CHAIN_OF_THOUGHT',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='retrieval',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RetrievalConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='strategy',
+                    value=Constant(value='hybrid')),
+                  keyword(
+                    arg='max_hits',
+                    value=Constant(value=16))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='profile_spec', ctx=Load()),
+                    attr='safety_tier',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Store())],
+              value=Constant(value='standard')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='profile_spec', ctx=Load()),
+                    attr='model_tier',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Store())],
+              value=Constant(value='balanced')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_cost_usd',
+                  ctx=Store())],
+              value=Constant(value=1.0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_latency_ms',
+                  ctx=Store())],
+              value=Constant(value=5000)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='qa_council_size',
+                  ctx=Store())],
+              value=Constant(value=3)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='enable_correction_loop',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='max_corrections',
+                  ctx=Store())],
+              value=Constant(value=2)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='rag_allow_hyde',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='hyde_model_tier',
+                  ctx=Store())],
+              value=Constant(value='balanced')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='profile_spec', ctx=Load()),
+                  attr='routing_telemetry_mode',
+                  ctx=Store())],
+              value=Constant(value='basic')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_get_profile', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Name(id='profile_spec', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='meta_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='active_profile_id',
+                  ctx=Store())],
+              value=Constant(value='test_profile')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='prefers_anthropic',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='prefers_openai',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='prefers_fast_models',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='reasoning_mode_hint',
+                  ctx=Store())],
+              value=Constant(value='tot')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='qa_failure_rate_last_10',
+                  ctx=Store())],
+              value=Constant(value=0.1)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='correction_rate_last_10',
+                  ctx=Store())],
+              value=Constant(value=0.4)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='extra_qa_passes',
+                  ctx=Store())],
+              value=Constant(value=1)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='reinforce_strictness',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='elevated_caution',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='hil_preferred',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='seniority_label',
+                  ctx=Store())],
+              value=Constant(value='senior_ic')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='domain_label',
+                  ctx=Store())],
+              value=Constant(value='software')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='meta_profile', ctx=Load()),
+                  attr='skill_cluster_labels',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='python_data')])),
+            Assign(
+              targets=[
+                Name(id='job', ctx=Store())],
+              value=Call(
+                func=Name(id='JobInput', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='title',
+                    value=Constant(value='Senior Engineer')),
+                  keyword(
+                    arg='requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='5+ years Python'),
+                        Constant(value='AWS')],
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='resume', ctx=Store())],
+              value=Call(
+                func=Name(id='ResumeInput', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='summary',
+                    value=Constant(value='Senior Python developer with AWS and team leadership')),
+                  keyword(
+                    arg='experience_sections',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='skills',
+                    value=List(
+                      elts=[
+                        Constant(value='Python'),
+                        Constant(value='AWS'),
+                        Constant(value='Leadership')],
+                      ctx=Load())),
+                  keyword(
+                    arg='projects',
+                    value=List(ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='WorkflowConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='profile_id',
+                    value=Constant(value='senior')),
+                  keyword(
+                    arg='enable_rag',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='enable_qa',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='bundle', ctx=Store())],
+              value=Call(
+                func=Name(id='build_workflow_plan_bundle', ctx=Load()),
+                args=[
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load()),
+                  Name(id='config', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='meta_profile',
+                    value=Name(id='meta_profile', ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='bundle', ctx=Load()),
+                  Name(id='WorkflowPlanBundle', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='bundle', ctx=Load()),
+                  Constant(value='strategy')]))],
+          decorator_list=[
+            Call(
+              func=Name(id='patch', ctx=Load()),
+              args=[
+                Constant(value='l1.workflow_planning.get_profile')])])])])

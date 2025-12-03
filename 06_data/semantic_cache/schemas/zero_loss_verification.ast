@@ -1,0 +1,1243 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nZero-loss verification script comparing original baseline vs current YAML structure\n')),
+    Import(
+      names=[
+        alias(name='yaml')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='collections',
+      names=[
+        alias(name='defaultdict')],
+      level=0),
+    FunctionDef(
+      name='extract_all_files_from_yaml',
+      args=arguments(
+        args=[
+          arg(arg='yaml_data')]),
+      body=[
+        Expr(
+          value=Constant(value='Extract all leaf file paths from YAML structure, excluding __init__.py')),
+        FunctionDef(
+          name='traverse_tree',
+          args=arguments(
+            args=[
+              arg(arg='node'),
+              arg(arg='path'),
+              arg(arg='files_list')]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='node', ctx=Load()),
+                    Name(id='dict', ctx=Load())])),
+              body=[
+                Return()]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='node', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='__init__.py')]),
+                  body=[
+                    Continue()],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Name(id='dict', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='traverse_tree', ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load()),
+                              BinOp(
+                                left=Name(id='path', ctx=Load()),
+                                op=Add(),
+                                right=List(
+                                  elts=[
+                                    Name(id='key', ctx=Load())],
+                                  ctx=Load())),
+                              Name(id='files_list', ctx=Load())]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='files_list', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Constant(value='/'),
+                                  attr='join',
+                                  ctx=Load()),
+                                args=[
+                                  BinOp(
+                                    left=Name(id='path', ctx=Load()),
+                                    op=Add(),
+                                    right=List(
+                                      elts=[
+                                        Name(id='key', ctx=Load())],
+                                      ctx=Load()))])]))])])])]),
+        Assign(
+          targets=[
+            Name(id='files', ctx=Store())],
+          value=List(ctx=Load())),
+        Expr(
+          value=Call(
+            func=Name(id='traverse_tree', ctx=Load()),
+            args=[
+              Name(id='yaml_data', ctx=Load()),
+              List(ctx=Load()),
+              Name(id='files', ctx=Load())])),
+        Return(
+          value=Name(id='files', ctx=Load()))]),
+    FunctionDef(
+      name='load_yaml_tree_only',
+      args=arguments(
+        args=[
+          arg(arg='yaml_path')]),
+      body=[
+        Expr(
+          value=Constant(value='Load only the tree structure from YAML, excluding meta section')),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Name(id='yaml_path', ctx=Load()),
+                  Constant(value='r')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='read',
+                  ctx=Load())))]),
+        Assign(
+          targets=[
+            Name(id='lines', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='content', ctx=Load()),
+              attr='split',
+              ctx=Load()),
+            args=[
+              Constant(value='\n')])),
+        Assign(
+          targets=[
+            Name(id='meta_start', ctx=Store())],
+          value=Constant(value=None)),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='i', ctx=Store()),
+              Name(id='line', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='lines', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='line', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='# unified_structure_subatomic_meta.yaml')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='meta_start', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='i', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Break()])]),
+        If(
+          test=Compare(
+            left=Name(id='meta_start', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='tree_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='lines', ctx=Load()),
+                    slice=Slice(
+                      upper=BinOp(
+                        left=Name(id='meta_start', ctx=Load()),
+                        op=Sub(),
+                        right=Constant(value=1))),
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='yaml_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='yaml', ctx=Load()),
+                  attr='safe_load',
+                  ctx=Load()),
+                args=[
+                  Name(id='tree_content', ctx=Load())]))],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='yaml_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='yaml', ctx=Load()),
+                  attr='safe_load',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())]))]),
+        Return(
+          value=Name(id='yaml_data', ctx=Load()))]),
+    FunctionDef(
+      name='normalize_file_path',
+      args=arguments(
+        args=[
+          arg(arg='file_path')]),
+      body=[
+        Expr(
+          value=Constant(value='Normalize file path for comparison - handle flattened structures')),
+        Assign(
+          targets=[
+            Name(id='normalized', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='file_path', ctx=Load()),
+              attr='replace',
+              ctx=Load()),
+            args=[
+              Constant(value='\\'),
+              Constant(value='/')])),
+        Assign(
+          targets=[
+            Name(id='parts', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='normalized', ctx=Load()),
+              attr='split',
+              ctx=Load()),
+            args=[
+              Constant(value='/')])),
+        For(
+          target=Name(id='i', ctx=Store()),
+          iter=Call(
+            func=Name(id='range', ctx=Load()),
+            args=[
+              BinOp(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='parts', ctx=Load())]),
+                op=Sub(),
+                right=Constant(value=2))]),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Subscript(
+                      value=Name(id='parts', ctx=Load()),
+                      slice=Name(id='i', ctx=Load()),
+                      ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='policy'),
+                          Constant(value='semantic'),
+                          Constant(value='embedding'),
+                          Constant(value='utility'),
+                          Constant(value='routing'),
+                          Constant(value='refinement')],
+                        ctx=Load())]),
+                  Compare(
+                    left=Subscript(
+                      value=Name(id='parts', ctx=Load()),
+                      slice=BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Add(),
+                        right=Constant(value=1)),
+                      ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='check_safety'),
+                          Constant(value='adjust_scores'),
+                          Constant(value='compare_meaning'),
+                          Constant(value='prepare_information'),
+                          Constant(value='retry_task')],
+                        ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='flattened_name', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='parts', ctx=Load()),
+                          slice=Name(id='i', ctx=Load()),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='_'),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='parts', ctx=Load()),
+                          slice=BinOp(
+                            left=Name(id='i', ctx=Load()),
+                            op=Add(),
+                            right=Constant(value=1)),
+                          ctx=Load()),
+                        conversion=-1)])),
+                If(
+                  test=Compare(
+                    left=BinOp(
+                      left=Name(id='i', ctx=Load()),
+                      op=Add(),
+                      right=Constant(value=2)),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='parts', ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='new_parts', ctx=Store())],
+                      value=BinOp(
+                        left=BinOp(
+                          left=Subscript(
+                            value=Name(id='parts', ctx=Load()),
+                            slice=Slice(
+                              upper=Name(id='i', ctx=Load())),
+                            ctx=Load()),
+                          op=Add(),
+                          right=List(
+                            elts=[
+                              Name(id='flattened_name', ctx=Load())],
+                            ctx=Load())),
+                        op=Add(),
+                        right=Subscript(
+                          value=Name(id='parts', ctx=Load()),
+                          slice=Slice(
+                            lower=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Add(),
+                              right=Constant(value=2))),
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='normalized', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Constant(value='/'),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='new_parts', ctx=Load())])),
+                    Break()])])]),
+        For(
+          target=Name(id='i', ctx=Store()),
+          iter=Call(
+            func=Name(id='range', ctx=Load()),
+            args=[
+              BinOp(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='parts', ctx=Load())]),
+                op=Sub(),
+                right=Constant(value=2))]),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='parts', ctx=Load()),
+                        slice=Name(id='i', ctx=Load()),
+                        ctx=Load()),
+                      attr='startswith',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='manage_')]),
+                  Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='parts', ctx=Load()),
+                        slice=Name(id='i', ctx=Load()),
+                        ctx=Load()),
+                      attr='endswith',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='_costs')]),
+                  Compare(
+                    left=Subscript(
+                      value=Name(id='parts', ctx=Load()),
+                      slice=BinOp(
+                        left=Name(id='i', ctx=Load()),
+                        op=Add(),
+                        right=Constant(value=1)),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='update_memory')])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='flattened_name', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='parts', ctx=Load()),
+                          slice=Name(id='i', ctx=Load()),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='_update_memory')])),
+                If(
+                  test=Compare(
+                    left=BinOp(
+                      left=Name(id='i', ctx=Load()),
+                      op=Add(),
+                      right=Constant(value=2)),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='parts', ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='new_parts', ctx=Store())],
+                      value=BinOp(
+                        left=BinOp(
+                          left=Subscript(
+                            value=Name(id='parts', ctx=Load()),
+                            slice=Slice(
+                              upper=Name(id='i', ctx=Load())),
+                            ctx=Load()),
+                          op=Add(),
+                          right=List(
+                            elts=[
+                              Name(id='flattened_name', ctx=Load())],
+                            ctx=Load())),
+                        op=Add(),
+                        right=Subscript(
+                          value=Name(id='parts', ctx=Load()),
+                          slice=Slice(
+                            lower=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Add(),
+                              right=Constant(value=2))),
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='normalized', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Constant(value='/'),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='new_parts', ctx=Load())])),
+                    Break()])])]),
+        Return(
+          value=Name(id='normalized', ctx=Load()))]),
+    FunctionDef(
+      name='compare_structures',
+      args=arguments(
+        args=[
+          arg(arg='original_yaml'),
+          arg(arg='current_yaml')]),
+      body=[
+        Expr(
+          value=Constant(value='Compare original and current YAML structures for zero-loss verification')),
+        Assign(
+          targets=[
+            Name(id='original_files', ctx=Store())],
+          value=Call(
+            func=Name(id='extract_all_files_from_yaml', ctx=Load()),
+            args=[
+              Name(id='original_yaml', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='current_files', ctx=Store())],
+          value=Call(
+            func=Name(id='extract_all_files_from_yaml', ctx=Load()),
+            args=[
+              Name(id='current_yaml', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='original_normalized', ctx=Store())],
+          value=SetComp(
+            elt=Call(
+              func=Name(id='normalize_file_path', ctx=Load()),
+              args=[
+                Name(id='f', ctx=Load())]),
+            generators=[
+              comprehension(
+                target=Name(id='f', ctx=Store()),
+                iter=Name(id='original_files', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='current_normalized', ctx=Store())],
+          value=SetComp(
+            elt=Call(
+              func=Name(id='normalize_file_path', ctx=Load()),
+              args=[
+                Name(id='f', ctx=Load())]),
+            generators=[
+              comprehension(
+                target=Name(id='f', ctx=Store()),
+                iter=Name(id='current_files', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='missing_files', ctx=Store())],
+          value=BinOp(
+            left=Name(id='original_normalized', ctx=Load()),
+            op=Sub(),
+            right=Name(id='current_normalized', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='added_files', ctx=Store())],
+          value=BinOp(
+            left=Name(id='current_normalized', ctx=Load()),
+            op=Sub(),
+            right=Name(id='original_normalized', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='original_file_count'),
+              Constant(value='current_file_count'),
+              Constant(value='original_unique_normalized'),
+              Constant(value='current_unique_normalized'),
+              Constant(value='missing_files'),
+              Constant(value='added_files'),
+              Constant(value='preserved_files'),
+              Constant(value='zero_loss_status'),
+              Constant(value='expansion_status')],
+            values=[
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='original_files', ctx=Load())]),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='current_files', ctx=Load())]),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='original_normalized', ctx=Load())]),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='current_normalized', ctx=Load())]),
+              Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Name(id='missing_files', ctx=Load())])]),
+              Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Name(id='added_files', ctx=Load())])]),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='original_normalized', ctx=Load()),
+                    op=BitAnd(),
+                    right=Name(id='current_normalized', ctx=Load()))]),
+              IfExp(
+                test=Compare(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='missing_files', ctx=Load())]),
+                  ops=[
+                    Eq()],
+                  comparators=[
+                    Constant(value=0)]),
+                body=Constant(value='PASS'),
+                orelse=Constant(value='FAIL')),
+              IfExp(
+                test=Compare(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='added_files', ctx=Load())]),
+                  ops=[
+                    Gt()],
+                  comparators=[
+                    Constant(value=0)]),
+                body=Constant(value='EXPANDED'),
+                orelse=Constant(value='IDENTICAL'))])),
+        Assign(
+          targets=[
+            Name(id='original_depths', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Call(
+                  func=Attribute(
+                    value=Name(id='f', ctx=Load()),
+                    attr='split',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='/')])]),
+            generators=[
+              comprehension(
+                target=Name(id='f', ctx=Store()),
+                iter=Name(id='original_files', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='current_depths', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Call(
+                  func=Attribute(
+                    value=Name(id='f', ctx=Load()),
+                    attr='split',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='/')])]),
+            generators=[
+              comprehension(
+                target=Name(id='f', ctx=Store()),
+                iter=Name(id='current_files', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='results', ctx=Load()),
+              slice=Constant(value='depth_analysis'),
+              ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='original_max_depth'),
+              Constant(value='current_max_depth'),
+              Constant(value='original_avg_depth'),
+              Constant(value='current_avg_depth'),
+              Constant(value='depth_reduction')],
+            values=[
+              IfExp(
+                test=Name(id='original_depths', ctx=Load()),
+                body=Call(
+                  func=Name(id='max', ctx=Load()),
+                  args=[
+                    Name(id='original_depths', ctx=Load())]),
+                orelse=Constant(value=0)),
+              IfExp(
+                test=Name(id='current_depths', ctx=Load()),
+                body=Call(
+                  func=Name(id='max', ctx=Load()),
+                  args=[
+                    Name(id='current_depths', ctx=Load())]),
+                orelse=Constant(value=0)),
+              IfExp(
+                test=Name(id='original_depths', ctx=Load()),
+                body=BinOp(
+                  left=Call(
+                    func=Name(id='sum', ctx=Load()),
+                    args=[
+                      Name(id='original_depths', ctx=Load())]),
+                  op=Div(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='original_depths', ctx=Load())])),
+                orelse=Constant(value=0)),
+              IfExp(
+                test=Name(id='current_depths', ctx=Load()),
+                body=BinOp(
+                  left=Call(
+                    func=Name(id='sum', ctx=Load()),
+                    args=[
+                      Name(id='current_depths', ctx=Load())]),
+                  op=Div(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='current_depths', ctx=Load())])),
+                orelse=Constant(value=0)),
+              IfExp(
+                test=BoolOp(
+                  op=And(),
+                  values=[
+                    Name(id='original_depths', ctx=Load()),
+                    Name(id='current_depths', ctx=Load())]),
+                body=BinOp(
+                  left=Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      Name(id='original_depths', ctx=Load())]),
+                  op=Sub(),
+                  right=Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      Name(id='current_depths', ctx=Load())])),
+                orelse=Constant(value=0))])),
+        Return(
+          value=Tuple(
+            elts=[
+              Name(id='results', ctx=Load()),
+              Name(id='original_files', ctx=Load()),
+              Name(id='current_files', ctx=Load())],
+            ctx=Load()))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Main zero-loss verification function')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Running zero-loss verification...')])),
+        Assign(
+          targets=[
+            Name(id='original_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Constant(value='original_baseline.yaml')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='original_path', ctx=Load()),
+                attr='exists',
+                ctx=Load()))),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='❌ Original baseline file not found')])),
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='original_yaml', ctx=Store())],
+          value=Call(
+            func=Name(id='load_yaml_tree_only', ctx=Load()),
+            args=[
+              Name(id='original_path', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='current_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Constant(value='unified_structure_subatomic.yaml')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='current_path', ctx=Load()),
+                attr='exists',
+                ctx=Load()))),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='❌ Current YAML file not found')])),
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='current_yaml', ctx=Store())],
+          value=Call(
+            func=Name(id='load_yaml_tree_only', ctx=Load()),
+            args=[
+              Name(id='current_path', ctx=Load())])),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='results', ctx=Store()),
+                Name(id='original_files', ctx=Store()),
+                Name(id='current_files', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Name(id='compare_structures', ctx=Load()),
+            args=[
+              Name(id='original_yaml', ctx=Load()),
+              Name(id='current_yaml', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n=== ZERO-LOSS VERIFICATION RESULTS ===')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Original file count: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='original_file_count'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Current file count: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='current_file_count'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Preserved files: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='preserved_files'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Missing files: '),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='missing_files'),
+                          ctx=Load())]),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Added files: '),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='added_files'),
+                          ctx=Load())]),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Zero-loss status: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='zero_loss_status'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Expansion status: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='expansion_status'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n=== DEPTH ANALYSIS ===')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Original max depth: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='depth_analysis'),
+                        ctx=Load()),
+                      slice=Constant(value='original_max_depth'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Current max depth: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='depth_analysis'),
+                        ctx=Load()),
+                      slice=Constant(value='current_max_depth'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Depth reduction: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='depth_analysis'),
+                        ctx=Load()),
+                      slice=Constant(value='depth_reduction'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        If(
+          test=Subscript(
+            value=Name(id='results', ctx=Load()),
+            slice=Constant(value='missing_files'),
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\n=== MISSING FILES ===')])])),
+            For(
+              target=Name(id='file', ctx=Store()),
+              iter=Subscript(
+                value=Subscript(
+                  value=Name(id='results', ctx=Load()),
+                  slice=Constant(value='missing_files'),
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=10)),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  - '),
+                          FormattedValue(
+                            value=Name(id='file', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='missing_files'),
+                      ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=10)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  ... and '),
+                          FormattedValue(
+                            value=BinOp(
+                              left=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Subscript(
+                                    value=Name(id='results', ctx=Load()),
+                                    slice=Constant(value='missing_files'),
+                                    ctx=Load())]),
+                              op=Sub(),
+                              right=Constant(value=10)),
+                            conversion=-1),
+                          Constant(value=' more')])]))])]),
+        If(
+          test=Subscript(
+            value=Name(id='results', ctx=Load()),
+            slice=Constant(value='added_files'),
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\n=== ADDED FILES ===')])])),
+            For(
+              target=Name(id='file', ctx=Store()),
+              iter=Subscript(
+                value=Subscript(
+                  value=Name(id='results', ctx=Load()),
+                  slice=Constant(value='added_files'),
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=10)),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  + '),
+                          FormattedValue(
+                            value=Name(id='file', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='added_files'),
+                      ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=10)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  ... and '),
+                          FormattedValue(
+                            value=BinOp(
+                              left=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Subscript(
+                                    value=Name(id='results', ctx=Load()),
+                                    slice=Constant(value='added_files'),
+                                    ctx=Load())]),
+                              op=Sub(),
+                              right=Constant(value=10)),
+                            conversion=-1),
+                          Constant(value=' more')])]))])]),
+        Assign(
+          targets=[
+            Name(id='report', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='timestamp'),
+              Constant(value='verification_type'),
+              Constant(value='results'),
+              Constant(value='sample_missing_files'),
+              Constant(value='sample_added_files')],
+            values=[
+              Constant(value='2025-12-02T20:30:00.000000'),
+              Constant(value='zero_loss_analysis'),
+              Name(id='results', ctx=Load()),
+              Subscript(
+                value=Subscript(
+                  value=Name(id='results', ctx=Load()),
+                  slice=Constant(value='missing_files'),
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=20)),
+                ctx=Load()),
+              Subscript(
+                value=Subscript(
+                  value=Name(id='results', ctx=Load()),
+                  slice=Constant(value='added_files'),
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=20)),
+                ctx=Load())])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Constant(value='zero_loss_verification.json'),
+                  Constant(value='w')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Import(
+              names=[
+                alias(name='json')]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dump',
+                  ctx=Load()),
+                args=[
+                  Name(id='report', ctx=Load()),
+                  Name(id='f', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='indent',
+                    value=Constant(value=2))]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n✅ Detailed verification saved to: zero_loss_verification.json')])])),
+        If(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='results', ctx=Load()),
+              slice=Constant(value='zero_loss_status'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='PASS')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='🎉 ZERO-LOSS VERIFICATION PASSED - All original files preserved')])),
+            Return(
+              value=Constant(value=True))],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='⚠️  ZERO-LOSS VERIFICATION FAILED - Some files missing')])),
+            Return(
+              value=Constant(value=False))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='success', ctx=Store())],
+          value=Call(
+            func=Name(id='main', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='exit', ctx=Load()),
+            args=[
+              IfExp(
+                test=Name(id='success', ctx=Load()),
+                body=Constant(value=0),
+                orelse=Constant(value=1))]))])])

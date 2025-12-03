@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"v9.23-overwrite\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-29T22:40:49Z\",\n    \"sources\": [\n      \"LIC_2025-09-23_v3.4.json\",\n      \"LIC_9.26.2025_v7.6.json\"\n    ],\n    \"notes\": \"Full overwrite merge: carries LIC 7.6 router and message-type parameters into the 9/23 canonical shell. Strict MZLO and QA retained.\",\n    \"sha256\": \"7902fdba75aae9da7c721873fb15f5085ff76e452cb8109be9b4aebef82b5ab2\"\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 (Task) in visible output.\",\n    \"Run Section 3 (Context) once and pause.\",\n    \"Run all of Section 4 (K.1..K.9) and pause.\",\n    \"Run all of Section 5 (K.1..K.11 as applicable) and pause.\",\n    \"Do not batch multiple artifacts in a single run.\"\n  ],\n  \"governance\": {\n    \"RequireRuntimeLinkedInInput\": true,\n    \"LinkedInInputGates\": [\n      \"name\",\n      \"title\",\n      \"about\",\n      \"profile_url\"\n    ],\n    \"block_on_missing\": true,\n    \"router_requires",
+  "full_hash": "7688f3698ba226f827753af1f194a67fe67652b80da5b5e0d52302949f5ab3ee",
+  "generated_at": 1764728339.7001965,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_v9.23_overwrite.json"
+}

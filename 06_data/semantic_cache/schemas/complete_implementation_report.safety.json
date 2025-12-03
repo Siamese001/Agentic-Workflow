@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 410,
+  "generated_at": 1764728342.4330254,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\complete_implementation_report.json"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.40 - SINGLE SOURCE OF TRUTH\n\nv5.40 CHANGES - CRITICAL ARCHITECTURE FIX:\n\u2713 FIXED: \"Only resume should be master resume\" principle enforced\n  - REMOVED: load_master_resume() function and file loading\n  - REMOVED: External file dependency on Master_Resume_V2_15.json\n  - KEPT: Embedded master resume as SOLE source of truth\n  - Result: Self-contained script, single MASTER_RESUME_JSON assignment\n\u2713 PRINCIPLE: One embedded master resume, no file loading, no overwriting\n  - Users modify the embedded resume directly in the code\n  - No confusion about multiple data sources\n  - No file loading failures\n  - No overwriting bugs\n\nv5.38 CHANGES (maintained):\n\u2713 Real Claude API integration (not mock)\n\u2713 Comprehensive API error handling\n\nAll v5.36 functionality maintained:\n\u2713 Master resume as true source of truth\n\u2713 Structured experience_sections data flow\n\u2713 Dynamic job metadata extraction\n\u2713 Zero fabrication - all bullets from master resume\n\u2713 Comprehensive hyphenation rules (",
+  "full_hash": "ae0bfaae6bd70ee383c4e5e1de7836e3689a0ddc36354c5b563909920479c67e",
+  "generated_at": 1764728303.9923897,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_40_SINGLE_SOURCE.py"
+}

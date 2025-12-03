@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Lightweight workflow graph for system tests.\"\"\"\nfrom __future__ import annotations\n\nfrom typing import Iterable, List\n\n_REQUIRED_NODES: List[str] = [\n    \"PromptInjectionDetector\",\n    \"PIISanitizerAgent\",\n    \"QAAgent\",\n    \"StrategyAgent\",\n    \"RAGAgent\",\n    \"DraftingAgent\",\n]\n\n_EDGES: List[str] = [\n    \"PromptInjectionDetector -> PIISanitizerAgent\",\n    \"PIISanitizerAgent -> StrategyAgent\",\n    \"StrategyAgent -> RAGAgent\",\n    \"RAGAgent -> DraftingAgent\",\n    \"DraftingAgent -> QAAgent\",\n]\n\n\ndef get_nodes() -> Iterable[str]:\n    \"\"\"Return the ordered list of workflow nodes.\"\"\"\n\n    return list(_REQUIRED_NODES)\n\n\ndef get_edges() -> Iterable[str]:\n    \"\"\"Return labelled edges in ``node_a -> node_b`` form.\"\"\"\n\n    return list(_EDGES)\n",
+  "full_hash": "5b1e07d266120c263fc50d60db07a8844db5b90a0ad0af63b0c1bc0efe9822de",
+  "generated_at": 1764728330.0369997,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\workflow\\graph.py"
+}

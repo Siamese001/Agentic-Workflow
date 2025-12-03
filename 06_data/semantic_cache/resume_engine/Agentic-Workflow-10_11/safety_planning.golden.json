@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nSafety planning for resume improvement validation and professional standards.\n\nCreates structured plans to ensure professional standards and compliance\nin resume enhancement for job applications.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any\n\nfrom core.models.models import (\n    ExecutionContext,\n    DraftingResult,\n    RAGResult,\n    QAResult,\n)\nfrom l1.builders.prompt_builder import PromptInstance, build_safety_prompt\n\n\n@dataclass(frozen=True)\nclass SafetyPlan:\n    \"\"\"\n    Defines safety validation structure for resume content.\n\n    Ensures professional standards and compliance in resume\n    improvement recommendations for job applications.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\ndef plan_safety_review(\n    safety_plan: Any,\n    *,\n    ctx: ExecutionContext,\n    draft: DraftingResult,\n    rag: RAGResult,\n    qa: QAResult,\n) -> SafetyPlan:\n    \"\"\"\n    Creates comprehensive safety plan for resume validation.\n\n    Structures evaluati",
+  "full_hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
+  "generated_at": 1764728224.7556818,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\safety_planning.py"
+}

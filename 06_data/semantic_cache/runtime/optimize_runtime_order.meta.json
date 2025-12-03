@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\optimize_runtime_order.py",
+    "rel_path": "optimize_runtime_order.py",
+    "root_name": "runtime",
+    "file_hash": "08aadf924d06b71d67c22135f0e3f28d36e4f87f595053ac5e4cc724d2319aa7",
+    "file_size": 6711,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.5183935
+}

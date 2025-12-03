@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__contracts__test_contract_schemas_v10_7.py",
+    "rel_path": "test_flat__contracts__test_contract_schemas_v10_7.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "d43eff478a46d7de3a3bc933e493eed7d57ab657cd90c2532938328fc32ce2af",
+    "file_size": 2481,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728230.9086225
+}

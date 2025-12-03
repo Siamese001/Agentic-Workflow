@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nProvides observability compatibility shim for resume generation system.\n\nEnsures runtime monitoring and tracking capabilities for improved\nresume generation quality and debugging.\n\"\"\"\n\n# FILE: observability.py\n\nfrom __future__ import annotations\n\nfrom runtime.observability.spans import *  # noqa: F401,F403\nfrom runtime.observability.events import *  # noqa: F401,F403\nfrom runtime.observability.emitters import *  # noqa: F401,F403\nfrom runtime.observability.collectors import (  # noqa: F401\n    get_events,\n    clear_events as _clear_events_impl,\n)\n\n\ndef get_all_events():\n    \"\"\"Retrieves all observability events for resume generation monitoring.\n\n    Ensures comprehensive tracking of resume generation processes\n    for quality assurance and debugging.\n    \"\"\"\n    return get_events()\n\n\ndef clear_events() -> None:  # type: ignore[override]\n    \"\"\"Clears observability events to maintain clean monitoring state.\n\n    Ensures resume generation tracking remains organized and\n    manageable",
+  "full_hash": "488c5080363fb9da8cdd65966eae6f8f2f3be517b67704b40b9aee2d36af4a85",
+  "generated_at": 1764728225.7405317,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\observability.py"
+}

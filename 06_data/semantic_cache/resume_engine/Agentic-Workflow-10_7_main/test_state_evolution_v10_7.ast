@@ -1,0 +1,848 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    Import(
+      names=[
+        alias(name='copy')]),
+    Assign(
+      targets=[
+        Name(id='VOLATILE_KEYS', ctx=Store())],
+      value=Set(
+        elts=[
+          Constant(value='timestamp'),
+          Constant(value='uuid'),
+          Constant(value='usage'),
+          Constant(value='cost'),
+          Constant(value='trace_id')])),
+    FunctionDef(
+      name='_sanitize_state',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Removes volatile fields that are allowed to differ run-run.\n    Ensures stable comparison for deterministic state evolution tests.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load()),
+                Name(id='dict', ctx=Load())])),
+          body=[
+            Return(
+              value=Name(id='state', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='clean', ctx=Store())],
+          value=Dict()),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='k', ctx=Store()),
+              Name(id='v', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='state', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='k', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='VOLATILE_KEYS', ctx=Load())]),
+              body=[
+                Continue()]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='v', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='clean', ctx=Load()),
+                      slice=Name(id='k', ctx=Load()),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='_sanitize_state', ctx=Load()),
+                    args=[
+                      Name(id='v', ctx=Load())]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='clean', ctx=Load()),
+                      slice=Name(id='k', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='v', ctx=Load()))])]),
+        Return(
+          value=Name(id='clean', ctx=Load()))]),
+    FunctionDef(
+      name='test_state_grows_monotonically_through_pipeline',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='StateGrowUser'),
+                  Constant(value='AI Exec')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='required_blocks', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='strategy'),
+              Constant(value='rag'),
+              Constant(value='drafting'),
+              Constant(value='qa')],
+            ctx=Load())),
+        For(
+          target=Name(id='blk', ctx=Store()),
+          iter=Name(id='required_blocks', ctx=Load()),
+          body=[
+            Assert(
+              test=Compare(
+                left=Name(id='blk', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='resume', ctx=Load())]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value="Missing required state block '"),
+                  FormattedValue(
+                    value=Name(id='blk', ctx=Load()),
+                    conversion=-1),
+                  Constant(value="'")]))]),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Subscript(
+                value=Name(id='resume', ctx=Load()),
+                slice=Constant(value='strategy'),
+                ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='context')]),
+          msg=Constant(value='Strategy context lost downstream')),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Subscript(
+                value=Name(id='resume', ctx=Load()),
+                slice=Constant(value='rag'),
+                ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='document')]),
+          msg=Constant(value='RAG did not populate document')),
+        Assert(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='bullets')])]),
+          msg=Constant(value='Drafting stage did not add summary or bullets')),
+        Assert(
+          test=Compare(
+            left=Constant(value='qa'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='resume', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='issues'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Name(id='resume', ctx=Load()),
+                slice=Constant(value='qa'),
+                ctx=Load())]),
+          msg=Constant(value='QA issues missing')),
+        Assert(
+          test=Compare(
+            left=Constant(value='confidence'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Name(id='resume', ctx=Load()),
+                slice=Constant(value='qa'),
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_no_upstream_state_loss',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='UpstreamLossTest'),
+                  Constant(value='AWS')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='expected_upstream_keys', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='strategy'),
+              Constant(value='rag')])),
+        Assign(
+          targets=[
+            Name(id='missing', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='k', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='k', ctx=Store()),
+                iter=Name(id='expected_upstream_keys', ctx=Load()),
+                ifs=[
+                  Compare(
+                    left=Name(id='k', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='resume', ctx=Load())])],
+                is_async=0)])),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='missing', ctx=Load())),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Upstream blocks lost: '),
+              FormattedValue(
+                value=Name(id='missing', ctx=Load()),
+                conversion=-1)])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Subscript(
+                value=Name(id='resume', ctx=Load()),
+                slice=Constant(value='strategy'),
+                ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='context')]),
+          msg=Constant(value='Strategy context was lost or overwritten downstream'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_state_determinism_clean_structure',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='compat_mode'),
+              Constant(value='resume'),
+              Constant(value='jd')],
+            values=[
+              Constant(value='v10_7'),
+              Constant(value='DeterminismUser'),
+              Constant(value='Citi')])),
+        Assign(
+          targets=[
+            Name(id='out1', ctx=Store())],
+          value=Call(
+            func=Name(id='_sanitize_state', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='run_workflow', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='copy', ctx=Load()),
+                      attr='deepcopy',
+                      ctx=Load()),
+                    args=[
+                      Name(id='ctx', ctx=Load())])])])),
+        Assign(
+          targets=[
+            Name(id='out2', ctx=Store())],
+          value=Call(
+            func=Name(id='_sanitize_state', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='run_workflow', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='copy', ctx=Load()),
+                      attr='deepcopy',
+                      ctx=Load()),
+                    args=[
+                      Name(id='ctx', ctx=Load())])])])),
+        Assert(
+          test=Compare(
+            left=Name(id='out1', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='out2', ctx=Load())]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='State output mismatch across identical runs (determinism broken). out1='),
+              FormattedValue(
+                value=Name(id='out1', ctx=Load()),
+                conversion=-1),
+              Constant(value='\nout2='),
+              FormattedValue(
+                value=Name(id='out2', ctx=Load()),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_no_cross_run_state_leakage',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out1', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='LeakUserA'),
+                  Constant(value='Exec')])])),
+        Assign(
+          targets=[
+            Name(id='out2', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='LeakUserB'),
+                  Constant(value='Exec')])])),
+        Assign(
+          targets=[
+            Name(id='clean1', ctx=Store())],
+          value=Call(
+            func=Name(id='_sanitize_state', ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='out1', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='clean2', ctx=Store())],
+          value=Call(
+            func=Name(id='_sanitize_state', ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='out2', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Name(id='clean1', ctx=Load()),
+            ops=[
+              NotEq()],
+            comparators=[
+              Name(id='clean2', ctx=Load())]),
+          msg=Constant(value='Cross-run contamination detected (state leak)'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_state_adds_minimum_required_keys',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='MinKeysTest'),
+                  Constant(value='Director')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='required', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='strategy'),
+              Constant(value='rag'),
+              Constant(value='drafting'),
+              Constant(value='qa'),
+              Constant(value='events')],
+            ctx=Load())),
+        For(
+          target=Name(id='k', ctx=Store()),
+          iter=Name(id='required', ctx=Load()),
+          body=[
+            Assert(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Name(id='k', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='resume', ctx=Load())]),
+                  Compare(
+                    left=Name(id='k', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='out', ctx=Load())])]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value="State missing required block '"),
+                  FormattedValue(
+                    value=Name(id='k', ctx=Load()),
+                    conversion=-1),
+                  Constant(value="'")]))])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_event_sequence_matches_state_sequence',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='SeqTest'),
+                  Constant(value='AWS')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='events', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Attribute(
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='e', ctx=Load())]),
+                attr='lower',
+                ctx=Load())),
+            generators=[
+              comprehension(
+                target=Name(id='e', ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='out', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='events'),
+                    List(ctx=Load())]),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='state_blocks_order', ctx=Store())],
+          value=List(
+            elts=[
+              Tuple(
+                elts=[
+                  Constant(value='strategy'),
+                  Constant(value='strategy')],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Constant(value='rag'),
+                  Constant(value='rag')],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Constant(value='bullet'),
+                  Constant(value='bullet')],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Constant(value='draft'),
+                  Constant(value='draft')],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Constant(value='qa'),
+                  Constant(value='qa')],
+                ctx=Load())],
+            ctx=Load())),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='block', ctx=Store()),
+              Name(id='event_prefix', ctx=Store())],
+            ctx=Store()),
+          iter=Name(id='state_blocks_order', ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='block', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='resume', ctx=Load())]),
+              body=[
+                Assert(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='event_prefix', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='e', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='e', ctx=Store()),
+                            iter=Name(id='events', ctx=Load()),
+                            is_async=0)])]),
+                  msg=JoinedStr(
+                    values=[
+                      Constant(value="State contains '"),
+                      FormattedValue(
+                        value=Name(id='block', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' but no corresponding '"),
+                      FormattedValue(
+                        value=Name(id='event_prefix', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' event recorded")]))])])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_total_resume_key_count_does_not_shrink',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Acts as a tripwire for structural regressions.\n    For v10.7, resume typically contains 5–7 keys.\n    This test enforces that the count does NOT shrink across refactors.\n    ')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='CountTest'),
+                  Constant(value='Exec')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Call(
+                  func=Attribute(
+                    value=Name(id='resume', ctx=Load()),
+                    attr='keys',
+                    ctx=Load()))]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=5)]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Resume structure shrunk unexpectedly: keys='),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='list', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='resume', ctx=Load()),
+                        attr='keys',
+                        ctx=Load()))]),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_state_block_type_stability',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='TypeStableUser'),
+                  Constant(value='AI Exec')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        For(
+          target=Name(id='blk', ctx=Store()),
+          iter=List(
+            elts=[
+              Constant(value='strategy'),
+              Constant(value='rag'),
+              Constant(value='drafting'),
+              Constant(value='qa')],
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='val', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='blk', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='val', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value="Block '"),
+                  FormattedValue(
+                    value=Name(id='blk', ctx=Load()),
+                    conversion=-1),
+                  Constant(value="' must be dict, got "),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Name(id='val', ctx=Load())]),
+                    conversion=-1)]))])],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_drafting_content_survives_qa',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='SurvivalTest'),
+                  Constant(value='CoreWeave')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='resume', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='k', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Tuple(
+                      elts=[
+                        Constant(value='summary'),
+                        Constant(value='bullets')],
+                      ctx=Load()),
+                    is_async=0)])]),
+          msg=Constant(value='Drafting content erased after QA stage'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='state',
+          ctx=Load())])])

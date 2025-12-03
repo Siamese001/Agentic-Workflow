@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v2\\artist_constraints.json",
+    "rel_path": "artist_constraints.json",
+    "root_name": "resume_engine/v2",
+    "file_hash": "19fa42585d156d4c696498a4eb88ebf1d667944641a7ea9b0ad118471bec4171",
+    "file_size": 2081,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728326.84829
+}

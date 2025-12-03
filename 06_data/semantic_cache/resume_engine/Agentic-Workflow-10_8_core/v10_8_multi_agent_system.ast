@@ -1,0 +1,1651 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nV10.8 Consolidated Module: Multi Agent System\nMerged from 5 source files\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='multi_agent',
+      names=[
+        alias(name='AgentGraph'),
+        alias(name='summarize_graph'),
+        alias(name='COUNCIL_OF_QA')],
+      level=0),
+    ImportFrom(
+      module='multi_agent',
+      names=[
+        alias(name='AgentMessage'),
+        alias(name='route_to_specialist')],
+      level=0),
+    ImportFrom(
+      module='multi_agent',
+      names=[
+        alias(name='AgentRole')],
+      level=0),
+    ImportFrom(
+      module='multi_agent',
+      names=[
+        alias(name='delegation_metadata')],
+      level=0),
+    ImportFrom(
+      module='multi_agent',
+      names=[
+        alias(name='deterministic_vote')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='utils_types',
+      names=[
+        alias(name='StatePatch')],
+      level=0),
+    Import(
+      names=[
+        alias(name='copy')]),
+    ClassDef(
+      name='AgentMessage',
+      body=[
+        AnnAssign(
+          target=Name(id='sender', ctx=Store()),
+          annotation=Name(id='AgentRole', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recipient', ctx=Store()),
+          annotation=Name(id='AgentRole', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='route_to_specialist',
+      args=arguments(
+        args=[
+          arg(arg='graph'),
+          arg(
+            arg='message',
+            annotation=Name(id='AgentMessage', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic routing:\n    - Finds first node whose role matches message.recipient.\n    - No execution, no side effects.\n    ')),
+        For(
+          target=Name(id='node', ctx=Store()),
+          iter=Attribute(
+            value=Name(id='graph', ctx=Load()),
+            attr='nodes',
+            ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='node', ctx=Load()),
+                  attr='role',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='message', ctx=Load()),
+                    attr='recipient',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Attribute(
+                        value=Name(id='message', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      ops=[
+                        IsNot()],
+                      comparators=[
+                        Constant(value=None)]),
+                    body=Attribute(
+                      value=Name(id='message', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load()),
+                    orelse=Dict())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metadata', ctx=Load()),
+                      slice=Constant(value='route_trace'),
+                      ctx=Store())],
+                  value=List(
+                    elts=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='sender',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='node', ctx=Load()),
+                          attr='role',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='message', ctx=Load()),
+                      attr='metadata',
+                      ctx=Store())],
+                  value=Name(id='metadata', ctx=Load())),
+                Return(
+                  value=Name(id='node', ctx=Load()))])]),
+        Return(
+          value=Constant(value=None))]),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ClassDef(
+      name='AgentRole',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='PLANNER', ctx=Store())],
+          value=Constant(value='planner')),
+        Assign(
+          targets=[
+            Name(id='RETRIEVER', ctx=Store())],
+          value=Constant(value='retriever')),
+        Assign(
+          targets=[
+            Name(id='DRAFTER', ctx=Store())],
+          value=Constant(value='drafter')),
+        Assign(
+          targets=[
+            Name(id='BULLET', ctx=Store())],
+          value=Constant(value='bullet')),
+        Assign(
+          targets=[
+            Name(id='QA', ctx=Store())],
+          value=Constant(value='qa')),
+        Assign(
+          targets=[
+            Name(id='SAFETY', ctx=Store())],
+          value=Constant(value='safety'))]),
+    ClassDef(
+      name='AgentNode',
+      body=[
+        AnnAssign(
+          target=Name(id='role', ctx=Store()),
+          annotation=Name(id='AgentRole', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='config', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='AgentGraph',
+      body=[
+        AnnAssign(
+          target=Name(id='nodes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='AgentNode', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='edges', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='tuple', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    Assign(
+      targets=[
+        Name(id='LINEAR_PIPELINE', ctx=Store())],
+      value=Call(
+        func=Name(id='AgentGraph', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='nodes',
+            value=List(
+              elts=[
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='PLANNER',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='RETRIEVER',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='DRAFTER',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='SAFETY',
+                      ctx=Load()),
+                    Dict()])],
+              ctx=Load())),
+          keyword(
+            arg='edges',
+            value=List(
+              elts=[
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='PLANNER',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='RETRIEVER',
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='RETRIEVER',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='DRAFTER',
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='DRAFTER',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='SAFETY',
+                      ctx=Load())],
+                  ctx=Load())],
+              ctx=Load()))])),
+    Assign(
+      targets=[
+        Name(id='COUNCIL_OF_QA', ctx=Store())],
+      value=Call(
+        func=Name(id='AgentGraph', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='nodes',
+            value=List(
+              elts=[
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='id')],
+                      values=[
+                        Constant(value=1)])]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='id')],
+                      values=[
+                        Constant(value=2)])]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='id')],
+                      values=[
+                        Constant(value=3)])])],
+              ctx=Load())),
+          keyword(
+            arg='edges',
+            value=List(ctx=Load()))])),
+    FunctionDef(
+      name='summarize_graph',
+      args=arguments(
+        args=[
+          arg(arg='graph')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic summary of graph nodes and edges.\n    ')),
+        FunctionDef(
+          name='_role_value',
+          args=arguments(
+            args=[
+              arg(arg='entry')]),
+          body=[
+            Return(
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='entry', ctx=Load()),
+                    Constant(value='role')]),
+                body=Attribute(
+                  value=Attribute(
+                    value=Name(id='entry', ctx=Load()),
+                    attr='role',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Load()),
+                orelse=Attribute(
+                  value=Name(id='entry', ctx=Load()),
+                  attr='value',
+                  ctx=Load())))]),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='nodes'),
+              Constant(value='edges')],
+            values=[
+              ListComp(
+                elt=Call(
+                  func=Name(id='_role_value', ctx=Load()),
+                  args=[
+                    Name(id='n', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='n', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='graph', ctx=Load()),
+                      attr='nodes',
+                      ctx=Load()),
+                    is_async=0)]),
+              ListComp(
+                elt=Tuple(
+                  elts=[
+                    Call(
+                      func=Name(id='_role_value', ctx=Load()),
+                      args=[
+                        Name(id='a', ctx=Load())]),
+                    Call(
+                      func=Name(id='_role_value', ctx=Load()),
+                      args=[
+                        Name(id='b', ctx=Load())])],
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='a', ctx=Store()),
+                        Name(id='b', ctx=Store())],
+                      ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='graph', ctx=Load()),
+                      attr='edges',
+                      ctx=Load()),
+                    is_async=0)])]))]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    FunctionDef(
+      name='can_delegate',
+      args=arguments(
+        args=[
+          arg(
+            arg='from_role',
+            annotation=Name(id='AgentRole', ctx=Load())),
+          arg(
+            arg='to_role',
+            annotation=Name(id='AgentRole', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic fixed delegation policy.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='PLANNER',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Set(
+                    elts=[
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='RETRIEVER',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='DRAFTER',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='QA',
+                        ctx=Load())])]))]),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='RETRIEVER',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='DRAFTER',
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='DRAFTER',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='QA',
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='QA',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='SAFETY',
+                    ctx=Load())]))]),
+        Return(
+          value=Constant(value=False))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='delegation_metadata',
+      args=arguments(
+        args=[
+          arg(
+            arg='sender',
+            annotation=Name(id='AgentRole', ctx=Load())),
+          arg(
+            arg='recipient',
+            annotation=Name(id='AgentRole', ctx=Load()))]),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='from'),
+              Constant(value='to'),
+              Constant(value='allowed')],
+            values=[
+              Attribute(
+                value=Name(id='sender', ctx=Load()),
+                attr='value',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='recipient', ctx=Load()),
+                attr='value',
+                ctx=Load()),
+              Call(
+                func=Name(id='can_delegate', ctx=Load()),
+                args=[
+                  Name(id='sender', ctx=Load()),
+                  Name(id='recipient', ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    FunctionDef(
+      name='deterministic_vote',
+      args=arguments(
+        args=[
+          arg(
+            arg='candidates',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic selection:\n    - Highest score wins\n    - Ties broken by smallest id\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='candidates', ctx=Load())),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='score'),
+                  Constant(value='rationale')],
+                values=[
+                  Constant(value=None),
+                  Constant(value=0.0),
+                  Constant(value='no_candidates')]))]),
+        Assign(
+          targets=[
+            Name(id='sorted_candidates', ctx=Store())],
+          value=Call(
+            func=Name(id='sorted', ctx=Load()),
+            args=[
+              Name(id='candidates', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='c')]),
+                  body=Tuple(
+                    elts=[
+                      UnaryOp(
+                        op=USub(),
+                        operand=Call(
+                          func=Name(id='float', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='c', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='score'),
+                                Constant(value=0.0)])])),
+                      Call(
+                        func=Name(id='int', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='c', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='id'),
+                              Constant(value=999999)])])],
+                    ctx=Load())))])),
+        Return(
+          value=Subscript(
+            value=Name(id='sorted_candidates', ctx=Load()),
+            slice=Constant(value=0),
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='utils_types',
+      names=[
+        alias(name='StatePatch')],
+      level=0),
+    ClassDef(
+      name='MultiAgentOrchestrator',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='graph',
+                annotation=Name(id='AgentGraph', ctx=Load())),
+              arg(arg='state_adapter')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='graph',
+                  ctx=Store())],
+              value=Name(id='graph', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='state_adapter',
+                  ctx=Store())],
+              value=Name(id='state_adapter', ctx=Load()))]),
+        FunctionDef(
+          name='dispatch',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message',
+                annotation=Name(id='AgentMessage', ctx=Load())),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='recipient_node', ctx=Store())],
+              value=Call(
+                func=Name(id='route_to_specialist', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='graph',
+                    ctx=Load()),
+                  Name(id='message', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='recipient', ctx=Store())],
+              value=IfExp(
+                test=Name(id='recipient_node', ctx=Load()),
+                body=Attribute(
+                  value=Name(id='recipient_node', ctx=Load()),
+                  attr='role',
+                  ctx=Load()),
+                orelse=Constant(value=None))),
+            AnnAssign(
+              target=Name(id='multi_agent_block', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='last_message'),
+                  Constant(value='sender'),
+                  Constant(value='recipient'),
+                  Constant(value='routed_to'),
+                  Constant(value='delegation'),
+                  Constant(value='graph_summary')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='content'),
+                      Constant(value='sender'),
+                      Constant(value='recipient')],
+                    values=[
+                      Attribute(
+                        value=Name(id='message', ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='sender',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='recipient',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='message', ctx=Load()),
+                      attr='sender',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  IfExp(
+                    test=Name(id='recipient', ctx=Load()),
+                    body=Attribute(
+                      value=Name(id='recipient', ctx=Load()),
+                      attr='value',
+                      ctx=Load()),
+                    orelse=Constant(value=None)),
+                  IfExp(
+                    test=Name(id='recipient', ctx=Load()),
+                    body=Attribute(
+                      value=Name(id='recipient', ctx=Load()),
+                      attr='value',
+                      ctx=Load()),
+                    orelse=Constant(value=None)),
+                  IfExp(
+                    test=Name(id='recipient', ctx=Load()),
+                    body=Call(
+                      func=Name(id='delegation_metadata', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='sender',
+                          ctx=Load()),
+                        Name(id='recipient', ctx=Load())]),
+                    orelse=Constant(value=None)),
+                  Call(
+                    func=Name(id='summarize_graph', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='graph',
+                        ctx=Load())])]),
+              simple=1),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='graph',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='COUNCIL_OF_QA', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='multi_agent_block', ctx=Load()),
+                      slice=Constant(value='council_vote'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='deterministic_vote', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='id'),
+                              Constant(value='score'),
+                              Constant(value='rationale')],
+                            values=[
+                              Constant(value=1),
+                              Constant(value=0.7),
+                              Constant(value='baseline')]),
+                          Dict(
+                            keys=[
+                              Constant(value='id'),
+                              Constant(value='score'),
+                              Constant(value='rationale')],
+                            values=[
+                              Constant(value=2),
+                              Constant(value=0.7),
+                              Constant(value='alt')])],
+                        ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='patch', ctx=Store())],
+              value=Call(
+                func=Name(id='StatePatch', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='multi_agent')],
+                    values=[
+                      Name(id='multi_agent_block', ctx=Load())])])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='state_adapter',
+                    ctx=Load()),
+                  attr='apply_patch',
+                  ctx=Load()),
+                args=[
+                  Name(id='patch', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='AgentMessage',
+      body=[
+        AnnAssign(
+          target=Name(id='sender', ctx=Store()),
+          annotation=Name(id='AgentRole', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recipient', ctx=Store()),
+          annotation=Name(id='AgentRole', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='route_to_specialist',
+      args=arguments(
+        args=[
+          arg(arg='graph'),
+          arg(
+            arg='message',
+            annotation=Name(id='AgentMessage', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic routing:\n    - Finds first node whose role matches message.recipient.\n    - No execution, no side effects.\n    ')),
+        For(
+          target=Name(id='node', ctx=Store()),
+          iter=Attribute(
+            value=Name(id='graph', ctx=Load()),
+            attr='nodes',
+            ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='node', ctx=Load()),
+                  attr='role',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='message', ctx=Load()),
+                    attr='recipient',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Attribute(
+                        value=Name(id='message', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      ops=[
+                        IsNot()],
+                      comparators=[
+                        Constant(value=None)]),
+                    body=Attribute(
+                      value=Name(id='message', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load()),
+                    orelse=Dict())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metadata', ctx=Load()),
+                      slice=Constant(value='route_trace'),
+                      ctx=Store())],
+                  value=List(
+                    elts=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='sender',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='node', ctx=Load()),
+                          attr='role',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='message', ctx=Load()),
+                      attr='metadata',
+                      ctx=Store())],
+                  value=Name(id='metadata', ctx=Load())),
+                Return(
+                  value=Name(id='node', ctx=Load()))])]),
+        Return(
+          value=Constant(value=None))]),
+    ClassDef(
+      name='AgentRole',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='PLANNER', ctx=Store())],
+          value=Constant(value='planner')),
+        Assign(
+          targets=[
+            Name(id='RETRIEVER', ctx=Store())],
+          value=Constant(value='retriever')),
+        Assign(
+          targets=[
+            Name(id='DRAFTER', ctx=Store())],
+          value=Constant(value='drafter')),
+        Assign(
+          targets=[
+            Name(id='BULLET', ctx=Store())],
+          value=Constant(value='bullet')),
+        Assign(
+          targets=[
+            Name(id='QA', ctx=Store())],
+          value=Constant(value='qa')),
+        Assign(
+          targets=[
+            Name(id='SAFETY', ctx=Store())],
+          value=Constant(value='safety'))]),
+    ClassDef(
+      name='AgentNode',
+      body=[
+        AnnAssign(
+          target=Name(id='role', ctx=Store()),
+          annotation=Name(id='AgentRole', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='config', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='AgentGraph',
+      body=[
+        AnnAssign(
+          target=Name(id='nodes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='AgentNode', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='edges', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='tuple', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    Assign(
+      targets=[
+        Name(id='LINEAR_PIPELINE', ctx=Store())],
+      value=Call(
+        func=Name(id='AgentGraph', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='nodes',
+            value=List(
+              elts=[
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='PLANNER',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='RETRIEVER',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='DRAFTER',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict()]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='SAFETY',
+                      ctx=Load()),
+                    Dict()])],
+              ctx=Load())),
+          keyword(
+            arg='edges',
+            value=List(
+              elts=[
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='PLANNER',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='RETRIEVER',
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='RETRIEVER',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='DRAFTER',
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='DRAFTER',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='SAFETY',
+                      ctx=Load())],
+                  ctx=Load())],
+              ctx=Load()))])),
+    Assign(
+      targets=[
+        Name(id='COUNCIL_OF_QA', ctx=Store())],
+      value=Call(
+        func=Name(id='AgentGraph', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='nodes',
+            value=List(
+              elts=[
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='id')],
+                      values=[
+                        Constant(value=1)])]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='id')],
+                      values=[
+                        Constant(value=2)])]),
+                Call(
+                  func=Name(id='AgentNode', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='AgentRole', ctx=Load()),
+                      attr='QA',
+                      ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='id')],
+                      values=[
+                        Constant(value=3)])])],
+              ctx=Load())),
+          keyword(
+            arg='edges',
+            value=List(ctx=Load()))])),
+    FunctionDef(
+      name='summarize_graph',
+      args=arguments(
+        args=[
+          arg(arg='graph')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic summary of graph nodes and edges.\n    ')),
+        FunctionDef(
+          name='_role_value',
+          args=arguments(
+            args=[
+              arg(arg='entry')]),
+          body=[
+            Return(
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='entry', ctx=Load()),
+                    Constant(value='role')]),
+                body=Attribute(
+                  value=Attribute(
+                    value=Name(id='entry', ctx=Load()),
+                    attr='role',
+                    ctx=Load()),
+                  attr='value',
+                  ctx=Load()),
+                orelse=Attribute(
+                  value=Name(id='entry', ctx=Load()),
+                  attr='value',
+                  ctx=Load())))]),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='nodes'),
+              Constant(value='edges')],
+            values=[
+              ListComp(
+                elt=Call(
+                  func=Name(id='_role_value', ctx=Load()),
+                  args=[
+                    Name(id='n', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='n', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='graph', ctx=Load()),
+                      attr='nodes',
+                      ctx=Load()),
+                    is_async=0)]),
+              ListComp(
+                elt=Tuple(
+                  elts=[
+                    Call(
+                      func=Name(id='_role_value', ctx=Load()),
+                      args=[
+                        Name(id='a', ctx=Load())]),
+                    Call(
+                      func=Name(id='_role_value', ctx=Load()),
+                      args=[
+                        Name(id='b', ctx=Load())])],
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='a', ctx=Store()),
+                        Name(id='b', ctx=Store())],
+                      ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='graph', ctx=Load()),
+                      attr='edges',
+                      ctx=Load()),
+                    is_async=0)])]))]),
+    ClassDef(
+      name='MultiAgentOrchestrator',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='graph',
+                annotation=Name(id='AgentGraph', ctx=Load())),
+              arg(arg='state_adapter')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='graph',
+                  ctx=Store())],
+              value=Name(id='graph', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='state_adapter',
+                  ctx=Store())],
+              value=Name(id='state_adapter', ctx=Load()))]),
+        FunctionDef(
+          name='dispatch',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message',
+                annotation=Name(id='AgentMessage', ctx=Load())),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='recipient_node', ctx=Store())],
+              value=Call(
+                func=Name(id='route_to_specialist', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='graph',
+                    ctx=Load()),
+                  Name(id='message', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='recipient', ctx=Store())],
+              value=IfExp(
+                test=Name(id='recipient_node', ctx=Load()),
+                body=Attribute(
+                  value=Name(id='recipient_node', ctx=Load()),
+                  attr='role',
+                  ctx=Load()),
+                orelse=Constant(value=None))),
+            AnnAssign(
+              target=Name(id='multi_agent_block', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(
+                keys=[
+                  Constant(value='last_message'),
+                  Constant(value='sender'),
+                  Constant(value='recipient'),
+                  Constant(value='routed_to'),
+                  Constant(value='delegation'),
+                  Constant(value='graph_summary')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='content'),
+                      Constant(value='sender'),
+                      Constant(value='recipient')],
+                    values=[
+                      Attribute(
+                        value=Name(id='message', ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='sender',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='recipient',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='message', ctx=Load()),
+                      attr='sender',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  IfExp(
+                    test=Name(id='recipient', ctx=Load()),
+                    body=Attribute(
+                      value=Name(id='recipient', ctx=Load()),
+                      attr='value',
+                      ctx=Load()),
+                    orelse=Constant(value=None)),
+                  IfExp(
+                    test=Name(id='recipient', ctx=Load()),
+                    body=Attribute(
+                      value=Name(id='recipient', ctx=Load()),
+                      attr='value',
+                      ctx=Load()),
+                    orelse=Constant(value=None)),
+                  IfExp(
+                    test=Name(id='recipient', ctx=Load()),
+                    body=Call(
+                      func=Name(id='delegation_metadata', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='message', ctx=Load()),
+                          attr='sender',
+                          ctx=Load()),
+                        Name(id='recipient', ctx=Load())]),
+                    orelse=Constant(value=None)),
+                  Call(
+                    func=Name(id='summarize_graph', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='graph',
+                        ctx=Load())])]),
+              simple=1),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='graph',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='COUNCIL_OF_QA', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='multi_agent_block', ctx=Load()),
+                      slice=Constant(value='council_vote'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='deterministic_vote', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='id'),
+                              Constant(value='score'),
+                              Constant(value='rationale')],
+                            values=[
+                              Constant(value=1),
+                              Constant(value=0.7),
+                              Constant(value='baseline')]),
+                          Dict(
+                            keys=[
+                              Constant(value='id'),
+                              Constant(value='score'),
+                              Constant(value='rationale')],
+                            values=[
+                              Constant(value=2),
+                              Constant(value=0.7),
+                              Constant(value='alt')])],
+                        ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='patch', ctx=Store())],
+              value=Call(
+                func=Name(id='StatePatch', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='multi_agent')],
+                    values=[
+                      Name(id='multi_agent_block', ctx=Load())])])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='state_adapter',
+                    ctx=Load()),
+                  attr='apply_patch',
+                  ctx=Load()),
+                args=[
+                  Name(id='patch', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='apply_hil_feedback',
+      args=arguments(
+        args=[
+          arg(arg='state'),
+          arg(arg='feedback')]),
+      body=[
+        Expr(
+          value=Constant(value='Return a deep-copied state updated with human-in-the-loop feedback.')),
+        Assign(
+          targets=[
+            Name(id='new_state', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='state', ctx=Load()),
+              ops=[
+                IsNot()],
+              comparators=[
+                Constant(value=None)]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='copy', ctx=Load()),
+                attr='deepcopy',
+                ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load())]),
+            orelse=Dict())),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='new_state', ctx=Load()),
+              slice=Constant(value='hil_feedback'),
+              ctx=Store())],
+          value=Name(id='feedback', ctx=Load())),
+        Return(
+          value=Name(id='new_state', ctx=Load()))])])

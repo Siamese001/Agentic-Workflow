@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\constitution\\test_constitutional_engine_basic.py",
+    "rel_path": "test_constitutional_engine_basic.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "8f1dd1a2eddcf65ad125cba638596792641f1fa7c471c39c8e74524d23a808ca",
+    "file_size": 835,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.4595602
+}

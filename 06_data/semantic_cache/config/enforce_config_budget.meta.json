@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\manage-config-costs\\general\\update-memory\\enforce_config_budget.py",
+    "rel_path": "enforce_config_budget.py",
+    "root_name": "config",
+    "file_hash": "24f1d4337e8af9d4b408443a2217b013402c89e831279318bf6899756ef67c44",
+    "file_size": 11332,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.3832638
+}

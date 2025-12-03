@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 16,
+  "generated_at": 1764728327.7892065,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\Testing\\requirements.txt"
+}

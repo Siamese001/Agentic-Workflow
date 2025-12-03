@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Human-in-the-loop interface module.\"\"\"\n\nimport copy\n\n\ndef apply_hil_feedback(state, feedback):\n    \"\"\"Return a deep-copied state updated with human-in-the-loop feedback.\"\"\"\n\n    new_state = copy.deepcopy(state) if state is not None else {}\n    new_state[\"hil_feedback\"] = feedback\n    return new_state\n",
+  "full_hash": "f2fe86f3b4aa89b173cbf402490437b96efae3f5274c090ed8b0b3979ed4fa23",
+  "generated_at": 1764728347.6607196,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\retriever-microagent-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\rest_interface.py"
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\integrity_records_engine.py",
+    "rel_path": "integrity_records_engine.py",
+    "root_name": "schemas",
+    "file_hash": "d9ec7d47ba04a301eff30a7021bfbfac4fb648be8712eb4c1423b0aa5526a8f5",
+    "file_size": 12299,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728345.5942848
+}

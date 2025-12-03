@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\retriever-microagent-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\context_manager.py",
+    "rel_path": "context_manager.py",
+    "root_name": "runtime",
+    "file_hash": "4dbf80bd2c4695bd64b91251993af6570fc58fe4428edfb4b6f01d3560bafaa9",
+    "file_size": 22,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.7000256
+}

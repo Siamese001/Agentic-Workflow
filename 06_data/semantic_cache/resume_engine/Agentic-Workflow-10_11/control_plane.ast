@@ -1,0 +1,249 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nControl plane orchestration for résumé processing safety pipeline.\n\nCoordinates rule evaluation and safety decisions for comprehensive résumé improvement workflows.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='decisions',
+      names=[
+        alias(name='JudgeVerdict'),
+        alias(name='SafetyPipelineTrace'),
+        alias(name='RulesEngineResult')],
+      level=1),
+    ImportFrom(
+      module='judge_engine',
+      names=[
+        alias(name='evaluate_with_guard_model')],
+      level=1),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='PolicyDecision'),
+        alias(name='SafetyContext')],
+      level=1),
+    ImportFrom(
+      module='routing',
+      names=[
+        alias(name='resolve_rules_for_context')],
+      level=1),
+    ImportFrom(
+      module='rules_engine',
+      names=[
+        alias(name='evaluate_rules')],
+      level=1),
+    FunctionDef(
+      name='run_safety_pipeline',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Name(id='SafetyContext', ctx=Load())),
+          arg(
+            arg='execution_profile',
+            annotation=BinOp(
+              left=Name(id='object', ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Executes complete safety pipeline for résumé processing workflows.\n\n    Ensures comprehensive safety validation for résumé enhancement operations.\n    ')),
+        Assign(
+          targets=[
+            Name(id='rules', ctx=Store())],
+          value=Call(
+            func=Name(id='resolve_rules_for_context', ctx=Load()),
+            args=[
+              Name(id='context', ctx=Load())])),
+        AnnAssign(
+          target=Name(id='rules_result', ctx=Store()),
+          annotation=Name(id='RulesEngineResult', ctx=Load()),
+          value=Call(
+            func=Name(id='evaluate_rules', ctx=Load()),
+            args=[
+              Name(id='context', ctx=Load()),
+              Name(id='rules', ctx=Load())]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='judge_verdict', ctx=Store()),
+          annotation=Name(id='JudgeVerdict', ctx=Load()),
+          value=Call(
+            func=Name(id='evaluate_with_guard_model', ctx=Load()),
+            args=[
+              Name(id='context', ctx=Load()),
+              Name(id='rules_result', ctx=Load())]),
+          simple=1),
+        If(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='judge_verdict', ctx=Load()),
+              attr='verdict',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='unsafe')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='action', ctx=Store())],
+              value=Constant(value='deny'))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='judge_verdict', ctx=Load()),
+                  attr='verdict',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='ambiguous')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='action', ctx=Store())],
+                  value=Constant(value='revise'))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='action', ctx=Store())],
+                  value=Constant(value='allow'))])]),
+        Assign(
+          targets=[
+            Name(id='decision', ctx=Store())],
+          value=Call(
+            func=Name(id='PolicyDecision', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='action',
+                value=Name(id='action', ctx=Load())),
+              keyword(
+                arg='verdict',
+                value=Attribute(
+                  value=Name(id='judge_verdict', ctx=Load()),
+                  attr='verdict',
+                  ctx=Load())),
+              keyword(
+                arg='reason',
+                value=Attribute(
+                  value=Name(id='judge_verdict', ctx=Load()),
+                  attr='explanation',
+                  ctx=Load())),
+              keyword(
+                arg='rule_ids',
+                value=ListComp(
+                  elt=Attribute(
+                    value=Name(id='m', ctx=Load()),
+                    attr='rule_id',
+                    ctx=Load()),
+                  generators=[
+                    comprehension(
+                      target=Name(id='m', ctx=Store()),
+                      iter=Attribute(
+                        value=Name(id='rules_result', ctx=Load()),
+                        attr='matches',
+                        ctx=Load()),
+                      is_async=0)])),
+              keyword(
+                arg='max_severity',
+                value=Attribute(
+                  value=Name(id='rules_result', ctx=Load()),
+                  attr='max_severity',
+                  ctx=Load())),
+              keyword(
+                arg='details',
+                value=Dict(
+                  keys=[
+                    Constant(value='has_pii'),
+                    Constant(value='match_count')],
+                  values=[
+                    Attribute(
+                      value=Name(id='rules_result', ctx=Load()),
+                      attr='has_pii',
+                      ctx=Load()),
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='rules_result', ctx=Load()),
+                          attr='matches',
+                          ctx=Load())])]))])),
+        Assign(
+          targets=[
+            Name(id='trace', ctx=Store())],
+          value=Call(
+            func=Name(id='SafetyPipelineTrace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='rules_engine',
+                value=Dict(
+                  keys=[
+                    Constant(value='matches'),
+                    Constant(value='max_severity'),
+                    Constant(value='has_pii'),
+                    Constant(value='match_count')],
+                  values=[
+                    ListComp(
+                      elt=Call(
+                        func=Attribute(
+                          value=Name(id='m', ctx=Load()),
+                          attr='dict',
+                          ctx=Load())),
+                      generators=[
+                        comprehension(
+                          target=Name(id='m', ctx=Store()),
+                          iter=Attribute(
+                            value=Name(id='rules_result', ctx=Load()),
+                            attr='matches',
+                            ctx=Load()),
+                          is_async=0)]),
+                    Attribute(
+                      value=Name(id='rules_result', ctx=Load()),
+                      attr='max_severity',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='rules_result', ctx=Load()),
+                      attr='has_pii',
+                      ctx=Load()),
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='rules_result', ctx=Load()),
+                          attr='matches',
+                          ctx=Load())])])),
+              keyword(
+                arg='judge',
+                value=Dict(
+                  keys=[
+                    Constant(value='verdict'),
+                    Constant(value='signals')],
+                  values=[
+                    Attribute(
+                      value=Name(id='judge_verdict', ctx=Load()),
+                      attr='verdict',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='judge_verdict', ctx=Load()),
+                      attr='signals',
+                      ctx=Load())]))])),
+        Return(
+          value=Tuple(
+            elts=[
+              Name(id='decision', ctx=Load()),
+              Name(id='trace', ctx=Load())],
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='PolicyDecision', ctx=Load()),
+            Name(id='SafetyPipelineTrace', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

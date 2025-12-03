@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedIn.md",
+    "rel_path": "LinkedIn.md",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "a6b43fd6215558903cd80b905001aa3dd225a529484f72b1566aa80ad3e23796",
+    "file_size": 11580,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728339.761905
+}

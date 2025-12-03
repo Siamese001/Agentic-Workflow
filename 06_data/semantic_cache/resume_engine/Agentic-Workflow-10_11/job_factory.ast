@@ -1,0 +1,147 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Job Factory for Testing.')),
+    ClassDef(
+      name='JobFactory',
+      body=[
+        Expr(
+          value=Constant(value='Factory for creating Job test objects.')),
+        FunctionDef(
+          name='create',
+          args=arguments(
+            args=[
+              arg(arg='title'),
+              arg(arg='company'),
+              arg(arg='requirements'),
+              arg(arg='experience_years')],
+            defaults=[
+              Constant(value='Software Engineer'),
+              Constant(value='Tech Corp'),
+              Constant(value=None),
+              Constant(value=3)]),
+          body=[
+            Expr(
+              value=Constant(value='Create a Job dict.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='title'),
+                  Constant(value='company'),
+                  Constant(value='requirements'),
+                  Constant(value='experience_years')],
+                values=[
+                  Name(id='title', ctx=Load()),
+                  Name(id='company', ctx=Load()),
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='requirements', ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='AWS')],
+                        ctx=Load())]),
+                  Name(id='experience_years', ctx=Load())]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())])]),
+    ClassDef(
+      name='ResumeFactory',
+      body=[
+        Expr(
+          value=Constant(value='Factory for creating Resume test objects.')),
+        FunctionDef(
+          name='create',
+          args=arguments(
+            args=[
+              arg(arg='name'),
+              arg(arg='summary'),
+              arg(arg='skills'),
+              arg(arg='experience_years')],
+            defaults=[
+              Constant(value='John Doe'),
+              Constant(value='Experienced developer'),
+              Constant(value=None),
+              Constant(value=5)]),
+          body=[
+            Expr(
+              value=Constant(value='Create a Resume dict.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='summary'),
+                  Constant(value='skills'),
+                  Constant(value='experience_years')],
+                values=[
+                  Name(id='name', ctx=Load()),
+                  Name(id='summary', ctx=Load()),
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='skills', ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='JavaScript'),
+                          Constant(value='AWS')],
+                        ctx=Load())]),
+                  Name(id='experience_years', ctx=Load())]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())])]),
+    FunctionDef(
+      name='test_job_factory',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Test JobFactory.')),
+        Assign(
+          targets=[
+            Name(id='job', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='JobFactory', ctx=Load()),
+              attr='create',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='title',
+                value=Constant(value='ML Engineer'))])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='job', ctx=Load()),
+              slice=Constant(value='title'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='ML Engineer')]))]),
+    FunctionDef(
+      name='test_resume_factory',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Test ResumeFactory.')),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='ResumeFactory', ctx=Load()),
+              attr='create',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='Jane Doe'))])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='resume', ctx=Load()),
+              slice=Constant(value='name'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='Jane Doe')]))])])

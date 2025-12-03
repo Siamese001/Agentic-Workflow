@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.54 - WEB RAG IMPLEMENTATION\n\nv5.54 CHANGES - WEB RAG FULLY IMPLEMENTED:\n\u2713 COMPLETED: Real web search via Anthropic API\n\u2713 COMPLETED: Phase 1 - Thematic Research (15-20 searches)\n\u2713 COMPLETED: Phase 2 - Authenticity Patterns (10-15 searches)  \n\u2713 COMPLETED: Phase 3 - Competitive Positioning (10-15 searches)\n\u2713 COMPLETED: Caching layer (60-80% cost reduction)\n\u2713 MAINTAINED: Graceful fallback to v5.52 local NLP\n\u2713 MAINTAINED: Zero changes to HOP-1, HOP-2, HOP-3\n\nBUILD: October 19, 2025\n\nNOTE: This file shows the NEW sections to add to your v5.53.\n      Copy your existing v5.53, then replace the sections marked below.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport re\nimport hashlib\nimport math\nimport os\nimport time\nimport requests\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nfrom dataclasses import dataclass, field, asdict\nfrom pathlib import Path\nimport copy\n\n# NEW: Import anthropic for ",
+  "full_hash": "ef56d738eb149e286ab0daea4a0e1f428efc4fb9b39eda09e9eb13889e635160",
+  "generated_at": 1764728306.7794728,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_54_WEB_RAG.py"
+}

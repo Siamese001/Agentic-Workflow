@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\simulation_base.py",
+    "rel_path": "simulation_base.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "530ca60bdfe8f6204369d9f791dfff19663217a3b41d636d6c3f2fd95bf05a72",
+    "file_size": 692,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728230.1595545
+}

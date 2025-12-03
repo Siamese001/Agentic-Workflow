@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTest suite for semantic cache reconstruction and query operations\n\nTests embedding index, signature index, similarity search, and reconstruction\nfunctionality for both Resume Engine (RG) and Outreach Engine (LIC) engines.\n\"\"\"\n\nimport json\nimport math\nimport pytest\nimport tempfile\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, List\n\n# Add project paths for imports\nproject_root = Path(__file__).parent.parent\nsys.path.append(str(project_root / \"schemas\"))\nsys.path.append(str(project_root / \"runtime\"))\n\nfrom semantic_lineage import (\n    EngineType, ASTSignature, FileSignature, FileExtension\n)\nfrom semantic_reconstruction import (\n    EmbeddingIndex, SignatureIndex, SimilarityResult, ReconstructionQuery,\n    SemanticReconstructor, OrphanReport\n)\n\n\nclass TestEmbeddingIndex:\n    \"\"\"Test embedding index functionality\"\"\"\n    \n    def test_add_vector(self):\n        \"\"\"Test adding vectors to index\"\"\"\n        index = EmbeddingIndex()\n        \n ",
+  "full_hash": "1ae4c229fb04c4c02310c3851770067df158a404c547193b8d6e93ad91696ba2",
+  "generated_at": 1764728346.425149,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\10_tests\\test_semantic_cache_reconstruction.py"
+}

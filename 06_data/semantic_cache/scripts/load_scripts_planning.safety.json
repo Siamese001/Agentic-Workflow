@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728352.196285,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\load_scripts_planning.py"
+}

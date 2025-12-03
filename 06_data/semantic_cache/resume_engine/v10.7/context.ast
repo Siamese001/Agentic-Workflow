@@ -1,0 +1,3440 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Workflow context, states, and helpers for v10.7.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='asdict'),
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='chromadb.utils',
+      names=[
+        alias(name='embedding_functions')],
+      level=0),
+    ImportFrom(
+      module='mcp',
+      names=[
+        alias(name='get_tool')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='redis',
+          names=[
+            alias(name='Redis', asname='RedisType')],
+          level=0),
+        ImportFrom(
+          module='chromadb',
+          names=[
+            alias(name='Client', asname='ChromaClientType')],
+          level=0)],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='RedisType', ctx=Store())],
+              value=Name(id='Any', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='ChromaClientType', ctx=Store())],
+              value=Name(id='Any', ctx=Load()))])]),
+    ImportFrom(
+      module='clients',
+      names=[
+        alias(name='AnthropicAsyncClient'),
+        alias(name='GeminiAsyncClient'),
+        alias(name='OpenAIAsyncClient')],
+      level=1),
+    ImportFrom(
+      module='config',
+      names=[
+        alias(name='ConfigV10_7')],
+      level=1),
+    ImportFrom(
+      module='constants',
+      names=[
+        alias(name='canonical_model_name')],
+      level=1),
+    ImportFrom(
+      module='exceptions',
+      names=[
+        alias(name='MCPClientInitializationError')],
+      level=1),
+    ImportFrom(
+      module='mcp',
+      names=[
+        alias(name='MCPClientSpec'),
+        alias(name='MCPClientStub'),
+        alias(name='instantiate_mcp_client'),
+        alias(name='parse_mcp_client_specs')],
+      level=1),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='ConstitutionalReviewResult'),
+        alias(name='GeneratedPrompts'),
+        alias(name='HILAmbiguityReport'),
+        alias(name='StrategyPlan')],
+      level=1),
+    ImportFrom(
+      module='services',
+      names=[
+        alias(name='CacheManager'),
+        alias(name='ContextBudgetManager'),
+        alias(name='CostTracker'),
+        alias(name='FeedbackEntry'),
+        alias(name='FeedbackLogReader'),
+        alias(name='MetricsCollector'),
+        alias(name='PromptTemplateManager'),
+        alias(name='ProposedRulesLoader'),
+        alias(name='ResponseValidator'),
+        alias(name='SemanticValidator')],
+      level=1),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Constant(value='core_v10_7')])),
+    Assign(
+      targets=[
+        Name(id='redis_module', ctx=Store())],
+      value=Call(
+        func=Name(id='get_tool', ctx=Load()),
+        args=[
+          Constant(value='redis')])),
+    Assign(
+      targets=[
+        Name(id='chromadb_module', ctx=Store())],
+      value=Call(
+        func=Name(id='get_tool', ctx=Load()),
+        args=[
+          Constant(value='chromadb')])),
+    ClassDef(
+      name='WorkflowContext',
+      body=[
+        Expr(
+          value=Constant(value='\n    v10.7: True Dependency Injection container.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='ConfigV10_7', ctx=Load())),
+              arg(
+                arg='redis_client',
+                annotation=Name(id='RedisType', ctx=Load())),
+              arg(
+                arg='chromadb_client',
+                annotation=Name(id='ChromaClientType', ctx=Load())),
+              arg(
+                arg='cache_manager',
+                annotation=Name(id='CacheManager', ctx=Load())),
+              arg(
+                arg='cost_tracker',
+                annotation=Name(id='CostTracker', ctx=Load())),
+              arg(
+                arg='feedback_reader',
+                annotation=Name(id='FeedbackLogReader', ctx=Load())),
+              arg(
+                arg='rules_loader',
+                annotation=Name(id='ProposedRulesLoader', ctx=Load())),
+              arg(
+                arg='prompt_manager',
+                annotation=Name(id='PromptTemplateManager', ctx=Load())),
+              arg(
+                arg='response_validator',
+                annotation=Name(id='ResponseValidator', ctx=Load())),
+              arg(
+                arg='metrics_collector',
+                annotation=Name(id='MetricsCollector', ctx=Load())),
+              arg(
+                arg='semantic_validator',
+                annotation=Name(id='SemanticValidator', ctx=Load())),
+              arg(
+                arg='embedding_function',
+                annotation=Attribute(
+                  value=Name(id='embedding_functions', ctx=Load()),
+                  attr='EmbeddingFunction',
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Name(id='config', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='redis_client',
+                  ctx=Store())],
+              value=Name(id='redis_client', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='chromadb_client',
+                  ctx=Store())],
+              value=Name(id='chromadb_client', ctx=Load())),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='workflow_id',
+                ctx=Store()),
+              annotation=Name(id='str', ctx=Load()),
+              value=Constant(value=''),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='complexity',
+                ctx=Store()),
+              annotation=Name(id='str', ctx=Load()),
+              value=Constant(value='unknown'),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='cache_manager',
+                  ctx=Store())],
+              value=Name(id='cache_manager', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='cost_tracker',
+                  ctx=Store())],
+              value=Name(id='cost_tracker', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='feedback_reader',
+                  ctx=Store())],
+              value=Name(id='feedback_reader', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='rules_loader',
+                  ctx=Store())],
+              value=Name(id='rules_loader', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='prompt_manager',
+                  ctx=Store())],
+              value=Name(id='prompt_manager', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='response_validator',
+                  ctx=Store())],
+              value=Name(id='response_validator', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metrics_collector',
+                  ctx=Store())],
+              value=Name(id='metrics_collector', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='semantic_validator',
+                  ctx=Store())],
+              value=Name(id='semantic_validator', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='embedding_function',
+                  ctx=Store())],
+              value=Name(id='embedding_function', ctx=Load())),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='context_budget_manager',
+                ctx=Store()),
+              annotation=Name(id='ContextBudgetManager', ctx=Load()),
+              value=Constant(value=None),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_model_clients',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='mcp_clients',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_initialized',
+                ctx=Store()),
+              annotation=Name(id='bool', ctx=Load()),
+              value=Constant(value=False),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_client_specs',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='MCPClientSpec', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_fallback_mode',
+                ctx=Store()),
+              annotation=Name(id='str', ctx=Load()),
+              value=Constant(value='error'),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_fallback_parameters',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_errors',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='str', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_enabled',
+                ctx=Store()),
+              annotation=Name(id='bool', ctx=Load()),
+              value=Constant(value=False),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='wrap_mcp_nodes',
+                ctx=Store()),
+              annotation=Name(id='bool', ctx=Load()),
+              value=Constant(value=False),
+              simple=0),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_load_mcp_config',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='WorkflowContext initialized with v10.7 injected dependencies')]))]),
+        FunctionDef(
+          name='get_model_client',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='provider',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='model_name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='canonical_name', ctx=Store())],
+              value=Call(
+                func=Name(id='canonical_model_name', ctx=Load()),
+                args=[
+                  Name(id='model_name', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='key', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='provider', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=':'),
+                  FormattedValue(
+                    value=Name(id='canonical_name', ctx=Load()),
+                    conversion=-1)])),
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_model_clients',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='base_args', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='config'),
+                      Constant(value='model_name'),
+                      Constant(value='cache_manager'),
+                      Constant(value='cost_tracker'),
+                      Constant(value='metrics_collector'),
+                      Constant(value='workflow_id'),
+                      Constant(value='agent_name')],
+                    values=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      Name(id='canonical_name', ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='cache_manager',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='cost_tracker',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics_collector',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workflow_id',
+                        ctx=Load()),
+                      Constant(value='')])),
+                If(
+                  test=Compare(
+                    left=Name(id='provider', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='anthropic')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_model_clients',
+                            ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='AnthropicAsyncClient', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            value=Name(id='base_args', ctx=Load()))]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='provider', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='google')]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='_model_clients',
+                                ctx=Load()),
+                              slice=Name(id='key', ctx=Load()),
+                              ctx=Store())],
+                          value=Call(
+                            func=Name(id='GeminiAsyncClient', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                value=Name(id='base_args', ctx=Load()))]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='provider', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='openai')]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='_model_clients',
+                                    ctx=Load()),
+                                  slice=Name(id='key', ctx=Load()),
+                                  ctx=Store())],
+                              value=Call(
+                                func=Name(id='OpenAIAsyncClient', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    value=Name(id='base_args', ctx=Load()))]))],
+                          orelse=[
+                            Raise(
+                              exc=Call(
+                                func=Name(id='ValueError', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Unknown provider: '),
+                                      FormattedValue(
+                                        value=Name(id='provider', ctx=Load()),
+                                        conversion=-1)])]))])])])]),
+            Assign(
+              targets=[
+                Name(id='client', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_model_clients',
+                  ctx=Load()),
+                slice=Name(id='key', ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='client', ctx=Load()),
+                  attr='workflow_id',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='workflow_id',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='client', ctx=Load()),
+                  attr='model_name',
+                  ctx=Store())],
+              value=Name(id='canonical_name', ctx=Load())),
+            Return(
+              value=Name(id='client', ctx=Load()))]),
+        FunctionDef(
+          name='_load_mcp_config',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Pre-process MCP configuration into typed specs.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_client_specs',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_enabled',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='wrap_mcp_nodes',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_fallback_mode',
+                  ctx=Store())],
+              value=Constant(value='error')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_fallback_parameters',
+                  ctx=Store())],
+              value=Dict()),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='mcp_config', ctx=Store())],
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='mcp_config',
+                    ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='AttributeError', ctx=Load()),
+                  body=[
+                    Return()])]),
+            Assign(
+              targets=[
+                Name(id='enabled', ctx=Store())],
+              value=Call(
+                func=Name(id='bool', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='mcp_config', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='enabled'),
+                      Constant(value=False)])])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_enabled',
+                  ctx=Store())],
+              value=Name(id='enabled', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='wrap_mcp_nodes',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='bool', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='mcp_config', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='wrap_nodes_by_default'),
+                      Constant(value=False)])])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='enabled', ctx=Load())),
+              body=[
+                Return()]),
+            Assign(
+              targets=[
+                Name(id='fallback_mode', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      BoolOp(
+                        op=Or(),
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='mcp_config', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='fallback_mode'),
+                              Constant(value='error')]),
+                          Constant(value='error')])]),
+                  attr='lower',
+                  ctx=Load()))),
+            If(
+              test=Compare(
+                left=Name(id='fallback_mode', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Set(
+                    elts=[
+                      Constant(value='error'),
+                      Constant(value='stub')])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Constant(value="Unknown MCP fallback mode '%s'; defaulting to 'error'."),
+                      Name(id='fallback_mode', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='fallback_mode', ctx=Store())],
+                  value=Constant(value='error'))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_fallback_mode',
+                  ctx=Store())],
+              value=Name(id='fallback_mode', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='fallback_parameters', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='mcp_config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='fallback_parameters'),
+                  Dict()])),
+            If(
+              test=Compare(
+                left=Name(id='fallback_parameters', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='fallback_parameters', ctx=Store())],
+                  value=Dict())]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='fallback_parameters', ctx=Load()),
+                    Name(id='dict', ctx=Load())])),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='MCP fallback parameters must be a mapping; ignoring invalid value.')])),
+                Assign(
+                  targets=[
+                    Name(id='fallback_parameters', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_fallback_parameters',
+                  ctx=Store())],
+              value=Name(id='fallback_parameters', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='raw_clients', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='mcp_config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='clients'),
+                  List(ctx=Load())])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_mcp_client_specs',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='parse_mcp_client_specs', ctx=Load()),
+                    args=[
+                      Name(id='raw_clients', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='MCPClientInitializationError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Invalid MCP configuration: '),
+                              FormattedValue(
+                                value=Name(id='exc', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='exc', ctx=Load()))])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='is_mcp_enabled',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_enabled',
+                ctx=Load()))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='ensure_mcp_clients',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initialise MCP clients if required and return the registry.')),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_initialized',
+                ctx=Load()),
+              body=[
+                Return(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='mcp_clients',
+                    ctx=Load()))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_enabled',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='mcp_clients',
+                      ctx=Store())],
+                  value=Dict()),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_mcp_initialized',
+                      ctx=Store())],
+                  value=Constant(value=True)),
+                Return(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='mcp_clients',
+                    ctx=Load()))]),
+            AnnAssign(
+              target=Name(id='clients', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            AnnAssign(
+              target=Name(id='errors', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='str', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            For(
+              target=Name(id='spec', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_mcp_client_specs',
+                ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='clients', ctx=Load()),
+                          slice=Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='name',
+                            ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='instantiate_mcp_client', ctx=Load()),
+                        args=[
+                          Name(id='spec', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='exc',
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='errors', ctx=Load()),
+                              slice=Attribute(
+                                value=Name(id='spec', ctx=Load()),
+                                attr='name',
+                                ctx=Load()),
+                              ctx=Store())],
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='exc', ctx=Load())])),
+                        If(
+                          test=Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='optional',
+                            ctx=Load()),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='warning',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value="MCP client '%s' failed to initialise (%s). Using stub fallback."),
+                                  Attribute(
+                                    value=Name(id='spec', ctx=Load()),
+                                    attr='name',
+                                    ctx=Load()),
+                                  Name(id='exc', ctx=Load())])),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='clients', ctx=Load()),
+                                  slice=Attribute(
+                                    value=Name(id='spec', ctx=Load()),
+                                    attr='name',
+                                    ctx=Load()),
+                                  ctx=Store())],
+                              value=Call(
+                                func=Name(id='MCPClientStub', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='spec', ctx=Load()),
+                                    attr='name',
+                                    ctx=Load()),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='error'),
+                                      None,
+                                      None],
+                                    values=[
+                                      Call(
+                                        func=Name(id='str', ctx=Load()),
+                                        args=[
+                                          Name(id='exc', ctx=Load())]),
+                                      Attribute(
+                                        value=Name(id='spec', ctx=Load()),
+                                        attr='parameters',
+                                        ctx=Load()),
+                                      Attribute(
+                                        value=Name(id='self', ctx=Load()),
+                                        attr='_mcp_fallback_parameters',
+                                        ctx=Load())])]))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_mcp_fallback_mode',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='stub')]),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='logger', ctx=Load()),
+                                      attr='error',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value="Required MCP client '%s' failed during initialisation and cannot fall back to a stub."),
+                                      Attribute(
+                                        value=Name(id='spec', ctx=Load()),
+                                        attr='name',
+                                        ctx=Load())])),
+                                Raise(
+                                  exc=Call(
+                                    func=Name(id='MCPClientInitializationError', ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value="Failed to initialize MCP client '"),
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='spec', ctx=Load()),
+                                              attr='name',
+                                              ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value="': "),
+                                          FormattedValue(
+                                            value=Name(id='exc', ctx=Load()),
+                                            conversion=-1)])]),
+                                  cause=Name(id='exc', ctx=Load()))],
+                              orelse=[
+                                Raise(
+                                  exc=Call(
+                                    func=Name(id='MCPClientInitializationError', ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value="Failed to initialize MCP client '"),
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='spec', ctx=Load()),
+                                              attr='name',
+                                              ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value="': "),
+                                          FormattedValue(
+                                            value=Name(id='exc', ctx=Load()),
+                                            conversion=-1)])]),
+                                  cause=Name(id='exc', ctx=Load()))])])])])]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mcp_clients',
+                  ctx=Store())],
+              value=Name(id='clients', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_errors',
+                  ctx=Store())],
+              value=Name(id='errors', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_initialized',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='mcp_clients',
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_mcp_client',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='default',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='clients', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='ensure_mcp_clients',
+                  ctx=Load()))),
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='clients', ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='clients', ctx=Load()),
+                    slice=Name(id='name', ctx=Load()),
+                    ctx=Load()))]),
+            If(
+              test=Compare(
+                left=Name(id='default', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='clients', ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='default', ctx=Load())),
+                Return(
+                  value=Name(id='default', ctx=Load()))]),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_fallback_mode',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='stub')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='stub', ctx=Store())],
+                  value=Call(
+                    func=Name(id='MCPClientStub', ctx=Load()),
+                    args=[
+                      Name(id='name', ctx=Load()),
+                      Dict(
+                        keys=[
+                          Constant(value='source'),
+                          None],
+                        values=[
+                          Constant(value='fallback'),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_mcp_fallback_parameters',
+                            ctx=Load())])])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='mcp_clients',
+                        ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='stub', ctx=Load())),
+                Return(
+                  value=Name(id='stub', ctx=Load()))]),
+            Raise(
+              exc=Call(
+                func=Name(id='KeyError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="MCP client '"),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' not available")])]))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='reset_mcp_clients',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Allow tests to reset the MCP registry.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mcp_clients',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_initialized',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_mcp_errors',
+                  ctx=Store())],
+              value=Dict())],
+          returns=Constant(value=None))]),
+    FunctionDef(
+      name='get_checkpointer',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='db',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='allow_memory_fallback',
+            annotation=Name(id='bool', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=False)]),
+      body=[
+        Expr(
+          value=Constant(value="\n    DESTRUCTIVE OVERWRITE — v10.7 Colab / Local Runtime Patch\n\n    Purpose:\n    LangGraph 1.x removed the 'langgraph.checkpoint' module that v10.7 relied on.\n    RedisSaver and SqliteSaver no longer exist under those import paths, so attempting\n    to initialize them raises ModuleNotFoundError and halts the workflow.\n\n    For Colab, local laptops, or any environment without a persistent checkpointer,\n    checkpointing is unnecessary — single-run DAG execution works perfectly in-memory.\n\n    This replacement function disables all checkpointing and forces LangGraph to run\n    purely in-memory by returning None. All upstream graph.compile() logic accepts\n    checkpointer=None and proceeds normally.\n\n    Compatible with:\n      • LangGraph 1.x\n      • Colab with pip-installed langgraph\n      • Any env lacking Redis or Sqlite checkpoint modules\n    ")),
+        Return(
+          value=Constant(value=None))]),
+    FunctionDef(
+      name='create_workflow_context',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load())),
+          arg(
+            arg='db',
+            annotation=Name(id='int', ctx=Load()))],
+        defaults=[
+          Constant(value=0)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    v10.7 REFACTOR: Centralized Composition Root.\n    ')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Creating WorkflowContext with '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='config', ctx=Load()),
+                      attr='schema_version',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='...')])])),
+        Assign(
+          targets=[
+            Name(id='redis_ctor', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='redis_module', ctx=Load()),
+              Constant(value='Redis'),
+              Constant(value=None)])),
+        If(
+          test=Call(
+            func=Name(id='callable', ctx=Load()),
+            args=[
+              Name(id='redis_ctor', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='redis_client', ctx=Store())],
+              value=Call(
+                func=Name(id='redis_ctor', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='host',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='redis_config',
+                        ctx=Load()),
+                      attr='host',
+                      ctx=Load())),
+                  keyword(
+                    arg='port',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='redis_config',
+                        ctx=Load()),
+                      attr='port',
+                      ctx=Load())),
+                  keyword(
+                    arg='db',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='db', ctx=Load()),
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='config', ctx=Load()),
+                            attr='redis_config',
+                            ctx=Load()),
+                          attr='db',
+                          ctx=Load())]))]))],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='redis_client', ctx=Store())],
+              value=Call(
+                func=Name(id='MCPClientStub', ctx=Load()),
+                args=[
+                  Constant(value='redis'),
+                  Dict(
+                    keys=[
+                      Constant(value='host'),
+                      Constant(value='port'),
+                      Constant(value='db')],
+                    values=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='config', ctx=Load()),
+                          attr='redis_config',
+                          ctx=Load()),
+                        attr='host',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='config', ctx=Load()),
+                          attr='redis_config',
+                          ctx=Load()),
+                        attr='port',
+                        ctx=Load()),
+                      BoolOp(
+                        op=Or(),
+                        values=[
+                          Name(id='db', ctx=Load()),
+                          Attribute(
+                            value=Attribute(
+                              value=Name(id='config', ctx=Load()),
+                              attr='redis_config',
+                              ctx=Load()),
+                            attr='db',
+                            ctx=Load())])])]))]),
+        If(
+          test=Attribute(
+            value=Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='chromadb_config',
+              ctx=Load()),
+            attr='use_http_client',
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='http_ctor', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='chromadb_module', ctx=Load()),
+                  Constant(value='HttpClient'),
+                  Constant(value=None)])),
+            If(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='http_ctor', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='chromadb_client', ctx=Store())],
+                  value=Call(
+                    func=Name(id='http_ctor', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='host',
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='config', ctx=Load()),
+                            attr='chromadb_config',
+                            ctx=Load()),
+                          attr='host',
+                          ctx=Load())),
+                      keyword(
+                        arg='port',
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='config', ctx=Load()),
+                            attr='chromadb_config',
+                            ctx=Load()),
+                          attr='port',
+                          ctx=Load()))]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='client_ctor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='chromadb_module', ctx=Load()),
+                      Constant(value='Client'),
+                      Constant(value=None)])),
+                Assign(
+                  targets=[
+                    Name(id='chromadb_client', ctx=Store())],
+                  value=IfExp(
+                    test=Call(
+                      func=Name(id='callable', ctx=Load()),
+                      args=[
+                        Name(id='client_ctor', ctx=Load())]),
+                    body=Call(
+                      func=Name(id='client_ctor', ctx=Load())),
+                    orelse=Call(
+                      func=Name(id='MCPClientStub', ctx=Load()),
+                      args=[
+                        Constant(value='chromadb')])))])],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='persistent_ctor', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='chromadb_module', ctx=Load()),
+                  Constant(value='PersistentClient'),
+                  Constant(value=None)])),
+            If(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Name(id='persistent_ctor', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='chromadb_client', ctx=Store())],
+                  value=Call(
+                    func=Name(id='persistent_ctor', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='path',
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='config', ctx=Load()),
+                            attr='chromadb_config',
+                            ctx=Load()),
+                          attr='persistent_path',
+                          ctx=Load()))]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='client_ctor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='chromadb_module', ctx=Load()),
+                      Constant(value='Client'),
+                      Constant(value=None)])),
+                Assign(
+                  targets=[
+                    Name(id='chromadb_client', ctx=Store())],
+                  value=IfExp(
+                    test=Call(
+                      func=Name(id='callable', ctx=Load()),
+                      args=[
+                        Name(id='client_ctor', ctx=Load())]),
+                    body=Call(
+                      func=Name(id='client_ctor', ctx=Load())),
+                    orelse=Call(
+                      func=Name(id='MCPClientStub', ctx=Load()),
+                      args=[
+                        Constant(value='chromadb')])))])]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='Initialized ChromaDB client')])),
+        Assign(
+          targets=[
+            Name(id='embedding_ctor', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='embedding_functions', ctx=Load()),
+              Constant(value='DefaultEmbeddingFunction'),
+              Constant(value=None)])),
+        If(
+          test=Call(
+            func=Name(id='callable', ctx=Load()),
+            args=[
+              Name(id='embedding_ctor', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='embedding_function', ctx=Store())],
+              value=Call(
+                func=Name(id='embedding_ctor', ctx=Load())))],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='embedding_function', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='embedding_functions', ctx=Load()),
+                  attr='EmbeddingFunction',
+                  ctx=Load())))]),
+        Assign(
+          targets=[
+            Name(id='feedback_reader', ctx=Store())],
+          value=Call(
+            func=Name(id='FeedbackLogReader', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='meta_loop_config',
+                  ctx=Load()),
+                attr='feedback_log_path',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='cache_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='CacheManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='redis_client',
+                value=Name(id='redis_client', ctx=Load())),
+              keyword(
+                arg='chromadb_client',
+                value=Name(id='chromadb_client', ctx=Load())),
+              keyword(
+                arg='embedding_function',
+                value=Name(id='embedding_function', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='cost_tracker', ctx=Store())],
+          value=Call(
+            func=Name(id='CostTracker', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='rules_loader', ctx=Store())],
+          value=Call(
+            func=Name(id='ProposedRulesLoader', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='meta_loop_config',
+                  ctx=Load()),
+                attr='proposed_rules_path',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='prompt_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptTemplateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='feedback_reader',
+                value=Name(id='feedback_reader', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='response_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='ResponseValidator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='metrics_collector', ctx=Store())],
+          value=Call(
+            func=Name(id='MetricsCollector', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='semantic_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='SemanticValidator', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='metrics_collector',
+                value=Name(id='metrics_collector', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='WorkflowContext', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='redis_client',
+                value=Name(id='redis_client', ctx=Load())),
+              keyword(
+                arg='chromadb_client',
+                value=Name(id='chromadb_client', ctx=Load())),
+              keyword(
+                arg='cache_manager',
+                value=Name(id='cache_manager', ctx=Load())),
+              keyword(
+                arg='cost_tracker',
+                value=Name(id='cost_tracker', ctx=Load())),
+              keyword(
+                arg='feedback_reader',
+                value=Name(id='feedback_reader', ctx=Load())),
+              keyword(
+                arg='rules_loader',
+                value=Name(id='rules_loader', ctx=Load())),
+              keyword(
+                arg='prompt_manager',
+                value=Name(id='prompt_manager', ctx=Load())),
+              keyword(
+                arg='response_validator',
+                value=Name(id='response_validator', ctx=Load())),
+              keyword(
+                arg='metrics_collector',
+                value=Name(id='metrics_collector', ctx=Load())),
+              keyword(
+                arg='semantic_validator',
+                value=Name(id='semantic_validator', ctx=Load())),
+              keyword(
+                arg='embedding_function',
+                value=Name(id='embedding_function', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='context_budget_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='ContextBudgetManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='model_client_getter',
+                value=Attribute(
+                  value=Name(id='context', ctx=Load()),
+                  attr='get_model_client',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='context', ctx=Load()),
+              attr='context_budget_manager',
+              ctx=Store())],
+          value=Name(id='context_budget_manager', ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='WorkflowContext created and services injected.')])),
+        Return(
+          value=Name(id='context', ctx=Load()))],
+      returns=Name(id='WorkflowContext', ctx=Load())),
+    FunctionDef(
+      name='cleanup_workflow_chroma_collection',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='v10.7 REFACTOR: Centralized ChromaDB cleanup logic.')),
+        Assign(
+          targets=[
+            Name(id='workflow_id', ctx=Store())],
+          value=Attribute(
+            value=Name(id='context', ctx=Load()),
+            attr='workflow_id',
+            ctx=Load())),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='workflow_id', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='warning',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Cannot cleanup ChromaDB: WorkflowContext has no workflow_id.')])),
+            Return()]),
+        Try(
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Cleaning up ChromaDB collection for workflow: '),
+                      FormattedValue(
+                        value=Name(id='workflow_id', ctx=Load()),
+                        conversion=-1)])])),
+            Assign(
+              targets=[
+                Name(id='collection', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='context', ctx=Load()),
+                    attr='chromadb_client',
+                    ctx=Load()),
+                  attr='get_collection',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='context', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='chromadb_config',
+                        ctx=Load()),
+                      attr='default_collection_name',
+                      ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collection', ctx=Load()),
+                  attr='delete',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='where',
+                    value=Dict(
+                      keys=[
+                        Constant(value='workflow_id')],
+                      values=[
+                        Name(id='workflow_id', ctx=Load())]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ChromaDB cleanup complete.')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to cleanup ChromaDB collection for '),
+                          FormattedValue(
+                            value=Name(id='workflow_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])]))])])]),
+    FunctionDef(
+      name='detect_bias',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Name(id='WorkflowContext', ctx=Load())),
+          arg(
+            arg='text',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='workflow_id',
+            annotation=Name(id='str', ctx=Load()))],
+        defaults=[
+          Constant(value='')]),
+      body=[
+        Expr(
+          value=Constant(value='Centralized bias detection service shared by agents and tools.')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='debug',
+              ctx=Load()),
+            args=[
+              Constant(value='Running centralized bias detection service.')])),
+        Assign(
+          targets=[
+            Name(id='base_patterns', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='he/she'),
+              Constant(value='his/her'),
+              Constant(value='male/female'),
+              Constant(value='young'),
+              Constant(value='old')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='rules', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='context', ctx=Load()),
+                attr='rules_loader',
+                ctx=Load()),
+              attr='get_constitution_rules',
+              ctx=Load()))),
+        AnnAssign(
+          target=Name(id='bias_patterns', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Attribute(
+              value=Name(id='base_patterns', ctx=Load()),
+              attr='copy',
+              ctx=Load())),
+          simple=1),
+        For(
+          target=Name(id='rule', ctx=Store()),
+          iter=Name(id='rules', ctx=Load()),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='rule', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  Compare(
+                    left=Constant(value='bias_patterns'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='rule', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='patterns', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rule', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bias_patterns')])),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='patterns', ctx=Load()),
+                      Name(id='list', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='bias_patterns', ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Call(
+                              func=Name(id='str', ctx=Load()),
+                              args=[
+                                Name(id='p', ctx=Load())]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='p', ctx=Store()),
+                                iter=Name(id='patterns', ctx=Load()),
+                                is_async=0)])]))])])]),
+        Assign(
+          targets=[
+            Name(id='normalized_text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='text', ctx=Load()),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='detected_patterns', ctx=Store())],
+          value=Call(
+            func=Name(id='sorted', ctx=Load()),
+            args=[
+              SetComp(
+                elt=Name(id='p', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='p', ctx=Store()),
+                    iter=Name(id='bias_patterns', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='p', ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='normalized_text', ctx=Load())])],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='bias_detected', ctx=Store())],
+          value=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='detected_patterns', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='bias_detected'),
+              Constant(value='patterns'),
+              Constant(value='bias_score'),
+              Constant(value='dynamic_rules_applied')],
+            values=[
+              Name(id='bias_detected', ctx=Load()),
+              Name(id='detected_patterns', ctx=Load()),
+              IfExp(
+                test=Name(id='bias_patterns', ctx=Load()),
+                body=BinOp(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='detected_patterns', ctx=Load())]),
+                  op=Div(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='bias_patterns', ctx=Load())])),
+                orelse=Constant(value=0.0)),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='rules', ctx=Load())])])),
+        Return(
+          value=Name(id='result', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='ResumeContext',
+      body=[
+        AnnAssign(
+          target=Name(id='master_resume', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sanitized_resume', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='experience_bullets', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='JobContext',
+      body=[
+        AnnAssign(
+          target=Name(id='raw_jd', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='company', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job_title', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parsed_requirements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='StrategyContext',
+      body=[
+        AnnAssign(
+          target=Name(id='strategy_plan', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='StrategyPlan', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tot_branches', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PromptContext',
+      body=[
+        AnnAssign(
+          target=Name(id='prompts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='GeneratedPrompts', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='BulletContext',
+      body=[
+        AnnAssign(
+          target=Name(id='generated_bullets', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='critiqued_bullets', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='DraftContext',
+      body=[
+        AnnAssign(
+          target=Name(id='sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='QAContext',
+      body=[
+        AnnAssign(
+          target=Name(id='validation_results', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa_passed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='constitutional_review', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='ConstitutionalReviewResult', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ArtifactContext',
+      body=[
+        AnnAssign(
+          target=Name(id='artifacts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MetadataContext',
+      body=[
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cost', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retries', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='int', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Dict(
+                    keys=[
+                      Constant(value='bullet_retries'),
+                      Constant(value='qa_retries')],
+                    values=[
+                      Constant(value=0),
+                      Constant(value=0)])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='complexity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='unknown'),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SafetyContext',
+      body=[
+        AnnAssign(
+          target=Name(id='pii_detected', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='bias_detected', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_notes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='injection_detected', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='FeedbackContext',
+      body=[
+        AnnAssign(
+          target=Name(id='recent_feedback', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='FeedbackEntry', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='applied_rules', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='selected_agents', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='HILContext',
+      body=[
+        AnnAssign(
+          target=Name(id='ambiguity_detected', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='ambiguity_report', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='HILAmbiguityReport', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='next_step', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='payload', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='A2AMessage',
+      body=[
+        AnnAssign(
+          target=Name(id='sender', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recipient', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='message_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='payload', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load()))))]),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='sender'),
+                  Constant(value='recipient'),
+                  Constant(value='message_type'),
+                  Constant(value='payload'),
+                  Constant(value='timestamp')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='sender',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='recipient',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='message_type',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='payload',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='timestamp',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='model_dump',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load())))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='A2AContext',
+      body=[
+        AnnAssign(
+          target=Name(id='messages', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='A2AMessage', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MainGraphState',
+      body=[
+        Expr(
+          value=Constant(value='Main workflow state (v10.7)')),
+        AnnAssign(
+          target=Name(id='resume', ctx=Store()),
+          annotation=Name(id='ResumeContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='ResumeContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job', ctx=Store()),
+          annotation=Name(id='JobContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='JobContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='strategy', ctx=Store()),
+          annotation=Name(id='StrategyContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='StrategyContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='prompts', ctx=Store()),
+          annotation=Name(id='PromptContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='PromptContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='bullets', ctx=Store()),
+          annotation=Name(id='BulletContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='BulletContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='draft', ctx=Store()),
+          annotation=Name(id='DraftContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='DraftContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa', ctx=Store()),
+          annotation=Name(id='QAContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='QAContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='artifacts', ctx=Store()),
+          annotation=Name(id='ArtifactContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='ArtifactContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Name(id='MetadataContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='MetadataContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety', ctx=Store()),
+          annotation=Name(id='SafetyContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='SafetyContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='feedback', ctx=Store()),
+          annotation=Name(id='FeedbackContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='FeedbackContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='hil', ctx=Store()),
+          annotation=Name(id='HILContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='HILContext', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='a2a', ctx=Store()),
+          annotation=Name(id='A2AContext', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='A2AContext', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='v10.7: Custom serializer to handle nested Pydantic models.')),
+            Assign(
+              targets=[
+                Name(id='data', ctx=Store())],
+              value=Call(
+                func=Name(id='asdict', ctx=Load()),
+                args=[
+                  Name(id='self', ctx=Load())])),
+            If(
+              test=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='strategy',
+                  ctx=Load()),
+                attr='strategy_plan',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='data', ctx=Load()),
+                        slice=Constant(value='strategy'),
+                        ctx=Load()),
+                      slice=Constant(value='strategy_plan'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='strategy',
+                          ctx=Load()),
+                        attr='strategy_plan',
+                        ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load())))]),
+            If(
+              test=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='prompts',
+                  ctx=Load()),
+                attr='prompts',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='data', ctx=Load()),
+                        slice=Constant(value='prompts'),
+                        ctx=Load()),
+                      slice=Constant(value='prompts'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='prompts',
+                          ctx=Load()),
+                        attr='prompts',
+                        ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load())))]),
+            If(
+              test=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='hil',
+                  ctx=Load()),
+                attr='ambiguity_report',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='data', ctx=Load()),
+                        slice=Constant(value='hil'),
+                        ctx=Load()),
+                      slice=Constant(value='ambiguity_report'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='hil',
+                          ctx=Load()),
+                        attr='ambiguity_report',
+                        ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load())))]),
+            If(
+              test=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='qa',
+                  ctx=Load()),
+                attr='constitutional_review',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='data', ctx=Load()),
+                        slice=Constant(value='qa'),
+                        ctx=Load()),
+                      slice=Constant(value='constitutional_review'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='qa',
+                          ctx=Load()),
+                        attr='constitutional_review',
+                        ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load())))]),
+            Return(
+              value=Name(id='data', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='from_dict',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='data',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='v10.7: Custom deserializer to reconstruct nested Pydantic models.')),
+            Assign(
+              targets=[
+                Name(id='state', ctx=Store())],
+              value=Call(
+                func=Name(id='cls', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='resume',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='ResumeContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='resume'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='job',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='JobContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='job'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='bullets',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='BulletContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='bullets'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='draft',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='DraftContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='draft'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='artifacts',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='ArtifactContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='artifacts'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='metadata',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='MetadataContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='metadata'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='safety',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='safety'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='feedback',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='FeedbackContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='feedback'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='a2a',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='A2AContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='a2a'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Name(id='qa_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='qa_review_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='qa_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='constitutional_review')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='qa',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='QAContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='validation_results',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='qa_data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='validation_results'),
+                        Dict()])),
+                  keyword(
+                    arg='qa_passed',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='qa_data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='qa_passed'),
+                        Constant(value=False)])),
+                  keyword(
+                    arg='constitutional_review',
+                    value=IfExp(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='qa_review_data', ctx=Load()),
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='qa_review_data', ctx=Load()),
+                              Name(id='dict', ctx=Load())])]),
+                      body=Call(
+                        func=Attribute(
+                          value=Name(id='ConstitutionalReviewResult', ctx=Load()),
+                          attr='model_validate',
+                          ctx=Load()),
+                        args=[
+                          Name(id='qa_review_data', ctx=Load())]),
+                      orelse=Constant(value=None)))])),
+            Assign(
+              targets=[
+                Name(id='strategy_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='strategy'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='strategy_plan_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='strategy_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='strategy_plan')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='strategy',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='StrategyContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='strategy_plan',
+                    value=IfExp(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='strategy_plan_data', ctx=Load()),
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='strategy_plan_data', ctx=Load()),
+                              Name(id='dict', ctx=Load())])]),
+                      body=Call(
+                        func=Attribute(
+                          value=Name(id='StrategyPlan', ctx=Load()),
+                          attr='model_validate',
+                          ctx=Load()),
+                        args=[
+                          Name(id='strategy_plan_data', ctx=Load())]),
+                      orelse=Constant(value=None))),
+                  keyword(
+                    arg='tot_branches',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='strategy_data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='tot_branches'),
+                        List(ctx=Load())]))])),
+            Assign(
+              targets=[
+                Name(id='prompts_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prompts'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='prompts_model_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prompts_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prompts')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='prompts',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='PromptContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='prompts',
+                    value=IfExp(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='prompts_model_data', ctx=Load()),
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='prompts_model_data', ctx=Load()),
+                              Name(id='dict', ctx=Load())])]),
+                      body=Call(
+                        func=Attribute(
+                          value=Name(id='GeneratedPrompts', ctx=Load()),
+                          attr='model_validate',
+                          ctx=Load()),
+                        args=[
+                          Name(id='prompts_model_data', ctx=Load())]),
+                      orelse=Constant(value=None)))])),
+            Assign(
+              targets=[
+                Name(id='hil_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='hil'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='hil_report_data', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='hil_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ambiguity_report')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='hil',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='HILContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='ambiguity_detected',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='hil_data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='ambiguity_detected'),
+                        Constant(value=False)])),
+                  keyword(
+                    arg='ambiguity_report',
+                    value=IfExp(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Name(id='hil_report_data', ctx=Load()),
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='hil_report_data', ctx=Load()),
+                              Name(id='dict', ctx=Load())])]),
+                      body=Call(
+                        func=Attribute(
+                          value=Name(id='HILAmbiguityReport', ctx=Load()),
+                          attr='model_validate',
+                          ctx=Load()),
+                        args=[
+                          Name(id='hil_report_data', ctx=Load())]),
+                      orelse=Constant(value=None))),
+                  keyword(
+                    arg='next_step',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='hil_data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='next_step'),
+                        Constant(value='')])),
+                  keyword(
+                    arg='payload',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='hil_data', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='payload')]))])),
+            Return(
+              value=Name(id='state', ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Constant(value='MainGraphState'))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MetaGraphState',
+      body=[
+        Expr(
+          value=Constant(value='v10.7: Meta-learning graph state.')),
+        AnnAssign(
+          target=Name(id='raw_logs', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='log_summary', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='patterns', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='hypotheses', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='proposal', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='critique', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='replan_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='generated_tool_code', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='WorkflowContext'),
+          Constant(value='get_checkpointer'),
+          Constant(value='create_workflow_context'),
+          Constant(value='cleanup_workflow_chroma_collection'),
+          Constant(value='detect_bias'),
+          Constant(value='ResumeContext'),
+          Constant(value='JobContext'),
+          Constant(value='StrategyContext'),
+          Constant(value='PromptContext'),
+          Constant(value='BulletContext'),
+          Constant(value='DraftContext'),
+          Constant(value='QAContext'),
+          Constant(value='ArtifactContext'),
+          Constant(value='MetadataContext'),
+          Constant(value='SafetyContext'),
+          Constant(value='FeedbackContext'),
+          Constant(value='HILContext'),
+          Constant(value='A2AMessage'),
+          Constant(value='A2AContext'),
+          Constant(value='MainGraphState'),
+          Constant(value='MetaGraphState')],
+        ctx=Load()))])

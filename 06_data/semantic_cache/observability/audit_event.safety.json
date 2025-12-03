@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 53,
+  "generated_at": 1764728351.346858,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\retriever-microagent-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\audit_event.py"
+}

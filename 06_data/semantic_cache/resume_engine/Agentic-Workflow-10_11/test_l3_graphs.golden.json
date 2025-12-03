@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L3 Orchestration Graph Unit Tests.\"\"\"\n\nclass TestL3Graphs:\n    \"\"\"Unit tests for L3 orchestration graphs.\"\"\"\n    \n    def test_graph_node_creation(self):\n        \"\"\"Test graph node creation.\"\"\"\n        nodes = [{\"id\": f\"n{i}\", \"data\": {}} for i in range(3)]\n        assert len(nodes) == 3\n    \n    def test_graph_edge_creation(self):\n        \"\"\"Test graph edge creation.\"\"\"\n        edges = [(\"n0\", \"n1\"), (\"n1\", \"n2\")]\n        assert len(edges) == 2\n    \n    def test_graph_traversal_order(self):\n        \"\"\"Test graph traversal order.\"\"\"\n        order = [\"n0\", \"n1\", \"n2\"]\n        for i, node in enumerate(order):\n            assert node == f\"n{i}\"\n",
+  "full_hash": "ad4aa43cf826708afa95dc18af29193af120b09ae267b1a026a1b0ad8d6a05fd",
+  "generated_at": 1764728227.0290864,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\unit\\graphs\\test_l3_graphs.py"
+}

@@ -1,0 +1,33 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nProvides access to specialized AI agents for résumé analysis and job matching optimization.\n\nImproves résumé quality by coordinating strategy, drafting, QA, and safety agents for comprehensive career analysis.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='l2.agents',
+      names=[
+        alias(name='LLMBaseAgent'),
+        alias(name='StrategyLLMAgent'),
+        alias(name='DraftingGuild'),
+        alias(name='SemanticQAAgent'),
+        alias(name='ConstitutionalSafetyAgent'),
+        alias(name='HYDEQueryAgent'),
+        alias(name='QACouncilAgent')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='LLMBaseAgent'),
+          Constant(value='StrategyLLMAgent'),
+          Constant(value='DraftingGuild'),
+          Constant(value='SemanticQAAgent'),
+          Constant(value='ConstitutionalSafetyAgent'),
+          Constant(value='HYDEQueryAgent'),
+          Constant(value='QACouncilAgent')],
+        ctx=Load()))])

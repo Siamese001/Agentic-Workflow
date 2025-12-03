@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728348.877102,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\expand-phase\\convert-config-content\\semantic\\adjust-scores\\normalize_config_scores.py"
+}

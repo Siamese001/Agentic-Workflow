@@ -1,0 +1,6 @@
+{
+  "golden_content": "import asyncio, sys, types, pytest\nfrom pathlib import Path\nfrom typing import Any, Dict, List\n\n# Ensure repository root is importable when pytest rootdir resolves to tests/\nROOT = Path(__file__).resolve().parents[1]\nif str(ROOT) not in sys.path:\n    sys.path.insert(0, str(ROOT))\n\n# ---- LangGraph stub (so imports succeed in tests) ----\nif \"langgraph\" not in sys.modules:  # setup code only\n    langgraph = types.ModuleType(\"langgraph\")\n    graph_module = types.ModuleType(\"langgraph.graph\")\n\n    class StateGraph:  # type: ignore[override]\n        def __init__(self, _state_type):\n            self.nodes = {}\n        def add_node(self, name, func):\n            self.nodes[name] = func\n        def set_entry_point(self, _name):\n            return None\n        def add_edge(self, *_args, **_kwargs):\n            return None\n    graph_module.StateGraph = StateGraph\n    graph_module.END = \"END\"\n\n    errors_module = types.ModuleType(\"langgraph.errors\")\n    class GraphRecursionError(Exception): ...\n ",
+  "full_hash": "705fe15c4667f27fb4036d301c280b93a028ed99964f46da08fd7cc97c3c071a",
+  "generated_at": 1764728329.8101065,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\conftest.py"
+}

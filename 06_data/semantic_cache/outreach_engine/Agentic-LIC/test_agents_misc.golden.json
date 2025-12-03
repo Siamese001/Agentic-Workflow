@@ -1,0 +1,6 @@
+{
+  "golden_content": "from types import SimpleNamespace\n\nfrom src.lic_agentic.agents.k1_router_agent import RouterAgent\nfrom src.lic_agentic.agents.k5_cta_agent import CTAAgent\nfrom src.lic_agentic.agents.k6_signature_agent import SignatureAgent\nfrom src.lic_agentic.safety.bias_auditor import BiasAssessment\n\n\ndef test_router_prioritizes_meeting_intent():\n    router = RouterAgent()\n    inputs = SimpleNamespace(prompt=\"Can we schedule a meeting next week?\")\n    decision = router.route(inputs, BiasAssessment(0.0, \"clean\"))\n    assert decision.priority == \"high\"\n    assert decision.channel == \"email\"\n\n\ndef test_cta_agent_appends_default_line():\n    draft = CTAAgent().adjust(\"Body\", route_decision=None)\n    assert \"CTA:\" in draft\n\n\ndef test_signature_agent_adds_signature_block():\n    draft = SignatureAgent().attach(\"Body\", route_decision=None)\n    assert draft.endswith(\"LIC Outreach Bot\")\n",
+  "full_hash": "05fc0af3fe9af173ee98f6132cd52cbd43c12a4a7e0f8b8f2434ecc04fc437fa",
+  "generated_at": 1764728331.06078,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_agents_misc.py"
+}

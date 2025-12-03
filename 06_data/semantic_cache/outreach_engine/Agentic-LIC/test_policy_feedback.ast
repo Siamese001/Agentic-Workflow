@@ -1,0 +1,147 @@
+Module(
+  body=[
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='patch')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.agents.k3_message_architect',
+      names=[
+        alias(name='DraftPackage')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.reasoning.toggles',
+      names=[
+        alias(name='ReasoningToggles')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.stacks.outreach_stack',
+      names=[
+        alias(name='OutreachStack')],
+      level=0),
+    FunctionDef(
+      name='test_policy_feedback_updates_toggles_and_budget',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='OutreachStack', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='ReasoningToggles', ctx=Load()))])),
+        FunctionDef(
+          name='fake_compose',
+          args=arguments(
+            args=[
+              arg(arg='inputs'),
+              arg(arg='route')],
+            kwonlyargs=[
+              arg(arg='max_calls')],
+            kw_defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='draft', ctx=Store())],
+              value=Constant(value='Subject: Hi\n\nHello there\n[artifact_id:aid] evidence')),
+            Return(
+              value=Call(
+                func=Name(id='DraftPackage', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='draft',
+                    value=Name(id='draft', ctx=Load())),
+                  keyword(
+                    arg='artifacts',
+                    value=Dict(
+                      keys=[
+                        Constant(value='aid')],
+                      values=[
+                        Constant(value='evidence')])),
+                  keyword(
+                    arg='total_latency_ms',
+                    value=Constant(value=5000))]))]),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='object',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='stack', ctx=Load()),
+                    attr='architect',
+                    ctx=Load()),
+                  Constant(value='compose')],
+                keywords=[
+                  keyword(
+                    arg='side_effect',
+                    value=Name(id='fake_compose', ctx=Load()))]))],
+          body=[
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='stack', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='SimpleNamespace', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='prompt',
+                        value=Constant(value='Testing')),
+                      keyword(
+                        arg='company_id',
+                        value=Constant(value='ACME')),
+                      keyword(
+                        arg='contact_id',
+                        value=Constant(value='C1'))])]))]),
+        Assert(
+          test=Attribute(
+            value=Subscript(
+              value=Name(id='result', ctx=Load()),
+              slice=Constant(value='verdict'),
+              ctx=Load()),
+            attr='passed',
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Attribute(
+                value=Name(id='stack', ctx=Load()),
+                attr='policy',
+                ctx=Load()),
+              attr='budget_multiplier',
+              ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=1),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='stack', ctx=Load()),
+                  attr='toggles',
+                  ctx=Load()),
+                attr='tot_branches',
+                ctx=Load()),
+              Constant(value=4)]))])])

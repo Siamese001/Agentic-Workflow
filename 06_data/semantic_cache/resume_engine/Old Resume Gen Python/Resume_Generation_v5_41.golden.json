@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.41 - MULTI-LLM SUPPORT\n\nv5.41 CHANGES - MULTI-LLM INTEGRATION:\n\u2713 NEW: Support for both Claude and Gemini APIs\n\u2713 NEW: LLM_PROVIDER configuration variable\n\u2713 NEW: _call_gemini_api() method\n\u2713 All v5.40 functionality maintained\n\nv5.40 CHANGES - CRITICAL ARCHITECTURE FIX:\n\u2713 FIXED: \"Only resume should be master resume\" principle enforced\n  - REMOVED: load_master_resume() function and file loading\n  - REMOVED: External file dependency on Master_Resume_V2_15.json\n  - KEPT: Embedded master resume as SOLE source of truth\n  - Result: Self-contained script, single MASTER_RESUME_JSON assignment\n\u2713 PRINCIPLE: One embedded master resume, no file loading, no overwriting\n  - Users modify the embedded resume directly in the code\n  - No confusion about multiple data sources\n  - No file loading failures\n  - No overwriting bugs\n\nv5.38 CHANGES (maintained):\n\u2713 Real Claude API integration (not mock)\n\u2713 Comprehensive API error handling\n\nAll v5.36 functionality maintained:\n\u2713 Master ",
+  "full_hash": "8058627e009ff6b58f9b0047633e8ef0b3b97be31f336457e62735bac5724519",
+  "generated_at": 1764728304.04893,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_41.py"
+}

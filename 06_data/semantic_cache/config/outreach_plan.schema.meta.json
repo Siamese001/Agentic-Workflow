@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\expand-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\outreach_plan.schema.json",
+    "rel_path": "outreach_plan.schema.json",
+    "root_name": "config",
+    "file_hash": "9ff22825b41e610bcd7759e0a12caaab06ddcadc3a3008154ecd569c7e5f1ba0",
+    "file_size": 22112,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.1099195
+}

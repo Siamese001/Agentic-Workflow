@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Strategy stack agents.\"\"\"\n\nimport asyncio\nimport json\nfrom typing import Any, Dict, List\n\nfrom pydantic import BaseModel\n\nfrom core_v10_7 import (\n    BaseAgent,\n    StrategyPlan,\n    ValidationError,\n    track_metrics,\n    _format_prompt_with_defaults,\n)\n\n\nclass QueryComplexityClassifier(BaseAgent):\n    \"\"\"Classifies query complexity for dynamic routing.\"\"\"\n\n    class ComplexityOutput(BaseModel):\n        complexity: str\n        reason: str\n\n    @track_metrics(\"run_complexity_classifier\")\n    async def run_async(self, job_description: str, workflow_id: str) -> str:\n        self.log_info(\"Classifying query complexity...\")\n\n        client = self.get_model_client(\"strategy_model_simple\")\n\n        pruned_jd = await self.budget_manager.prune(job_description, 2000)\n        prompt = f\"\"\"\n        {client.goal_state}\n        {client.top_failures}\n        -------------------\n        MODE: ANALYTICAL\n        TASK: Classify the job description's complexity as 'simple' or 'complex'.\n        'sim",
+  "full_hash": "90d3e5648670d111a853e2fb9bfffcf76922f424b025ebcfc71475d5c26382b9",
+  "generated_at": 1764728329.7412095,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\stacks_v10_7\\strategy.py"
+}

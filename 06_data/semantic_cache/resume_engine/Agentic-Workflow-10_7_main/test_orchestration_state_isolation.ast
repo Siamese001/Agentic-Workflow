@@ -1,0 +1,141 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Orchestration-level regression tests for state mutation guarantees.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='copy')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='agent_orchestration_v10_7',
+      names=[
+        alias(name='run_inject_hil_edit')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='MainGraphState')],
+      level=0),
+    AsyncFunctionDef(
+      name='test_run_inject_hil_edit_keeps_input_state_immutable',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='typed_state', ctx=Store())],
+          value=Call(
+            func=Name(id='MainGraphState', ctx=Load()))),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='typed_state', ctx=Load()),
+                attr='metadata',
+                ctx=Load()),
+              attr='workflow_id',
+              ctx=Store())],
+          value=Constant(value='wf-immutability')),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='typed_state', ctx=Load()),
+                attr='draft',
+                ctx=Load()),
+              attr='sections',
+              ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='summary')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='draft')],
+                values=[
+                  Constant(value='Original summary')])])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='typed_state', ctx=Load()),
+              attr='to_dict',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Subscript(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='setdefault',
+                  ctx=Load()),
+                args=[
+                  Constant(value='hil'),
+                  Dict()]),
+              slice=Constant(value='payload'),
+              ctx=Store())],
+          value=Constant(value='Add new summary')),
+        Assign(
+          targets=[
+            Name(id='baseline', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='copy', ctx=Load()),
+              attr='deepcopy',
+              ctx=Load()),
+            args=[
+              Name(id='state', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='updated', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Name(id='run_inject_hil_edit', ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load()),
+                Name(id='workflow_context', ctx=Load())]))),
+        Assert(
+          test=Compare(
+            left=Name(id='state', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='baseline', ctx=Load())]),
+          msg=Constant(value='Orchestration nodes must not mutate the incoming state')),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Subscript(
+                value=Subscript(
+                  value=Subscript(
+                    value=Subscript(
+                      value=Name(id='updated', ctx=Load()),
+                      slice=Constant(value='draft'),
+                      ctx=Load()),
+                    slice=Constant(value='sections'),
+                    ctx=Load()),
+                  slice=Constant(value='summary'),
+                  ctx=Load()),
+                slice=Constant(value='draft'),
+                ctx=Load()),
+              attr='startswith',
+              ctx=Load()),
+            args=[
+              Constant(value='[EDITED BY HUMAN]')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

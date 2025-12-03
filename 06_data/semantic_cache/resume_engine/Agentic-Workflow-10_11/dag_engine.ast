@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nDAG engine compatibility shim for résumé processing workflows.\n\nPreserves backward compatibility while supporting comprehensive résumé enhancement operations.\n')),
+    ImportFrom(
+      module='dag_models',
+      names=[
+        alias(name='Node'),
+        alias(name='Edge'),
+        alias(name='Graph')],
+      level=1),
+    ImportFrom(
+      module='dag_executor',
+      names=[
+        alias(name='DAGExecutor')],
+      level=1)])

@@ -1,0 +1,157 @@
+Module(
+  body=[
+    ImportFrom(
+      module='stacks_v10_8.policy_stack',
+      names=[
+        alias(name='PolicyStack')],
+      level=0),
+    ClassDef(
+      name='DummyOutput',
+      bases=[
+        Name(id='dict', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Simple mapping to mimic stack outputs.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='text',
+                    value=Name(id='text', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='text',
+                  ctx=Store())],
+              value=Name(id='text', ctx=Load()))])]),
+    FunctionDef(
+      name='_make_stack',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='PolicyStack', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None)),
+              keyword(
+                arg='debug_mode',
+                value=Constant(value=False))]))]),
+    FunctionDef(
+      name='test_benign_output_allowed',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_stack', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='decision', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='stack', ctx=Load()),
+              attr='guard_output',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='DummyOutput', ctx=Load()),
+                args=[
+                  Constant(value='Generic help text.')])])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='decision', ctx=Load()),
+              Constant(value='allowed')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='decision', ctx=Load()),
+              Constant(value='reason')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='decision', ctx=Load()),
+              attr='allowed',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)]))]),
+    FunctionDef(
+      name='test_disallowed_output_blocked_when_rule_exists',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_stack', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='output', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyOutput', ctx=Load()),
+            args=[
+              Constant(value='This mentions a forbidden_topic that should be blocked.')])),
+        Assign(
+          targets=[
+            Name(id='decision', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='stack', ctx=Load()),
+              attr='guard_output',
+              ctx=Load()),
+            args=[
+              Name(id='output', ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='decision', ctx=Load()),
+              Constant(value='allowed')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='decision', ctx=Load()),
+              Constant(value='reason')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='decision', ctx=Load()),
+              attr='allowed',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='decision', ctx=Load()),
+              attr='reason',
+              ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]))])])

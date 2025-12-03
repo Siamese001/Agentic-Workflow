@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Observability Tracing Tests.\"\"\"\n\nclass TestObservabilityTracing:\n    \"\"\"Tests for observability tracing.\"\"\"\n    \n    def test_span_creation(self):\n        \"\"\"Test trace span creation.\"\"\"\n        span = {\n            \"id\": \"span_001\",\n            \"name\": \"test_operation\",\n            \"start_time\": 1000,\n            \"end_time\": 1100,\n            \"duration_ms\": 100\n        }\n        assert span[\"duration_ms\"] == 100\n        assert span[\"end_time\"] > span[\"start_time\"]\n",
+  "full_hash": "89b908c4178eb86fc7dc3af73df3fe958ebcc65fcd05460ccafca514526c32c6",
+  "generated_at": 1764728227.4281316,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\tracing\\test_obs_tracing.py"
+}

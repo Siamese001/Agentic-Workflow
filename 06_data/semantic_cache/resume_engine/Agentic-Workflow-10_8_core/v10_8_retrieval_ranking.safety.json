@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 285,
+  "generated_at": 1764728228.967226,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_retrieval_ranking.py"
+}

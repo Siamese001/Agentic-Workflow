@@ -1,0 +1,82 @@
+Module(
+  body=[
+    ImportFrom(
+      module='orchestration.control_plane',
+      names=[
+        alias(name='SafetyContext'),
+        alias(name='PolicyRule'),
+        alias(name='evaluate_rules')],
+      level=0),
+    FunctionDef(
+      name='test_rules_engine_detects_pii_email',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='SafetyContext', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='input_text',
+                value=Constant(value='Contact me at user@example.com'))])),
+        Assign(
+          targets=[
+            Name(id='rules', ctx=Store())],
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='PolicyRule', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='id',
+                    value=Constant(value='custom_email')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='Email PII')),
+                  keyword(
+                    arg='category',
+                    value=Constant(value='pii')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value='medium')),
+                  keyword(
+                    arg='pattern',
+                    value=Constant(value='@example\\.com')),
+                  keyword(
+                    arg='is_pii_rule',
+                    value=Constant(value=True))])],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='evaluate_rules', ctx=Load()),
+            args=[
+              Name(id='ctx', ctx=Load()),
+              Name(id='rules', ctx=Load())])),
+        Assert(
+          test=Attribute(
+            value=Name(id='result', ctx=Load()),
+            attr='matches',
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='max_severity',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='medium')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='has_pii',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)]))])])

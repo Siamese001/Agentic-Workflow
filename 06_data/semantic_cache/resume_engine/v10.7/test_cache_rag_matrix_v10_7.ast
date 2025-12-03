@@ -1,0 +1,208 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='CacheManager')],
+      level=0),
+    FunctionDef(
+      name='test_cache_roundtrip_variants',
+      args=arguments(
+        args=[
+          arg(
+            arg='cache_manager',
+            annotation=Name(id='CacheManager', ctx=Load())),
+          arg(arg='provider'),
+          arg(arg='model'),
+          arg(arg='temps')]),
+      body=[
+        For(
+          target=Name(id='temp', ctx=Store()),
+          iter=Name(id='temps', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='key', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='provider', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='-'),
+                  FormattedValue(
+                    value=Name(id='model', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='-'),
+                  FormattedValue(
+                    value=Name(id='temp', ctx=Load()),
+                    conversion=-1)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='cache_manager', ctx=Load()),
+                      attr='set_llm_cache',
+                      ctx=Load()),
+                    args=[
+                      Name(id='provider', ctx=Load()),
+                      Name(id='model', ctx=Load()),
+                      Name(id='key', ctx=Load()),
+                      Name(id='temp', ctx=Load()),
+                      Dict(
+                        keys=[
+                          Constant(value='content')],
+                        values=[
+                          Name(id='key', ctx=Load())])])])),
+            Assign(
+              targets=[
+                Name(id='got', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='cache_manager', ctx=Load()),
+                      attr='get_llm_cache',
+                      ctx=Load()),
+                    args=[
+                      Name(id='provider', ctx=Load()),
+                      Name(id='model', ctx=Load()),
+                      Name(id='key', ctx=Load()),
+                      Name(id='temp', ctx=Load())])])),
+            Assert(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='got', ctx=Load()),
+                  Compare(
+                    left=Subscript(
+                      value=Name(id='got', ctx=Load()),
+                      slice=Constant(value='content'),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='key', ctx=Load())])]))])],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='provider,model,temps'),
+            List(
+              elts=[
+                Tuple(
+                  elts=[
+                    Constant(value='openai'),
+                    Constant(value='gpt-test'),
+                    List(
+                      elts=[
+                        Constant(value=0.0),
+                        Constant(value=0.1),
+                        Constant(value=0.2)],
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Constant(value='anthropic'),
+                    Constant(value='claude-3'),
+                    List(
+                      elts=[
+                        Constant(value=0.0),
+                        Constant(value=0.3)],
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Constant(value='gemini'),
+                    Constant(value='1.5-pro'),
+                    List(
+                      elts=[
+                        Constant(value=0.2),
+                        Constant(value=0.5)],
+                      ctx=Load())],
+                  ctx=Load())],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_tool_cache_variants',
+      args=arguments(
+        args=[
+          arg(
+            arg='cache_manager',
+            annotation=Name(id='CacheManager', ctx=Load())),
+          arg(arg='tool')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='payload', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='k')],
+            values=[
+              Name(id='tool', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='cache_manager', ctx=Load()),
+              attr='set_tool_cache',
+              ctx=Load()),
+            args=[
+              Name(id='tool', ctx=Load()),
+              Name(id='payload', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='ok'),
+                  Constant(value='tool')],
+                values=[
+                  Constant(value=True),
+                  Name(id='tool', ctx=Load())])])),
+        Assert(
+          test=Subscript(
+            value=Call(
+              func=Attribute(
+                value=Name(id='cache_manager', ctx=Load()),
+                attr='get_tool_cache',
+                ctx=Load()),
+              args=[
+                Name(id='tool', ctx=Load()),
+                Name(id='payload', ctx=Load())]),
+            slice=Constant(value='ok'),
+            ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='tool'),
+            List(
+              elts=[
+                Constant(value='search'),
+                Constant(value='rerank'),
+                Constant(value='hybrid'),
+                Constant(value='bm25'),
+                Constant(value='embed')],
+              ctx=Load())])])])

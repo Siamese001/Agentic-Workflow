@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\safety_profile.py",
+    "rel_path": "safety_profile.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "c57b1c53e88ed3e5a73c65ad5db10bc107b29e37228c5a5b5a7d58126c912ddf",
+    "file_size": 537,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728223.818681
+}

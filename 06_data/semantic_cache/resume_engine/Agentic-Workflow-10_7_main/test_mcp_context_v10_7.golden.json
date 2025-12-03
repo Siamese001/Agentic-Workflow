@@ -1,0 +1,6 @@
+{
+  "golden_content": "import core_v10_7.context as context_module\nfrom core_v10_7 import MCPClientSpec, MCPClientStub\n\n\ndef test_ensure_mcp_clients_converts_optional_failures(monkeypatch, mock_workflow_context):\n    ctx = mock_workflow_context\n    ctx.reset_mcp_clients()\n    ctx._mcp_enabled = True\n    ctx._mcp_client_specs = [\n        MCPClientSpec(\n            name=\"optional_client\",\n            provider=\"custom\",\n            module=\"fake.module\",\n            class_name=\"FakeClient\",\n            optional=True,\n            parameters={\"foo\": \"bar\"},\n        )\n    ]\n\n    def boom(_spec):\n        raise RuntimeError(\"boom\")\n\n    monkeypatch.setattr(context_module, \"instantiate_mcp_client\", boom)\n\n    clients = ctx.ensure_mcp_clients()\n    assert \"optional_client\" in clients\n    assert isinstance(clients[\"optional_client\"], MCPClientStub)\n    assert ctx._mcp_errors[\"optional_client\"] == \"boom\"\n\n\ndef test_get_mcp_client_returns_stub_when_missing_in_stub_mode(mock_workflow_context):\n    ctx = mock_workflow_conte",
+  "full_hash": "f2a4a41ad91214fb97eecbeeef2579f697174136c4b6c025e4b3bd7c93c485c2",
+  "generated_at": 1764728230.623054,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\mcp\\test_mcp_context_v10_7.py"
+}

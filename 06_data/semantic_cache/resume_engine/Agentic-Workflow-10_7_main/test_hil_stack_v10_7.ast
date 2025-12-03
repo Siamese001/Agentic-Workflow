@@ -1,0 +1,484 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='PersonaConsensus'),
+        alias(name='StrategyPlan')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7.models',
+      names=[
+        alias(name='HILFeedbackIntent')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.components.hil',
+      names=[
+        alias(name='HILAmbiguityDetectorAgent'),
+        alias(name='HILFeedbackRouterAgent'),
+        alias(name='HILReconciliationAgent')],
+      level=0),
+    ClassDef(
+      name='StubLLMClient',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='payload',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='payload',
+                  ctx=Store())],
+              value=Name(id='payload', ctx=Load()))]),
+        AsyncFunctionDef(
+          name='chat_completion_async',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            vararg=arg(arg='_'),
+            kwarg=arg(arg='__')),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='content')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='payload',
+                        ctx=Load())])]))])]),
+    AsyncFunctionDef(
+      name='test_hil_ambiguity_detector_triggers_on_vague_strategy',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='workflow_context', ctx=Load()),
+                  attr='config',
+                  ctx=Load()),
+                attr='agent_stacks',
+                ctx=Load()),
+              attr='enable_hil_stack',
+              ctx=Store())],
+          value=Constant(value=True)),
+        Assign(
+          targets=[
+            Name(id='payload', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='ambiguity_detected'),
+              Constant(value='confidence'),
+              Constant(value='reason'),
+              Constant(value='question_for_human')],
+            values=[
+              Constant(value=True),
+              Constant(value=0.92),
+              Constant(value='Strategy missing focus areas'),
+              Constant(value='Which team should we highlight?')])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='workflow_context', ctx=Load()),
+              attr='get_model_client',
+              ctx=Store())],
+          value=Lambda(
+            args=arguments(
+              vararg=arg(arg='_'),
+              kwarg=arg(arg='__')),
+            body=Call(
+              func=Name(id='StubLLMClient', ctx=Load()),
+              args=[
+                Name(id='payload', ctx=Load())]))),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='HILAmbiguityDetectorAgent', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='strategy', ctx=Store())],
+          value=Call(
+            func=Name(id='StrategyPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy_name',
+                value=Constant(value='Generic')),
+              keyword(
+                arg='focus_areas',
+                value=List(ctx=Load())),
+              keyword(
+                arg='key_achievements_to_highlight',
+                value=List(ctx=Load())),
+              keyword(
+                arg='tone',
+                value=Constant(value='neutral'))])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              keywords=[
+                keyword(
+                  arg='strategy',
+                  value=Name(id='strategy', ctx=Load())),
+                keyword(
+                  arg='workflow_id',
+                  value=Constant(value='wf-hil'))]))),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='ambiguity_report'),
+                ctx=Load()),
+              attr='ambiguity_detected',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_hil_feedback_router_routes_to_drafting_by_default',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context'),
+          arg(arg='monkeypatch')]),
+      body=[
+        FunctionDef(
+          name='fake_summarizer',
+          args=arguments(
+            vararg=arg(arg='_'),
+            kwarg=arg(arg='__')),
+          body=[
+            ClassDef(
+              name='_Summarizer',
+              body=[
+                AsyncFunctionDef(
+                  name='run_async',
+                  args=arguments(
+                    args=[
+                      arg(arg='self')],
+                    vararg=arg(arg='args'),
+                    kwarg=arg(arg='kwargs')),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='intent', ctx=Store())],
+                      value=Call(
+                        func=Name(id='HILFeedbackIntent', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='intent_id',
+                            value=Constant(value='intent-1')),
+                          keyword(
+                            arg='summary',
+                            value=Constant(value='Fine')),
+                          keyword(
+                            arg='severity',
+                            value=Constant(value='low')),
+                          keyword(
+                            arg='recommended_owner',
+                            value=Constant(value='drafting')),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.2))])),
+                    Assign(
+                      targets=[
+                        Name(id='stub', ctx=Store())],
+                      value=Call(
+                        func=Name(id='SimpleNamespace', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='intent_clusters',
+                            value=List(
+                              elts=[
+                                Name(id='intent', ctx=Load())],
+                              ctx=Load())),
+                          keyword(
+                            arg='delegation_score',
+                            value=Constant(value=0.1)),
+                          keyword(
+                            arg='recommended_node',
+                            value=Constant(value='DRAFTING')),
+                          keyword(
+                            arg='recommended_specialists',
+                            value=List(ctx=Load()))])),
+                    Return(
+                      value=Name(id='stub', ctx=Load()))])]),
+            Return(
+              value=Call(
+                func=Name(id='_Summarizer', ctx=Load())))]),
+        FunctionDef(
+          name='fake_council',
+          args=arguments(
+            vararg=arg(arg='_'),
+            kwarg=arg(arg='__')),
+          body=[
+            ClassDef(
+              name='_Council',
+              body=[
+                AsyncFunctionDef(
+                  name='run_async',
+                  args=arguments(
+                    args=[
+                      arg(arg='self')],
+                    vararg=arg(arg='args'),
+                    kwarg=arg(arg='kwargs')),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Name(id='PersonaConsensus', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='approved',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='rationale',
+                            value=Constant(value='Minor edits')),
+                          keyword(
+                            arg='negotiated_actions',
+                            value=List(ctx=Load())),
+                          keyword(
+                            arg='persona_votes',
+                            value=List(ctx=Load())),
+                          keyword(
+                            arg='escalation_recommended',
+                            value=Constant(value=False))]))])]),
+            Return(
+              value=Call(
+                func=Name(id='_Council', ctx=Load())))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Constant(value='agent_stacks_v10_8.components.hil.HILFeedbackSummarizerAgent'),
+              Name(id='fake_summarizer', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Constant(value='agent_stacks_v10_8.components.hil.VirtualReviewerCouncilAgent'),
+              Name(id='fake_council', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='HILFeedbackRouterAgent', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='route', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              args=[
+                Constant(value='Looks fine, just minor edits')],
+              keywords=[
+                keyword(
+                  arg='workflow_id',
+                  value=Constant(value='wf-route'))]))),
+        Assign(
+          targets=[
+            Name(id='route_data', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='route', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Name(id='route', ctx=Load()),
+            orelse=Call(
+              func=Attribute(
+                value=Name(id='route', ctx=Load()),
+                attr='model_dump',
+                ctx=Load())))),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='route_data', ctx=Load()),
+              slice=Constant(value='next_step'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='DRAFTING')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_hil_reconciliation_merges_specialist_feedback',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='payload', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='integrated_text'),
+              Constant(value='change_log'),
+              Constant(value='unresolved_questions')],
+            values=[
+              Constant(value='Updated summary'),
+              List(
+                elts=[
+                  Constant(value='Merged specialist notes')],
+                ctx=Load()),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='workflow_context', ctx=Load()),
+              attr='get_model_client',
+              ctx=Store())],
+          value=Lambda(
+            args=arguments(
+              vararg=arg(arg='_'),
+              kwarg=arg(arg='__')),
+            body=Call(
+              func=Name(id='StubLLMClient', ctx=Load()),
+              args=[
+                Name(id='payload', ctx=Load())]))),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='HILReconciliationAgent', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='consensus', ctx=Store())],
+          value=Call(
+            func=Name(id='PersonaConsensus', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='approved',
+                value=Constant(value=True)),
+              keyword(
+                arg='rationale',
+                value=Constant(value='Aligned')),
+              keyword(
+                arg='negotiated_actions',
+                value=List(ctx=Load())),
+              keyword(
+                arg='persona_votes',
+                value=List(ctx=Load())),
+              keyword(
+                arg='escalation_recommended',
+                value=Constant(value=False))])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              keywords=[
+                keyword(
+                  arg='draft_sections',
+                  value=Dict(
+                    keys=[
+                      Constant(value='summary')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='draft')],
+                        values=[
+                          Constant(value='Old')])])),
+                keyword(
+                  arg='specialist_feedback',
+                  value=List(
+                    elts=[
+                      Constant(value='Add more metrics')],
+                    ctx=Load())),
+                keyword(
+                  arg='persona_consensus',
+                  value=Name(id='consensus', ctx=Load())),
+                keyword(
+                  arg='workflow_id',
+                  value=Constant(value='wf-recon'))]))),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='integrated_text',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='Updated summary')])),
+        Assert(
+          test=Attribute(
+            value=Name(id='result', ctx=Load()),
+            attr='change_log',
+            ctx=Load()))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\plan-phase\\get-scripts-info\\general\\understand-request\\coordinate_scripts_operations.py",
+    "rel_path": "coordinate_scripts_operations.py",
+    "root_name": "scripts",
+    "file_hash": "38ce503c6d873d08d6be7927425208cdd48cfef8401cd0c007a5246c9a136829",
+    "file_size": 7038,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.9054286
+}

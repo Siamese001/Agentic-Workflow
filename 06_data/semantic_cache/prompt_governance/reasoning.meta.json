@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\safety-guard-layer\\retry-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\reasoning.yaml",
+    "rel_path": "reasoning.yaml",
+    "root_name": "prompt_governance",
+    "file_hash": "75525d3cf951f14415c9e5527d0da829654e2831e891def5fb34b40dc6be1dca",
+    "file_size": 16181,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728348.1983109
+}

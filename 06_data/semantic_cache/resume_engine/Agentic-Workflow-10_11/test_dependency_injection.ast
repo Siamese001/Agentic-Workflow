@@ -1,0 +1,831 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Unit Tests for Dependency Injection System\n\nTests DI container functionality and proper service injection\nacross all layers to maintain L1-L5 atomicity.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock'),
+        alias(name='patch')],
+      level=0),
+    ImportFrom(
+      module='infra.di_container',
+      names=[
+        alias(name='SimpleDIContainer'),
+        alias(name='get_container'),
+        alias(name='register_service'),
+        alias(name='get_service'),
+        alias(name='initialize_default_services'),
+        alias(name='inject_dependencies')],
+      level=0),
+    ImportFrom(
+      module='l4.pinecone_adapter',
+      names=[
+        alias(name='PineconeAdapter'),
+        alias(name='PineconeConfig')],
+      level=0),
+    ImportFrom(
+      module='l5.policy',
+      names=[
+        alias(name='SafetyEngine')],
+      level=0),
+    ClassDef(
+      name='TestSimpleDIContainer',
+      body=[
+        Expr(
+          value=Constant(value='Test cases for dependency injection container.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Set up test fixtures.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='container',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleDIContainer', ctx=Load())))]),
+        FunctionDef(
+          name='test_register_and_get_service',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test registering and retrieving services.')),
+            Assign(
+              targets=[
+                Name(id='mock_service', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='container',
+                    ctx=Load()),
+                  attr='register',
+                  ctx=Load()),
+                args=[
+                  Name(id='Mock', ctx=Load()),
+                  Name(id='mock_service', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='retrieved', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='container',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='Mock', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='retrieved', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='mock_service', ctx=Load())]))]),
+        FunctionDef(
+          name='test_get_nonexistent_service',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value="Test getting a service that doesn't exist.")),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='container',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='Mock', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='result', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]))]),
+        FunctionDef(
+          name='test_clear_services',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test clearing all services.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='container',
+                    ctx=Load()),
+                  attr='register',
+                  ctx=Load()),
+                args=[
+                  Name(id='Mock', ctx=Load()),
+                  Call(
+                    func=Name(id='Mock', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='container',
+                    ctx=Load()),
+                  attr='register',
+                  ctx=Load()),
+                args=[
+                  Name(id='str', ctx=Load()),
+                  Constant(value='test')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='container',
+                    ctx=Load()),
+                  attr='clear',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='container',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='Mock', ctx=Load())]),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='container',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='str', ctx=Load())]),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]))]),
+        FunctionDef(
+          name='test_duplicate_registration_raises_error',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that registering the same service type twice raises error.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='container',
+                    ctx=Load()),
+                  attr='register',
+                  ctx=Load()),
+                args=[
+                  Name(id='Mock', ctx=Load()),
+                  Call(
+                    func=Name(id='Mock', ctx=Load()))])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='raises',
+                      ctx=Load()),
+                    args=[
+                      Name(id='Exception', ctx=Load())]))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='container',
+                        ctx=Load()),
+                      attr='register',
+                      ctx=Load()),
+                    args=[
+                      Name(id='Mock', ctx=Load()),
+                      Call(
+                        func=Name(id='Mock', ctx=Load()))]))])])]),
+    ClassDef(
+      name='TestGlobalDIContainer',
+      body=[
+        Expr(
+          value=Constant(value='Test cases for global DI container functions.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Set up test fixtures.')),
+            Assign(
+              targets=[
+                Name(id='container', ctx=Store())],
+              value=Call(
+                func=Name(id='get_container', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='container', ctx=Load()),
+                  attr='clear',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='test_global_register_and_get',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test global register and get functions.')),
+            Assign(
+              targets=[
+                Name(id='mock_service', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Name(id='register_service', ctx=Load()),
+                args=[
+                  Name(id='Mock', ctx=Load()),
+                  Name(id='mock_service', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='retrieved', ctx=Store())],
+              value=Call(
+                func=Name(id='get_service', ctx=Load()),
+                args=[
+                  Name(id='Mock', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='retrieved', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='mock_service', ctx=Load())]))]),
+        FunctionDef(
+          name='test_initialize_default_services',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test initialization of default services.')),
+            Expr(
+              value=Call(
+                func=Name(id='initialize_default_services', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='container', ctx=Store())],
+              value=Call(
+                func=Name(id='get_container', ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='container', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='PineconeAdapter', ctx=Load())]),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='container', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='SafetyEngine', ctx=Load())]),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]))])]),
+    ClassDef(
+      name='TestDependencyInjection',
+      body=[
+        Expr(
+          value=Constant(value='Test cases for dependency injection in execution contexts.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Set up test fixtures.')),
+            Expr(
+              value=Call(
+                func=Name(id='initialize_default_services', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='ctx',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='ctx',
+                    ctx=Load()),
+                  attr='user_id',
+                  ctx=Store())],
+              value=Constant(value='test_user')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='ctx',
+                    ctx=Load()),
+                  attr='session_id',
+                  ctx=Store())],
+              value=Constant(value='test_session')),
+            For(
+              target=Name(id='attr', ctx=Store()),
+              iter=List(
+                elts=[
+                  Constant(value='pinecone_adapter'),
+                  Constant(value='safety_engine'),
+                  Constant(value='state_manager')],
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='ctx',
+                        ctx=Load()),
+                      Name(id='attr', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='delattr', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='ctx',
+                            ctx=Load()),
+                          Name(id='attr', ctx=Load())]))])])]),
+        FunctionDef(
+          name='test_inject_dependencies_adds_services',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that inject_dependencies adds services to context.')),
+            Assert(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='ctx',
+                      ctx=Load()),
+                    Constant(value='pinecone_adapter')]))),
+            Assert(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='ctx',
+                      ctx=Load()),
+                    Constant(value='safety_engine')]))),
+            Assign(
+              targets=[
+                Name(id='updated_ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='inject_dependencies', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='ctx',
+                    ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='updated_ctx', ctx=Load()),
+                  Constant(value='pinecone_adapter')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='updated_ctx', ctx=Load()),
+                  Constant(value='safety_engine')])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='updated_ctx', ctx=Load()),
+                    attr='pinecone_adapter',
+                    ctx=Load()),
+                  Name(id='PineconeAdapter', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='updated_ctx', ctx=Load()),
+                    attr='safety_engine',
+                    ctx=Load()),
+                  Name(id='SafetyEngine', ctx=Load())]))]),
+        FunctionDef(
+          name='test_inject_dependencies_preserves_existing',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that inject_dependencies preserves existing services.')),
+            Assign(
+              targets=[
+                Name(id='existing_adapter', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='spec',
+                    value=Name(id='PineconeAdapter', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='ctx',
+                    ctx=Load()),
+                  attr='pinecone_adapter',
+                  ctx=Store())],
+              value=Name(id='existing_adapter', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='updated_ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='inject_dependencies', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='ctx',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='updated_ctx', ctx=Load()),
+                  attr='pinecone_adapter',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='existing_adapter', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='updated_ctx', ctx=Load()),
+                  Constant(value='safety_engine')]))])]),
+    ClassDef(
+      name='TestLayerDIIntegration',
+      body=[
+        Expr(
+          value=Constant(value='Test DI integration across all layers - simplified.')),
+        FunctionDef(
+          name='setup_method',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Set up test fixtures.')),
+            Expr(
+              value=Call(
+                func=Name(id='initialize_default_services', ctx=Load())))]),
+        FunctionDef(
+          name='test_pinecone_adapter_di_interface',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that PineconeAdapter provides DI-compatible interface.')),
+            ImportFrom(
+              module='l4.pinecone_adapter',
+              names=[
+                alias(name='PineconeConfig')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='PineconeConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='api_key',
+                    value=Constant(value='test_key')),
+                  keyword(
+                    arg='index_name',
+                    value=Constant(value='test_index'))])),
+            Assign(
+              targets=[
+                Name(id='adapter', ctx=Store())],
+              value=Call(
+                func=Name(id='PineconeAdapter', ctx=Load()),
+                args=[
+                  Name(id='config', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='adapter', ctx=Load()),
+                  Constant(value='retrieve_evidence')])),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='adapter', ctx=Load()),
+                      Constant(value='retrieve_evidence')])]))]),
+        FunctionDef(
+          name='test_safety_engine_di_interface',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that SafetyEngine provides DI-compatible interface.')),
+            Assign(
+              targets=[
+                Name(id='engine', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyEngine', ctx=Load()))),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='engine', ctx=Load()),
+                  Constant(value='evaluate')])),
+            Assert(
+              test=Call(
+                func=Name(id='callable', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='engine', ctx=Load()),
+                      Constant(value='evaluate')])]))])]),
+    ClassDef(
+      name='TestDIAtomicityCompliance',
+      body=[
+        Expr(
+          value=Constant(value='Test that DI maintains L1-L5 atomicity constraints.')),
+        FunctionDef(
+          name='test_no_direct_imports_in_l2',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value="Test that L2 doesn't directly import services.")),
+            Import(
+              names=[
+                alias(name='l2.execution')]),
+            Assign(
+              targets=[
+                Name(id='source_lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Constant(value='l2/execution.py'),
+                          Constant(value='r')]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='source_lines', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='f', ctx=Load()),
+                          attr='readlines',
+                          ctx=Load())))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='FileNotFoundError', ctx=Load()),
+                  body=[
+                    Return()])]),
+            Assign(
+              targets=[
+                Name(id='source', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=''),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='source_lines', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='from infra.di_container import'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='source', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='business_logic_imports', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='from pinecone import'),
+                  Constant(value='import pinecone')],
+                ctx=Load())),
+            For(
+              target=Name(id='imp', ctx=Store()),
+              iter=Name(id='business_logic_imports', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='lines_with_imp', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='line', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='line', ctx=Store()),
+                        iter=Name(id='source_lines', ctx=Load()),
+                        ifs=[
+                          BoolOp(
+                            op=And(),
+                            values=[
+                              Compare(
+                                left=Name(id='imp', ctx=Load()),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='line', ctx=Load())]),
+                              UnaryOp(
+                                op=Not(),
+                                operand=Call(
+                                  func=Attribute(
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='line', ctx=Load()),
+                                        attr='strip',
+                                        ctx=Load())),
+                                    attr='startswith',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='#')]))])],
+                        is_async=0)])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='lines_with_imp', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)]),
+                  msg=JoinedStr(
+                    values=[
+                      Constant(value='Found direct import: '),
+                      FormattedValue(
+                        value=Name(id='imp', ctx=Load()),
+                        conversion=-1)]))])]),
+        FunctionDef(
+          name='test_no_direct_imports_in_l3',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value="Test that L3 doesn't directly import services.")),
+            Import(
+              names=[
+                alias(name='l3')]),
+            Assign(
+              targets=[
+                Name(id='source_lines', ctx=Store())],
+              value=List(ctx=Load())),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Constant(value='l3/__init__.py'),
+                          Constant(value='r')]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='source_lines', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='f', ctx=Load()),
+                          attr='readlines',
+                          ctx=Load())))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='FileNotFoundError', ctx=Load()),
+                  body=[
+                    Return()])]),
+            Assign(
+              targets=[
+                Name(id='source', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=''),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='source_lines', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='from infra.di_container import'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='source', ctx=Load())]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='main',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='__file__', ctx=Load())],
+                ctx=Load())]))])])

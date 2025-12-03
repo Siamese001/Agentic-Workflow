@@ -1,0 +1,14 @@
+Module(
+  body=[
+    ClassDef(
+      name='MetricsCollector',
+      body=[
+        FunctionDef(
+          name='collect',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='metric_name'),
+              arg(arg='value')]),
+          body=[
+            Pass()])])])

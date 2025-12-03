@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v2\\interpreter_RES_v2.py",
+    "rel_path": "interpreter_RES_v2.py",
+    "root_name": "resume_engine/v2",
+    "file_hash": "cd709f04809a33a9473678f937de2efbc5eff7fd447af921b7cadb3cae39cbc9",
+    "file_size": 5084,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728327.0983102
+}

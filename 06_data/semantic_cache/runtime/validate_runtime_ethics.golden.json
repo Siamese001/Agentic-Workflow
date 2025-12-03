@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - validate_runtime_ethics\nImplements L5 Safety/Policy Layer for validate runtime ethics operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ValidateRuntimeEthicsSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass ValidateRuntimeEthicsSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ValidateRuntimeEthicsSafetyResult:\n    \"\"\"L5 Safety result ",
+  "full_hash": "7977a2b7342d860aad1858bedcc3533c44771d557446a4b68dbfd2f05f910f04",
+  "generated_at": 1764728347.8146281,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\safe-layer\\safety-phase\\check-runtime-rules\\policy\\check-safety\\validate_runtime_ethics.py"
+}

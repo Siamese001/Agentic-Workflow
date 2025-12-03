@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\rag.py",
+    "rel_path": "rag.py",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "d9baa0347089c88b6f93fe8ae49bac5064a05f283f63e84cd182641e2321b0e3",
+    "file_size": 25495,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728340.7631228
+}

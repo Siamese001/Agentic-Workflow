@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Tests for RAG simulator.\"\"\"\n\nimport pytest\n\nfrom simulations.engines.rag_sim import RAGSimulator\nfrom simulations.models import RAGSimRequest\n\n\n@pytest.mark.asyncio\nasync def test_rag_simulator_returns_result():\n    simulator = RAGSimulator()\n    request = RAGSimRequest(\n        simulation_id=\"sim-rag\",\n        payload={},\n        query=\"test\",\n        documents=[\"doc1\", \"doc2\", \"doc3\"],\n    )\n    result = await simulator.run(request)\n    assert result.success is True\n    assert 0.0 <= result.metrics[\"recall\"] <= 1.0\n    assert 0.0 <= result.metrics[\"precision\"] <= 1.0\n    assert 0.0 <= result.metrics[\"redundancy\"] <= 1.0\n    assert isinstance(result.details[\"top_documents\"], list)\n\n\ndef test_rag_request_validation():\n    request = RAGSimRequest(\n        simulation_id=\"sim-rag-validate\",\n        payload={},\n        query=\"hello\",\n        documents=[\"a\"],\n    )\n    assert request.query == \"hello\"\n    assert request.documents == [\"a\"]\n",
+  "full_hash": "3ff18f30f4c1982ca90e30cee7acd17d33b7106fa11aa512cb8f6b97abbeed3c",
+  "generated_at": 1764728231.5585725,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\simulations\\test_rag_sim.py"
+}

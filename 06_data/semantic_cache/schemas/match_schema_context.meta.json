@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\retrieve-phase\\get-schema-info\\embedding\\compare-meaning\\match_schema_context.py",
+    "rel_path": "match_schema_context.py",
+    "root_name": "schemas",
+    "file_hash": "a897cf76666fc27de053d76cee6fff49f67780a03cdc45a898482a0ba1be90ed",
+    "file_size": 1438,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.213425
+}

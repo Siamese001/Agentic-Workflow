@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 adapter for resume job alignment workflows.\n\nWraps safety validator to enforce interface contracts for resume enhancement.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional, Union\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom enum import Enum\n\nfrom l5.interfaces import (\n    L5PolicyEnforcerInterface,\n    L5SafetyCheckerInterface,\n    L5RiskAssessmentInterface,\n    L5ComplianceCheckerInterface,\n    L5HitLInterface,\n    L5ResourceGuardInterface,\n    L5AuditLoggerInterface,\n    L5PolicyRequest,\n    L5PolicyResult,\n    PolicyType,\n    Action,\n)\nfrom l5.safety_validator import SafetyValidator, SafetyViolation\nfrom core.models.models import (\n    ExecutionContext,\n    SafetyResult,\n    SafetyFinding,\n    RiskLevel,\n    PolicyViolation,\n    HitLRequest,\n)\n\n\nclass SafetyValidatorAdapter(L5SafetyCheckerInterface):\n    \"\"\"Adapter wrapping safety validator for resume job alignment workflows.\"\"\"\n    \n    def __init__(self, wrapped_",
+  "full_hash": "e7c4036491910a66d385199431c023248e288ee65fc07ea1d3f77232528b35ce",
+  "generated_at": 1764728225.37461,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\adapters(1).py"
+}

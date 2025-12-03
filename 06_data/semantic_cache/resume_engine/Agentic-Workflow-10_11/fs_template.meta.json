@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\fs_template.py",
+    "rel_path": "fs_template.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "86b32fff3cbeff566f58deaedd9a63c1d4ccae4af62fa5e815887958c1cdc741",
+    "file_size": 491,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728224.292331
+}

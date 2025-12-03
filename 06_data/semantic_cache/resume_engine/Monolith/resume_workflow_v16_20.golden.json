@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nimport copy\nimport hashlib\nimport json\nimport logging\nimport os\nimport random\nimport re\nimport shutil\nimport signal\nimport time\nimport uuid\nfrom collections import defaultdict\nfrom datetime import datetime, timedelta\nimport functools\nfrom functools import partial\nfrom enum import Enum, auto\nfrom typing import (\n    Any, Callable, ClassVar, Dict, List, \n    Optional, Set, Tuple, TypeVar, Union\n)\n\nT = TypeVar('T')\n\nfrom dataclasses import asdict, dataclass, field, is_dataclass\n\nfrom dotenv import load_dotenv\nload_dotenv()\n\n__version__ = \"16_20\"\n\nDEFAULT_GENERATION_TEMPERATURE = 0.9\n\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\n\n    api_key = os.environ.get(\"GEMINI_API_KEY\")\n    if api_key:\n        genai.configure(api_key=api_key)\n        logging.info(\"\u2713 Gemini API configured successfully at module initialization\")\n    else:\n        logging.warning(\"\u26a0\ufe0f GEMINI_API_KEY not found in environment. API calls will fail.\")\n        GE",
+  "full_hash": "3a0fbc40a63c66bea472e24e37b4ff9507374dae66289749fca5c1012aacf5d1",
+  "generated_at": 1764728233.1081479,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Monolith\\resume_workflow_v16_20.py"
+}

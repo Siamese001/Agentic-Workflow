@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.38 - REAL CLAUDE API INTEGRATION\n\nv5.38 CHANGES FROM v5.37 - CRITICAL API FIX:\n\u2713 FIXED: _call_claude_api now makes REAL API calls to Anthropic Claude API\n  - Replaced hardcoded mock responses with actual HTTP requests\n  - Uses claude-sonnet-4-20250514 model\n  - Implements retry logic with exponential backoff\n  - Adds proper error handling and timeout management\n  - Requires ANTHROPIC_API_KEY environment variable\n\u2713 FIXED: Generated content now unique per job description (not hardcoded)\n  - Executive summary, headline, bullets, etc. now dynamically generated\n  - Content tailored to actual JD requirements (e.g., DataRobot VP Pre-Sales)\n  - No more \"Amit Ayer\" or \"Acme Corp\" hardcoded responses\n\u2713 ADDED: Comprehensive API error handling\n  - Rate limit detection with exponential backoff\n  - Timeout handling with configurable retries\n  - Detailed logging of API calls and responses\n\nTESTING IMPACT:\n- All E2E test cases now validate against REAL Claude API respon",
+  "full_hash": "8b6fec434351688b192f4c5d3267f6a70daafc60db3b49448a2f76cbd5c90287",
+  "generated_at": 1764728303.850337,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_38_FINAL.py"
+}

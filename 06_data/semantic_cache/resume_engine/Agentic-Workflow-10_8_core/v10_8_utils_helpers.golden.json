@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nV10.8 Consolidated Module: Utils Helpers\nMerged from 15 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom dataclasses import dataclass, field\nfrom model_invocation import invoke_model\nfrom typing import Any, Dict\nfrom typing import Any, Dict, Iterable, List\nfrom typing import Any, Dict, List\nfrom typing import Dict, Any\nimport copy\nimport time\n\n\n# ============================================================\n# From v10_8_errors_controlflow.py\n# ============================================================\n\nError definitions for control-flow orchestration structures.\n\"\"\"\n\n\nclass ControlFlowError(Exception):\n    \"\"\"Base error for control-flow orchestration.\"\"\"\n\n\nclass DAGValidationError(ControlFlowError):\n    \"\"\"Raised when a DAG definition is invalid or cyclic.\"\"\"\n\n\nclass NodeExecutionError(ControlFlowError):\n    \"\"\"Raised when a DAG node encounters an execution failure.\"\"\"\n\n# ============================================================\n# From v10_8_mode",
+  "full_hash": "6b258e52851f451eda75e9ab4f90079c10695c60892fa1e6c4128a7fb0dd523f",
+  "generated_at": 1764728228.9748008,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_utils_helpers.py"
+}

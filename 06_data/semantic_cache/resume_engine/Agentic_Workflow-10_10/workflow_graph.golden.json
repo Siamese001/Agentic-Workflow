@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: workflow_graph.py\n# PHASE 3 \u2014 FULL ORCHESTRATION GRAPH RESTORE (WITH CORRECTION LOOP)\n#\n# Strict L3 orchestration only:\n#   \u2022 No LLM calls\n#   \u2022 No retrieval logic\n#   \u2022 No ranking logic\n#   \u2022 No prompting\n#   \u2022 No state mutation\n#   \u2022 No safety evaluation\n#\n# Responsibilities:\n#   \u2022 DAG construction\n#   \u2022 Concurrency rules\n#   \u2022 Typed node definitions\n#   \u2022 Retrieval parallelization\n#   \u2022 Bounded correction loop orchestration\n#\n# This module wires together the L2 execution primitives into a canonical,\n# deterministic workflow graph with a bounded correction loop across all\n# surfaces (strategy, retrieval, drafting, QA, safety).\n#\n# Layering:\n#   \u2022 This is strictly L3. It owns orchestration and nothing else.\n#   \u2022 L2 owns all cognition (LLM, RAG, tools).\n#   \u2022 L4 owns state mutation.\n#   \u2022 L5 owns safety enforcement.\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Optional, Callable, Dict\n\nfrom models import (\n    WorkflowPlanBundle,\n    ExecutionContext,",
+  "full_hash": "20a1bdd70a663ae9de9e59d5096baeba516da84e5399c6b9c470dd177e9b531c",
+  "generated_at": 1764728228.5062056,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\workflow_graph.py"
+}

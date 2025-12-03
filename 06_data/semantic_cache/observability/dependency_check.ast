@@ -1,0 +1,83 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nChecks import validity to ensure resume generation system works properly.\n\nVerifies all modules can be imported without errors to maintain\ncode quality and ensure smooth resume generation functionality.\n')),
+    Import(
+      names=[
+        alias(name='pkgutil')]),
+    Expr(
+      value=Call(
+        func=Name(id='print', ctx=Load()),
+        args=[
+          Constant(value='=== IMPORT CHECK START ===')])),
+    For(
+      target=Name(id='m', ctx=Store()),
+      iter=Call(
+        func=Attribute(
+          value=Name(id='pkgutil', ctx=Load()),
+          attr='walk_packages',
+          ctx=Load()),
+        args=[
+          List(
+            elts=[
+              Constant(value='')],
+            ctx=Load())]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Name(id='m', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  Constant(value='')]),
+              attr='lstrip',
+              ctx=Load()),
+            args=[
+              Constant(value='')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='name', ctx=Load())),
+          body=[
+            Continue()]),
+        Try(
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='__import__', ctx=Load()),
+                args=[
+                  Name(id='name', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='FAILED:'),
+                      Name(id='name', ctx=Load()),
+                      Constant(value='->'),
+                      Attribute(
+                        value=Call(
+                          func=Name(id='type', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]),
+                        attr='__name__',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='e', ctx=Load())])]))])])]),
+    Expr(
+      value=Call(
+        func=Name(id='print', ctx=Load()),
+        args=[
+          Constant(value='=== IMPORT CHECK END ===')]))])

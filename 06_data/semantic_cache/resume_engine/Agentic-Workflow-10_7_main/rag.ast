@@ -1,0 +1,830 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Agentic RAG shim that delegates to the v10.8 execution stack.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7.agents',
+      names=[
+        alias(name='BaseAgent')],
+      level=0),
+    FunctionDef(
+      name='_build_execution_stack',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='debug_mode',
+            annotation=Name(id='bool', ctx=Load()))],
+        defaults=[
+          Constant(value=False)]),
+      body=[
+        ImportFrom(
+          module='agent_stacks_v10_8',
+          names=[
+            alias(name='RAGExecutionStack', asname='RAGExecutionStackV10_8')],
+          level=0),
+        Return(
+          value=Call(
+            func=Name(id='RAGExecutionStackV10_8', ctx=Load()),
+            args=[
+              Name(id='context', ctx=Load()),
+              Name(id='debug_mode', ctx=Load())]))]),
+    ClassDef(
+      name='RAG_SearchAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Compatibility wrapper preserving the v10.7 stack interface.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_stack',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_build_execution_stack', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_stack_initialized_via_init',
+                  ctx=Store())],
+              value=Constant(value=True))]),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='self', ctx=Load()),
+                    Constant(value='_stack')])),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_ensure_context_dependencies',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='debug_mode', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      Constant(value='debug_mode'),
+                      Constant(value=False)])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_stack',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='_build_execution_stack', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='context',
+                        ctx=Load()),
+                      Name(id='debug_mode', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='workflow_id', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='metadata'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='workflow_id'),
+                  Constant(value='')])),
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_maybe_precompute_embeddings',
+                    ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='patch', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_stack',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            If(
+              test=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='self', ctx=Load()),
+                  Constant(value='_stack_initialized_via_init'),
+                  Constant(value=False)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='resume', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='setdefault',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='resume', ctx=Load()),
+                      slice=Constant(value='experience_bullets'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='patch', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='resume'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='experience_bullets'),
+                      List(ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Constant(value='rag'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='patch', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='state', ctx=Load()),
+                          slice=Constant(value='rag'),
+                          ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='patch', ctx=Load()),
+                        slice=Constant(value='rag'),
+                        ctx=Load()))]),
+                Return(
+                  value=Name(id='state', ctx=Load()))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='resume')],
+                values=[
+                  Dict()]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_record_world_model_rag_run',
+          args=arguments(
+            args=[
+              arg(
+                arg='agent',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ranked',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='store', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='agent', ctx=Load()),
+                      Constant(value='context'),
+                      Constant(value=None)]),
+                  Constant(value='world_model_store'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='store', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='store', ctx=Load()),
+                          Constant(value='enabled'),
+                          Lambda(
+                            args=arguments(),
+                            body=Constant(value=False))])))]),
+              body=[
+                Return()]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='store', ctx=Load()),
+                  attr='set_json',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='rag_last_run:'),
+                      FormattedValue(
+                        value=Name(id='workflow_id', ctx=Load()),
+                        conversion=-1)]),
+                  Dict(
+                    keys=[
+                      Constant(value='query'),
+                      Constant(value='num_results')],
+                    values=[
+                      Name(id='query', ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          BoolOp(
+                            op=Or(),
+                            values=[
+                              Name(id='ranked', ctx=Load()),
+                              List(ctx=Load())])])])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Constant(value=None)),
+        AsyncFunctionDef(
+          name='_maybe_precompute_embeddings',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='engine', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Constant(value='precompute_engine'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='engine', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='engine', ctx=Load()),
+                        Constant(value='precompute_embeddings')]))]),
+              body=[
+                Return()]),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_derive_query',
+                  ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            If(
+              test=Name(id='query', ctx=Load()),
+              body=[
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='engine', ctx=Load()),
+                        attr='precompute_embeddings',
+                        ctx=Load()),
+                      args=[
+                        Name(id='query', ctx=Load())]))),
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='engine', ctx=Load()),
+                      Constant(value='precompute_hyde_document')]),
+                  body=[
+                    Expr(
+                      value=Await(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='engine', ctx=Load()),
+                            attr='precompute_hyde_document',
+                            ctx=Load()),
+                          args=[
+                            Name(id='query', ctx=Load())])))])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_derive_query',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='job', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='title', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='job_title')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='title')]),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='company', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='employer')]),
+                  Constant(value='')])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='title', ctx=Load()),
+                  Name(id='company', ctx=Load())]),
+              body=[
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='title', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' at '),
+                      FormattedValue(
+                        value=Name(id='company', ctx=Load()),
+                        conversion=-1)]))]),
+            Return(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='title', ctx=Load()),
+                  Name(id='company', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='state', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='workflow_id'),
+                      Constant(value='')])]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_ensure_context_dependencies',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='context',
+                ctx=Load())),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='context', ctx=Load()),
+                    Constant(value='embedding_function')])),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='embedding_function',
+                      ctx=Store())],
+                  value=Lambda(
+                    args=arguments(
+                      args=[
+                        arg(arg='prompts')]),
+                    body=ListComp(
+                      elt=List(
+                        elts=[
+                          Constant(value=0.0)],
+                        ctx=Load()),
+                      generators=[
+                        comprehension(
+                          target=Name(id='_', ctx=Store()),
+                          iter=Name(id='prompts', ctx=Load()),
+                          is_async=0)])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='context', ctx=Load()),
+                    Constant(value='chromadb_client')])),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='chromadb_client',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='SimpleNamespace', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='get_or_create_collection',
+                        value=Lambda(
+                          args=arguments(
+                            kwarg=arg(arg='_')),
+                          body=Call(
+                            func=Name(id='SimpleNamespace', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='add',
+                                value=Lambda(
+                                  args=arguments(
+                                    kwarg=arg(arg='__')),
+                                  body=Constant(value=None)))])))]))]),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='config'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='config', ctx=Load()),
+                        Constant(value='chromadb_config')]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='setattr', ctx=Load()),
+                    args=[
+                      Name(id='config', ctx=Load()),
+                      Constant(value='chromadb_config'),
+                      Call(
+                        func=Name(id='SimpleNamespace', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='default_collection_name',
+                            value=Constant(value='predictive-cache'))])]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='config', ctx=Load()),
+                        Constant(value='agent_stacks')]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='setattr', ctx=Load()),
+                    args=[
+                      Name(id='config', ctx=Load()),
+                      Constant(value='agent_stacks'),
+                      Call(
+                        func=Name(id='SimpleNamespace', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='reranking_top_k',
+                            value=Constant(value=3))])]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='config', ctx=Load()),
+                        Constant(value='model_config')]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='setattr', ctx=Load()),
+                    args=[
+                      Name(id='config', ctx=Load()),
+                      Constant(value='model_config'),
+                      Call(
+                        func=Name(id='SimpleNamespace', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='reranker_model',
+                            value=Call(
+                              func=Name(id='SimpleNamespace', ctx=Load()),
+                              keywords=[
+                                keyword(
+                                  arg='provider',
+                                  value=Constant(value='mock')),
+                                keyword(
+                                  arg='model_name',
+                                  value=Constant(value='mock-reranker')),
+                                keyword(
+                                  arg='temperature',
+                                  value=Constant(value=0.0))]))])]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='config', ctx=Load()),
+                        Constant(value='performance_config')]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='setattr', ctx=Load()),
+                    args=[
+                      Name(id='config', ctx=Load()),
+                      Constant(value='performance_config'),
+                      Call(
+                        func=Name(id='SimpleNamespace', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='max_complex_model_latency_ms',
+                            value=Constant(value=1000))])]))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='context', ctx=Load()),
+                    Constant(value='get_model_client')])),
+              body=[
+                AsyncFunctionDef(
+                  name='_noop_completion_async',
+                  args=arguments(
+                    kwarg=arg(arg='_kwargs')),
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='{}')]))]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get_model_client',
+                      ctx=Store())],
+                  value=Lambda(
+                    args=arguments(
+                      kwarg=arg(arg='_kwargs')),
+                    body=Call(
+                      func=Name(id='SimpleNamespace', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='chat_completion_async',
+                          value=Name(id='_noop_completion_async', ctx=Load())),
+                        keyword(
+                          arg='goal_state',
+                          value=Constant(value='')),
+                        keyword(
+                          arg='top_failures',
+                          value=Constant(value=''))])))]),
+            Assign(
+              targets=[
+                Name(id='budget_manager', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='context_budget_manager'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Name(id='budget_manager', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='budget_manager', ctx=Load()),
+                        Constant(value='prune')]))]),
+              body=[
+                AsyncFunctionDef(
+                  name='_noop_prune',
+                  args=arguments(
+                    args=[
+                      arg(
+                        arg='text',
+                        annotation=Name(id='str', ctx=Load()))],
+                    vararg=arg(arg='_args')),
+                  body=[
+                    Return(
+                      value=Name(id='text', ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='context_budget_manager',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='SimpleNamespace', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='prune',
+                        value=Name(id='_noop_prune', ctx=Load()))]))])],
+          returns=Constant(value=None))])])

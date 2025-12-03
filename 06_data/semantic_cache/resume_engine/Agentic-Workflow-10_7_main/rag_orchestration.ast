@@ -1,0 +1,1181 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Layer-3 orchestration for the v10.8 RAG workflow.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.state_adapter_stack',
+      names=[
+        alias(name='StateAdapterStack')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='BaseAgent')],
+      level=0),
+    ImportFrom(
+      module='rag_execution',
+      names=[
+        alias(name='RAGExecutionStack')],
+      level=1),
+    ImportFrom(
+      module='rag_planning',
+      names=[
+        alias(name='RAGPlanningStack')],
+      level=1),
+    ClassDef(
+      name='RAGOrchestratorStack',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Coordinates RAG planning and execution without adding new heuristics.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_adapter',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='StateAdapterStack', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_planning',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RAGPlanningStack', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_execution',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RAGExecutionStack', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='safety_policy',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='safety_policy'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='policy_stack',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='policy_stack'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='constitutional_engine',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='constitutional_engine'),
+                  Constant(value=None)]))],
+          returns=Constant(value=None)),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='workflow_id', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='state', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='workflow_id'),
+                      Constant(value='')])])),
+            Assign(
+              targets=[
+                Name(id='current_state', ctx=Store())],
+              value=Name(id='state', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='plan_patch', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_planning',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='current_state', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='plan_payload', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_ensure_plan_metadata',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan_patch', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='current_state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_adapter',
+                    ctx=Load()),
+                  attr='apply_patch',
+                  ctx=Load()),
+                args=[
+                  Name(id='current_state', ctx=Load()),
+                  Name(id='plan_patch', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_append_a2a_message',
+                  ctx=Load()),
+                args=[
+                  Name(id='current_state', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='message_type',
+                    value=Constant(value='PLAN_CREATED')),
+                  keyword(
+                    arg='payload',
+                    value=Dict(
+                      keys=[
+                        Constant(value='workflow_id'),
+                        Constant(value='goal')],
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='plan_payload', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='goal'),
+                            Constant(value='')])]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='rag_plan'),
+                  Constant(value='signal'),
+                  Dict(
+                    keys=[
+                      Constant(value='goal'),
+                      Constant(value='use_hyde')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='plan_payload', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='goal')]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='plan_payload', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='use_hyde'),
+                          Constant(value=True)])])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_append_a2a_message',
+                  ctx=Load()),
+                args=[
+                  Name(id='current_state', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='message_type',
+                    value=Constant(value='EXECUTION_STARTED')),
+                  keyword(
+                    arg='payload',
+                    value=Dict(
+                      keys=[
+                        Constant(value='workflow_id'),
+                        Constant(value='query_count')],
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='plan_payload', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='retrieval_queries'),
+                                List(ctx=Load())])])]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='rag_execution'),
+                  Constant(value='signal'),
+                  Dict(
+                    keys=[
+                      Constant(value='phase'),
+                      Constant(value='queries')],
+                    values=[
+                      Constant(value='start'),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='plan_payload', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='retrieval_queries'),
+                              List(ctx=Load())])])])])),
+            Assign(
+              targets=[
+                Name(id='execution_patch', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_execution',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='current_state', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='current_state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_adapter',
+                    ctx=Load()),
+                  attr='apply_patch',
+                  ctx=Load()),
+                args=[
+                  Name(id='current_state', ctx=Load()),
+                  Name(id='execution_patch', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='current_state', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_maybe_retry_rag',
+                    ctx=Load()),
+                  args=[
+                    Name(id='current_state', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load()),
+                    Name(id='plan_payload', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='bullets', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='current_state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='experience_bullets'),
+                  List(ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_append_a2a_message',
+                  ctx=Load()),
+                args=[
+                  Name(id='current_state', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='message_type',
+                    value=Constant(value='EXECUTION_COMPLETED')),
+                  keyword(
+                    arg='payload',
+                    value=Dict(
+                      keys=[
+                        Constant(value='workflow_id'),
+                        Constant(value='bullet_count')],
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='bullets', ctx=Load())])]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='rag_execution'),
+                  Constant(value='success'),
+                  Dict(
+                    keys=[
+                      Constant(value='phase'),
+                      Constant(value='bullets')],
+                    values=[
+                      Constant(value='complete'),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='bullets', ctx=Load())])])])),
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_record_arbitration',
+                    ctx=Load()),
+                  args=[
+                    Name(id='current_state', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='safety_report', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='current_state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety_report')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='policy_decision', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='current_state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='policy_decision')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='constitutional_review', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='current_state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='constitutional_review')]),
+                  Dict()])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='safety_report', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='safety_report', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='safety_report', ctx=Load()),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='policy_decision', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='policy_decision', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='policy_decision', ctx=Load()),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='constitutional_review', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='constitutional_review', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='constitutional_review', ctx=Load()),
+                                      Dict()])]))])])))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='current_state', ctx=Load()),
+                  slice=Constant(value='safety_report'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='safety_report', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='current_state', ctx=Load()),
+                  slice=Constant(value='policy_decision'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='policy_decision', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='current_state', ctx=Load()),
+                  slice=Constant(value='constitutional_review'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='constitutional_review', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Return(
+              value=Name(id='current_state', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_append_a2a_message',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            kwonlyargs=[
+              arg(
+                arg='message_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='payload',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            kw_defaults=[
+              None,
+              None]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='channel', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='setdefault',
+                  ctx=Load()),
+                args=[
+                  Constant(value='a2a'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='messages', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='channel', ctx=Load()),
+                  attr='setdefault',
+                  ctx=Load()),
+                args=[
+                  Constant(value='messages'),
+                  List(ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='messages', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='sender'),
+                      Constant(value='recipient'),
+                      Constant(value='message_type'),
+                      Constant(value='payload'),
+                      Constant(value='timestamp')],
+                    values=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='__class__',
+                          ctx=Load()),
+                        attr='__name__',
+                        ctx=Load()),
+                      Constant(value='ALL'),
+                      Name(id='message_type', ctx=Load()),
+                      Name(id='payload', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='utcnow',
+                              ctx=Load())),
+                          attr='isoformat',
+                          ctx=Load()))])]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_ensure_plan_metadata',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan_patch',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='plan_payload', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='plan_patch', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='rag'),
+                          Dict()]),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='plan'),
+                  Dict()])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='plan_payload', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  Compare(
+                    left=Constant(value='use_hyde'),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='plan_payload', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='plan_payload', ctx=Load()),
+                      slice=Constant(value='use_hyde'),
+                      ctx=Store())],
+                  value=Constant(value=True))]),
+            Return(
+              value=Name(id='plan_payload', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_maybe_retry_rag',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='plan_payload',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='scm', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='self', ctx=Load()),
+                  Constant(value='self_correction_manager'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Name(id='bullets', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='experience_bullets'),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='should_retry', ctx=Store())],
+              value=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan_payload', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='use_hyde'),
+                      Constant(value=True)]),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='bullets', ctx=Load()))])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=BoolOp(
+                  op=And(),
+                  values=[
+                    Name(id='should_retry', ctx=Load()),
+                    Name(id='scm', ctx=Load()),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='scm', ctx=Load()),
+                        attr='can_retry',
+                        ctx=Load()),
+                      args=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Constant(value='rag')])])),
+              body=[
+                Return(
+                  value=Name(id='state', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scm', ctx=Load()),
+                  attr='start_retry',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='rag')],
+                keywords=[
+                  keyword(
+                    arg='issue',
+                    value=Constant(value='hyde_zero_results')),
+                  keyword(
+                    arg='action',
+                    value=Constant(value='rerun_without_hyde')),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='query_count')],
+                      values=[
+                        Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='plan_payload', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='retrieval_queries'),
+                                List(ctx=Load())])])]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='plan_payload', ctx=Load()),
+                  slice=Constant(value='use_hyde'),
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_append_a2a_message',
+                  ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='message_type',
+                    value=Constant(value='RETRY_TRIGGERED')),
+                  keyword(
+                    arg='payload',
+                    value=Dict(
+                      keys=[
+                        Constant(value='workflow_id'),
+                        Constant(value='reason')],
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Constant(value='hyde_zero_results')]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='rag_retry'),
+                  Constant(value='retry'),
+                  Dict(
+                    keys=[
+                      Constant(value='reason')],
+                    values=[
+                      Constant(value='hyde_zero_results')])])),
+            Assign(
+              targets=[
+                Name(id='retry_patch', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_execution',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_adapter',
+                    ctx=Load()),
+                  attr='apply_patch',
+                  ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load()),
+                  Name(id='retry_patch', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='bullets_after', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='experience_bullets'),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='resolved', ctx=Store())],
+              value=Call(
+                func=Name(id='bool', ctx=Load()),
+                args=[
+                  Name(id='bullets_after', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scm', ctx=Load()),
+                  attr='finalize_retry',
+                  ctx=Load()),
+                args=[
+                  Name(id='report', ctx=Load()),
+                  Name(id='resolved', ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='bullet_count')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='bullets_after', ctx=Load())])])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='rag_retry'),
+                  IfExp(
+                    test=Name(id='resolved', ctx=Load()),
+                    body=Constant(value='success'),
+                    orelse=Constant(value='failure')),
+                  Dict(
+                    keys=[
+                      Constant(value='resolved'),
+                      Constant(value='bullet_count')],
+                    values=[
+                      Name(id='resolved', ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='bullets_after', ctx=Load())])])])),
+            Return(
+              value=Name(id='state', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_record_arbitration',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='engine', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Constant(value='arbitration_engine'),
+                  Constant(value=None)])),
+            If(
+              test=Compare(
+                left=Name(id='engine', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Return()]),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='engine', ctx=Load()),
+                    attr='run_check',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='prompt_rag_join'),
+                    Name(id='state', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='bucket', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='setdefault',
+                  ctx=Load()),
+                args=[
+                  Constant(value='arbitration'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='bucket', ctx=Load()),
+                  slice=Constant(value='prompt_rag_join'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='report', ctx=Load()),
+                  attr='model_dump',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='rag_arbitration'),
+                  Constant(value='signal'),
+                  Dict(
+                    keys=[
+                      Constant(value='decision'),
+                      Constant(value='confidence')],
+                    values=[
+                      Attribute(
+                        value=Name(id='report', ctx=Load()),
+                        attr='decision',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='report', ctx=Load()),
+                        attr='confidence',
+                        ctx=Load())])]))],
+          returns=Constant(value=None))])])

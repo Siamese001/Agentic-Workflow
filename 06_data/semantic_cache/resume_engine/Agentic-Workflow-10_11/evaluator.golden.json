@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import List\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef evaluate_hypotheses(hypotheses: List[Hypothesis]) -> List[Hypothesis]:\n    \"\"\"Return a new list of hypotheses with adjusted confidence.\n\n    Heuristics (purely deterministic):\n    - penalize very long or very short content slightly.\n    - if a hypothesis has no evidence_ids, reduce confidence.\n    - clamp confidence to [0, 1].\n    \"\"\"\n\n    evaluated: List[Hypothesis] = []\n    for h in hypotheses:\n        conf = float(h.confidence)\n        length = len(h.content or \"\")\n        if length < 20 or length > 400:\n            conf *= 0.9\n        if not h.evidence_ids:\n            conf *= 0.7\n        conf = max(0.0, min(1.0, conf))\n        evaluated.append(h.model_copy(update={\"confidence\": conf}))\n    return evaluated\n\n\n\n",
+  "full_hash": "5fca9f43ec14c234c331bd60f3570237d8b620ff2e8a9bec334ba7ed501d6fee",
+  "generated_at": 1764728225.567886,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\metacognition\\evaluator.py"
+}

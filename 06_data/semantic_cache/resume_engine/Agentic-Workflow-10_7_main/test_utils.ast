@@ -1,0 +1,472 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='contextlib')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='types')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    FunctionDef(
+      name='install_langgraph_stub',
+      args=arguments(),
+      body=[
+        If(
+          test=Compare(
+            left=Constant(value='langgraph'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='sys', ctx=Load()),
+                attr='modules',
+                ctx=Load())]),
+          body=[
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='langgraph', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='types', ctx=Load()),
+              attr='ModuleType',
+              ctx=Load()),
+            args=[
+              Constant(value='langgraph')])),
+        Assign(
+          targets=[
+            Name(id='graph_module', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='types', ctx=Load()),
+              attr='ModuleType',
+              ctx=Load()),
+            args=[
+              Constant(value='langgraph.graph')])),
+        ClassDef(
+          name='StateGraph',
+          body=[
+            FunctionDef(
+              name='__init__',
+              args=arguments(
+                args=[
+                  arg(arg='self'),
+                  arg(arg='_state_type')]),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='nodes',
+                      ctx=Store())],
+                  value=Dict())]),
+            FunctionDef(
+              name='add_node',
+              args=arguments(
+                args=[
+                  arg(arg='self'),
+                  arg(arg='name'),
+                  arg(arg='func')]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='nodes',
+                        ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='func', ctx=Load()))]),
+            FunctionDef(
+              name='set_entry_point',
+              args=arguments(
+                args=[
+                  arg(arg='self'),
+                  arg(arg='_name')]),
+              body=[
+                Return(
+                  value=Constant(value=None))]),
+            FunctionDef(
+              name='add_edge',
+              args=arguments(
+                args=[
+                  arg(arg='self')],
+                vararg=arg(arg='_args'),
+                kwarg=arg(arg='_kwargs')),
+              body=[
+                Return(
+                  value=Constant(value=None))])]),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='graph_module', ctx=Load()),
+              attr='StateGraph',
+              ctx=Store())],
+          value=Name(id='StateGraph', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='graph_module', ctx=Load()),
+              attr='END',
+              ctx=Store())],
+          value=Constant(value='END')),
+        Assign(
+          targets=[
+            Name(id='errors_module', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='types', ctx=Load()),
+              attr='ModuleType',
+              ctx=Load()),
+            args=[
+              Constant(value='langgraph.errors')])),
+        ClassDef(
+          name='GraphRecursionError',
+          bases=[
+            Name(id='Exception', ctx=Load())],
+          body=[
+            Expr(
+              value=Constant(value=Ellipsis))]),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='errors_module', ctx=Load()),
+              attr='GraphRecursionError',
+              ctx=Store())],
+          value=Name(id='GraphRecursionError', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='langgraph', ctx=Load()),
+              attr='graph',
+              ctx=Store())],
+          value=Name(id='graph_module', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='langgraph', ctx=Load()),
+              attr='errors',
+              ctx=Store())],
+          value=Name(id='errors_module', ctx=Load())),
+        Assign(
+          targets=[
+            Subscript(
+              value=Attribute(
+                value=Name(id='sys', ctx=Load()),
+                attr='modules',
+                ctx=Load()),
+              slice=Constant(value='langgraph'),
+              ctx=Store())],
+          value=Name(id='langgraph', ctx=Load())),
+        Assign(
+          targets=[
+            Subscript(
+              value=Attribute(
+                value=Name(id='sys', ctx=Load()),
+                attr='modules',
+                ctx=Load()),
+              slice=Constant(value='langgraph.graph'),
+              ctx=Store())],
+          value=Name(id='graph_module', ctx=Load())),
+        Assign(
+          targets=[
+            Subscript(
+              value=Attribute(
+                value=Name(id='sys', ctx=Load()),
+                attr='modules',
+                ctx=Load()),
+              slice=Constant(value='langgraph.errors'),
+              ctx=Store())],
+          value=Name(id='errors_module', ctx=Load()))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='pytest_configure',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='Config',
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='addinivalue_line',
+              ctx=Load()),
+            args=[
+              Constant(value='markers'),
+              Constant(value='asyncio: enable asyncio event loop')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='addinivalue_line',
+              ctx=Load()),
+            args=[
+              Constant(value='markers'),
+              Constant(value='slow_graph: mark tests that execute the compiled graph')]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='pytest_addoption',
+      args=arguments(
+        args=[
+          arg(
+            arg='parser',
+            annotation=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='Parser',
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='addoption',
+              ctx=Load()),
+            args=[
+              Constant(value='--run-slow-graph')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='default',
+                value=Constant(value=False)),
+              keyword(
+                arg='help',
+                value=Constant(value='run tests marked as slow_graph'))]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='_run_loop',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='loop', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='new_event_loop',
+              ctx=Load()))),
+        Try(
+          body=[
+            Expr(
+              value=Yield(
+                value=Name(id='loop', ctx=Load())))],
+          finalbody=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='loop', ctx=Load()),
+                  attr='run_until_complete',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='loop', ctx=Load()),
+                      attr='shutdown_asyncgens',
+                      ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='loop', ctx=Load()),
+                  attr='close',
+                  ctx=Load())))])],
+      decorator_list=[
+        Attribute(
+          value=Name(id='contextlib', ctx=Load()),
+          attr='contextmanager',
+          ctx=Load())]),
+    FunctionDef(
+      name='pytest_pyfunc_call',
+      args=arguments(
+        args=[
+          arg(arg='pyfuncitem')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='marker', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='pyfuncitem', ctx=Load()),
+              attr='get_closest_marker',
+              ctx=Load()),
+            args=[
+              Constant(value='asyncio')])),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='marker', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='iscoroutinefunction',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='pyfuncitem', ctx=Load()),
+                    attr='obj',
+                    ctx=Load())])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='argnames', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='pyfuncitem', ctx=Load()),
+                        attr='_fixtureinfo',
+                        ctx=Load()),
+                      Constant(value='argnames'),
+                      Tuple(ctx=Load())]),
+                  Tuple(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='kwargs', ctx=Store())],
+              value=DictComp(
+                key=Name(id='name', ctx=Load()),
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='pyfuncitem', ctx=Load()),
+                    attr='funcargs',
+                    ctx=Load()),
+                  slice=Name(id='name', ctx=Load()),
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='name', ctx=Store()),
+                    iter=Name(id='argnames', ctx=Load()),
+                    is_async=0)])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='_run_loop', ctx=Load())),
+                  optional_vars=Name(id='loop', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='loop', ctx=Load()),
+                      attr='run_until_complete',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='pyfuncitem', ctx=Load()),
+                          attr='obj',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            value=Name(id='kwargs', ctx=Load()))])]))]),
+            Return(
+              value=Constant(value=True))]),
+        Return(
+          value=Constant(value=False))]),
+    FunctionDef(
+      name='pytest_collection_modifyitems',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='Config',
+              ctx=Load())),
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='Item',
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='getoption',
+              ctx=Load()),
+            args=[
+              Constant(value='--run-slow-graph')]),
+          body=[
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='skip_marker', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='pytest', ctx=Load()),
+                attr='mark',
+                ctx=Load()),
+              attr='skip',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='reason',
+                value=Constant(value='pass --run-slow-graph to execute this test'))])),
+        For(
+          target=Name(id='item', ctx=Store()),
+          iter=Name(id='items', ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Constant(value='slow_graph'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='item', ctx=Load()),
+                    attr='keywords',
+                    ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='item', ctx=Load()),
+                      attr='add_marker',
+                      ctx=Load()),
+                    args=[
+                      Name(id='skip_marker', ctx=Load())]))])])],
+      returns=Constant(value=None)),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='install_langgraph_stub'),
+          Constant(value='pytest_collection_modifyitems'),
+          Constant(value='pytest_configure'),
+          Constant(value='pytest_pyfunc_call')],
+        ctx=Load()))])

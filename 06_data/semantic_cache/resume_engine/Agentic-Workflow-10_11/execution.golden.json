@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL2 execution layer for resume improvement tasks.\n\nExecutes cognitive agents for strategy, drafting, QA, and safety\nimprovements to enhance resume job alignment.\n\"\"\"\n\n# FILE: l2.py\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Any, List, Optional, Sequence, Tuple\n\nfrom core.models.models import (\n    ExecutionContext,\n    WorkflowPlanBundle,\n    StrategyResult,\n    StrategyBranch,\n    Evidence,\n    RAGResult,\n    DraftingResult,\n    DraftSection,\n    QAResult,\n    SafetyResult,\n    L2ResultBundle,\n    RAGPlan,\n    RetrievalConfig,\n    CouncilVote,\n)\n\nfrom runtime.observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event\nfrom meta.schema_validation import validate_schema_version\nimport meta.retrieval as _retrieval_module\nfrom infra.di_container import inject_dependencies, get_service\nfrom l5.policy import SafetyEngine\nfrom typing import TYPE_CHECKING\n\nif TYPE_CHECKING:\n    from .agents import (\n        StrategyLLMAgent,\n      ",
+  "full_hash": "0f7766ca49d04e4f4046af809dc3c2469b51b33af11069d5c2a1f250fa7d8cd9",
+  "generated_at": 1764728224.9442148,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\execution.py"
+}

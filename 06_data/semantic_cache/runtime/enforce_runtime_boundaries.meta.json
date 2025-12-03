@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\plan-phase\\check-runtime-rules\\policy\\check-safety\\enforce_runtime_boundaries.py",
+    "rel_path": "enforce_runtime_boundaries.py",
+    "root_name": "runtime",
+    "file_hash": "1a04b5de36a51fbc10897de292b15aae3f4f4616588f315c22d8850e70ff8fc5",
+    "file_size": 6807,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.3985431
+}

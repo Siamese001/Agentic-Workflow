@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v14\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v13 with SHOW_DETAILED_REASONING toggle\",\n    \"notes\": \"Added user-controllable toggle to show/hide detailed transformer visualization. When OFF, K-nodes skip ASCII tree and slide-by-slide output, showing only final results. Reasoning still executes for quality.\",\n    \"sha256\": \"pending_calculation\"\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 (Task) in visible output.\",\n    \"Run Section 3 (Context) once and pause - includes routing decision tree at start.\",\n    \"Run all of Section 4 and pause.\",\n    \"Run all of Section 5 and pause.\",\n    \"Do not batch multiple artifacts in a single run.\"\n  ],\n  \"governance\": {\n    \"RequireRuntimeLinkedInInput\": true,\n    \"RequireRoutingDecision\": true,\n    \"LinkedInInputGates\": [\"name\", \"title\", \"about\", \"profile_url\"],\n    \"block_on_missing\": true,\n    \"route",
+  "full_hash": "c52dcfb931b6bc66358bd196961239a024ff847570090f6d4944a55a356c016b",
+  "generated_at": 1764728337.4871156,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9-30-2025 v14.json"
+}

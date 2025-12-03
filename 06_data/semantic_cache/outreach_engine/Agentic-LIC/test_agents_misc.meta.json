@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_agents_misc.py",
+    "rel_path": "test_agents_misc.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "05fc0af3fe9af173ee98f6132cd52cbd43c12a4a7e0f8b8f2434ecc04fc437fa",
+    "file_size": 875,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.0628474
+}

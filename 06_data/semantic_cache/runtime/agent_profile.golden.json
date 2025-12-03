@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\n\"\"\"Agent profile facade used by Phase-1 agent substrate.\n\nThis module re-exports AgentCard from the unified models.py so that\ncore.agent_router_policy and future profile tooling can depend on a\nstable import path.\n\"\"\"\n\nfrom core.models.models import AgentCard  # noqa: F401\n\n__all__ = [\"AgentCard\"]\n\n\n\n",
+  "full_hash": "8af87ef2f5659d908390cca1af6f6dc66c6b9ac3e49d7ac28db31054d55d56b4",
+  "generated_at": 1764728347.680465,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\retriever-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\agent_profile.py"
+}

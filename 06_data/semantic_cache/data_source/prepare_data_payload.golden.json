@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - prepare_data_payload\nImplements L1 Cognitive Planning Layer for prepare data payload operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass PrepareDataPayloadPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass PrepareDataPayloadPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass PrepareDataPayloadPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n ",
+  "full_hash": "070e461982f20fdc0aea754819613b2ec010810d8b8ea7450bf4839252db9692",
+  "generated_at": 1764728350.0016847,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\plan-phase\\get-data-info\\utility\\prepare-information\\prepare_data_payload.py"
+}

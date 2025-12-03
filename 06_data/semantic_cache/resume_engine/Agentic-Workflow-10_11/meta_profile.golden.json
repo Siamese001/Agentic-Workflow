@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/meta_profile.py\n\"\"\"\nMeta Profile & Adaptive Biases (v10_10 \u00b7 Phase 3) \u2014 META LAYER ONLY\n===================================================================\n\nThis module defines the *meta-layer* profile for the agentic system.\n\nIt is **NOT** part of L1\u2013L5. It provides SOFT BIASES and historical\nsignals that L1, L2, routing, and self-correction may consult:\n\n    \u2022 Model routing preferences (prefer fast vs robust).\n    \u2022 Planning preferences (conservative vs exploratory).\n    \u2022 QA-related hints (recent failure rates, extra passes).\n    \u2022 Safety-related hints (heightened caution, HIL bias).\n    \u2022 Rolling statistics (QA failures, correction usage).\n    \u2022 Phase-1: ProfileInferenceResult storage (seniority, domains, skills).\n\n...\n\"\"\"\n\nfrom __future__ import annotations\nfrom dataclasses import dataclass, field, asdict\nfrom typing import Any, Dict, List, Optional\n\nfrom core.models.models import ProfileInferenceResult\n\n# =============================================================",
+  "full_hash": "a174a17bb4f5db8751f5a2df65479d25ac33a03c2449e8b6930ae09f811b5158",
+  "generated_at": 1764728223.8021271,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\meta_profile.py"
+}

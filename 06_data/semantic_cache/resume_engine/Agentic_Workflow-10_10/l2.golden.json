@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/l2.py\n\"\"\"\nUnified L2 Execution Layer (v10_10 \u00b7 Phase 3)\n=============================================\n\nResponsibilities:\n    \u2022 Execute StrategyPlan, RAGPlan, DraftingPlan, QAPlan, SafetyPlan.\n    \u2022 Perform all LLM calls (via cognitive_agents), plus retrieval hooks.\n    \u2022 Produce structured outputs:\n          \u2013 StrategyResult\n          \u2013 RAGResult (evidence + Phase-3 RAG reasoning signal)\n          \u2013 DraftingResult\n          \u2013 QAResult\n          \u2013 SafetyResult\n    \u2022 Wrap all computation in deterministic observability spans.\n    \u2022 NO state mutation (L4 only).\n\nLayer constraints:\n    1) No direct provider SDK usage.\n       All LLM calls are delegated to cognitive_agents.\n    2) No state mutation (WorkflowStatePatch is applied in L4).\n    3) No RAG ranking logic (lives in retrieval.py / ranking.py).\n    4) No DAG orchestration (lives in workflow_graph.py).\n\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nfrom typing import Any, List, Optional, Sequence, Tuple\n\nfrom mod",
+  "full_hash": "cb445db6416703c1da5ddb23b5b27cd14f46aba88eee74f0573045c2443db490",
+  "generated_at": 1764728228.2744315,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\l2.py"
+}

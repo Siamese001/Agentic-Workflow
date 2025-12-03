@@ -1,0 +1,35 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel'),
+        alias(name='Field')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ContextBudget')],
+      level=0),
+    ClassDef(
+      name='ContextProfile',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Profile capturing context budget hints used by planning and routing.')),
+        AnnAssign(
+          target=Name(id='context_budget', ctx=Store()),
+          annotation=Name(id='ContextBudget', ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='ContextBudget', ctx=Load()))]),
+          simple=1)])])

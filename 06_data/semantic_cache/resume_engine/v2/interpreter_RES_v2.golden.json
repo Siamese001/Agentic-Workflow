@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: interpreter_RES_v2.py\n# Code Interpreter Tool Module - V18 Architecture (Refactored)\n# Version: 18.00 (Removed validate_word_count - moved to validator)\n# This is a powerful and high-risk sandboxed tool\n\nimport json\nimport logging\nimport os\nimport re\nimport subprocess\nimport sys\nfrom typing import Any, Dict, List, Optional, Tuple\n\n# ==============================================================================\n# CODE INTERPRETER TOOL\n# ==============================================================================\n\nclass CodeInterpreterTool:\n    \"\"\"\n    Code Interpreter for deterministic operations on LLM outputs.\n    Provides Python execution environment for validation and transformation tasks.\n    This is a powerful and high-risk sandboxed tool that must be in its own module\n    for clear isolation, security auditing, and maintenance.\n    (Extracted from utils_RES_v2.py lines 651-809)\n    \"\"\"\n    \n    def __init__(self):\n        \"\"\"Initialize Code Interpreter.\"\"\"\n        self.",
+  "full_hash": "cd709f04809a33a9473678f937de2efbc5eff7fd447af921b7cadb3cae39cbc9",
+  "generated_at": 1764728327.0955524,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\interpreter_RES_v2.py"
+}

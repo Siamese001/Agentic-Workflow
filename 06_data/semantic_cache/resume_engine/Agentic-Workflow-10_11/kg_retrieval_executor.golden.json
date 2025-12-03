@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nKnowledge graph retrieval executor for resume processing workflows.\n\nImplements L2 execution for multi-hop knowledge graph traversal\nto support resume enhancement and job alignment operations.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set, Tuple\nfrom datetime import datetime, UTC\nfrom collections import defaultdict\n\nfrom l1.kg_retrieval_planning import (\n    KGQueryPlan,\n    HopSpec,\n    HopDirection,\n    QueryType,\n)\nfrom l4.triplet_store import Triplet, TripletStore, TripletQuery\n\n\n@dataclass\nclass TraversalPath:\n    \"\"\"\n    Represents a path through the resume processing knowledge graph.\n\n    Enables systematic traversal of resume enhancement data relationships.\n    \"\"\"\n    \n    entities: List[str]\n    triplets: List[Triplet]\n    total_confidence: float = 1.0\n    \n    def add_hop(self, triplet: Triplet, next_entity: str) -> \"TraversalPath\":\n        \"\"\"\n        Adds a hop to the resume processin",
+  "full_hash": "e02508416fa9fd2684b7bb61add38013ef647114a71479e1f36c84997b57baea",
+  "generated_at": 1764728225.0132334,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\kg_retrieval_executor.py"
+}

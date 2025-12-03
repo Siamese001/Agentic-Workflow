@@ -1,0 +1,6 @@
+{
+  "golden_content": "from types import SimpleNamespace\n\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_token_drift_guard():\n    stack = OutreachStack(ReasoningToggles())\n    sample = SimpleNamespace(prompt=\"Checking drift bounds\", company_id=\"ACME\", contact_id=\"C1\")\n    outcome = stack.run(sample)\n    verdict = outcome[\"verdict\"]\n    assert verdict.passed\n    drift = stack.validator.metrics.token_drift()\n    assert drift <= 0.1\n",
+  "full_hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
+  "generated_at": 1764728331.0525374,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_token_drift_guard.py"
+}

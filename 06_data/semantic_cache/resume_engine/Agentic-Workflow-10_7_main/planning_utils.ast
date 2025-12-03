@@ -1,0 +1,811 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Shared helpers for lightweight L1 planning stacks.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List')],
+      level=0),
+    FunctionDef(
+      name='extract_job_profile',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='job', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job')]),
+              Dict()])),
+        FunctionDef(
+          name='_first',
+          args=arguments(
+            vararg=arg(
+              arg='keys',
+              annotation=Name(id='str', ctx=Load()))),
+          body=[
+            For(
+              target=Name(id='key', ctx=Store()),
+              iter=Name(id='keys', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='value', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='key', ctx=Load())])),
+                If(
+                  test=Name(id='value', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load())]))])]),
+            Return(
+              value=Constant(value=''))],
+          returns=Name(id='str', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='raw_requirements', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='job', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='top_requirements')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='job', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='required_skills')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='job', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='keywords')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='job', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='skills')]),
+              List(ctx=Load())])),
+        AnnAssign(
+          target=Name(id='requirements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='raw_requirements', ctx=Load()),
+              Name(id='str', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='requirements', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='part', ctx=Load()),
+                    attr='strip',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='part', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='raw_requirements', ctx=Load()),
+                        attr='split',
+                        ctx=Load()),
+                      args=[
+                        Constant(value=',')]),
+                    ifs=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='part', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))],
+                    is_async=0)]))],
+          orelse=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='raw_requirements', ctx=Load()),
+                  Name(id='Iterable', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='requirements', ctx=Store())],
+                  value=ListComp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='item', ctx=Load())]),
+                        attr='strip',
+                        ctx=Load())),
+                    generators=[
+                      comprehension(
+                        target=Name(id='item', ctx=Store()),
+                        iter=Name(id='raw_requirements', ctx=Load()),
+                        ifs=[
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Name(id='item', ctx=Load())]),
+                              attr='strip',
+                              ctx=Load()))],
+                        is_async=0)]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='requirements', ctx=Store())],
+                  value=List(ctx=Load()))])]),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='title'),
+              Constant(value='company'),
+              Constant(value='summary'),
+              Constant(value='team'),
+              Constant(value='location'),
+              Constant(value='requirements')],
+            values=[
+              Call(
+                func=Name(id='_first', ctx=Load()),
+                args=[
+                  Constant(value='job_title'),
+                  Constant(value='title'),
+                  Constant(value='role')]),
+              Call(
+                func=Name(id='_first', ctx=Load()),
+                args=[
+                  Constant(value='company'),
+                  Constant(value='employer'),
+                  Constant(value='organization')]),
+              Call(
+                func=Name(id='_first', ctx=Load()),
+                args=[
+                  Constant(value='summary'),
+                  Constant(value='description'),
+                  Constant(value='jd_excerpt'),
+                  Constant(value='jd')]),
+              Call(
+                func=Name(id='_first', ctx=Load()),
+                args=[
+                  Constant(value='team'),
+                  Constant(value='org_unit'),
+                  Constant(value='department')]),
+              Call(
+                func=Name(id='_first', ctx=Load()),
+                args=[
+                  Constant(value='location'),
+                  Constant(value='city')]),
+              Name(id='requirements', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='extract_resume_profile',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='resume')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='master_resume', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='master_resume')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='summary', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='master_resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='master_resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='professional_summary')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='master_resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='profile')]),
+              Constant(value='')])),
+        Assign(
+          targets=[
+            Name(id='experiences', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='master_resume', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='professional_experience')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='experiences', ctx=Load()),
+                Name(id='list', ctx=Load())])),
+          body=[
+            Assign(
+              targets=[
+                Name(id='experiences', ctx=Store())],
+              value=List(ctx=Load()))]),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='summary'),
+              Constant(value='experiences')],
+            values=[
+              Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='summary', ctx=Load())]),
+              Name(id='experiences', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='describe_experience',
+      args=arguments(
+        args=[
+          arg(
+            arg='experience',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='title', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='experience', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='title')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='experience', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='role')]),
+              Constant(value='Role')])),
+        Assign(
+          targets=[
+            Name(id='company', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='experience', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='company')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='experience', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='employer')]),
+              Constant(value='Company')])),
+        Assign(
+          targets=[
+            Name(id='scope', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='experience', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='impact_summary')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='experience', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='experience', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='description')]),
+              Constant(value='')])),
+        Assign(
+          targets=[
+            Name(id='description', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='title', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' @ '),
+                  FormattedValue(
+                    value=Name(id='company', ctx=Load()),
+                    conversion=-1)]),
+              attr='strip',
+              ctx=Load()))),
+        If(
+          test=Name(id='scope', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='description', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='description', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' – '),
+                      FormattedValue(
+                        value=Name(id='scope', ctx=Load()),
+                        conversion=-1)]),
+                  attr='strip',
+                  ctx=Load())))]),
+        Return(
+          value=Name(id='description', ctx=Load()))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='detect_metrics',
+      args=arguments(
+        args=[
+          arg(
+            arg='experiences',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        AnnAssign(
+          target=Name(id='metrics', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='exp', ctx=Store()),
+          iter=Name(id='experiences', ctx=Load()),
+          body=[
+            AnnAssign(
+              target=Name(id='text_parts', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='key', ctx=Store()),
+              iter=Tuple(
+                elts=[
+                  Constant(value='impact_summary'),
+                  Constant(value='summary'),
+                  Constant(value='description')],
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='value', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='key', ctx=Load())])),
+                If(
+                  test=Name(id='value', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='text_parts', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load())])]))])]),
+            Assign(
+              targets=[
+                Name(id='bullet_pool', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='exp', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='bullet_pool')])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='bullet_pool', ctx=Load()),
+                  Name(id='list', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='text_parts', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='item', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='item', ctx=Store()),
+                            iter=Name(id='bullet_pool', ctx=Load()),
+                            is_async=0)])]))]),
+            Assign(
+              targets=[
+                Name(id='combined', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='text_parts', ctx=Load())])),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='char', ctx=Load()),
+                        attr='isdigit',
+                        ctx=Load())),
+                    generators=[
+                      comprehension(
+                        target=Name(id='char', ctx=Store()),
+                        iter=Name(id='combined', ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='metrics', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Quantify results from '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='describe_experience', ctx=Load()),
+                              args=[
+                                Name(id='exp', ctx=Load())]),
+                            conversion=-1)])]))])]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='metrics', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Quantify at least one outcome per bullet')]))]),
+        Return(
+          value=Name(id='metrics', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='collect_sections',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='draft')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='sections', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='draft', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='sections')])),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='sections', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              Name(id='sections', ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='sections', ctx=Load()),
+                      attr='keys',
+                      ctx=Load()))]))]),
+        Return(
+          value=List(
+            elts=[
+              Constant(value='summary'),
+              Constant(value='experience'),
+              Constant(value='skills')],
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='missing_requirements',
+      args=arguments(
+        args=[
+          arg(
+            arg='requirements',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='experiences',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='requirements', ctx=Load())),
+          body=[
+            Return(
+              value=List(ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='combined', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        BoolOp(
+                          op=Or(),
+                          values=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='exp', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='impact_summary')]),
+                            Call(
+                              func=Attribute(
+                                value=Name(id='exp', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='summary')]),
+                            Constant(value='')])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='exp', ctx=Store()),
+                        iter=Name(id='experiences', ctx=Load()),
+                        is_async=0)])]),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='missing', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='req', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='req', ctx=Store()),
+                iter=Name(id='requirements', ctx=Load()),
+                ifs=[
+                  Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='req', ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='combined', ctx=Load())])],
+                is_async=0)])),
+        Return(
+          value=Name(id='missing', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load()))])

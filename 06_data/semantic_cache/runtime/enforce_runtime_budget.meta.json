@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\safe-layer\\safety-phase\\manage-runtime-costs\\general\\update-memory\\enforce_runtime_budget.py",
+    "rel_path": "enforce_runtime_budget.py",
+    "root_name": "runtime",
+    "file_hash": "a962a60adebb115aa0f39fd4663639278e5aef97bc7b90322e28db07ba14febf",
+    "file_size": 11348,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.8653517
+}

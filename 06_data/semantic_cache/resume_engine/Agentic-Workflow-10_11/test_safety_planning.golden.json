@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTest Safety Planning\n\nTests comprehensive safety planning functionality for r\u00e9sum\u00e9 validation,\nincluding safety plan creation, content validation, and policy enforcement.\n\"\"\"\n\nimport pytest\nfrom unittest.mock import Mock\n\n# Import actual safety planning components\ntry:\n    from l1.safety_planning import (\n        SafetyPlan,\n    )\nexcept ImportError:\n    pytest.skip(\"Safety planning components not available\", allow_module_level=True)\n\n# Mark as L1 planning tests\npytestmark = [pytest.mark.l1, pytest.mark.planning, pytest.mark.safety]\n\n\nclass TestSafetyPlanning:\n    \"\"\"Test safety planning functionality.\"\"\"\n    \n    def test_safety_plan_dataclass_structure(self):\n        \"\"\"Test SafetyPlan dataclass structure.\"\"\"\n        # Create a mock prompt\n        prompt = Mock()\n        prompt.id = \"test.safety\"\n        prompt.content = \"Test safety content\"\n        \n        # Create SafetyPlan\n        safety_plan = SafetyPlan(prompt=prompt)\n        \n        # Validate structure\n        assert h",
+  "full_hash": "a21093086cdb1a641cbbf2e75dd01f05cb7b4c934d07c9a6dbfaf9736c7aa46d",
+  "generated_at": 1764728226.8996725,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_safety_planning.py"
+}

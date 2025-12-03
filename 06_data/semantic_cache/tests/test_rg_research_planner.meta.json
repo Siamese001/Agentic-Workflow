@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\planner-microagent-layer\\act-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\test_rg_research_planner.py",
+    "rel_path": "test_rg_research_planner.py",
+    "root_name": "tests",
+    "file_hash": "43a2b15b2f5a19e7e4ed16252bbc130eb75026f1dee117be0a48fb8a596954a2",
+    "file_size": 1457,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.6953554
+}

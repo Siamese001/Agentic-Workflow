@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nSelf-Correction Injection for resume generation quality improvement.\n\nProvides self-correction loops and mechanisms for continuous\nresume enhancement and error recovery.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom typing import Any, Dict, List, Optional, Tuple, Callable\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\n\nfrom l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent\n\n\nclass CorrectionType(str, Enum):\n    \"\"\"\n    Types of self-correction mechanisms for resume improvement.\n\n    Defines correction approaches for enhanced resume quality.\n    \"\"\"\n    \n    PROMPT_REFINEMENT = \"prompt_refinement\"\n    OUTPUT_VALIDATION = \"output_validation\"\n    STRATEGY_ADJUSTMENT = \"strategy_adjustment\"\n    ERROR_RECOVERY = \"error_recovery\"\n    QUALITY_IMPROVEMENT = \"quality_improvement\"\n\n\n@dataclass\nclass CorrectionRule:\n    \"\"\"\n    Rule for triggering self-correction in resume generation.\n\n    Ensures automated quality improve",
+  "full_hash": "b596e3728ece697407284bcbe37befcc1fbca1be87dfe1991548f24905e4a835",
+  "generated_at": 1764728224.7863328,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\self_correction_injection.py"
+}

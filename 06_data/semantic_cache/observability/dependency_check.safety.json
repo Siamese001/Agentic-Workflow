@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 22,
+  "generated_at": 1764728350.3919582,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\executor-microagent-layer\\act-phase-group\\tool-adapter-ops\\general-operations-ops\\dependency_check.py"
+}

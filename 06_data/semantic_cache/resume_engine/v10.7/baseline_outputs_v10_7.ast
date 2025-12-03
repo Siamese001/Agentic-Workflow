@@ -1,0 +1,36 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='strategy'),
+          Constant(value='qa')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='fields'),
+              Constant(value='version'),
+              Constant(value='notes')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='steps'),
+                  Constant(value='goal'),
+                  Constant(value='context')],
+                ctx=Load()),
+              Constant(value='v10.7'),
+              Constant(value='Extended context to include orchestration metadata')]),
+          Dict(
+            keys=[
+              Constant(value='fields'),
+              Constant(value='version'),
+              Constant(value='notes')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='confidence'),
+                  Constant(value='summary'),
+                  Constant(value='issues')],
+                ctx=Load()),
+              Constant(value='v10.7'),
+              Constant(value='Includes structured issue reporting')])]))])

@@ -1,0 +1,175 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema validation and structure verification.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ValidationLevel',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema validation levels.')),
+        Assign(
+          targets=[
+            Name(id='SYNTAX', ctx=Store())],
+          value=Constant(value='syntax')),
+        Assign(
+          targets=[
+            Name(id='SEMANTIC', ctx=Store())],
+          value=Constant(value='semantic')),
+        Assign(
+          targets=[
+            Name(id='STRUCTURAL', ctx=Store())],
+          value=Constant(value='structural')),
+        Assign(
+          targets=[
+            Name(id='BUSINESS_RULES', ctx=Store())],
+          value=Constant(value='business_rules'))]),
+    ClassDef(
+      name='ValidationSeverity',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Validation rule severity levels.')),
+        Assign(
+          targets=[
+            Name(id='ERROR', ctx=Store())],
+          value=Constant(value='error')),
+        Assign(
+          targets=[
+            Name(id='WARNING', ctx=Store())],
+          value=Constant(value='warning')),
+        Assign(
+          targets=[
+            Name(id='INFO', ctx=Store())],
+          value=Constant(value='info')),
+        Assign(
+          targets=[
+            Name(id='CRITICAL', ctx=Store())],
+          value=Constant(value='critical'))]),
+    ClassDef(
+      name='ValidationRule',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual validation rule.')),
+        AnnAssign(
+          target=Name(id='rule_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rule_type', ctx=Store()),
+          annotation=Name(id='ValidationLevel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='ValidationSeverity', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parameters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ValidationResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for validation result details.')),
+        AnnAssign(
+          target=Name(id='rule_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='is_valid', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='location', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='suggested_fix', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SchemaValidationReport',
+      body=[
+        Expr(
+          value=Constant(value='Schema for complete validation report.')),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='validation_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_rules_checked', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='passed_rules', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='failed_rules', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='results', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationResult', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='overall_valid', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

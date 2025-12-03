@@ -1,0 +1,682 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='13.0')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Any'),
+        alias(name='Set'),
+        alias(name='Tuple'),
+        alias(name='Callable')],
+      level=0),
+    ClassDef(
+      name='Route',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Message delivery routes')),
+        Assign(
+          targets=[
+            Name(id='INMAIL', ctx=Store())],
+          value=Constant(value='INMAIL')),
+        Assign(
+          targets=[
+            Name(id='CONNECTION_REQ', ctx=Store())],
+          value=Constant(value='CONNECTION_REQ')),
+        Assign(
+          targets=[
+            Name(id='EMAIL', ctx=Store())],
+          value=Constant(value='EMAIL')),
+        Assign(
+          targets=[
+            Name(id='FOLLOW_UP', ctx=Store())],
+          value=Constant(value='FOLLOW_UP'))]),
+    ClassDef(
+      name='Archetype',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Recipient archetypes for personalization - v11.6 4-archetype standard')),
+        Assign(
+          targets=[
+            Name(id='C_LEVEL', ctx=Store())],
+          value=Constant(value='C_LEVEL')),
+        Assign(
+          targets=[
+            Name(id='EXECUTIVE', ctx=Store())],
+          value=Constant(value='EXECUTIVE')),
+        Assign(
+          targets=[
+            Name(id='SENIOR_TA', ctx=Store())],
+          value=Constant(value='SENIOR_TA')),
+        Assign(
+          targets=[
+            Name(id='RECRUITER', ctx=Store())],
+          value=Constant(value='RECRUITER'))]),
+    ClassDef(
+      name='EventType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Event types for message bus / state logging')),
+        Assign(
+          targets=[
+            Name(id='WORKFLOW_STARTED', ctx=Store())],
+          value=Constant(value='WORKFLOW_STARTED')),
+        Assign(
+          targets=[
+            Name(id='WORKFLOW_COMPLETED', ctx=Store())],
+          value=Constant(value='WORKFLOW_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_1_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_1_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_2_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_2_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_3_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_3_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_4_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_4_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_5_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_5_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_6_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_6_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_7_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_7_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='HOP_8_COMPLETED', ctx=Store())],
+          value=Constant(value='HOP_8_COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='FACTUAL_LOOP_TRIGGERED', ctx=Store())],
+          value=Constant(value='FACTUAL_LOOP_TRIGGERED')),
+        Assign(
+          targets=[
+            Name(id='CREATIVE_LOOP_TRIGGERED', ctx=Store())],
+          value=Constant(value='CREATIVE_LOOP_TRIGGERED')),
+        Assign(
+          targets=[
+            Name(id='CIRCUIT_BREAKER_TRIGGERED', ctx=Store())],
+          value=Constant(value='CIRCUIT_BREAKER_TRIGGERED'))]),
+    ClassDef(
+      name='AgentStatus',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Agent execution status')),
+        Assign(
+          targets=[
+            Name(id='IDLE', ctx=Store())],
+          value=Constant(value='IDLE')),
+        Assign(
+          targets=[
+            Name(id='RUNNING', ctx=Store())],
+          value=Constant(value='RUNNING')),
+        Assign(
+          targets=[
+            Name(id='COMPLETED', ctx=Store())],
+          value=Constant(value='COMPLETED')),
+        Assign(
+          targets=[
+            Name(id='FAILED', ctx=Store())],
+          value=Constant(value='FAILED'))]),
+    ClassDef(
+      name='ValidationSeverity',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Validation result severity levels')),
+        Assign(
+          targets=[
+            Name(id='CRITICAL', ctx=Store())],
+          value=Constant(value='CRITICAL')),
+        Assign(
+          targets=[
+            Name(id='HIGH', ctx=Store())],
+          value=Constant(value='HIGH')),
+        Assign(
+          targets=[
+            Name(id='MEDIUM', ctx=Store())],
+          value=Constant(value='MEDIUM')),
+        Assign(
+          targets=[
+            Name(id='INFO', ctx=Store())],
+          value=Constant(value='INFO'))]),
+    ClassDef(
+      name='CircuitState',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Circuit breaker states')),
+        Assign(
+          targets=[
+            Name(id='CLOSED', ctx=Store())],
+          value=Constant(value='CLOSED')),
+        Assign(
+          targets=[
+            Name(id='OPEN', ctx=Store())],
+          value=Constant(value='OPEN')),
+        Assign(
+          targets=[
+            Name(id='HALF_OPEN', ctx=Store())],
+          value=Constant(value='HALF_OPEN'))]),
+    ClassDef(
+      name='FailureClassifier',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Classifies S6 validation failures to determine retry strategy in HOP-7.\n    ')),
+        Assign(
+          targets=[
+            Name(id='CREATIVE_FAILURE', ctx=Store())],
+          value=Constant(value='CREATIVE_FAILURE')),
+        Assign(
+          targets=[
+            Name(id='FACTUAL_FAILURE', ctx=Store())],
+          value=Constant(value='FACTUAL_FAILURE'))]),
+    ClassDef(
+      name='FactualGapError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    v13.0: Raised by HOP-7 GateDecisionAgent when a FACTUAL failure is detected.\n    This signals the HOPOrchestrator to trigger the S6->S2 "Slow Factual Loop"\n    for a full re-planning and re-research cycle.\n    ')),
+        Pass()]),
+    ClassDef(
+      name='CircuitBreakerOpenError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when circuit breaker is OPEN')),
+        Pass()]),
+    ClassDef(
+      name='OutreachMission',
+      body=[
+        Expr(
+          value=Constant(value='Complete mission specification (Input)')),
+        AnnAssign(
+          target=Name(id='mission_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sender_profile', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recipient_profile', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job_description', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='connection_status', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='not_connected'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='prior_message_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='route_override', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Route', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ProfileAnalysis',
+      body=[
+        Expr(
+          value=Constant(value='\n    DEPRECATED v13.0: Logic moved to HOP1_ProfileAnalysisAgent.\n    Output is now state/1_profile_analysis.json\n    This class is kept for type hinting in legacy models if needed.\n    ')),
+        AnnAssign(
+          target=Name(id='archetype', ctx=Store()),
+          annotation=Name(id='Archetype', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reasoning', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='key_indicators', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='needs_manual_override', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RAGResult',
+      body=[
+        Expr(
+          value=Constant(value='\n    Single RAG retrieval result with metadata.\n    Used by HOP-2 ResearchAgent.\n    ')),
+        AnnAssign(
+          target=Name(id='source', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='extracted_keywords', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source_weight', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='age_days', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recipient_specific', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.0),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SenderGroundingWhitelists',
+      body=[
+        Expr(
+          value=Constant(value='\n    Output of HOP-3 SenderGroundingAgent.\n    Used to validate "my team" / "our product" claims in HOP-6.\n    ')),
+        AnnAssign(
+          target=Name(id='team_members', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='products', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='case_studies', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='quantifiable_achievements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='raw_evidence', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ResearchContext',
+      body=[
+        Expr(
+          value=Constant(value='\n    DEPRECATED v13.0: Logic moved to HOP2_ResearchAgent.\n    Output is now state/2_research_context.json\n    This class is kept for type hinting in legacy models if needed.\n    ')),
+        AnnAssign(
+          target=Name(id='recipient_insights', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='company_context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recent_activity', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rag_results', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RAGResult', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sender_grounding', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='SenderGroundingWhitelists', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='adversarial_findings', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MessageScaffold',
+      body=[
+        Expr(
+          value=Constant(value='\n    DEPRECATED v13.0: Logic moved to HOP4_RoutingAgent.\n    Output is now state/4_routing_decision.json\n    This class is kept for type hinting in legacy models if needed.\n    ')),
+        AnnAssign(
+          target=Name(id='route', ctx=Store()),
+          annotation=Name(id='Route', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='archetype', ctx=Store()),
+          annotation=Name(id='Archetype', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='constraints', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='locked_sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='set', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='GeneratedMessage',
+      body=[
+        Expr(
+          value=Constant(value='\n    DEPRECATED v13.0: Logic moved to HOP5_GenerationAgent.\n    Output is now state/5_generated_drafts.json\n    This class is kept for type hinting in legacy models if needed.\n    ')),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='word_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='char_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='route', ctx=Store()),
+          annotation=Name(id='Route', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='archetype', ctx=Store()),
+          annotation=Name(id='Archetype', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='generation_temperature', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='generation_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='checksum', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ValidationResult',
+      body=[
+        Expr(
+          value=Constant(value='\n    Result from a single validation check in HOP-6.\n    ')),
+        AnnAssign(
+          target=Name(id='passed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='ValidationSeverity', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rule_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='QAReport',
+      body=[
+        Expr(
+          value=Constant(value='\n    DEPRECATED v13.0: Logic moved to HOP8_QAReportAgent.\n    Output is now a persistent .md file.\n    This class is kept for type hinting in legacy models if needed.\n    ')),
+        AnnAssign(
+          target=Name(id='mission_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='validation_results', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationResult', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='passed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

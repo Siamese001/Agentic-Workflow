@@ -1,0 +1,72 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Test that all vector search modules can be imported.')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    FunctionDef(
+      name='_can_import_pinecone',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Check if Pinecone SDK is properly installed.')),
+        Try(
+          body=[
+            ImportFrom(
+              module='pinecone',
+              names=[
+                alias(name='Pinecone')],
+              level=0),
+            Return(
+              value=Constant(value=True))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='ImportError', ctx=Load()),
+              body=[
+                Return(
+                  value=Constant(value=False))])])],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='test_import_vector_modules',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Test that all vector search related modules can be imported.')),
+        Import(
+          names=[
+            alias(name='l2.agents.planning.vector_search_planning')]),
+        Import(
+          names=[
+            alias(name='l2.agents.execution.vector_search_executor')]),
+        Assert(
+          test=Constant(value=True))]),
+    FunctionDef(
+      name='test_import_pinecone_provider',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Test that pinecone provider can be imported when SDK is available.')),
+        Import(
+          names=[
+            alias(name='providers.pinecone_client')]),
+        Assert(
+          test=Constant(value=True))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='skipif',
+            ctx=Load()),
+          args=[
+            UnaryOp(
+              op=Not(),
+              operand=Call(
+                func=Name(id='_can_import_pinecone', ctx=Load())))],
+          keywords=[
+            keyword(
+              arg='reason',
+              value=Constant(value='Pinecone SDK not properly installed or incompatible version'))])])])

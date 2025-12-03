@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L2 Execution Unit Tools Tests.\"\"\"\n\nclass TestL2UnitTools:\n    \"\"\"Unit tests for L2 execution tools.\"\"\"\n    \n    def test_tool_registration(self):\n        \"\"\"Test tool registration mechanism.\"\"\"\n        registry = {\"tools\": [\"search\", \"extract\", \"validate\"]}\n        assert len(registry[\"tools\"]) == 3\n    \n    def test_tool_parameter_validation(self):\n        \"\"\"Test tool parameter validation.\"\"\"\n        params = {\"query\": \"test\", \"limit\": 10}\n        assert params[\"limit\"] > 0\n",
+  "full_hash": "dedf6b48b30ea615d67a129396e247616533c4936731b841d64da22003f89bf4",
+  "generated_at": 1764728227.0014913,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\unit\\tools\\test_l2_unit_tools.py"
+}

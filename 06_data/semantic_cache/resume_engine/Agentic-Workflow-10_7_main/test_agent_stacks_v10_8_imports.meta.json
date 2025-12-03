@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\architecture\\test_agent_stacks_v10_8_imports.py",
+    "rel_path": "test_agent_stacks_v10_8_imports.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "fcf65bc8976acf21c48926df92fd1f7704912018be0793960f2065a1a87be40b",
+    "file_size": 939,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.4273832
+}

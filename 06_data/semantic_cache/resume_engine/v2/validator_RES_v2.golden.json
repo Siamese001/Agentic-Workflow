@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: validator_RES_v2.py\n# Core Validator Orchestrator Module - V18 Architecture (Refactored)\n# Version: 18.00 (Split into validation/ package)\n# This file contains only the PreFlightValidator, which orchestrates\n# the engine, context, and rules from its sub-modules.\n\nimport re\nimport json\nimport logging\nfrom datetime import datetime\nfrom typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable\nfrom collections import defaultdict\nfrom functools import partial\n\n# Import dependencies from new modules\nfrom config_RES_v2 import CONFIG, COVER_LETTER_SIGNATURE_TEMPLATE\nfrom models_RES import (\n    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,\n    ImmutableStagingBuffer, GateDecision, BulletProvenance,\n    FactualFailureException\n)\nfrom utils_RES_v2 import text_utils, calculate_signal_score\nfrom interpreter_RES_v2 import CodeInterpreterTool\n\n# --- V18 REFACTOR: Import from new validation package ---\nfrom validation.engine import ValidationEngine, Valida",
+  "full_hash": "8e73ff146289bff054ef3e7a6ad1141bd78d66dab438226ba1d05152774b6aa6",
+  "generated_at": 1764728327.399992,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\validator_RES_v2.py"
+}

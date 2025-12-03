@@ -1,0 +1,164 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema state querying and retrieval.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='StateType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema state types.')),
+        Assign(
+          targets=[
+            Name(id='CURRENT_STATE', ctx=Store())],
+          value=Constant(value='current_state')),
+        Assign(
+          targets=[
+            Name(id='HISTORICAL_STATE', ctx=Store())],
+          value=Constant(value='historical_state')),
+        Assign(
+          targets=[
+            Name(id='PROJECTED_STATE', ctx=Store())],
+          value=Constant(value='projected_state')),
+        Assign(
+          targets=[
+            Name(id='AGGREGATE_STATE', ctx=Store())],
+          value=Constant(value='aggregate_state'))]),
+    ClassDef(
+      name='QueryMode',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema query modes.')),
+        Assign(
+          targets=[
+            Name(id='READ_ONLY', ctx=Store())],
+          value=Constant(value='read_only')),
+        Assign(
+          targets=[
+            Name(id='READ_WRITE', ctx=Store())],
+          value=Constant(value='read_write')),
+        Assign(
+          targets=[
+            Name(id='STREAMING', ctx=Store())],
+          value=Constant(value='streaming')),
+        Assign(
+          targets=[
+            Name(id='BATCH', ctx=Store())],
+          value=Constant(value='batch'))]),
+    ClassDef(
+      name='StateQuery',
+      body=[
+        Expr(
+          value=Constant(value='Schema for state query.')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='state_type', ctx=Store()),
+          annotation=Name(id='StateType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query_mode', ctx=Store()),
+          annotation=Name(id='QueryMode', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query_parameters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='StateRetrieval',
+      body=[
+        Expr(
+          value=Constant(value='Schema for state retrieval operation.')),
+        AnnAssign(
+          target=Name(id='retrieval_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query', ctx=Store()),
+          annotation=Name(id='StateQuery', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_strategy', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='StateQueryResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for state query results.')),
+        AnnAssign(
+          target=Name(id='result_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval', ctx=Store()),
+          annotation=Name(id='StateRetrieval', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='state_data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query_successful', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='state_metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

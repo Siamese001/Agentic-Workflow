@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_full_pipeline_pass_rate.py",
+    "rel_path": "test_full_pipeline_pass_rate.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "6737e0f47b0ada378145eb4ab2b39c1ac5ea7fb06eab86e5bccd15eed96ff464",
+    "file_size": 2395,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.9422898
+}

@@ -1,0 +1,86 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL1 planning layer for resume drafting strategy and content optimization.\n\nCreates structured plans to guide comprehensive resume content\nimprovement and job alignment.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ClassDef(
+      name='DraftPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines resume drafting strategy and structure.\n\n    Ensures systematic approach to enhance resume alignment\n    with job requirements for better applications.\n    ')),
+        AnnAssign(
+          target=Name(id='sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tone', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='focus_areas', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reasoning', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='plan_drafting',
+      args=arguments(
+        args=[
+          arg(
+            arg='strategy_result',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='job',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='resume',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates comprehensive resume drafting plan.\n\n    Outlines structured approach to improve resume content\n    and job alignment for better applications.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='DraftPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='sections',
+                value=List(
+                  elts=[
+                    Constant(value='summary'),
+                    Constant(value='experience'),
+                    Constant(value='skills')],
+                  ctx=Load())),
+              keyword(
+                arg='tone',
+                value=Constant(value='professional')),
+              keyword(
+                arg='focus_areas',
+                value=List(
+                  elts=[
+                    Constant(value='technical_skills'),
+                    Constant(value='leadership')],
+                  ctx=Load())),
+              keyword(
+                arg='reasoning',
+                value=Constant(value='Align resume with job requirements'))]))],
+      returns=Name(id='DraftPlan', ctx=Load()))])

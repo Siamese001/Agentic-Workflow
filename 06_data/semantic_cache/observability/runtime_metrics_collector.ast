@@ -1,0 +1,1511 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nBasic Metrics Implementation\nProvides metrics collection and logging functionality\n')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='asdict')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='MetricType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of metrics')),
+        Assign(
+          targets=[
+            Name(id='COUNTER', ctx=Store())],
+          value=Constant(value='counter')),
+        Assign(
+          targets=[
+            Name(id='GAUGE', ctx=Store())],
+          value=Constant(value='gauge')),
+        Assign(
+          targets=[
+            Name(id='HISTOGRAM', ctx=Store())],
+          value=Constant(value='histogram')),
+        Assign(
+          targets=[
+            Name(id='TIMER', ctx=Store())],
+          value=Constant(value='timer'))]),
+    ClassDef(
+      name='MetricValue',
+      body=[
+        Expr(
+          value=Constant(value='Single metric value')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='value', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metric_type', ctx=Store()),
+          annotation=Name(id='MetricType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='labels', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='unit', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MetricsCollector',
+      body=[
+        Expr(
+          value=Constant(value='Basic metrics collector')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='metrics_file',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='runtime/metrics.json')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metrics_file',
+                  ctx=Store())],
+              value=Name(id='metrics_file', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metrics',
+                  ctx=Store())],
+              value=Dict()),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_ensure_metrics_directory',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='_ensure_metrics_directory',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Ensure metrics directory exists')),
+            Assign(
+              targets=[
+                Name(id='metrics_dir', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='dirname',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics_file',
+                    ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='metrics_dir', ctx=Load()),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='os', ctx=Load()),
+                          attr='path',
+                          ctx=Load()),
+                        attr='exists',
+                        ctx=Load()),
+                      args=[
+                        Name(id='metrics_dir', ctx=Load())]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='os', ctx=Load()),
+                      attr='makedirs',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metrics_dir', ctx=Load())]))])]),
+        FunctionDef(
+          name='increment_counter',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='labels',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=1.0),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Increment a counter metric')),
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=List(ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='metric', ctx=Store())],
+              value=Call(
+                func=Name(id='MetricValue', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='value',
+                    value=Name(id='value', ctx=Load())),
+                  keyword(
+                    arg='metric_type',
+                    value=Attribute(
+                      value=Name(id='MetricType', ctx=Load()),
+                      attr='COUNTER',
+                      ctx=Load())),
+                  keyword(
+                    arg='timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        attr='isoformat',
+                        ctx=Load()))),
+                  keyword(
+                    arg='labels',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='labels', ctx=Load()),
+                        Dict()]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Name(id='name', ctx=Load()),
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='metric', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='debug',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Counter incremented: '),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' += '),
+                      FormattedValue(
+                        value=Name(id='value', ctx=Load()),
+                        conversion=-1)])]))]),
+        FunctionDef(
+          name='set_gauge',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='labels',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Set a gauge metric value')),
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=List(ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='metric', ctx=Store())],
+              value=Call(
+                func=Name(id='MetricValue', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='value',
+                    value=Name(id='value', ctx=Load())),
+                  keyword(
+                    arg='metric_type',
+                    value=Attribute(
+                      value=Name(id='MetricType', ctx=Load()),
+                      attr='GAUGE',
+                      ctx=Load())),
+                  keyword(
+                    arg='timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        attr='isoformat',
+                        ctx=Load()))),
+                  keyword(
+                    arg='labels',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='labels', ctx=Load()),
+                        Dict()]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Name(id='name', ctx=Load()),
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='metric', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='debug',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Gauge set: '),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' = '),
+                      FormattedValue(
+                        value=Name(id='value', ctx=Load()),
+                        conversion=-1)])]))]),
+        FunctionDef(
+          name='record_timer',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='duration_ms',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='labels',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Record a timer metric')),
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=List(ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='metric', ctx=Store())],
+              value=Call(
+                func=Name(id='MetricValue', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='value',
+                    value=Name(id='duration_ms', ctx=Load())),
+                  keyword(
+                    arg='metric_type',
+                    value=Attribute(
+                      value=Name(id='MetricType', ctx=Load()),
+                      attr='TIMER',
+                      ctx=Load())),
+                  keyword(
+                    arg='timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        attr='isoformat',
+                        ctx=Load()))),
+                  keyword(
+                    arg='labels',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='labels', ctx=Load()),
+                        Dict()])),
+                  keyword(
+                    arg='unit',
+                    value=Constant(value='ms'))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Name(id='name', ctx=Load()),
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='metric', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='debug',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Timer recorded: '),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' = '),
+                      FormattedValue(
+                        value=Name(id='duration_ms', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='ms')])]))]),
+        FunctionDef(
+          name='record_histogram',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='labels',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Record a histogram metric value')),
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=List(ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='metric', ctx=Store())],
+              value=Call(
+                func=Name(id='MetricValue', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='value',
+                    value=Name(id='value', ctx=Load())),
+                  keyword(
+                    arg='metric_type',
+                    value=Attribute(
+                      value=Name(id='MetricType', ctx=Load()),
+                      attr='HISTOGRAM',
+                      ctx=Load())),
+                  keyword(
+                    arg='timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        attr='isoformat',
+                        ctx=Load()))),
+                  keyword(
+                    arg='labels',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='labels', ctx=Load()),
+                        Dict()]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Name(id='name', ctx=Load()),
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='metric', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='debug',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Histogram recorded: '),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' = '),
+                      FormattedValue(
+                        value=Name(id='value', ctx=Load()),
+                        conversion=-1)])]))]),
+        FunctionDef(
+          name='get_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Get metrics by name (or all if None)')),
+            If(
+              test=Name(id='name', ctx=Load()),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='name', ctx=Load()),
+                      List(ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='all_metrics', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='metric_list', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='all_metrics', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metric_list', ctx=Load())]))]),
+            Return(
+              value=Name(id='all_metrics', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='MetricValue', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='write_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Write metrics to file')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='serializable_metrics', ctx=Store())],
+                  value=Dict()),
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='name', ctx=Store()),
+                      Name(id='metric_list', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='serializable_metrics', ctx=Load()),
+                          slice=Name(id='name', ctx=Load()),
+                          ctx=Store())],
+                      value=List(ctx=Load())),
+                    For(
+                      target=Name(id='metric', ctx=Store()),
+                      iter=Name(id='metric_list', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='metric_dict', ctx=Store())],
+                          value=Call(
+                            func=Name(id='asdict', ctx=Load()),
+                            args=[
+                              Name(id='metric', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='metric_dict', ctx=Load()),
+                              slice=Constant(value='metric_type'),
+                              ctx=Store())],
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='metric', ctx=Load()),
+                              attr='metric_type',
+                              ctx=Load()),
+                            attr='value',
+                            ctx=Load())),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Subscript(
+                                value=Name(id='serializable_metrics', ctx=Load()),
+                                slice=Name(id='name', ctx=Load()),
+                                ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='metric_dict', ctx=Load())]))])]),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='metrics_file',
+                            ctx=Load()),
+                          Constant(value='w')]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Dict(
+                            keys=[
+                              Constant(value='timestamp'),
+                              Constant(value='total_metrics'),
+                              Constant(value='metrics')],
+                            values=[
+                              Call(
+                                func=Attribute(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='datetime', ctx=Load()),
+                                      attr='now',
+                                      ctx=Load())),
+                                  attr='isoformat',
+                                  ctx=Load())),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='serializable_metrics', ctx=Load())]),
+                              Name(id='serializable_metrics', ctx=Load())]),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2))]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Metrics written to '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='metrics_file',
+                              ctx=Load()),
+                            conversion=-1)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to write metrics: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])]),
+        FunctionDef(
+          name='clear_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Clear all metrics')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics',
+                    ctx=Load()),
+                  attr='clear',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Metrics cleared')]))])]),
+    Assign(
+      targets=[
+        Name(id='_metrics_collector', ctx=Store())],
+      value=Constant(value=None)),
+    FunctionDef(
+      name='get_metrics_collector',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Get the global metrics collector instance')),
+        Global(
+          names=[
+            '_metrics_collector']),
+        If(
+          test=Compare(
+            left=Name(id='_metrics_collector', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='_metrics_collector', ctx=Store())],
+              value=Call(
+                func=Name(id='MetricsCollector', ctx=Load())))]),
+        Return(
+          value=Name(id='_metrics_collector', ctx=Load()))],
+      returns=Name(id='MetricsCollector', ctx=Load())),
+    FunctionDef(
+      name='increment_counter',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='value',
+            annotation=Name(id='float', ctx=Load())),
+          arg(
+            arg='labels',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=1.0),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Increment a counter metric')),
+        Assign(
+          targets=[
+            Name(id='collector', ctx=Store())],
+          value=Call(
+            func=Name(id='get_metrics_collector', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='increment_counter',
+              ctx=Load()),
+            args=[
+              Name(id='name', ctx=Load()),
+              Name(id='value', ctx=Load()),
+              Name(id='labels', ctx=Load())]))]),
+    FunctionDef(
+      name='set_gauge',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='value',
+            annotation=Name(id='float', ctx=Load())),
+          arg(
+            arg='labels',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Set a gauge metric value')),
+        Assign(
+          targets=[
+            Name(id='collector', ctx=Store())],
+          value=Call(
+            func=Name(id='get_metrics_collector', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='set_gauge',
+              ctx=Load()),
+            args=[
+              Name(id='name', ctx=Load()),
+              Name(id='value', ctx=Load()),
+              Name(id='labels', ctx=Load())]))]),
+    FunctionDef(
+      name='record_timer',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='duration_ms',
+            annotation=Name(id='float', ctx=Load())),
+          arg(
+            arg='labels',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Record a timer metric')),
+        Assign(
+          targets=[
+            Name(id='collector', ctx=Store())],
+          value=Call(
+            func=Name(id='get_metrics_collector', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='record_timer',
+              ctx=Load()),
+            args=[
+              Name(id='name', ctx=Load()),
+              Name(id='duration_ms', ctx=Load()),
+              Name(id='labels', ctx=Load())]))]),
+    FunctionDef(
+      name='write_metrics',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Write all metrics to file')),
+        Assign(
+          targets=[
+            Name(id='collector', ctx=Store())],
+          value=Call(
+            func=Name(id='get_metrics_collector', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='write_metrics',
+              ctx=Load())))]),
+    FunctionDef(
+      name='cost_tracking_enabled',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Check if cost tracking is enabled')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='os', ctx=Load()),
+                attr='path',
+                ctx=Load()),
+              attr='exists',
+              ctx=Load()),
+            args=[
+              Constant(value='runtime/cost_tracking.json')]))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='latency_tracking_enabled',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Check if latency tracking is enabled')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='os', ctx=Load()),
+                attr='path',
+                ctx=Load()),
+              attr='exists',
+              ctx=Load()),
+            args=[
+              Constant(value='runtime/metrics.json')]))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='enable_cost_tracking',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Enable cost tracking by creating config file')),
+        Assign(
+          targets=[
+            Name(id='cost_config', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='enabled'),
+              Constant(value='model_costs'),
+              Constant(value='tracking_enabled')],
+            values=[
+              Constant(value=True),
+              Dict(
+                keys=[
+                  Constant(value='gpt-3.5-turbo'),
+                  Constant(value='gpt-4'),
+                  Constant(value='claude-3')],
+                values=[
+                  Constant(value=0.002),
+                  Constant(value=0.03),
+                  Constant(value=0.015)]),
+              Constant(value=True)])),
+        Try(
+          body=[
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='runtime/cost_tracking.json'),
+                      Constant(value='w')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='cost_config', ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2))]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Cost tracking enabled')])),
+            Return(
+              value=Constant(value=True))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to enable cost tracking: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=False))])])]),
+    FunctionDef(
+      name='enable_latency_tracking',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Enable latency tracking by recording some sample metrics')),
+        Assign(
+          targets=[
+            Name(id='collector', ctx=Store())],
+          value=Call(
+            func=Name(id='get_metrics_collector', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='record_timer',
+              ctx=Load()),
+            args=[
+              Constant(value='model_call_latency'),
+              Constant(value=150.0),
+              Dict(
+                keys=[
+                  Constant(value='model')],
+                values=[
+                  Constant(value='gpt-3.5-turbo')])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='record_timer',
+              ctx=Load()),
+            args=[
+              Constant(value='dag_execution_latency'),
+              Constant(value=75.0),
+              Dict(
+                keys=[
+                  Constant(value='dag_type')],
+                values=[
+                  Constant(value='simple')])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='record_timer',
+              ctx=Load()),
+            args=[
+              Constant(value='tool_execution_latency'),
+              Constant(value=25.0),
+              Dict(
+                keys=[
+                  Constant(value='tool')],
+                values=[
+                  Constant(value='draft_executor')])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='write_metrics',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='Latency tracking enabled')])),
+        Return(
+          value=Constant(value=True))]),
+    FunctionDef(
+      name='_initialize_basic_metrics',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Initialize basic system metrics')),
+        Assign(
+          targets=[
+            Name(id='collector', ctx=Store())],
+          value=Call(
+            func=Name(id='get_metrics_collector', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='set_gauge',
+              ctx=Load()),
+            args=[
+              Constant(value='system_uptime'),
+              Constant(value=0.0)])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='increment_counter',
+              ctx=Load()),
+            args=[
+              Constant(value='system_startups')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='set_gauge',
+              ctx=Load()),
+            args=[
+              Constant(value='active_connections'),
+              Constant(value=0)])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='collector', ctx=Load()),
+              attr='write_metrics',
+              ctx=Load())))]),
+    Expr(
+      value=Call(
+        func=Name(id='_initialize_basic_metrics', ctx=Load()))),
+    FunctionDef(
+      name='apply_error_taxonomy',
+      args=arguments(
+        args=[
+          arg(
+            arg='error',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Apply error taxonomy classification to errors.')),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='collector', ctx=Store())],
+              value=Call(
+                func=Name(id='get_metrics_collector', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='error_type', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='error', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='type'),
+                  Constant(value='unknown')])),
+            Assign(
+              targets=[
+                Name(id='error_severity', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='error', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='severity'),
+                  Constant(value='medium')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='increment_counter',
+                  ctx=Load()),
+                args=[
+                  Constant(value='errors_classified')],
+                keywords=[
+                  keyword(
+                    arg='labels',
+                    value=Dict(
+                      keys=[
+                        Constant(value='type')],
+                      values=[
+                        Name(id='error_type', ctx=Load())]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='increment_counter',
+                  ctx=Load()),
+                args=[
+                  Constant(value='errors_by_severity')],
+                keywords=[
+                  keyword(
+                    arg='labels',
+                    value=Dict(
+                      keys=[
+                        Constant(value='severity')],
+                      values=[
+                        Name(id='error_severity', ctx=Load())]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Applied error taxonomy: '),
+                      FormattedValue(
+                        value=Name(id='error_type', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='/'),
+                      FormattedValue(
+                        value=Name(id='error_severity', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Constant(value=True))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to apply error taxonomy: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=False))])])],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='update_reliability_scores',
+      args=arguments(
+        args=[
+          arg(
+            arg='component',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='reliability_score',
+            annotation=Name(id='float', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Update reliability scores for system components.')),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='collector', ctx=Store())],
+              value=Call(
+                func=Name(id='get_metrics_collector', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='set_gauge',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='reliability_score_'),
+                      FormattedValue(
+                        value=Name(id='component', ctx=Load()),
+                        conversion=-1)]),
+                  Name(id='reliability_score', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='record_histogram',
+                  ctx=Load()),
+                args=[
+                  Constant(value='reliability_distribution'),
+                  Name(id='reliability_score', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='labels',
+                    value=Dict(
+                      keys=[
+                        Constant(value='component')],
+                      values=[
+                        Name(id='component', ctx=Load())]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='collector', ctx=Load()),
+                  attr='increment_counter',
+                  ctx=Load()),
+                args=[
+                  Constant(value='reliability_updates')],
+                keywords=[
+                  keyword(
+                    arg='labels',
+                    value=Dict(
+                      keys=[
+                        Constant(value='component')],
+                      values=[
+                        Name(id='component', ctx=Load())]))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Updated reliability score for '),
+                      FormattedValue(
+                        value=Name(id='component', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=': '),
+                      FormattedValue(
+                        value=Name(id='reliability_score', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Constant(value=True))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to update reliability scores: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=False))])])],
+      returns=Name(id='bool', ctx=Load()))])

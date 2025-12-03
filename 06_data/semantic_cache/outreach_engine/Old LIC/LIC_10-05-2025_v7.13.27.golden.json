@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-03-2025_v7.5\",\n  \"metadata\": {\n    \"name\": \"LinkedIn Intelligent Composer (LIC)\",\n    \"version\": \"LIC_10-05-2025_v7.13.27\",\n    \"last_updated\": \"2025-10-04\",\n    \"description\": \"Orchestration system for LinkedIn outreach with unified RAG, claim verification, job application linkage, Unicode filtering, enhanced reasoning toggles\",\n    \"changelog\": [\n      {\n        \"version\": \"v7.13.25_C087\",\n        \"date\": \"2025-10-04\",\n        \"changes\": [\n          \"C087: Operationalize Step 3.5 job_application_prescan - full implementation spec, matching_logic, error_handling, and output_format\",\n          \"C087b: Update Step 3.6 to job_application_context_confirmation referencing prescan results\",\n          \"C087c: Add tool_usage primary/fallback notes for tracker search\"\n        ]\n      },\n      {\n        \"version\": \"v7.9_C043\",\n        \"date\": \"2025-10-03\",\n        \"changes\": [\n          \"C043: Direct App_Schema_v4.json",
+  "full_hash": "5533b166861274f957accd477cd3add51d93ad27736bcc858b01397eff2d1ad8",
+  "generated_at": 1764728335.564651,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v7.13.27.json"
+}

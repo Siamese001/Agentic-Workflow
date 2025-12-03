@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\validation_tools\\validation_detailed_report.json",
+    "rel_path": "validation_detailed_report.json",
+    "root_name": "schemas",
+    "file_hash": "884e1c5d6b6057cec6213f5a5e5d56d45bf7f5c4789e2609906257a37d0df7b9",
+    "file_size": 1725,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 4
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.2807412
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v4.0 - OPTIMIZED SIGNAL & CONSTRAINT SYSTEM\n============================================================================\n\nCOMPLETE REWRITE WITH 8 OPTIMIZATIONS:\n\u2713 OPT 1: Per-Section Tolerance Bands (replaces global \u00b150)\n\u2713 OPT 2: Signal-to-Word-Count Elasticity Curve (words drive signal up to cap)\n\u2713 OPT 3: Section-Priority Allocation Matrix (dynamic based on signal deficit)\n\u2713 OPT 4: Unify/IBM Ratio Soft Band (1.15\u20131.35 with penalty, hard fail <1.1 or >1.4)\n\u2713 OPT 5: Section-Length Coherence Score (CV <0.18 target, penalize outliers)\n\u2713 OPT 6: Temperature Mode Knob (Conservative/Balanced/Creative)\n\u2713 OPT 7: Signal Floor/Ceiling per Section + Word Count Band Tier System\n\u2713 OPT 8: Signal Preservation Scoring (drop lowest signal_density bullets first)\n\nPRODUCES 5 HIGH-SIGNAL OUTPUTS:\n1. Complete Resume (formatted, submission-ready, ATS-optimized)\n2. Word Count Table (with per-section tolerance bands, delta analysis)\n3. Signal Calibration (role-specific, with elastic",
+  "full_hash": "2d10b6b7e16c1999d2f29ca6468db1e54715f955e5ac6e91799bbb5637a80a18",
+  "generated_at": 1764728296.6014817,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_0_OPTIMIZED.py"
+}

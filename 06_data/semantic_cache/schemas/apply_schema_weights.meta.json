@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\expand-phase\\convert-schema-content\\semantic\\adjust-scores\\apply_schema_weights.py",
+    "rel_path": "apply_schema_weights.py",
+    "root_name": "schemas",
+    "file_hash": "27719ba80cae0206e7e51a339379a51416f41979b24efb45e225c932015cff34",
+    "file_size": 1430,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.0407333
+}

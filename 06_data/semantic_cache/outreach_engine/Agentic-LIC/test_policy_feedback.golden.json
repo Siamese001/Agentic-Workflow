@@ -1,0 +1,6 @@
+{
+  "golden_content": "from types import SimpleNamespace\nfrom unittest.mock import patch\n\nfrom src.lic_agentic.agents.k3_message_architect import DraftPackage\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\nfrom src.lic_agentic.stacks.outreach_stack import OutreachStack\n\n\ndef test_policy_feedback_updates_toggles_and_budget():\n    stack = OutreachStack(ReasoningToggles())\n\n    def fake_compose(inputs, route, *, max_calls=None):\n        draft = \"Subject: Hi\\n\\nHello there\\n[artifact_id:aid] evidence\"\n        return DraftPackage(draft=draft, artifacts={\"aid\": \"evidence\"}, total_latency_ms=5000)\n\n    with patch.object(stack.architect, \"compose\", side_effect=fake_compose):\n        result = stack.run(SimpleNamespace(prompt=\"Testing\", company_id=\"ACME\", contact_id=\"C1\"))\n\n    assert result[\"verdict\"].passed\n    assert stack.policy.budget_multiplier <= 1.0\n    assert 1 <= stack.toggles.tot_branches <= 4\n",
+  "full_hash": "d53fd13332af59623be74c00307e2dee6e35fad26d71c02a8a57382d906868ad",
+  "generated_at": 1764728330.9480217,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_policy_feedback.py"
+}

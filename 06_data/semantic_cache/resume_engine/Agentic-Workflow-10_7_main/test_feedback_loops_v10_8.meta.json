@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\integration\\test_feedback_loops_v10_8.py",
+    "rel_path": "test_feedback_loops_v10_8.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "a9fa7fb363e6bf3b0326f3091129d787d5cc264ae2f3fb4eb19f617f7002840f",
+    "file_size": 5399,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.4818046
+}

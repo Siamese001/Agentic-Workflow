@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": true,
+  "line_count": 307,
+  "generated_at": 1764728350.203852,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\safe-layer\\safety-phase\\check-data-rules\\semantic\\adjust-scores\\compute_data_score.py"
+}

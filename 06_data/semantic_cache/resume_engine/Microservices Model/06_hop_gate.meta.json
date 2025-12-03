@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\06_hop_gate.py",
+    "rel_path": "06_hop_gate.py",
+    "root_name": "resume_engine/Microservices Model",
+    "file_hash": "4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3",
+    "file_size": 10924,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728232.0457451
+}

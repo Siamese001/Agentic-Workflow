@@ -1,0 +1,35 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ClassDef(
+      name='SandboxError',
+      bases=[
+        Name(id='RuntimeError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Base class for sandbox-related errors.'))]),
+    ClassDef(
+      name='SandboxTimeoutError',
+      bases=[
+        Name(id='SandboxError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when a tool call exceeds its allowed timeout inside the VM.'))]),
+    ClassDef(
+      name='SandboxExecutionError',
+      bases=[
+        Name(id='SandboxError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when a tool execution fails inside the VM.'))]),
+    ClassDef(
+      name='SandboxIsolationError',
+      bases=[
+        Name(id='SandboxError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when an isolation invariant appears to be violated.'))])])

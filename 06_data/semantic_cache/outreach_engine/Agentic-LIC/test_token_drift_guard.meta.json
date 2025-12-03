@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_token_drift_guard.py",
+    "rel_path": "test_token_drift_guard.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "30a87f62de5cfb2bfb21a546dce71f6d97f16989bcfced6882f48cf48ce2949b",
+    "file_size": 502,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.054918
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import json\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7.models import StrategyPlan\nfrom core_v10_7.services import WorldModelStore\nfrom agent_stacks_v10_8.components.strategy import (\n    QueryComplexityClassifier,\n    ToTStrategistAgent,\n)\nfrom agent_stacks_v10_8.components.rag import RAG_SearchAgent\n\n\nclass _DummyRedis:\n    def __init__(self):\n        self.set_calls = []\n        self.get_calls = []\n        self.storage = {}\n\n    def setex(self, key, ttl, value):\n        self.set_calls.append((key, ttl, value))\n        self.storage[key] = value\n\n    def get(self, key):\n        self.get_calls.append(key)\n        return self.storage.get(key)\n\n\ndef _config(enabled=True, key_prefix=\"wm\", max_history=5):\n    return SimpleNamespace(\n        world_model_config=SimpleNamespace(\n            enabled=enabled,\n            key_prefix=key_prefix,\n            max_strategy_history=max_history,\n        )\n    )\n\n\ndef test_world_model_disabled_noop():\n    redis = _DummyRedis()\n    ",
+  "full_hash": "79985586ce6ae3c33d340972a7bcca03cdab69b971256c69a784b6473115f172",
+  "generated_at": 1764728231.4113002,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\world_model\\test_world_model_store_v10_7.py"
+}

@@ -1,0 +1,158 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='runtime.observability.collectors',
+      names=[
+        alias(name='get_events')],
+      level=0),
+    FunctionDef(
+      name='get_routing_trace',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return a structured trace of routing decisions from telemetry.\n\n    This mirrors the real runtime.trace.trace_reconstruction helper but lives\n    inside the Agentic-Workflow-10_10 snapshot so that\n    ``from runtime.trace.trace_reconstruction import get_routing_trace`` works\n    when tests are run with rootdir=Agentic-Workflow-10_10.\n    ')),
+        AnnAssign(
+          target=Name(id='trace', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        Try(
+          body=[
+            For(
+              target=Name(id='evt', ctx=Store()),
+              iter=Call(
+                func=Name(id='get_events', ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='getattr', ctx=Load()),
+                      args=[
+                        Name(id='evt', ctx=Load()),
+                        Constant(value='name'),
+                        Constant(value='')]),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Constant(value='routing_decision')]),
+                  body=[
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='attrs', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='evt', ctx=Load()),
+                          Constant(value='attributes'),
+                          Dict()]),
+                      Dict()])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='trace', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='task'),
+                          Constant(value='agent_role'),
+                          Constant(value='reason'),
+                          Constant(value='has_council'),
+                          Constant(value='council_selected_id'),
+                          Constant(value='council_aggregated_decision'),
+                          Constant(value='council_vote_count')],
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='attrs', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='task')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='attrs', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='agent_role')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='attrs', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='reason')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='attrs', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='has_council')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='attrs', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='council_selected_id')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='attrs', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='council_aggregated_decision')]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='attrs', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='council_vote_count')])])]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Pass()])]),
+        Return(
+          value=Name(id='trace', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()))])

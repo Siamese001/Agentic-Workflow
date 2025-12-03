@@ -1,0 +1,335 @@
+Module(
+  body=[
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='PROJECT_ROOT', ctx=Store())],
+      value=Subscript(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parents',
+          ctx=Load()),
+        slice=Constant(value=2),
+        ctx=Load())),
+    FunctionDef(
+      name='test_retrieval_directory_structure_exists',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Ensure META retrieval directory tree exists.')),
+        Assign(
+          targets=[
+            Name(id='expected_dirs', ctx=Store())],
+          value=List(
+            elts=[
+              BinOp(
+                left=Name(id='PROJECT_ROOT', ctx=Load()),
+                op=Div(),
+                right=Constant(value='meta')),
+              BinOp(
+                left=BinOp(
+                  left=Name(id='PROJECT_ROOT', ctx=Load()),
+                  op=Div(),
+                  right=Constant(value='meta')),
+                op=Div(),
+                right=Constant(value='retrieval')),
+              BinOp(
+                left=BinOp(
+                  left=BinOp(
+                    left=Name(id='PROJECT_ROOT', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='meta')),
+                  op=Div(),
+                  right=Constant(value='retrieval')),
+                op=Div(),
+                right=Constant(value='retrievers'))],
+            ctx=Load())),
+        For(
+          target=Name(id='d', ctx=Store()),
+          iter=Name(id='expected_dirs', ctx=Load()),
+          body=[
+            Assert(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='d', ctx=Load()),
+                  attr='exists',
+                  ctx=Load())),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Expected directory missing: '),
+                  FormattedValue(
+                    value=Name(id='d', ctx=Load()),
+                    conversion=-1)]))])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_retriever_placeholders_present',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Ensure placeholder retriever modules exist for future implementation.')),
+        Assign(
+          targets=[
+            Name(id='expected_files', ctx=Store())],
+          value=List(
+            elts=[
+              BinOp(
+                left=BinOp(
+                  left=BinOp(
+                    left=BinOp(
+                      left=Name(id='PROJECT_ROOT', ctx=Load()),
+                      op=Div(),
+                      right=Constant(value='meta')),
+                    op=Div(),
+                    right=Constant(value='retrieval')),
+                  op=Div(),
+                  right=Constant(value='retrievers')),
+                op=Div(),
+                right=Constant(value='bm25.py')),
+              BinOp(
+                left=BinOp(
+                  left=BinOp(
+                    left=BinOp(
+                      left=Name(id='PROJECT_ROOT', ctx=Load()),
+                      op=Div(),
+                      right=Constant(value='meta')),
+                    op=Div(),
+                    right=Constant(value='retrieval')),
+                  op=Div(),
+                  right=Constant(value='retrievers')),
+                op=Div(),
+                right=Constant(value='dense.py'))],
+            ctx=Load())),
+        For(
+          target=Name(id='f', ctx=Store()),
+          iter=Name(id='expected_files', ctx=Load()),
+          body=[
+            Assert(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='exists',
+                  ctx=Load())),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Expected retriever module missing: '),
+                  FormattedValue(
+                    value=Name(id='f', ctx=Load()),
+                    conversion=-1)]))])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_meta_ranking_and_hybrid_ranker_present',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Ensure META ranking + hybrid ranker modules exist and are wired.')),
+        Assign(
+          targets=[
+            Name(id='ranking_file', ctx=Store())],
+          value=BinOp(
+            left=BinOp(
+              left=Name(id='PROJECT_ROOT', ctx=Load()),
+              op=Div(),
+              right=Constant(value='meta')),
+            op=Div(),
+            right=Constant(value='ranking.py'))),
+        Assign(
+          targets=[
+            Name(id='hybrid_ranker_file', ctx=Store())],
+          value=BinOp(
+            left=BinOp(
+              left=BinOp(
+                left=Name(id='PROJECT_ROOT', ctx=Load()),
+                op=Div(),
+                right=Constant(value='meta')),
+              op=Div(),
+              right=Constant(value='retrieval')),
+            op=Div(),
+            right=Constant(value='hybrid_ranker.py'))),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Name(id='ranking_file', ctx=Load()),
+              attr='exists',
+              ctx=Load())),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Expected META ranking module missing: '),
+              FormattedValue(
+                value=Name(id='ranking_file', ctx=Load()),
+                conversion=-1)])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Name(id='hybrid_ranker_file', ctx=Load()),
+              attr='exists',
+              ctx=Load())),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Expected hybrid_ranker module missing: '),
+              FormattedValue(
+                value=Name(id='hybrid_ranker_file', ctx=Load()),
+                conversion=-1)])),
+        Assign(
+          targets=[
+            Name(id='retrieval_file', ctx=Store())],
+          value=BinOp(
+            left=BinOp(
+              left=BinOp(
+                left=Name(id='PROJECT_ROOT', ctx=Load()),
+                op=Div(),
+                right=Constant(value='meta')),
+              op=Div(),
+              right=Constant(value='retrieval')),
+            op=Div(),
+            right=Constant(value='retrieval.py'))),
+        Assign(
+          targets=[
+            Name(id='text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='retrieval_file', ctx=Load()),
+              attr='read_text',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='encoding',
+                value=Constant(value='utf-8'))])),
+        Assign(
+          targets=[
+            Name(id='lines', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='text', ctx=Load()),
+              attr='split',
+              ctx=Load()),
+            args=[
+              Constant(value='\n')])),
+        Assign(
+          targets=[
+            Name(id='import_lines', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Attribute(
+                value=Name(id='line', ctx=Load()),
+                attr='strip',
+                ctx=Load())),
+            generators=[
+              comprehension(
+                target=Name(id='line', ctx=Store()),
+                iter=Name(id='lines', ctx=Load()),
+                ifs=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='line', ctx=Load()),
+                              attr='strip',
+                              ctx=Load())),
+                          attr='startswith',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='from ')]),
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='line', ctx=Load()),
+                              attr='strip',
+                              ctx=Load())),
+                          attr='startswith',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='import ')])])],
+                is_async=0)])),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Constant(value='from meta.retrieval.hybrid_ranker import fuse_and_rank'),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='line', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='line', ctx=Store()),
+                    iter=Name(id='import_lines', ctx=Load()),
+                    is_async=0)])]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Expected import from meta.retrieval.hybrid_ranker not found. Imports: '),
+              FormattedValue(
+                value=Name(id='import_lines', ctx=Load()),
+                conversion=-1)])),
+        Assign(
+          targets=[
+            Name(id='retriever_imports', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='line', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='line', ctx=Store()),
+                iter=Name(id='import_lines', ctx=Load()),
+                ifs=[
+                  Compare(
+                    left=Constant(value='from retrievers.'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='line', ctx=Load())])],
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='expected_retrievers', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='from retrievers.bm25 import bm25_search'),
+              Constant(value='from retrievers.dense import dense_search')],
+            ctx=Load())),
+        For(
+          target=Name(id='expected', ctx=Store()),
+          iter=Name(id='expected_retrievers', ctx=Load()),
+          body=[
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='expected', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='line', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='line', ctx=Store()),
+                        iter=Name(id='retriever_imports', ctx=Load()),
+                        is_async=0)])]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Expected retriever import not found: '),
+                  FormattedValue(
+                    value=Name(id='expected', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='. Found: '),
+                  FormattedValue(
+                    value=Name(id='retriever_imports', ctx=Load()),
+                    conversion=-1)]))])],
+      returns=Constant(value=None))])

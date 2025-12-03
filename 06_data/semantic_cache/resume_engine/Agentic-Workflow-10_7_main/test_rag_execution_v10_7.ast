@@ -1,0 +1,124 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='stacks_v10_8.rag_execution',
+      names=[
+        alias(name='RAGExecutionStack')],
+      level=0),
+    AsyncFunctionDef(
+      name='test_run_from_state_async_returns_patch',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch'),
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='metadata')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='workflow_id')],
+                values=[
+                  Constant(value='wf-rag')])])),
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='RAGExecutionStack', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        AsyncFunctionDef(
+          name='fake_run_async',
+          args=arguments(
+            args=[
+              arg(arg='state_arg'),
+              arg(arg='workflow_id_arg')]),
+          body=[
+            Assert(
+              test=Compare(
+                left=Name(id='workflow_id_arg', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='wf-rag')])),
+            Assert(
+              test=Compare(
+                left=Name(id='state_arg', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='state', ctx=Load())])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='resume'),
+                  Constant(value='rag')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='experience_bullets')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='x')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='plan'),
+                      Constant(value='metadata')],
+                    values=[
+                      Dict(),
+                      Dict()])]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='stack', ctx=Load()),
+              Constant(value='run_async'),
+              Name(id='fake_run_async', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='stack', ctx=Load()),
+                attr='run_from_state_async',
+                ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load()),
+                Constant(value=None)]))),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Name(id='patch', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load()),
+              slice=Constant(value='experience_bullets'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(
+                elts=[
+                  Constant(value='x')],
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

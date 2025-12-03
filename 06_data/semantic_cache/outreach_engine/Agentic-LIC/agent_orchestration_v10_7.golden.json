@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: agent_orchestration_v10_7.py\n# Version: 10.7 (Refactored - CORRECTED)\n#\n# v10.7 REFACTOR (CORRECTION):\n# - RE-ADDED: Restored the `StrategyPlan.model_validate(...)` calls\n#   inside nodes. Removing them was an error and broke the agent\n#   contracts, which expect Pydantic objects, not dicts.\n#\n# v10.7 REFACTOR CHANGES:\n# - UPDATED: All versioning to v10_7.\n#\n# v10.7 MAJOR CHANGES:\n# - IMPLEMENTED (Fix #5): Graph now runs run_prompt_engineering and\n#   run_rag_stack in parallel using a fork/join pattern.\n# - IMPLEMENTED (Fix #7): Added load_dynamic_tools() to dynamically load\n#   tools from the generated_tools_v10_7 directory at runtime.\n#   Conductors now call this to update their tool lists.\n# - IMPLEMENTED (Fix #8): QAConductor now loads UI tools (stubs).\n# - IMPLEMENTED (Fix #10): run_rag_stack node refactored to support\n#   A2A messaging (accepts full state, returns state patch).\n# - IMPLEMENTED (Fix #17, #19, #20, #24): ReActConductor prompts updated\n#   to manually inject",
+  "full_hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
+  "generated_at": 1764728330.107331,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agent_orchestration_v10_7.py"
+}

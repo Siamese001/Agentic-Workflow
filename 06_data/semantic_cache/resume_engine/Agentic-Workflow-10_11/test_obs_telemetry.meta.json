@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\telemetry\\test_obs_telemetry.py",
+    "rel_path": "test_obs_telemetry.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "7750e74ea9cb18dfa30bccb88bdb4169cddac505f496e5f40a20b2887117a31a",
+    "file_size": 420,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.3836505
+}

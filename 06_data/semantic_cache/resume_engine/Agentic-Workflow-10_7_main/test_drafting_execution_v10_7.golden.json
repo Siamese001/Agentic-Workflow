@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\n\nimport stacks_v10_8.draft_orchestration as orchestrator_module\nfrom agent_stacks_v10_8.drafting_execution_stack import DraftingExecutionStack\n\n\nclass _DummyDraftOrchestrator:\n    calls = []\n\n    def __init__(self, context, debug_mode=False):\n        self.context = context\n        self.debug_mode = debug_mode\n\n    async def run_async(self, state, workflow_id, state_snapshot=None):\n        self.__class__.calls.append((state, workflow_id, state_snapshot))\n        return {\"draft\": {\"sections\": {\"summary\": {\"draft\": \"updated\"}}}}\n\n\n@pytest.mark.asyncio\nasync def test_run_from_state_async_routes_through_orchestrator(monkeypatch, workflow_context):\n    monkeypatch.setattr(\n        orchestrator_module, \"DraftOrchestratorStack\", _DummyDraftOrchestrator\n    )\n    _DummyDraftOrchestrator.calls.clear()\n\n    stack = DraftingExecutionStack(workflow_context)\n    state = {\"metadata\": {\"workflow_id\": \"wf-draft\"}}\n\n    patch = await stack.run_from_state_async(state, \"wf-draft\")\n\n    asser",
+  "full_hash": "fa8aa3fcfa5427e00ab5bf3d069948e874b2de2e824a4f0e0626f775fac40ff3",
+  "generated_at": 1764728230.7346303,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\stacks\\test_drafting_execution_v10_7.py"
+}

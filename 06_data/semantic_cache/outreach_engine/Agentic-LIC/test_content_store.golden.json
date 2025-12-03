@@ -1,0 +1,6 @@
+{
+  "golden_content": "from src.lic_agentic.rag.content_store import ContentStore, make_key\n\n\ndef test_put_get_freshness():\n    store = ContentStore()\n    key = make_key(scope=\"company\", query=\"ACME\")\n    store.put(key, {\"payload\": 1}, {\"tool\": \"web_search\"})\n    blob, meta, fresh = store.get(key, ttl_s=3600)\n    assert fresh\n    assert blob[\"payload\"] == 1\n    assert meta.tool == \"web_search\"\n\n\ndef test_get_returns_none_when_missing():\n    store = ContentStore()\n    assert store.get(\"missing\", ttl_s=60) is None\n\n\ndef test_clear_resets_store():\n    store = ContentStore()\n    key = make_key(scope=\"company\", query=\"ACME\")\n    store.put(key, {\"payload\": 1}, {\"tool\": \"web_search\"})\n    assert store.get(key, ttl_s=3600) is not None\n    store.clear()\n    assert store.get(key, ttl_s=3600) is None\n",
+  "full_hash": "4b52f6db625ab9fdcc8c9685de4219dff9969c4788347cd0f51902602d603da6",
+  "generated_at": 1764728331.0857782,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_content_store.py"
+}

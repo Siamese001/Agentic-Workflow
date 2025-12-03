@@ -1,0 +1,203 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL5 â€” Policy Engine\n\nResponsibilities:\n    â€¢ Enforce organizational policies and guardrails on agent activities.\n    â€¢ Translate policy decisions into actionable constraints for orchestration and execution layers.\n    â€¢ Provide auditable policy evaluations for compliance and safety reviews.\n\nProduces StatePatch outputs only.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='l5_policy',
+      names=[
+        alias(name='PolicyRule'),
+        alias(name='SafetyConfig'),
+        alias(name='load_default_safety_config')],
+      level=0),
+    ImportFrom(
+      module='utils_types',
+      names=[
+        alias(name='StatePatch')],
+      level=0),
+    ClassDef(
+      name='PolicyEngine',
+      body=[
+        Expr(
+          value=Constant(value='Deterministic policy evaluation engine.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=BinOp(
+                  left=Name(id='SafetyConfig', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_config',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  Call(
+                    func=Name(id='load_default_safety_config', ctx=Load()))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='evaluate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='intent',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='str', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Return a StatePatch describing policy allowances for the given intent.')),
+            Assign(
+              targets=[
+                Name(id='intent', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='intent', ctx=Load()),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='action', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='intent', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='action'),
+                  Constant(value='unspecified')])),
+            Assign(
+              targets=[
+                Name(id='rule', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='policy_rule', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='policy_rule', ctx=Store()),
+                        iter=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_config',
+                            ctx=Load()),
+                          attr='policy_rules',
+                          ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='policy_rule', ctx=Load()),
+                              attr='action',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Name(id='action', ctx=Load())])],
+                        is_async=0)]),
+                  Call(
+                    func=Name(id='PolicyRule', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='action',
+                        value=Name(id='action', ctx=Load())),
+                      keyword(
+                        arg='allowed',
+                        value=Constant(value=True)),
+                      keyword(
+                        arg='reason',
+                        value=Constant(value=None))])])),
+            Assign(
+              targets=[
+                Name(id='allowed', ctx=Store())],
+              value=Attribute(
+                value=Name(id='rule', ctx=Load()),
+                attr='allowed',
+                ctx=Load())),
+            AnnAssign(
+              target=Name(id='patch', ctx=Store()),
+              annotation=Name(id='StatePatch', ctx=Load()),
+              value=Call(
+                func=Name(id='StatePatch', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='policy_evaluation')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='action'),
+                          Constant(value='allowed'),
+                          Constant(value='denied_reason'),
+                          Constant(value='denied_actions')],
+                        values=[
+                          Name(id='action', ctx=Load()),
+                          Name(id='allowed', ctx=Load()),
+                          IfExp(
+                            test=UnaryOp(
+                              op=Not(),
+                              operand=Name(id='allowed', ctx=Load())),
+                            body=Attribute(
+                              value=Name(id='rule', ctx=Load()),
+                              attr='reason',
+                              ctx=Load()),
+                            orelse=Constant(value=None)),
+                          ListComp(
+                            elt=Attribute(
+                              value=Name(id='policy_rule', ctx=Load()),
+                              attr='action',
+                              ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='policy_rule', ctx=Store()),
+                                iter=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='_config',
+                                    ctx=Load()),
+                                  attr='policy_rules',
+                                  ctx=Load()),
+                                ifs=[
+                                  UnaryOp(
+                                    op=Not(),
+                                    operand=Attribute(
+                                      value=Name(id='policy_rule', ctx=Load()),
+                                      attr='allowed',
+                                      ctx=Load()))],
+                                is_async=0)])])])]),
+              simple=1),
+            Return(
+              value=Name(id='patch', ctx=Load()))],
+          returns=Name(id='StatePatch', ctx=Load()))])])

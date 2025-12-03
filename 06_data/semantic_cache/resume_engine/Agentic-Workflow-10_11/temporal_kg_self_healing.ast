@@ -1,0 +1,2683 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nOrchestrates automatic fixing of career timeline inconsistencies and job fact errors.\n\nImproves résumé accuracy by detecting and resolving conflicting dates, overlapping jobs, and career data issues.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Set'),
+        alias(name='Callable')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC'),
+        alias(name='timedelta')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='l4.temporal_schemas',
+      names=[
+        alias(name='TemporalTriplet'),
+        alias(name='TemporalEntity'),
+        alias(name='ConflictDetection'),
+        alias(name='ConflictType'),
+        alias(name='TemporalKGState'),
+        alias(name='TemporalEvent')],
+      level=0),
+    ImportFrom(
+      module='infra.dag_engine.models',
+      names=[
+        alias(name='Node', asname='DagNode'),
+        alias(name='Edge', asname='DagEdge'),
+        alias(name='Graph', asname='DagGraph')],
+      level=0),
+    ImportFrom(
+      module='infra.dag_engine.executor',
+      names=[
+        alias(name='DAGExecutor')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='HealingTrigger',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines events that trigger automatic résumé data consistency checks and repairs.\n\n    Improves résumé reliability by ensuring career data is continuously monitored and corrected.\n    ')),
+        Assign(
+          targets=[
+            Name(id='SCHEDULED', ctx=Store())],
+          value=Constant(value='scheduled')),
+        Assign(
+          targets=[
+            Name(id='CONFLICT_DETECTED', ctx=Store())],
+          value=Constant(value='conflict_detected')),
+        Assign(
+          targets=[
+            Name(id='STALE_DATA', ctx=Store())],
+          value=Constant(value='stale_data')),
+        Assign(
+          targets=[
+            Name(id='MANUAL', ctx=Store())],
+          value=Constant(value='manual')),
+        Assign(
+          targets=[
+            Name(id='THRESHOLD_EXCEEDED', ctx=Store())],
+          value=Constant(value='threshold_exceeded'))]),
+    ClassDef(
+      name='HealingStatus',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Tracks progress of résumé data consistency repair and validation operations.\n\n    Improves résumé quality monitoring by providing clear status updates for data fixing processes.\n    ')),
+        Assign(
+          targets=[
+            Name(id='PENDING', ctx=Store())],
+          value=Constant(value='pending')),
+        Assign(
+          targets=[
+            Name(id='RUNNING', ctx=Store())],
+          value=Constant(value='running')),
+        Assign(
+          targets=[
+            Name(id='COMPLETED', ctx=Store())],
+          value=Constant(value='completed')),
+        Assign(
+          targets=[
+            Name(id='FAILED', ctx=Store())],
+          value=Constant(value='failed')),
+        Assign(
+          targets=[
+            Name(id='CANCELLED', ctx=Store())],
+          value=Constant(value='cancelled'))]),
+    ClassDef(
+      name='HealingWorkflow',
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines automated repair processes for fixing résumé timeline and career data inconsistencies.\n\n    Improves résumé accuracy by orchestrating systematic detection and resolution of career data conflicts.\n    ')),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='trigger', ctx=Store()),
+          annotation=Name(id='HealingTrigger', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='status', ctx=Store()),
+          annotation=Name(id='HealingStatus', ctx=Load()),
+          value=Attribute(
+            value=Name(id='HealingStatus', ctx=Load()),
+            attr='PENDING',
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='conflict_types', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ConflictType', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entity_filters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='temporal_scope', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='created_at', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()),
+                    args=[
+                      Name(id='UTC', ctx=Load())])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='started_at', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='datetime', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='completed_at', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='datetime', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='conflicts_detected', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ConflictDetection', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='conflicts_resolved', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entities_processed', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Converts résumé repair workflow data to storage format for tracking and auditing.\n\n        Improves résumé quality control by maintaining complete records of all data consistency fixes.\n        ')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='workflow_id'),
+                  Constant(value='trigger'),
+                  Constant(value='status'),
+                  Constant(value='conflict_types'),
+                  Constant(value='entity_filters'),
+                  Constant(value='temporal_scope'),
+                  Constant(value='created_at'),
+                  Constant(value='started_at'),
+                  Constant(value='completed_at'),
+                  Constant(value='conflicts_detected'),
+                  Constant(value='conflicts_resolved'),
+                  Constant(value='entities_processed'),
+                  Constant(value='metadata')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='workflow_id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='trigger',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='status',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  ListComp(
+                    elt=Attribute(
+                      value=Name(id='ct', ctx=Load()),
+                      attr='value',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='ct', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='conflict_types',
+                          ctx=Load()),
+                        is_async=0)]),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='entity_filters',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='temporal_scope',
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='created_at',
+                        ctx=Load()),
+                      attr='isoformat',
+                      ctx=Load())),
+                  IfExp(
+                    test=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='started_at',
+                      ctx=Load()),
+                    body=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='started_at',
+                          ctx=Load()),
+                        attr='isoformat',
+                        ctx=Load())),
+                    orelse=Constant(value=None)),
+                  IfExp(
+                    test=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='completed_at',
+                      ctx=Load()),
+                    body=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='completed_at',
+                          ctx=Load()),
+                        attr='isoformat',
+                        ctx=Load())),
+                    orelse=Constant(value=None)),
+                  ListComp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='c', ctx=Load()),
+                        attr='to_dict',
+                        ctx=Load())),
+                    generators=[
+                      comprehension(
+                        target=Name(id='c', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='conflicts_detected',
+                          ctx=Load()),
+                        is_async=0)]),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='conflicts_resolved',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='entities_processed',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='HealingOrchestrationConfig',
+      body=[
+        Expr(
+          value=Constant(value='\n    Configures automated résumé data repair settings for different types of career inconsistencies.\n\n    Improves résumé maintenance by defining how and when to fix timeline conflicts and data errors.\n    ')),
+        AnnAssign(
+          target=Name(id='scheduled_interval_hours', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=24),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_concurrent_workflows', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=3),
+          simple=1),
+        AnnAssign(
+          target=Name(id='workflow_timeout_minutes', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=60),
+          simple=1),
+        AnnAssign(
+          target=Name(id='conflict_threshold', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=10),
+          simple=1),
+        AnnAssign(
+          target=Name(id='staleness_threshold_days', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=30),
+          simple=1),
+        AnnAssign(
+          target=Name(id='quality_threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.7),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_entities_per_workflow', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1000),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_conflicts_per_resolution', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=50),
+          simple=1),
+        AnnAssign(
+          target=Name(id='require_approval_for_dangerous_operations', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='backup_before_major_changes', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='TemporalKGSelfHealingController',
+      body=[
+        Expr(
+          value=Constant(value='\n    Manages automatic detection and repair of résumé timeline conflicts and career data inconsistencies.\n\n    Improves résumé accuracy by continuously monitoring career data and orchestrating fixes for timeline errors.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='l2_executors',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Callable', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='l4_state_manager',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='HealingOrchestrationConfig', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Sets up résumé data repair system with automated conflict detection and resolution tools.\n\n        Improves résumé maintenance by configuring continuous monitoring and fixing of career timeline issues.\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='l2_executors',
+                  ctx=Store())],
+              value=Name(id='l2_executors', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='l4_state_manager',
+                  ctx=Store())],
+              value=Name(id='l4_state_manager', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  Call(
+                    func=Name(id='HealingOrchestrationConfig', ctx=Load()))])),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='active_workflows',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='HealingWorkflow', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='workflow_history',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='HealingWorkflow', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metrics',
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workflows_initiated'),
+                  Constant(value='conflicts_detected'),
+                  Constant(value='conflicts_resolved'),
+                  Constant(value='entities_processed'),
+                  Constant(value='last_healing_cycle')],
+                values=[
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=None)]))]),
+        AsyncFunctionDef(
+          name='run_temporal_kg_self_heal_cycle',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='trigger',
+                annotation=Name(id='HealingTrigger', ctx=Load())),
+              arg(
+                arg='scope',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Attribute(
+                value=Name(id='HealingTrigger', ctx=Load()),
+                attr='SCHEDULED',
+                ctx=Load()),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Executes complete résumé data consistency check and automatic repair cycle.\n\n        Improves résumé accuracy by detecting timeline conflicts and applying systematic fixes to career data.\n        ')),
+            Assign(
+              targets=[
+                Name(id='workflow_id', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='healing_'),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()),
+                          args=[
+                            Name(id='UTC', ctx=Load())]),
+                        attr='strftime',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='%Y%m%d%H%M%S%f')]),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Name(id='workflow', ctx=Store())],
+              value=Call(
+                func=Name(id='HealingWorkflow', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_id',
+                    value=Name(id='workflow_id', ctx=Load())),
+                  keyword(
+                    arg='trigger',
+                    value=Name(id='trigger', ctx=Load())),
+                  keyword(
+                    arg='temporal_scope',
+                    value=Name(id='scope', ctx=Load()))])),
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='active_workflows',
+                          ctx=Load())]),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='max_concurrent_workflows',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='workflow', ctx=Load()),
+                          attr='status',
+                          ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='HealingStatus', ctx=Load()),
+                        attr='FAILED',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='metadata',
+                            ctx=Load()),
+                          slice=Constant(value='error'),
+                          ctx=Store())],
+                      value=Constant(value='Maximum concurrent workflows exceeded')),
+                    Return(
+                      value=Name(id='workflow', ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='workflow', ctx=Load()),
+                      attr='status',
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='HealingStatus', ctx=Load()),
+                    attr='RUNNING',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='workflow', ctx=Load()),
+                      attr='started_at',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()),
+                    args=[
+                      Name(id='UTC', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='active_workflows',
+                        ctx=Load()),
+                      slice=Name(id='workflow_id', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='workflow', ctx=Load())),
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_execute_healing_dag',
+                        ctx=Load()),
+                      args=[
+                        Name(id='workflow', ctx=Load())]))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='workflow', ctx=Load()),
+                      attr='status',
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='HealingStatus', ctx=Load()),
+                    attr='COMPLETED',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='workflow', ctx=Load()),
+                      attr='completed_at',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()),
+                    args=[
+                      Name(id='UTC', ctx=Load())])),
+                AugAssign(
+                  target=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Constant(value='workflows_initiated'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1)),
+                AugAssign(
+                  target=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Constant(value='conflicts_detected'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='workflow', ctx=Load()),
+                        attr='conflicts_detected',
+                        ctx=Load())])),
+                AugAssign(
+                  target=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Constant(value='conflicts_resolved'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='workflow', ctx=Load()),
+                        attr='conflicts_resolved',
+                        ctx=Load())])),
+                AugAssign(
+                  target=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='metrics',
+                      ctx=Load()),
+                    slice=Constant(value='entities_processed'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='workflow', ctx=Load()),
+                        attr='entities_processed',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metrics',
+                        ctx=Load()),
+                      slice=Constant(value='last_healing_cycle'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='workflow', ctx=Load()),
+                        attr='completed_at',
+                        ctx=Load()),
+                      attr='isoformat',
+                      ctx=Load())))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Self-healing workflow '),
+                              FormattedValue(
+                                value=Name(id='workflow_id', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' failed: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())]),
+                                conversion=-1)])])),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='workflow', ctx=Load()),
+                          attr='status',
+                          ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='HealingStatus', ctx=Load()),
+                        attr='FAILED',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='workflow', ctx=Load()),
+                          attr='completed_at',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load()),
+                        args=[
+                          Name(id='UTC', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='metadata',
+                            ctx=Load()),
+                          slice=Constant(value='error'),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='e', ctx=Load())]))])],
+              finalbody=[
+                If(
+                  test=Compare(
+                    left=Name(id='workflow_id', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='active_workflows',
+                        ctx=Load())]),
+                  body=[
+                    Delete(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='active_workflows',
+                            ctx=Load()),
+                          slice=Name(id='workflow_id', ctx=Load()),
+                          ctx=Del())])]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workflow_history',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='workflow', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='workflow_history',
+                          ctx=Load())]),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=100)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='workflow_history',
+                          ctx=Store())],
+                      value=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='workflow_history',
+                          ctx=Load()),
+                        slice=Slice(
+                          lower=UnaryOp(
+                            op=USub(),
+                            operand=Constant(value=100))),
+                        ctx=Load()))])]),
+            Return(
+              value=Name(id='workflow', ctx=Load()))],
+          returns=Name(id='HealingWorkflow', ctx=Load())),
+        AsyncFunctionDef(
+          name='schedule_conflict_detection_and_repair',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='conflict_types',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='ConflictType', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='entity_filters',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Schedules targeted résumé data conflict detection and repair for specific career inconsistencies.\n\n        Improves résumé precision by focusing repair efforts on particular types of timeline or data conflicts.\n        ')),
+            Assign(
+              targets=[
+                Name(id='scope', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='conflict_types'),
+                  Constant(value='entity_filters')],
+                values=[
+                  IfExp(
+                    test=Name(id='conflict_types', ctx=Load()),
+                    body=ListComp(
+                      elt=Attribute(
+                        value=Name(id='ct', ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      generators=[
+                        comprehension(
+                          target=Name(id='ct', ctx=Store()),
+                          iter=Name(id='conflict_types', ctx=Load()),
+                          is_async=0)]),
+                    orelse=Constant(value=None)),
+                  Name(id='entity_filters', ctx=Load())])),
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='run_temporal_kg_self_heal_cycle',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='trigger',
+                      value=Attribute(
+                        value=Name(id='HealingTrigger', ctx=Load()),
+                        attr='CONFLICT_DETECTED',
+                        ctx=Load())),
+                    keyword(
+                      arg='scope',
+                      value=Name(id='scope', ctx=Load()))])))],
+          returns=Name(id='HealingWorkflow', ctx=Load())),
+        AsyncFunctionDef(
+          name='_execute_healing_dag',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workflow',
+                annotation=Name(id='HealingWorkflow', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Runs automated résumé data repair workflow using directed acyclic graph execution.\n\n        Improves résumé consistency by systematically applying fixes to timeline conflicts and data errors.\n        ')),
+            Assign(
+              targets=[
+                Name(id='dag', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_healing_dag',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow', ctx=Load())])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='executor', ctx=Store())],
+                  value=Call(
+                    func=Name(id='DAGExecutor', ctx=Load()),
+                    args=[
+                      Name(id='dag', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='agent_registry',
+                        value=Constant(value=None))])),
+                Assign(
+                  targets=[
+                    Name(id='dag_context', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='workflow'),
+                      Constant(value='config')],
+                    values=[
+                      Name(id='workflow', ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load())])),
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='asyncio', ctx=Load()),
+                        attr='wait_for',
+                        ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='executor', ctx=Load()),
+                            attr='run',
+                            ctx=Load()),
+                          keywords=[
+                            keyword(
+                              arg='ctx',
+                              value=Name(id='dag_context', ctx=Load()))])],
+                      keywords=[
+                        keyword(
+                          arg='timeout',
+                          value=BinOp(
+                            left=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='config',
+                                ctx=Load()),
+                              attr='workflow_timeout_minutes',
+                              ctx=Load()),
+                            op=Mult(),
+                            right=Constant(value=60)))])))],
+              handlers=[
+                ExceptHandler(
+                  type=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='TimeoutError',
+                    ctx=Load()),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='Exception', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Healing workflow timed out after '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='config',
+                                    ctx=Load()),
+                                  attr='workflow_timeout_minutes',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' minutes')])]))])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_build_healing_dag',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workflow',
+                annotation=Name(id='HealingWorkflow', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Creates directed acyclic graph for systematic résumé data repair and validation workflow.\n\n        Improves résumé processing by organizing conflict detection and resolution into efficient execution steps.\n        ')),
+            Assign(
+              targets=[
+                Name(id='nodes', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='conflict_detection'),
+                  Constant(value='conflict_analysis'),
+                  Constant(value='entity_resolution'),
+                  Constant(value='triplet_repair'),
+                  Constant(value='temporal_invalidation'),
+                  Constant(value='validation')],
+                values=[
+                  Call(
+                    func=Name(id='DagNode', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='conflict_detection')),
+                      keyword(
+                        arg='fn',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_node_conflict_detection',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='step')],
+                          values=[
+                            Constant(value='detect_conflicts')]))]),
+                  Call(
+                    func=Name(id='DagNode', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='conflict_analysis')),
+                      keyword(
+                        arg='fn',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_node_conflict_analysis',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='step')],
+                          values=[
+                            Constant(value='analyze_conflicts')]))]),
+                  Call(
+                    func=Name(id='DagNode', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='entity_resolution')),
+                      keyword(
+                        arg='fn',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_node_entity_resolution',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='step')],
+                          values=[
+                            Constant(value='resolve_entities')]))]),
+                  Call(
+                    func=Name(id='DagNode', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='triplet_repair')),
+                      keyword(
+                        arg='fn',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_node_triplet_repair',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='step')],
+                          values=[
+                            Constant(value='repair_triplets')]))]),
+                  Call(
+                    func=Name(id='DagNode', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='temporal_invalidation')),
+                      keyword(
+                        arg='fn',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_node_temporal_invalidation',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='step')],
+                          values=[
+                            Constant(value='invalidate_temporal')]))]),
+                  Call(
+                    func=Name(id='DagNode', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='validation')),
+                      keyword(
+                        arg='fn',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_node_validation',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='step')],
+                          values=[
+                            Constant(value='validate_repairs')]))])])),
+            Assign(
+              targets=[
+                Name(id='edges', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='DagEdge', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='source',
+                        value=Constant(value='conflict_detection')),
+                      keyword(
+                        arg='target',
+                        value=Constant(value='conflict_analysis'))]),
+                  Call(
+                    func=Name(id='DagEdge', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='source',
+                        value=Constant(value='conflict_analysis')),
+                      keyword(
+                        arg='target',
+                        value=Constant(value='entity_resolution'))]),
+                  Call(
+                    func=Name(id='DagEdge', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='source',
+                        value=Constant(value='conflict_analysis')),
+                      keyword(
+                        arg='target',
+                        value=Constant(value='triplet_repair'))]),
+                  Call(
+                    func=Name(id='DagEdge', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='source',
+                        value=Constant(value='entity_resolution')),
+                      keyword(
+                        arg='target',
+                        value=Constant(value='temporal_invalidation'))]),
+                  Call(
+                    func=Name(id='DagEdge', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='source',
+                        value=Constant(value='triplet_repair')),
+                      keyword(
+                        arg='target',
+                        value=Constant(value='temporal_invalidation'))]),
+                  Call(
+                    func=Name(id='DagEdge', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='source',
+                        value=Constant(value='temporal_invalidation')),
+                      keyword(
+                        arg='target',
+                        value=Constant(value='validation'))])],
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='DagGraph', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='nodes',
+                    value=Name(id='nodes', ctx=Load())),
+                  keyword(
+                    arg='edges',
+                    value=Name(id='edges', ctx=Load()))]))],
+          returns=Name(id='DagGraph', ctx=Load())),
+        AsyncFunctionDef(
+          name='_node_conflict_detection',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag_ctx',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Detect conflicts in the temporal KG.')),
+            Assign(
+              targets=[
+                Name(id='workflow', ctx=Store())],
+              value=Subscript(
+                value=Name(id='dag_ctx', ctx=Load()),
+                slice=Constant(value='workflow'),
+                ctx=Load())),
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Constant(value='conflict_detector'),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='l2_executors',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='Exception', ctx=Load()),
+                        args=[
+                          Constant(value='Conflict detector executor not available')]))]),
+                Assign(
+                  targets=[
+                    Name(id='detection_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='l2_executors',
+                          ctx=Load()),
+                        slice=Constant(value='conflict_detector'),
+                        ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='temporal_scope',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='temporal_scope',
+                            ctx=Load())),
+                        keyword(
+                          arg='conflict_types',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='conflict_types',
+                            ctx=Load())),
+                        keyword(
+                          arg='entity_filters',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='entity_filters',
+                            ctx=Load()))]))),
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='detection_result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='success'),
+                      Constant(value=False)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='conflicts', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='detection_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='conflicts'),
+                          List(ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='workflow', ctx=Load()),
+                          attr='conflicts_detected',
+                          ctx=Store())],
+                      value=ListComp(
+                        elt=Call(
+                          func=Name(id='ConflictDetection', ctx=Load()),
+                          keywords=[
+                            keyword(
+                              value=Name(id='c', ctx=Load()))]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='c', ctx=Store()),
+                            iter=Name(id='conflicts', ctx=Load()),
+                            is_async=0)]))]),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='conflicts_detected'),
+                      Constant(value='detection_success')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='conflicts_detected',
+                            ctx=Load())]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='detection_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='success'),
+                          Constant(value=False)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Conflict detection failed: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())]),
+                                conversion=-1)])])),
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='conflicts_detected'),
+                          Constant(value='detection_success'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=0),
+                          Constant(value=False),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_node_conflict_analysis',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag_ctx',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Analyzes résumé data conflicts to prioritize the most impactful fixes for career timeline accuracy.\n\n        Improves résumé repair efficiency by focusing on critical conflicts that most affect job matching.\n        ')),
+            Assign(
+              targets=[
+                Name(id='workflow', ctx=Store())],
+              value=Subscript(
+                value=Name(id='dag_ctx', ctx=Load()),
+                slice=Constant(value='workflow'),
+                ctx=Load())),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='conflict_summary', ctx=Store())],
+                  value=Dict()),
+                For(
+                  target=Name(id='conflict', ctx=Store()),
+                  iter=Attribute(
+                    value=Name(id='workflow', ctx=Load()),
+                    attr='conflicts_detected',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='conflict_type', ctx=Store())],
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='conflict', ctx=Load()),
+                          attr='conflict_type',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load())),
+                    If(
+                      test=Compare(
+                        left=Name(id='conflict_type', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='conflict_summary', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='conflict_summary', ctx=Load()),
+                              slice=Name(id='conflict_type', ctx=Load()),
+                              ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='count'),
+                              Constant(value='severity_distribution'),
+                              Constant(value='affected_triplets')],
+                            values=[
+                              Constant(value=0),
+                              Dict(),
+                              Call(
+                                func=Name(id='set', ctx=Load()))]))]),
+                    AugAssign(
+                      target=Subscript(
+                        value=Subscript(
+                          value=Name(id='conflict_summary', ctx=Load()),
+                          slice=Name(id='conflict_type', ctx=Load()),
+                          ctx=Load()),
+                        slice=Constant(value='count'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    Assign(
+                      targets=[
+                        Name(id='severity', ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='conflict', ctx=Load()),
+                        attr='severity',
+                        ctx=Load())),
+                    If(
+                      test=Compare(
+                        left=Name(id='severity', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Subscript(
+                            value=Subscript(
+                              value=Name(id='conflict_summary', ctx=Load()),
+                              slice=Name(id='conflict_type', ctx=Load()),
+                              ctx=Load()),
+                            slice=Constant(value='severity_distribution'),
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Subscript(
+                                value=Subscript(
+                                  value=Name(id='conflict_summary', ctx=Load()),
+                                  slice=Name(id='conflict_type', ctx=Load()),
+                                  ctx=Load()),
+                                slice=Constant(value='severity_distribution'),
+                                ctx=Load()),
+                              slice=Name(id='severity', ctx=Load()),
+                              ctx=Store())],
+                          value=Constant(value=0))]),
+                    AugAssign(
+                      target=Subscript(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='conflict_summary', ctx=Load()),
+                            slice=Name(id='conflict_type', ctx=Load()),
+                            ctx=Load()),
+                          slice=Constant(value='severity_distribution'),
+                          ctx=Load()),
+                        slice=Name(id='severity', ctx=Load()),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Subscript(
+                              value=Name(id='conflict_summary', ctx=Load()),
+                              slice=Name(id='conflict_type', ctx=Load()),
+                              ctx=Load()),
+                            slice=Constant(value='affected_triplets'),
+                            ctx=Load()),
+                          attr='update',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='conflict', ctx=Load()),
+                            attr='affected_triplets',
+                            ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Name(id='prioritized_conflicts', ctx=Store())],
+                  value=Call(
+                    func=Name(id='sorted', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='workflow', ctx=Load()),
+                        attr='conflicts_detected',
+                        ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='key',
+                        value=Lambda(
+                          args=arguments(
+                            args=[
+                              arg(arg='c')]),
+                          body=Tuple(
+                            elts=[
+                              Attribute(
+                                value=Name(id='c', ctx=Load()),
+                                attr='severity',
+                                ctx=Load()),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='c', ctx=Load()),
+                                    attr='affected_triplets',
+                                    ctx=Load())])],
+                            ctx=Load()))),
+                      keyword(
+                        arg='reverse',
+                        value=Constant(value=True))])),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='conflict_summary'),
+                      Constant(value='prioritized_count'),
+                      Constant(value='analysis_success')],
+                    values=[
+                      Name(id='conflict_summary', ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='prioritized_conflicts', ctx=Load())]),
+                      Constant(value=True)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Conflict analysis failed: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())]),
+                                conversion=-1)])])),
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='analysis_success'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=False),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_node_entity_resolution',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag_ctx',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Resolve entity identity conflicts.')),
+            Assign(
+              targets=[
+                Name(id='workflow', ctx=Store())],
+              value=Subscript(
+                value=Name(id='dag_ctx', ctx=Load()),
+                slice=Constant(value='workflow'),
+                ctx=Load())),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='entity_conflicts', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='c', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='c', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='workflow', ctx=Load()),
+                          attr='conflicts_detected',
+                          ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='c', ctx=Load()),
+                              attr='conflict_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='ConflictType', ctx=Load()),
+                                attr='ENTITY_IDENTITY_CONFLICT',
+                                ctx=Load())])],
+                        is_async=0)])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='entity_conflicts', ctx=Load())),
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='entities_resolved'),
+                          Constant(value='resolution_success')],
+                        values=[
+                          Constant(value=0),
+                          Constant(value=True)]))]),
+                If(
+                  test=Compare(
+                    left=Constant(value='entity_resolver'),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='l2_executors',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='Exception', ctx=Load()),
+                        args=[
+                          Constant(value='Entity resolver executor not available')]))]),
+                Assign(
+                  targets=[
+                    Name(id='resolution_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='l2_executors',
+                          ctx=Load()),
+                        slice=Constant(value='entity_resolver'),
+                        ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='conflicts',
+                          value=Name(id='entity_conflicts', ctx=Load())),
+                        keyword(
+                          arg='max_entities',
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='max_entities_per_workflow',
+                            ctx=Load()))]))),
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='resolution_result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='success'),
+                      Constant(value=False)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='resolved_entities', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='resolution_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='resolved_entities'),
+                          List(ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='entities_processed',
+                            ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          Name(id='resolved_entities', ctx=Load())]))]),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='entities_resolved'),
+                      Constant(value='resolution_success')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='resolved_entities', ctx=Load())]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='resolution_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='success'),
+                          Constant(value=False)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Entity resolution failed: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())]),
+                                conversion=-1)])])),
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='entities_resolved'),
+                          Constant(value='resolution_success'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=0),
+                          Constant(value=False),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_node_triplet_repair',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag_ctx',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Repairs conflicting career facts and timeline data to ensure résumé consistency and accuracy.\n\n        Improves résumé reliability by fixing contradictory job dates, overlapping positions, and factual errors.\n        ')),
+            Assign(
+              targets=[
+                Name(id='workflow', ctx=Store())],
+              value=Subscript(
+                value=Name(id='dag_ctx', ctx=Load()),
+                slice=Constant(value='workflow'),
+                ctx=Load())),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='triplet_conflicts', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='c', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='c', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='workflow', ctx=Load()),
+                          attr='conflicts_detected',
+                          ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='c', ctx=Load()),
+                              attr='conflict_type',
+                              ctx=Load()),
+                            ops=[
+                              NotEq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='ConflictType', ctx=Load()),
+                                attr='ENTITY_IDENTITY_CONFLICT',
+                                ctx=Load())])],
+                        is_async=0)])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='triplet_conflicts', ctx=Load())),
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='triplets_repaired'),
+                          Constant(value='repair_success')],
+                        values=[
+                          Constant(value=0),
+                          Constant(value=True)]))]),
+                If(
+                  test=Compare(
+                    left=Constant(value='triplet_repairer'),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='l2_executors',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='Exception', ctx=Load()),
+                        args=[
+                          Constant(value='Triplet repairer executor not available')]))]),
+                Assign(
+                  targets=[
+                    Name(id='repair_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='l2_executors',
+                          ctx=Load()),
+                        slice=Constant(value='triplet_repairer'),
+                        ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='conflicts',
+                          value=Name(id='triplet_conflicts', ctx=Load())),
+                        keyword(
+                          arg='max_conflicts',
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='max_conflicts_per_resolution',
+                            ctx=Load()))]))),
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='repair_result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='success'),
+                      Constant(value=False)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='repaired_triplets', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='repair_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='repaired_triplet_ids'),
+                          List(ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='conflicts_resolved',
+                            ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          Name(id='repaired_triplets', ctx=Load())]))]),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='triplets_repaired'),
+                      Constant(value='repair_success')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='repaired_triplets', ctx=Load())]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='repair_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='success'),
+                          Constant(value=False)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Triplet repair failed: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())]),
+                                conversion=-1)])])),
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='triplets_repaired'),
+                          Constant(value='repair_success'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=0),
+                          Constant(value=False),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_node_temporal_invalidation',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag_ctx',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Apply temporal invalidation logic.')),
+            Assign(
+              targets=[
+                Name(id='workflow', ctx=Store())],
+              value=Subscript(
+                value=Name(id='dag_ctx', ctx=Load()),
+                slice=Constant(value='workflow'),
+                ctx=Load())),
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Constant(value='temporal_invalidator'),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='l2_executors',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='Exception', ctx=Load()),
+                        args=[
+                          Constant(value='Temporal invalidator executor not available')]))]),
+                Assign(
+                  targets=[
+                    Name(id='invalidation_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='l2_executors',
+                          ctx=Load()),
+                        slice=Constant(value='temporal_invalidator'),
+                        ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='resolved_entities',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='entities_processed',
+                            ctx=Load())),
+                        keyword(
+                          arg='resolved_triplets',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='conflicts_resolved',
+                            ctx=Load())),
+                        keyword(
+                          arg='temporal_scope',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='temporal_scope',
+                            ctx=Load()))]))),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='invalidations_applied'),
+                      Constant(value='invalidation_success')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='invalidation_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='invalidation_count'),
+                          Constant(value=0)]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='invalidation_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='success'),
+                          Constant(value=False)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Temporal invalidation failed: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())]),
+                                conversion=-1)])])),
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='invalidations_applied'),
+                          Constant(value='invalidation_success'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=0),
+                          Constant(value=False),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_node_validation',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag_ctx',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validates résumé repair results to ensure career data fixes are correct and complete.\n\n        Improves résumé quality by confirming that all timeline conflicts have been properly resolved.\n        ')),
+            Assign(
+              targets=[
+                Name(id='workflow', ctx=Store())],
+              value=Subscript(
+                value=Name(id='dag_ctx', ctx=Load()),
+                slice=Constant(value='workflow'),
+                ctx=Load())),
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Constant(value='repair_validator'),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='l2_executors',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='Exception', ctx=Load()),
+                        args=[
+                          Constant(value='Repair validator executor not available')]))]),
+                Assign(
+                  targets=[
+                    Name(id='validation_result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='l2_executors',
+                          ctx=Load()),
+                        slice=Constant(value='repair_validator'),
+                        ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='workflow_id',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='workflow_id',
+                            ctx=Load())),
+                        keyword(
+                          arg='resolved_entities',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='entities_processed',
+                            ctx=Load())),
+                        keyword(
+                          arg='resolved_triplets',
+                          value=Attribute(
+                            value=Name(id='workflow', ctx=Load()),
+                            attr='conflicts_resolved',
+                            ctx=Load()))]))),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='validation_success'),
+                      Constant(value='validation_score'),
+                      Constant(value='remaining_issues')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='validation_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='success'),
+                          Constant(value=False)]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='validation_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='score'),
+                          Constant(value=0.0)]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='validation_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='remaining_issues'),
+                          Constant(value=0)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Validation failed: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())]),
+                                conversion=-1)])])),
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='validation_success'),
+                          Constant(value='error')],
+                        values=[
+                          Constant(value=False),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_workflow_status',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get the status of a specific workflow.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='active_workflows',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='HealingWorkflow', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_active_workflows',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Lists all currently running résumé data repair and validation workflows.\n\n        Improves résumé monitoring by showing which career data consistency fixes are in progress.\n        ')),
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='active_workflows',
+                        ctx=Load()),
+                      attr='values',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='HealingWorkflow', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_healing_metrics',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Provides résumé data repair performance metrics and quality improvement statistics.\n\n        Improves résumé monitoring by tracking success rates and effectiveness of career data consistency fixes.\n        ')),
+            Return(
+              value=Dict(
+                keys=[
+                  None,
+                  Constant(value='active_workflows'),
+                  Constant(value='total_workflows'),
+                  Constant(value='success_rate')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metrics',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='active_workflows',
+                        ctx=Load())]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workflow_history',
+                        ctx=Load())]),
+                  BinOp(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        ListComp(
+                          elt=Name(id='w', ctx=Load()),
+                          generators=[
+                            comprehension(
+                              target=Name(id='w', ctx=Store()),
+                              iter=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='workflow_history',
+                                ctx=Load()),
+                              ifs=[
+                                Compare(
+                                  left=Attribute(
+                                    value=Name(id='w', ctx=Load()),
+                                    attr='status',
+                                    ctx=Load()),
+                                  ops=[
+                                    Eq()],
+                                  comparators=[
+                                    Attribute(
+                                      value=Name(id='HealingStatus', ctx=Load()),
+                                      attr='COMPLETED',
+                                      ctx=Load())])],
+                              is_async=0)])]),
+                    op=Div(),
+                    right=Call(
+                      func=Name(id='max', ctx=Load()),
+                      args=[
+                        Constant(value=1),
+                        Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='workflow_history',
+                              ctx=Load())])]))]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    AsyncFunctionDef(
+      name='run_scheduled_healing_cycle',
+      args=arguments(
+        args=[
+          arg(
+            arg='l2_executors',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Callable', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='l4_state_manager',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Performs routine résumé data consistency checks and automatic repairs on a regular schedule.\n\n    Improves résumé reliability by continuously monitoring and fixing career timeline issues without manual intervention.\n    ')),
+        Assign(
+          targets=[
+            Name(id='controller', ctx=Store())],
+          value=Call(
+            func=Name(id='TemporalKGSelfHealingController', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='l2_executors',
+                value=Name(id='l2_executors', ctx=Load())),
+              keyword(
+                arg='l4_state_manager',
+                value=Name(id='l4_state_manager', ctx=Load()))])),
+        Return(
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='controller', ctx=Load()),
+                attr='run_temporal_kg_self_heal_cycle',
+                ctx=Load()),
+              keywords=[
+                keyword(
+                  arg='trigger',
+                  value=Attribute(
+                    value=Name(id='HealingTrigger', ctx=Load()),
+                    attr='SCHEDULED',
+                    ctx=Load()))])))],
+      returns=Name(id='HealingWorkflow', ctx=Load())),
+    AsyncFunctionDef(
+      name='repair_conflicts',
+      args=arguments(
+        args=[
+          arg(
+            arg='conflict_types',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='ConflictType', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='l2_executors',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Callable', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='entity_filters',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Targets specific résumé data conflicts for immediate repair and validation.\n\n    Improves résumé accuracy by focusing on particular types of career timeline or data inconsistencies.\n    ')),
+        Assign(
+          targets=[
+            Name(id='controller', ctx=Store())],
+          value=Call(
+            func=Name(id='TemporalKGSelfHealingController', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='l2_executors',
+                value=Name(id='l2_executors', ctx=Load()))])),
+        Return(
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='controller', ctx=Load()),
+                attr='schedule_conflict_detection_and_repair',
+                ctx=Load()),
+              keywords=[
+                keyword(
+                  arg='conflict_types',
+                  value=Name(id='conflict_types', ctx=Load())),
+                keyword(
+                  arg='entity_filters',
+                  value=Name(id='entity_filters', ctx=Load()))])))],
+      returns=Name(id='HealingWorkflow', ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='HealingTrigger'),
+          Constant(value='HealingStatus'),
+          Constant(value='HealingWorkflow'),
+          Constant(value='HealingOrchestrationConfig'),
+          Constant(value='TemporalKGSelfHealingController'),
+          Constant(value='run_scheduled_healing_cycle'),
+          Constant(value='repair_conflicts')],
+        ctx=Load()))])

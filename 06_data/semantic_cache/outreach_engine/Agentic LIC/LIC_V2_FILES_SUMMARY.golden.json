@@ -1,0 +1,6 @@
+{
+  "golden_content": "# LIC V2 Files - Complete Summary\n\n## All V2 Python Files Created\n\n### 1. **models_LIC_v2.py** (377 lines, 12K)\nComplete data models with V2 architecture patterns:\n- Custom exceptions (HopExecutionError, StagingBufferError, FactualGapError, etc.)\n- Enumerations (Route, Archetype, GateDecision, ValidationSeverity, etc.)\n- Dataclasses for all workflow entities:\n  - OutreachMission, ProfileAnalysis, ResearchContext\n  - MessageScaffold, GeneratedMessage, ValidationResult\n  - HopCheckpoint, RAGEvidence, RAGCritique, RAGState, RAGTelemetry\n- **ImmutableStagingBuffer** - Write-once buffer for data integrity\n- **TraceRegistry** - Comprehensive audit trail system\n\n### 2. **state_manager_LIC_v2.py** (460 lines, 16K)\nState persistence and manifest management:\n- StateSerializer class (deprecated for hop-by-hop, kept for compatibility)\n- **ManifestManager** class:\n  - create_manifest() - Initialize new mission manifests\n  - load_manifest() - Resume from existing runs\n  - add_checkpoint() - Record h",
+  "full_hash": "ac11b45abe7d8bab8ef7d4cb8df6a6833322cc2e2bb857ef46b2256c65ce7700",
+  "generated_at": 1764728331.382145,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\LIC_V2_FILES_SUMMARY.md"
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v2\\hyphenation_rules.json",
+    "rel_path": "hyphenation_rules.json",
+    "root_name": "resume_engine/v2",
+    "file_hash": "047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457",
+    "file_size": 1342,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728327.0879626
+}

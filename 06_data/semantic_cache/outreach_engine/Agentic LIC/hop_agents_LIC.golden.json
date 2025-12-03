@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: hop_agents_LIC.py\n# Description: Refactored HOP agents for v13.0 pure agentic architecture\n# Demonstrates state-based I/O, single responsibility, and tool augmentation\n\n__version__ = \"13.0\"\n\nimport json\nimport os\nfrom typing import Dict, List, Any, Optional\nfrom datetime import datetime\n\nfrom models_LIC import (\n    OutreachMission, ProfileAnalysis, ResearchContext, MessageScaffold,\n    Route, Archetype, ValidationResult, ValidationSeverity, RAGResult,\n    SenderGroundingWhitelists, FactualGapError, FailureClassifier\n)\nfrom state_manager_LIC import StateManager\nfrom memory_LIC import VectorMemoryStore\nfrom llm_clients import GeminiLLMClient\nfrom retrieval_clients import GoogleSearchClient\nfrom utils_LIC import CircuitBreaker\nfrom tools_LIC import CodeInterpreterTool, ValidationToolkit\n\n\n# ============================================================================\n# HOP-1: PROFILE ANALYSIS AGENT\n# ============================================================================\n\ncla",
+  "full_hash": "cf98d91346060c5074d9c13508ec8e9cebbde91053112d793052289fc8628a49",
+  "generated_at": 1764728331.3487005,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\hop_agents_LIC.py"
+}

@@ -1,0 +1,773 @@
+Module(
+  body=[
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Import(
+      names=[
+        alias(name='agent_stacks_v10_8.components.drafting', asname='drafting_module')]),
+    ImportFrom(
+      module='agent_tools_v10_7',
+      names=[
+        alias(name='EvidenceBriefAssemblerTool'),
+        alias(name='EvidenceClarificationTool')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.components.drafting',
+      names=[
+        alias(name='DraftingGuildCoordinator')],
+      level=0),
+    FunctionDef(
+      name='strategy_payload',
+      args=arguments(),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='strategy_name'),
+              Constant(value='focus_areas'),
+              Constant(value='key_achievements_to_highlight'),
+              Constant(value='tone')],
+            values=[
+              Constant(value='AI Trailblazer'),
+              List(
+                elts=[
+                  Constant(value='automation'),
+                  Constant(value='scalability')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Scaled platform adoption')],
+                ctx=Load()),
+              Constant(value='executive')]))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='guild_coordinator',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context'),
+          arg(arg='monkeypatch')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='original_dumps', ctx=Store())],
+          value=Attribute(
+            value=Attribute(
+              value=Name(id='drafting_module', ctx=Load()),
+              attr='json',
+              ctx=Load()),
+            attr='dumps',
+            ctx=Load())),
+        FunctionDef(
+          name='safe_dumps',
+          args=arguments(
+            args=[
+              arg(arg='obj')],
+            vararg=arg(arg='args'),
+            kwarg=arg(arg='kwargs')),
+          body=[
+            FunctionDef(
+              name='default_serializer',
+              args=arguments(
+                args=[
+                  arg(arg='value')]),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Constant(value='model_dump')]),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='value', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load())))]),
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Constant(value='__dict__')]),
+                  body=[
+                    Return(
+                      value=DictComp(
+                        key=Name(id='k', ctx=Load()),
+                        value=Name(id='v', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Tuple(
+                              elts=[
+                                Name(id='k', ctx=Store()),
+                                Name(id='v', ctx=Store())],
+                              ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='value', ctx=Load()),
+                                  attr='__dict__',
+                                  ctx=Load()),
+                                attr='items',
+                                ctx=Load())),
+                            ifs=[
+                              UnaryOp(
+                                op=Not(),
+                                operand=Call(
+                                  func=Attribute(
+                                    value=Name(id='k', ctx=Load()),
+                                    attr='startswith',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='__')]))],
+                            is_async=0)]))]),
+                Return(
+                  value=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='kwargs', ctx=Load()),
+                  attr='setdefault',
+                  ctx=Load()),
+                args=[
+                  Constant(value='default'),
+                  Name(id='default_serializer', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='original_dumps', ctx=Load()),
+                args=[
+                  Name(id='obj', ctx=Load()),
+                  Starred(
+                    value=Name(id='args', ctx=Load()),
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    value=Name(id='kwargs', ctx=Load()))]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='drafting_module', ctx=Load()),
+                attr='json',
+                ctx=Load()),
+              Constant(value='dumps'),
+              Name(id='safe_dumps', ctx=Load())])),
+        AsyncFunctionDef(
+          name='fake_clarification',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='tool_input'),
+              arg(arg='workflow_id')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='request_id'),
+                  Constant(value='recipient'),
+                  Constant(value='questions'),
+                  Constant(value='priority'),
+                  Constant(value='context_summary')],
+                values=[
+                  Constant(value='clar-1'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='recipient'),
+                      Constant(value='rag_team')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='questions'),
+                      List(ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='priority'),
+                      Constant(value='normal')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='context_summary'),
+                      Constant(value='')])]))]),
+        AsyncFunctionDef(
+          name='fake_brief',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='tool_input'),
+              arg(arg='workflow_id')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='section'),
+                  Constant(value='brief'),
+                  Constant(value='key_points'),
+                  Constant(value='outstanding_questions'),
+                  Constant(value='citations')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='section'),
+                      Constant(value='summary')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='draft_content'),
+                      Constant(value='')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='evidence_points'),
+                      List(ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tool_input', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='open_questions'),
+                      List(ctx=Load())]),
+                  List(ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='EvidenceClarificationTool', ctx=Load()),
+              Constant(value='run_async'),
+              Name(id='fake_clarification', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='EvidenceBriefAssemblerTool', ctx=Load()),
+              Constant(value='run_async'),
+              Name(id='fake_brief', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='clar_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='staticmethod', ctx=Load()),
+            args=[
+              Lambda(
+                args=arguments(
+                  args=[
+                    arg(arg='data')]),
+                body=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='model_dump',
+                      value=Lambda(
+                        args=arguments(),
+                        body=Name(id='data', ctx=Load())))]))])),
+        Assign(
+          targets=[
+            Name(id='brief_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='staticmethod', ctx=Load()),
+            args=[
+              Lambda(
+                args=arguments(
+                  args=[
+                    arg(arg='data')]),
+                body=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='model_dump',
+                      value=Lambda(
+                        args=arguments(),
+                        body=Name(id='data', ctx=Load())))]))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='EvidenceClarificationTool', ctx=Load()),
+                attr='ClarificationRequestOutput',
+                ctx=Load()),
+              Constant(value='model_validate'),
+              Name(id='clar_validator', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='EvidenceBriefAssemblerTool', ctx=Load()),
+                attr='EvidenceBriefOutput',
+                ctx=Load()),
+              Constant(value='model_validate'),
+              Name(id='brief_validator', ctx=Load())])),
+        FunctionDef(
+          name='simple_merge',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            vararg=arg(arg='layers')),
+          body=[
+            AnnAssign(
+              target=Name(id='merged', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            For(
+              target=Name(id='layer', ctx=Store()),
+              iter=Name(id='layers', ctx=Load()),
+              body=[
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='key', ctx=Store()),
+                      Name(id='value', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='layer', ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='merged', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Name(id='value', ctx=Load()))])]),
+            Return(
+              value=Name(id='merged', ctx=Load()))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='DraftingGuildCoordinator', ctx=Load()),
+              Constant(value='_merge_sections'),
+              Name(id='simple_merge', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='DraftingGuildCoordinator', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_drafting_guild_produces_sections',
+      args=arguments(
+        args=[
+          arg(arg='guild_coordinator'),
+          arg(arg='strategy_payload')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='coordinator', ctx=Store())],
+          value=Name(id='guild_coordinator', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='task_context', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='bullets'),
+              Constant(value='strategy'),
+              Constant(value='resume')],
+            values=[
+              List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='text'),
+                      Constant(value='experience')],
+                    values=[
+                      Constant(value='Led AI migration'),
+                      Dict(
+                        keys=[
+                          Constant(value='company'),
+                          Constant(value='title')],
+                        values=[
+                          Constant(value='ACME'),
+                          Constant(value='VP')])]),
+                  Dict(
+                    keys=[
+                      Constant(value='text'),
+                      Constant(value='experience')],
+                    values=[
+                      Constant(value='Improved margins 12%'),
+                      Dict(
+                        keys=[
+                          Constant(value='company'),
+                          Constant(value='title'),
+                          Constant(value='years')],
+                        values=[
+                          Constant(value='ACME'),
+                          Constant(value='VP'),
+                          Constant(value=3)])])],
+                ctx=Load()),
+              Name(id='strategy_payload', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='summary')],
+                values=[
+                  Constant(value='Seasoned operator')])])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='coordinator', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              args=[
+                Name(id='task_context', ctx=Load())],
+              keywords=[
+                keyword(
+                  arg='workflow_id',
+                  value=Constant(value='wf-draft'))]))),
+        Assert(
+          test=Compare(
+            left=Constant(value='summary'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='final_output'),
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='experience'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='final_output'),
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='result', ctx=Load()),
+              slice=Constant(value='overall_status'),
+              ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='pass'),
+                  Constant(value='review'),
+                  Constant(value='revise')])]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_drafting_guild_respects_style_overrides',
+      args=arguments(
+        args=[
+          arg(arg='guild_coordinator'),
+          arg(arg='strategy_payload')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='coordinator', ctx=Store())],
+          value=Name(id='guild_coordinator', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='task_context', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='bullets'),
+              Constant(value='strategy'),
+              Constant(value='resume')],
+            values=[
+              List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='text'),
+                      Constant(value='experience')],
+                    values=[
+                      Constant(value='Launch new GTM'),
+                      Dict(
+                        keys=[
+                          Constant(value='company'),
+                          Constant(value='title')],
+                        values=[
+                          Constant(value='Globex'),
+                          Constant(value='Director')])])],
+                ctx=Load()),
+              Name(id='strategy_payload', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='summary')],
+                values=[
+                  Constant(value='Builder')])])),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='result', ctx=Store()),
+                Name(id='_', ctx=Store())],
+              ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='coordinator', ctx=Load()),
+                attr='_execute_guild',
+                ctx=Load()),
+              args=[
+                Name(id='task_context', ctx=Load())],
+              keywords=[
+                keyword(
+                  arg='workflow_id',
+                  value=Constant(value='wf-override')),
+                keyword(
+                  arg='overrides',
+                  value=Dict(
+                    keys=[
+                      Constant(value='boost_metrics'),
+                      Constant(value='expand_summary')],
+                    values=[
+                      Constant(value=True),
+                      Constant(value=True)]))]))),
+        Assign(
+          targets=[
+            Name(id='entries', ctx=Store())],
+          value=Subscript(
+            value=Subscript(
+              value=Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='final_output'),
+                ctx=Load()),
+              slice=Constant(value='experience'),
+              ctx=Load()),
+            slice=Constant(value='entries'),
+            ctx=Load())),
+        Assert(
+          test=Name(id='entries', ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Constant(value='+ quantified impact'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Subscript(
+                  value=Name(id='entries', ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                slice=Constant(value='bullet'),
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='summary_points', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Subscript(
+                value=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='final_output'),
+                  ctx=Load()),
+                slice=Constant(value='summary'),
+                ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='evidence_points'),
+              List(ctx=Load())])),
+        Assert(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='summary_points', ctx=Load()),
+              Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='Launch'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='p', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='p', ctx=Store()),
+                        iter=Name(id='summary_points', ctx=Load()),
+                        is_async=0)])])]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_drafting_guild_handles_empty_bullets_gracefully',
+      args=arguments(
+        args=[
+          arg(arg='guild_coordinator'),
+          arg(arg='strategy_payload')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='coordinator', ctx=Store())],
+          value=Name(id='guild_coordinator', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='task_context', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='bullets'),
+              Constant(value='strategy'),
+              Constant(value='resume')],
+            values=[
+              List(ctx=Load()),
+              Name(id='strategy_payload', ctx=Load()),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='coordinator', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              args=[
+                Name(id='task_context', ctx=Load())],
+              keywords=[
+                keyword(
+                  arg='workflow_id',
+                  value=Constant(value='wf-empty'))]))),
+        Assert(
+          test=Compare(
+            left=Constant(value='final_output'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='result', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='summary'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='final_output'),
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='final_output'),
+                  ctx=Load()),
+                slice=Constant(value='experience'),
+                ctx=Load()),
+              slice=Constant(value='entries'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

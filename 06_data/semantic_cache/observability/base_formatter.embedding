@@ -1,0 +1,1 @@
+{"#":1,"base":1,"schema":2,"classes":1,"from":2,"pydantic":1,"import":2,"basemodel":1,"typing":1,"dict,":1,"any,":1,"optional":1,"class":1,"baseschema(basemodel):":1,"\"\"\"base":1,"for":1,"all":1,"components\"\"\"":1,"name:":1,"str":2,"version:":1,"=":2,"\"1.0.0\"":1,"metadata:":1,"optional[dict[str,":1,"any]]":1,"none":1}

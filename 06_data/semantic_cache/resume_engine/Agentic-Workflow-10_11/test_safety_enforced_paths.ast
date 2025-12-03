@@ -1,0 +1,50 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='E2E Safety Enforced Path Tests.')),
+    ClassDef(
+      name='TestSafetyEnforcedPaths',
+      body=[
+        Expr(
+          value=Constant(value='E2E tests for safety enforced paths.')),
+        FunctionDef(
+          name='test_pii_blocked_path',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test PII is blocked in workflow path.')),
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Constant(value='safe resume content')),
+            Assert(
+              test=Compare(
+                left=Constant(value='SSN:'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='content', ctx=Load())]))]),
+        FunctionDef(
+          name='test_policy_violation_path',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test policy violation handling path.')),
+            Assign(
+              targets=[
+                Name(id='violations', ctx=Store())],
+              value=List(ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='violations', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))])])])

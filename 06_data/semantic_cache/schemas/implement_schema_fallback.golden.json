@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nSchema definitions for schema fallback implementation and management.\nContains only type definitions and data models - no execution logic.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Any, List\nfrom enum import Enum\n\n\nclass FallbackType(Enum):\n    \"\"\"Schema fallback types.\"\"\"\n    ALTERNATIVE_SERVICE = \"alternative_service\"\n    CACHED_RESULT = \"cached_result\"\n    DEFAULT_RESPONSE = \"default_response\"\n    SIMPLIFIED_OPERATION = \"simplified_operation\"\n\n\nclass FallbackTrigger(Enum):\n    \"\"\"Fallback trigger conditions.\"\"\"\n    FAILURE_THRESHOLD = \"failure_threshold\"\n    TIMEOUT = \"timeout\"\n    PERFORMANCE_DEGRADATION = \"performance_degradation\"\n    MANUAL_OVERRIDE = \"manual_override\"\n\n\n@dataclass\nclass SchemaFallback:\n    \"\"\"Schema for individual schema fallback.\"\"\"\n    fallback_id: str\n    fallback_type: FallbackType\n    trigger_condition: FallbackTrigger\n    fallback_configuration: Dict[str, Any]\n    priority: int = 0\n\n\n@dataclass\nclass FallbackImplementation:\n    \"\"",
+  "full_hash": "aab07dfe39973c6f78dbc13862f52e9b36066ca8b18f3cd5c97f85653a6fbd46",
+  "generated_at": 1764728342.8181918,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\orc-layer\\act-phase\\use-schema-tools\\routing\\retry-task\\implement_schema_fallback.py"
+}

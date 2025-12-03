@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\router-microagent-layer\\retry-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\init_.py",
+    "rel_path": "init_.py",
+    "root_name": "tests",
+    "file_hash": "9e2bd957a76477b5ca8b7dfab222532f3fd094ee5977414f1c61783c438d2e5e",
+    "file_size": 527,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.9132555
+}

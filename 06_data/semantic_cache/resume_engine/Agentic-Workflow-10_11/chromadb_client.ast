@@ -1,0 +1,357 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nChromaDB client provider for vector storage operations.\n\nIsolates ChromaDB SDK dependencies to the providers layer\nand provides a clean interface for vector store operations.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    Try(
+      body=[
+        Import(
+          names=[
+            alias(name='chromadb')])],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          name='exc',
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ImportError', ctx=Load()),
+                args=[
+                  Constant(value='chromadb package not installed. Install with: pip install chromadb')]),
+              cause=Name(id='exc', ctx=Load()))])]),
+    ClassDef(
+      name='ChromaClient',
+      body=[
+        Expr(
+          value=Constant(value='Provider client for ChromaDB operations.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='host',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='port',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='path',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='settings',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Dict', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value='localhost'),
+              Constant(value=8000),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize ChromaDB client with connection parameters.')),
+            If(
+              test=Name(id='path', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='client',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='chromadb', ctx=Load()),
+                      attr='PersistentClient',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='path',
+                        value=Name(id='path', ctx=Load())),
+                      keyword(
+                        arg='settings',
+                        value=Name(id='settings', ctx=Load()))]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='client',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='chromadb', ctx=Load()),
+                      attr='HttpClient',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='host',
+                        value=Name(id='host', ctx=Load())),
+                      keyword(
+                        arg='port',
+                        value=Name(id='port', ctx=Load())),
+                      keyword(
+                        arg='settings',
+                        value=Name(id='settings', ctx=Load()))]))])]),
+        FunctionDef(
+          name='create_collection',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='metadata',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Dict', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Create a new collection in ChromaDB.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='create_collection',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Name(id='metadata', ctx=Load()))]))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='get_collection',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get an existing collection from ChromaDB.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='get_collection',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load()))]))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='delete_collection',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Delete a collection from ChromaDB.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='delete_collection',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load()))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='list_collections',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='List all collections in ChromaDB.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='list_collections',
+                  ctx=Load())))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='heartbeat',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Check ChromaDB server heartbeat.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='heartbeat',
+                  ctx=Load())))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_version',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get ChromaDB version.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='get_version',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='ChromaConfig',
+      body=[
+        Expr(
+          value=Constant(value='Configuration for ChromaDB client.')),
+        AnnAssign(
+          target=Name(id='host', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='localhost'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='port', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=8000),
+          simple=1),
+        AnnAssign(
+          target=Name(id='path', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='settings', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='init_chroma_client',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='ChromaConfig', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Initialize a ChromaDB client from configuration.')),
+        If(
+          test=Compare(
+            left=Name(id='config', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='ChromaConfig', ctx=Load())))]),
+        Return(
+          value=Call(
+            func=Name(id='ChromaClient', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='host',
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='host',
+                  ctx=Load())),
+              keyword(
+                arg='port',
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='port',
+                  ctx=Load())),
+              keyword(
+                arg='path',
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='path',
+                  ctx=Load())),
+              keyword(
+                arg='settings',
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='settings',
+                  ctx=Load()))]))],
+      returns=Name(id='ChromaClient', ctx=Load()))])

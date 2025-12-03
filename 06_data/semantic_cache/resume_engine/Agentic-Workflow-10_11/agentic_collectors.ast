@@ -1,0 +1,68 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Any')],
+      level=0),
+    AnnAssign(
+      target=Name(id='EVENTS', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load()),
+      value=List(ctx=Load()),
+      simple=1),
+    FunctionDef(
+      name='append_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='event',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Append a raw event object to the in-memory agentic event buffer.')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='EVENTS', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Name(id='event', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='get_events',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return a snapshot of all collected agentic events.')),
+        Return(
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Name(id='EVENTS', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='clear_events',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Clear all collected agentic events.')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='EVENTS', ctx=Load()),
+              attr='clear',
+              ctx=Load())))],
+      returns=Constant(value=None))])

@@ -1,0 +1,240 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nVector search execution layer for resume processing workflows.\n\nExecutes vector search operations to support comprehensive resume\nenhancement through semantic retrieval for job alignment.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='l4',
+      names=[
+        alias(name='PineconeAdapter'),
+        alias(name='VectorQueryResult')],
+      level=0),
+    ClassDef(
+      name='SearchResult',
+      body=[
+        Expr(
+          value=Constant(value='\n    Container for resume processing vector search results.\n\n    Provides structured data retrieval for resume enhancement\n    and job alignment workflows.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='VectorSearchExecutor',
+      body=[
+        Expr(
+          value=Constant(value="\n    L2 executor for resume processing vector search operations.\n\n    Executes search plans from L1 via L4's PineconeAdapter for\n    resume enhancement and job alignment workflows.\n    ")),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='pinecone_adapter',
+                annotation=Name(id='PineconeAdapter', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Initializes vector search executor for resume processing.\n\n        Args:\n            pinecone_adapter: L4 PineconeAdapter for resume data retrieval\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='adapter',
+                  ctx=Store())],
+              value=Name(id='pinecone_adapter', ctx=Load()))]),
+        FunctionDef(
+          name='execute_search',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='query_text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='top_k',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='metadata_filter',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='score_threshold',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='float', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=5),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Executes vector search for resume processing data retrieval.\n\n        Main L2 execution method that takes search plan and executes\n        via L4 for resume enhancement and job alignment.\n        ')),
+            AnnAssign(
+              target=Name(id='l4_results', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='VectorQueryResult', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='adapter',
+                    ctx=Load()),
+                  attr='query_by_text',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_text',
+                    value=Name(id='query_text', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load())),
+                  keyword(
+                    arg='top_k',
+                    value=Name(id='top_k', ctx=Load())),
+                  keyword(
+                    arg='metadata_filter',
+                    value=Name(id='metadata_filter', ctx=Load())),
+                  keyword(
+                    arg='score_threshold',
+                    value=Name(id='score_threshold', ctx=Load()))]),
+              simple=1),
+            Return(
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='SearchResult', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='id',
+                      value=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='id',
+                        ctx=Load())),
+                    keyword(
+                      arg='score',
+                      value=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='score',
+                        ctx=Load())),
+                    keyword(
+                      arg='metadata',
+                      value=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='result', ctx=Store()),
+                    iter=Name(id='l4_results', ctx=Load()),
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SearchResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='execute_upsert',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='namespace',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='texts',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='record_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='metadata_list',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value='doc'),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Executes vector upsert for resume processing data storage.\n\n        Stores resume enhancement data for improved job alignment.\n        ')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='adapter',
+                    ctx=Load()),
+                  attr='upsert_text_records',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='texts',
+                    value=Name(id='texts', ctx=Load())),
+                  keyword(
+                    arg='namespace',
+                    value=Name(id='namespace', ctx=Load())),
+                  keyword(
+                    arg='record_type',
+                    value=Name(id='record_type', ctx=Load())),
+                  keyword(
+                    arg='metadata_list',
+                    value=Name(id='metadata_list', ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))])])

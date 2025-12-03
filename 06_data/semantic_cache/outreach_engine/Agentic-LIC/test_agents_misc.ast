@@ -1,0 +1,133 @@
+Module(
+  body=[
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.agents.k1_router_agent',
+      names=[
+        alias(name='RouterAgent')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.agents.k5_cta_agent',
+      names=[
+        alias(name='CTAAgent')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.agents.k6_signature_agent',
+      names=[
+        alias(name='SignatureAgent')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.safety.bias_auditor',
+      names=[
+        alias(name='BiasAssessment')],
+      level=0),
+    FunctionDef(
+      name='test_router_prioritizes_meeting_intent',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='router', ctx=Store())],
+          value=Call(
+            func=Name(id='RouterAgent', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='inputs', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt',
+                value=Constant(value='Can we schedule a meeting next week?'))])),
+        Assign(
+          targets=[
+            Name(id='decision', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='router', ctx=Load()),
+              attr='route',
+              ctx=Load()),
+            args=[
+              Name(id='inputs', ctx=Load()),
+              Call(
+                func=Name(id='BiasAssessment', ctx=Load()),
+                args=[
+                  Constant(value=0.0),
+                  Constant(value='clean')])])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='decision', ctx=Load()),
+              attr='priority',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='high')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='decision', ctx=Load()),
+              attr='channel',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='email')]))]),
+    FunctionDef(
+      name='test_cta_agent_appends_default_line',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='CTAAgent', ctx=Load())),
+              attr='adjust',
+              ctx=Load()),
+            args=[
+              Constant(value='Body')],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None))])),
+        Assert(
+          test=Compare(
+            left=Constant(value='CTA:'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='draft', ctx=Load())]))]),
+    FunctionDef(
+      name='test_signature_agent_adds_signature_block',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='SignatureAgent', ctx=Load())),
+              attr='attach',
+              ctx=Load()),
+            args=[
+              Constant(value='Body')],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None))])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Name(id='draft', ctx=Load()),
+              attr='endswith',
+              ctx=Load()),
+            args=[
+              Constant(value='LIC Outreach Bot')]))])])

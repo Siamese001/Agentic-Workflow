@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Phase 0.5 Semantic Cache Rebuild System\n\n## Overview\n\nA comprehensive semantic cache system for Resume Engine Archive (RG) and Outreach Engine Archive (LIC) that processes code archives with strict engine separation, parallel processing, and complete semantic artifact generation.\n\n## Architecture\n\n### Core Components\n\n- **schemas/**: Data structure definitions and validation schemas\n  - `semantic_lineage.py`: Core dataclasses for semantic lineage tracking\n  - `semantic_cache_schema.json`: JSON schema for cache validation\n\n- **runtime/**: Processing and analysis engines\n  - `semantic_scanner.py`: Unified scanner with parallel processing and engine tagging\n  - `semantic_lineage_merge.py`: Cross-version semantic diff and lineage analysis\n  - `semantic_reconstruction.py`: Query APIs and similarity search functionality\n\n- **scripts/**: Main execution orchestration\n  - `run_phase_0_5_semantic_cache.py`: CLI interface with dry-run, validation, and rebuild modes\n\n- **tests/**: Comprehensive ",
+  "full_hash": "07ef6fd827877e280eb5a1db076b9d501fee3b2965c839fd5cf30e848e0aac6e",
+  "generated_at": 1764728346.1620603,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\06_data\\semantic_cache\\README.md"
+}

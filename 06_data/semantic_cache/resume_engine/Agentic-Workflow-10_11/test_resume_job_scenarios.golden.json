@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nGolden Datasets - Resume-Job Matching Scenarios\n\nDefines golden datasets with known expected outcomes for resume-job matching evaluation.\nThese datasets serve as ground truth for LM-as-judge scoring and system validation.\n\"\"\"\n\nimport pytest\nfrom typing import Dict, Any, List\nfrom dataclasses import dataclass, field\nfrom enum import Enum\n\n# Mark all tests in this module as golden evaluation tests\npytestmark = [pytest.mark.golden, pytest.mark.evaluation]\n\n\nclass ScenarioDifficulty(Enum):\n    \"\"\"Difficulty levels for golden scenarios.\"\"\"\n    BASIC = \"basic\"\n    INTERMEDIATE = \"intermediate\"\n    ADVANCED = \"advanced\"\n    EXPERT = \"expert\"\n\n\nclass ExpectedOutcome(Enum):\n    \"\"\"Expected outcome types for golden scenarios.\"\"\"\n    HIGH_MATCH = \"high_match\"      # Score >= 0.8\n    MEDIUM_MATCH = \"medium_match\"  # Score 0.5-0.8\n    LOW_MATCH = \"low_match\"        # Score < 0.5\n    REJECT = \"reject\"              # Safety/policy violation\n\n\n@dataclass(frozen=True)\nclass GoldenScenario:\n    \"\"\"G",
+  "full_hash": "a4793af52440141e77d89cced8c767a95395459197cbc9fb76a97779018ca496",
+  "generated_at": 1764728226.6593223,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\datasets\\test_resume_job_scenarios.py"
+}

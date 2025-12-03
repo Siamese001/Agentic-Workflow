@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL4 state manager for resume job alignment workflows.\n\nEnsures reliable storage and retrieval for resume enhancement.\n\"\"\"\n\nfrom typing import Any, Dict, Optional, List\nfrom dataclasses import dataclass, field\nfrom datetime import datetime, timezone\nimport json\nfrom pathlib import Path\n\n@dataclass\nclass TemporalContext:\n    \"\"\"\n    Manages temporal context for resume job alignment workflows.\n\n    Provides time-bounded reasoning for resume enhancement.\n    \"\"\"\n    current_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))\n    processing_window: str = \"30d\"  # Default 30-day window\n    temporal_relationships: Dict[str, Any] = field(default_factory=dict)\n    \n    def is_within_window(self, timestamp: datetime) -> bool:\n        \"\"\"Checks if timestamp is within resume processing window.\"\"\"\n        from datetime import timedelta\n        window_delta = timedelta(days=int(self.processing_window.replace('d', '')))\n        return (self.current_time - timestamp) <= windo",
+  "full_hash": "9dd681fda635d1d4f795047f9914835035146b90e7ecc2fa897f3a8e5d8a021b",
+  "generated_at": 1764728225.2741477,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\state_manager.py"
+}

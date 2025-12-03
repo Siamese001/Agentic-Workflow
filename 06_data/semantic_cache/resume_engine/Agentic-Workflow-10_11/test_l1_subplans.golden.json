@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L1 Planning Subplans Tests.\"\"\"\n\nclass TestL1Subplans:\n    \"\"\"Tests for L1 planning subplans.\"\"\"\n    \n    def test_rag_subplan_creation(self):\n        \"\"\"Test RAG subplan creation.\"\"\"\n        subplan = {\"strategy\": \"hybrid\", \"max_hits\": 16}\n        assert subplan[\"strategy\"] == \"hybrid\"\n    \n    def test_drafting_subplan_creation(self):\n        \"\"\"Test drafting subplan creation.\"\"\"\n        sections = [\"summary\", \"experience\", \"skills\"]\n        assert len(sections) == 3\n    \n    def test_qa_subplan_creation(self):\n        \"\"\"Test QA subplan creation.\"\"\"\n        qa_config = {\"depth\": 2, \"council_size\": 3}\n        assert qa_config[\"depth\"] == 2\n",
+  "full_hash": "1c8aa13ea1c72a09edc7f427bc894c0da9185754e8bcb4c40d0d296557e56965",
+  "generated_at": 1764728226.8407412,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\subplans\\test_l1_subplans.py"
+}

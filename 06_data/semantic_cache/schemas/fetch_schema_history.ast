@@ -1,0 +1,194 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema history fetching and temporal queries.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='HistoryType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of schema history.')),
+        Assign(
+          targets=[
+            Name(id='VERSION_HISTORY', ctx=Store())],
+          value=Constant(value='version_history')),
+        Assign(
+          targets=[
+            Name(id='MODIFICATION_HISTORY', ctx=Store())],
+          value=Constant(value='modification_history')),
+        Assign(
+          targets=[
+            Name(id='USAGE_HISTORY', ctx=Store())],
+          value=Constant(value='usage_history')),
+        Assign(
+          targets=[
+            Name(id='DEPENDENCY_HISTORY', ctx=Store())],
+          value=Constant(value='dependency_history'))]),
+    ClassDef(
+      name='TimeRange',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Time range types for history queries.')),
+        Assign(
+          targets=[
+            Name(id='ALL_TIME', ctx=Store())],
+          value=Constant(value='all_time')),
+        Assign(
+          targets=[
+            Name(id='LAST_24_HOURS', ctx=Store())],
+          value=Constant(value='last_24_hours')),
+        Assign(
+          targets=[
+            Name(id='LAST_WEEK', ctx=Store())],
+          value=Constant(value='last_week')),
+        Assign(
+          targets=[
+            Name(id='LAST_MONTH', ctx=Store())],
+          value=Constant(value='last_month')),
+        Assign(
+          targets=[
+            Name(id='CUSTOM_RANGE', ctx=Store())],
+          value=Constant(value='custom_range'))]),
+    ClassDef(
+      name='HistoryQuery',
+      body=[
+        Expr(
+          value=Constant(value='Schema for history retrieval query.')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='history_type', ctx=Store()),
+          annotation=Name(id='HistoryType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='time_range', ctx=Store()),
+          annotation=Name(id='TimeRange', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='custom_start_date', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='custom_end_date', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='HistoryEntry',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual history entry.')),
+        AnnAssign(
+          target=Name(id='entry_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='change_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='changed_by', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SchemaHistory',
+      body=[
+        Expr(
+          value=Constant(value='Schema for complete schema history.')),
+        AnnAssign(
+          target=Name(id='history_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entries', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='HistoryEntry', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_entries', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query_metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

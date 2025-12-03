@@ -1,0 +1,57 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='infra.sandbox.models',
+      names=[
+        alias(name='ToolCallRequest')],
+      level=0),
+    ImportFrom(
+      module='infra.sandbox.vm_manager',
+      names=[
+        alias(name='run_in_ephemeral_vm')],
+      level=0),
+    ImportFrom(
+      module='infra.sandbox.sandbox_errors',
+      names=[
+        alias(name='SandboxTimeoutError')],
+      level=0),
+    FunctionDef(
+      name='test_timeout_error_when_timeout_non_positive',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='req', ctx=Store())],
+          value=Call(
+            func=Name(id='ToolCallRequest', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='tool_name',
+                value=Constant(value='echo')),
+              keyword(
+                arg='args',
+                value=List(ctx=Load())),
+              keyword(
+                arg='timeout_s',
+                value=Constant(value=0.0))])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='SandboxTimeoutError', ctx=Load())]))],
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='run_in_ephemeral_vm', ctx=Load()),
+                args=[
+                  Name(id='req', ctx=Load())],
+                keywords=[
+                  keyword(arg='resource_limits', value=Dict())]))])])])

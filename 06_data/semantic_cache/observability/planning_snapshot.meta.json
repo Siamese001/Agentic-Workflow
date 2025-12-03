@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\snapshots\\-1_Periodic_snapshots\\observer-microagent-layer\\act-phase-group\\general-operations-ops\\planning_snapshot.py",
+    "rel_path": "planning_snapshot.py",
+    "root_name": "observability",
+    "file_hash": "640d802cc72bed7e002de3c87685c87f5137da7c6cce881ce1069aa2b69c8d14",
+    "file_size": 2787,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 7
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728350.4676461
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\observer-microagent-layer\\rank-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\microvm.py",
+    "rel_path": "microvm.py",
+    "root_name": "runtime",
+    "file_hash": "d4a4ff0ae69344b4630b1a3b41d1c9288b8deeff8502a98f13de013baa89fd55",
+    "file_size": 2632,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.0056887
+}

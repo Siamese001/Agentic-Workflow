@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\04_testing_autorepair.md",
+    "rel_path": "04_testing_autorepair.md",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "ce407b498c3340117cf7b2caeccf3f8d2dcac536d2a622ffb727f33253c7374d",
+    "file_size": 1656,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728228.1561906
+}

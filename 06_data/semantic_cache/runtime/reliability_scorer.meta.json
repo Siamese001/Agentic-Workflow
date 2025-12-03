@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\observer-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\reliability_scorer.py",
+    "rel_path": "reliability_scorer.py",
+    "root_name": "runtime",
+    "file_hash": "3b65d42f852d4cf4f44ab8beefd5b2366b63621f53ea95a2a7f6fbad4c79dfa6",
+    "file_size": 886,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.9962919
+}

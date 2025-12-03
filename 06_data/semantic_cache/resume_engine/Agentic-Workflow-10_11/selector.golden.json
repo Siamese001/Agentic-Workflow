@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nModel selection orchestration for r\u00e9sum\u00e9 processing workflows.\n\nCoordinates policy evaluation and caching for optimal r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom typing import Optional\n\nfrom core.models.models import ExecutionProfile\n\nfrom .cache import get_cached_choice, set_cached_choice\nfrom .models import ModelChoice, RoutingContext\nfrom .policies import choose_provider_and_model, enforce_budget\n\n\ndef select_model(\n    ctx: RoutingContext,\n    *,\n    requested_model: Optional[str] = None,\n    execution_profile: Optional[ExecutionProfile] = None,\n) -> ModelChoice:\n    \"\"\"\n    Selects optimal model for r\u00e9sum\u00e9 processing workflows with caching.\n\n    Ensures efficient model choice and budget enforcement for comprehensive r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n\n    cached = get_cached_choice(ctx)\n    if cached is not None and requested_model is None:\n        return cached\n\n    base_choice = choose_provider_and_model(ctx, requested_model=requested_model)\n    final_choice = enforce_budget(base_cho",
+  "full_hash": "aa5ee7712ddb126cb6700ba51c4b9b4d0013a5b343db0ccb1786106c06bc57e0",
+  "generated_at": 1764728224.2583046,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\model_routing\\selector.py"
+}

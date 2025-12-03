@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\planner-microagent-layer\\rank-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\sample_company_kg.json",
+    "rel_path": "sample_company_kg.json",
+    "root_name": "tests",
+    "file_hash": "7cfb00c6aac2e204286759accf4a48889bb233e2915e56ecaced1112059b4aab",
+    "file_size": 7083,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.7379944
+}

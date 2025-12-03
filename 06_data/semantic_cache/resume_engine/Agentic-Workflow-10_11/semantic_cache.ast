@@ -1,0 +1,152 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='RetrievalConfig')],
+      level=0),
+    ImportFrom(
+      module='meta.cache.redis_cache',
+      names=[
+        alias(name='init_redis_client'),
+        alias(name='get_llm_cache'),
+        alias(name='set_llm_cache')],
+      level=0),
+    FunctionDef(
+      name='read_semantic_cache',
+      args=arguments(
+        args=[
+          arg(
+            arg='key',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='cfg',
+            annotation=Name(id='RetrievalConfig', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Read a value from the semantic cache if enabled.\n\n    Currently this delegates to the generic Redis cache using the\n    RetrievalConfig.redis_cache settings.\n    ')),
+        Assign(
+          targets=[
+            Name(id='redis_cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='cfg', ctx=Load()),
+              Constant(value='redis_cache'),
+              Constant(value=None)])),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              UnaryOp(
+                op=Not(),
+                operand=Name(id='redis_cfg', ctx=Load())),
+              UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='redis_cfg', ctx=Load()),
+                  attr='enabled',
+                  ctx=Load()))]),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='init_redis_client', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='url',
+                value=Attribute(
+                  value=Name(id='redis_cfg', ctx=Load()),
+                  attr='url',
+                  ctx=Load()))])),
+        Return(
+          value=Call(
+            func=Name(id='get_llm_cache', ctx=Load()),
+            args=[
+              Name(id='client', ctx=Load()),
+              Name(id='key', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='write_semantic_cache',
+      args=arguments(
+        args=[
+          arg(
+            arg='key',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='value',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='cfg',
+            annotation=Name(id='RetrievalConfig', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Write a value to the semantic cache if enabled.')),
+        Assign(
+          targets=[
+            Name(id='redis_cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='cfg', ctx=Load()),
+              Constant(value='redis_cache'),
+              Constant(value=None)])),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              UnaryOp(
+                op=Not(),
+                operand=Name(id='redis_cfg', ctx=Load())),
+              UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='redis_cfg', ctx=Load()),
+                  attr='enabled',
+                  ctx=Load()))]),
+          body=[
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='init_redis_client', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='url',
+                value=Attribute(
+                  value=Name(id='redis_cfg', ctx=Load()),
+                  attr='url',
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='set_llm_cache', ctx=Load()),
+            args=[
+              Name(id='client', ctx=Load()),
+              Name(id='key', ctx=Load()),
+              Name(id='value', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='ttl_s',
+                value=Attribute(
+                  value=Name(id='redis_cfg', ctx=Load()),
+                  attr='ttl_s',
+                  ctx=Load()))]))],
+      returns=Constant(value=None))])

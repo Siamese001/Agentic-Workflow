@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\enforce_scripts_filters.py",
+    "rel_path": "enforce_scripts_filters.py",
+    "root_name": "scripts",
+    "file_hash": "1b14122d0a886a8bd4bab3925d7ee242179a540be53d47884b0a91ef6f134899",
+    "file_size": 11380,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.4420068
+}

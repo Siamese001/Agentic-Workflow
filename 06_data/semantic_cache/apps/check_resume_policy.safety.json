@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728353.320453,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\plan-phase\\check-resume-rules\\policy\\check-safety\\check_resume_policy.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"1.role\": {\n    \"standards\": {\n      \"audit_ready_qa\": {\n        \"end_to_end\": true,\n        \"enforce\": [\n          \"QA Tables\",\n          \"Schema Enforcement\"\n        ]\n      },\n      \"reasoning_isolation\": {\n        \"confined_to_section\": 4,\n        \"enforced\": true,\n        \"methods_allowed\": [\n          \"CoT\",\n          \"ToT\",\n          \"Self-Consistency\",\n          \"Reflexion\"\n        ]\n      },\n      \"strict_mzlo\": {\n        \"record_conformance\": true,\n        \"requirements\": [\n          \"zero_loss\",\n          \"zero_ambiguity\",\n          \"zero_omission\",\n          \"zero_misrepresentation\"\n        ]\n      }\n    }\n  },\n  \"2.task\": {\n    \"success_criteria\": {\n      \"output_gate\": [\n        \"Per-key OUTPUT emitted only after per-key REASONING QA PASS\",\n        \"ASCII/dash hygiene PASS\",\n        \"Detected Settings Summary rendered\"\n      ],\n      \"reasoning_gate\": [\n        \"Per-key QA tables present and PASS even if SHOW_REASONING=false\",\n        \"Hybrid CoT+ToT present at plan-t",
+  "full_hash": "b6754d04989d4615e358545c694dad26e0ba2a149bb6200fec031e7e98acc5cd",
+  "generated_at": 1764728338.5545154,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.26.2025_v7.5.json"
+}

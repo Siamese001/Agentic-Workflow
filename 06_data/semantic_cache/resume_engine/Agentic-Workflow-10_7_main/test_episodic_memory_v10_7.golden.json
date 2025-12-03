@@ -1,0 +1,6 @@
+{
+  "golden_content": "from types import SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7.models import StrategyPlan\nfrom core_v10_7.services import EpisodicMemory\nfrom agent_stacks_v10_8.components.bullet import AsyncBulletGeneratorAgent\n\n\nclass FakeRedis:\n    def __init__(self):\n        self.store = {}\n\n    def get(self, key):\n        return self.store.get(key)\n\n    def setex(self, key, ttl, value):\n        self.store[key] = value\n\n\nclass DummyMetrics:\n    def get_average_latency(self, **_kwargs):\n        return None\n\n    def record(self, *_args, **_kwargs):\n        return None\n\n\nclass DummyContext:\n    def __init__(self, episodic_memory):\n        self.config = SimpleNamespace(\n            meta_loop_config=SimpleNamespace(feedback_log_path=\"/tmp/feedback.json\"),\n            model_config=SimpleNamespace(),\n            agent_stacks=SimpleNamespace(),\n            performance_config=SimpleNamespace(max_complex_model_latency_ms=1000),\n        )\n        self.prompt_manager = SimpleNamespace(\n            goal_stat",
+  "full_hash": "959f7c46b48b66e9604d4be782dc9e7b294835e6a787af9c5e9ac522365afe91",
+  "generated_at": 1764728230.646531,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\memory\\test_episodic_memory_v10_7.py"
+}

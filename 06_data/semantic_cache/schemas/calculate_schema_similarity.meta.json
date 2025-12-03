@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\expand-phase\\convert-schema-content\\embedding\\compare-meaning\\calculate_schema_similarity.py",
+    "rel_path": "calculate_schema_similarity.py",
+    "root_name": "schemas",
+    "file_hash": "c761f0d45caea6b48f8f3114c74205a8033dd104b31bc7aecc5e1d9618bfc93d",
+    "file_size": 1372,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.015111
+}

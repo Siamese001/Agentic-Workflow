@@ -1,0 +1,6 @@
+{
+  "golden_content": "class ValidationError(Exception):\n    pass\n\n\ndef Field(default=..., *, default_factory=None, **_kwargs):  # pragma: no cover - stub\n    if default is ... and default_factory is not None:\n        return default_factory()\n    return default\n\n\nclass BaseModel:\n    \"\"\"Minimal stand-in for pydantic.BaseModel used in tests.\"\"\"\n\n    def __init__(self, **data):\n        annotations = getattr(self, \"__annotations__\", {})\n        for name, annotation in annotations.items():\n            if name in data:\n                value = data[name]\n            elif hasattr(self, name):\n                value = getattr(self, name)\n                if value is ...:\n                    raise ValidationError(f\"Field '{name}' is required\")\n            else:\n                raise ValidationError(f\"Field '{name}' is required\")\n            setattr(self, name, value)\n\n        for extra_key, extra_value in data.items():\n            if extra_key not in annotations:\n                setattr(self, extra_key, extra_value)\n\n ",
+  "full_hash": "7c39e2007c249404cfceac690c6e88858f5b9dadfe63a347c02c840bd70d6555",
+  "generated_at": 1764728329.5437324,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\pydantic.py"
+}

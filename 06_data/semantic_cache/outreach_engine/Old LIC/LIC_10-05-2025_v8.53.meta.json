@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.53.json",
+    "rel_path": "LIC_10-05-2025_v8.53.json",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "57b2c5b9299fcc5b3273e79fa0d08ec6ce228c3f475918fee93541a55ab20d78",
+    "file_size": 225646,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728336.0204916
+}

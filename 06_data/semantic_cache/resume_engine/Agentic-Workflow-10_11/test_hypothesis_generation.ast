@@ -1,0 +1,186 @@
+Module(
+  body=[
+    ImportFrom(
+      module='meta.metacognition.hypothesis',
+      names=[
+        alias(name='generate_initial_hypotheses')],
+      level=0),
+    ImportFrom(
+      module='meta.metacognition.models',
+      names=[
+        alias(name='Hypothesis')],
+      level=0),
+    ClassDef(
+      name='DummyRAG',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='evidence_count',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='evidence',
+                  ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='object', ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='_', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='range', ctx=Load()),
+                      args=[
+                        Name(id='evidence_count', ctx=Load())]),
+                    is_async=0)]))],
+          returns=Constant(value=None))]),
+    ClassDef(
+      name='DummyAgentCard',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='agent_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='agent_id',
+                  ctx=Store())],
+              value=Name(id='agent_id', ctx=Load()))],
+          returns=Constant(value=None))]),
+    FunctionDef(
+      name='test_generate_initial_hypotheses_with_evidence',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='rag', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyRAG', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='evidence_count',
+                value=Constant(value=3))])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyAgentCard', ctx=Load()),
+            args=[
+              Constant(value='planner_1')])),
+        Assign(
+          targets=[
+            Name(id='hs', ctx=Store())],
+          value=Call(
+            func=Name(id='generate_initial_hypotheses', ctx=Load()),
+            args=[
+              Constant(value='task'),
+              Name(id='rag', ctx=Load()),
+              Name(id='agent', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='hs', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=1)])),
+        Assert(
+          test=Call(
+            func=Name(id='all', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='h', ctx=Load()),
+                    Name(id='Hypothesis', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='h', ctx=Store()),
+                    iter=Name(id='hs', ctx=Load()),
+                    is_async=0)])])),
+        Assert(
+          test=Compare(
+            left=SetComp(
+              elt=Attribute(
+                value=Name(id='h', ctx=Load()),
+                attr='agent_id',
+                ctx=Load()),
+              generators=[
+                comprehension(
+                  target=Name(id='h', ctx=Store()),
+                  iter=Name(id='hs', ctx=Load()),
+                  is_async=0)]),
+            ops=[
+              Eq()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='planner_1')])]))]),
+    FunctionDef(
+      name='test_generate_initial_hypotheses_without_evidence',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='rag', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyRAG', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='evidence_count',
+                value=Constant(value=0))])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyAgentCard', ctx=Load()),
+            args=[
+              Constant(value='planner_1')])),
+        Assign(
+          targets=[
+            Name(id='hs', ctx=Store())],
+          value=Call(
+            func=Name(id='generate_initial_hypotheses', ctx=Load()),
+            args=[
+              Constant(value='task'),
+              Name(id='rag', ctx=Load()),
+              Name(id='agent', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='hs', ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Subscript(
+                value=Name(id='hs', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load()),
+              attr='confidence',
+              ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=0.3)]))])])

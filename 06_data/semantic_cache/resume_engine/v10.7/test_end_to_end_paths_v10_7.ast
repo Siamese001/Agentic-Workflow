@@ -1,0 +1,135 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    FunctionDef(
+      name='test_full_run_variants',
+      args=arguments(
+        args=[
+          arg(arg='resume'),
+          arg(arg='jd'),
+          arg(arg='expect_keys')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Name(id='resume', ctx=Load()),
+                  Name(id='jd', ctx=Load())])])),
+        For(
+          target=Name(id='k', ctx=Store()),
+          iter=Name(id='expect_keys', ctx=Load()),
+          body=[
+            Assert(
+              test=Compare(
+                left=Name(id='k', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='out', ctx=Load())]))])],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='resume,jd,expect_keys'),
+            List(
+              elts=[
+                Tuple(
+                  elts=[
+                    Constant(value='Jane Doe'),
+                    Constant(value='Chief AI Officer'),
+                    List(
+                      elts=[
+                        Constant(value='summary')],
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Constant(value='John Smith'),
+                    Constant(value='Director, AI'),
+                    List(
+                      elts=[
+                        Constant(value='summary')],
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Constant(value='LowConf'),
+                    Constant(value='Analyst'),
+                    List(
+                      elts=[
+                        Constant(value='events')],
+                      ctx=Load())],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Constant(value='Ambiguous'),
+                    Constant(value='Unknown'),
+                    List(
+                      elts=[
+                        Constant(value='events')],
+                      ctx=Load())],
+                  ctx=Load())],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_scenarios_collectively',
+      args=arguments(
+        args=[
+          arg(arg='scenario')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Name(id='scenario', ctx=Load()),
+                  Constant(value='scenario')])])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load()),
+              Name(id='dict', ctx=Load())]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='scenario'),
+            List(
+              elts=[
+                Constant(value='batch-small'),
+                Constant(value='batch-large'),
+                Constant(value='parallel-merge'),
+                Constant(value='hil-trigger')],
+              ctx=Load())])])])

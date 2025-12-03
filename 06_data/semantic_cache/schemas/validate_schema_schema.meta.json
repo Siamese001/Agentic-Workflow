@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\validate-phase\\check-schema-structure\\policy\\check-safety\\validate_schema_schema.py",
+    "rel_path": "validate_schema_schema.py",
+    "root_name": "schemas",
+    "file_hash": "5f022dd31165fec3342ceae91525c77dfdff853951d2cd2812c4ca948dcf423c",
+    "file_size": 1354,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.326596
+}

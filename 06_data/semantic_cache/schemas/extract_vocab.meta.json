@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\validation_tools\\extract_vocab.py",
+    "rel_path": "extract_vocab.py",
+    "root_name": "schemas",
+    "file_hash": "59d3f92cd742aad93716a7f0b14d63a1b2c73a44c65b360bc2cc73fbe4c98b7b",
+    "file_size": 6206,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 4
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.241586
+}

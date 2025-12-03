@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nPhase 7 Stress Testing - Concurrent JD Processing\n\nTests system behavior under concurrent job description processing loads.\nFocuses on performance, resource usage, thread safety, and scalability limits.\n\"\"\"\n\nimport pytest\nimport asyncio\nimport threading\nimport time\nimport random\nfrom concurrent.futures import ThreadPoolExecutor, as_completed\nfrom typing import List, Dict, Any, Optional\nfrom dataclasses import dataclass\nfrom unittest.mock import Mock, patch, AsyncMock\n\n# Import telemetry for stress monitoring\nfrom tests.observability.test_telemetry_collection import TelemetryCollector, ExecutionMetrics, MetricType\n\n\n@dataclass(frozen=True, slots=True)\nclass JDProcessingTask:\n    \"\"\"Represents a job description processing task for stress testing.\"\"\"\n    task_id: str\n    job_title: str\n    job_description: str\n    resume_content: str\n    priority: int  # 1=high, 2=medium, 3=low\n    expected_processing_time: float\n\n\n@dataclass(frozen=True, slots=True)\nclass StressTestResult:\n    \"\"\"Res",
+  "full_hash": "e882361b336032322b8e3fea4669ac47c3d72d328507984524a509cb234ca413",
+  "generated_at": 1764728227.6848323,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\stress\\test_concurrent_jd_processing.py"
+}

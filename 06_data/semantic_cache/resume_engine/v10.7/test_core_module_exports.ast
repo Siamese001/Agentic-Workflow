@@ -1,0 +1,223 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='asyncio',
+      names=[
+        alias(name='TimeoutError', asname='NativeTimeoutError')],
+      level=0),
+    Import(
+      names=[
+        alias(name='core_v10_7')]),
+    FunctionDef(
+      name='_module_union',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return the union of all declared module exports plus AsyncTimeoutError.')),
+        Assign(
+          targets=[
+            Name(id='modules', ctx=Store())],
+          value=List(
+            elts=[
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='agents',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='clients',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='config',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='constants',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='context',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='exceptions',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='mcp',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='models',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='resilience',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='core_v10_7', ctx=Load()),
+                attr='services',
+                ctx=Load())],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='exports', ctx=Store())],
+          value=SetComp(
+            elt=Name(id='symbol', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='module', ctx=Store()),
+                iter=Name(id='modules', ctx=Load()),
+                is_async=0),
+              comprehension(
+                target=Name(id='symbol', ctx=Store()),
+                iter=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='module', ctx=Load()),
+                    Constant(value='__all__'),
+                    List(ctx=Load())]),
+                is_async=0)])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='exports', ctx=Load()),
+              attr='add',
+              ctx=Load()),
+            args=[
+              Constant(value='AsyncTimeoutError')])),
+        Return(
+          value=Name(id='exports', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='set', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='test_public_api_contains_expected_symbols',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='expected', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='CacheManager'),
+              Constant(value='WorkflowContext'),
+              Constant(value='ConfigV10_7'),
+              Constant(value='AsyncTimeoutError')])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Name(id='expected', ctx=Load()),
+              attr='issubset',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='core_v10_7', ctx=Load()),
+                    attr='__all__',
+                    ctx=Load())])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_async_timeout_error_alias_matches_asyncio',
+      args=arguments(),
+      body=[
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='core_v10_7', ctx=Load()),
+              attr='AsyncTimeoutError',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='NativeTimeoutError', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_package_reexports_match_module_definitions',
+      args=arguments(),
+      body=[
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='core_v10_7', ctx=Load()),
+              attr='CacheManager',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='core_v10_7', ctx=Load()),
+                  attr='services',
+                  ctx=Load()),
+                attr='CacheManager',
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='core_v10_7', ctx=Load()),
+              attr='WorkflowContext',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='core_v10_7', ctx=Load()),
+                  attr='context',
+                  ctx=Load()),
+                attr='WorkflowContext',
+                ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_public_api_matches_union_of_submodules',
+      args=arguments(),
+      body=[
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='set', ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='core_v10_7', ctx=Load()),
+                  attr='__all__',
+                  ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Call(
+                func=Name(id='_module_union', ctx=Load()))]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_public_api_is_sorted',
+      args=arguments(),
+      body=[
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='list', ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='core_v10_7', ctx=Load()),
+                  attr='__all__',
+                  ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='core_v10_7', ctx=Load()),
+                    attr='__all__',
+                    ctx=Load())])]))],
+      returns=Constant(value=None))])

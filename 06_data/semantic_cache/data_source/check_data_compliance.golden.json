@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - check_data_compliance\nImplements L1 Cognitive Planning Layer for check data compliance operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass CheckDataCompliancePlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass CheckDataCompliancePlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass CheckDataCompliancePlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: b",
+  "full_hash": "ca8ed7fc37021684e34e15e1670162e963d271b35465e9bd6248baeb2f579072",
+  "generated_at": 1764728350.0694673,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\validate-phase\\check-data-structure\\policy\\check-safety\\check_data_compliance.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nZero-loss Baseline Reconciliation for Agentic-Workflow\n\nImplements G3-G4: Zero-loss baseline reconciliation and mapping\n\nProvides comprehensive analysis of baseline vs current structure to determine\nif the 1303\u21921701 leaf count represents legitimate evolution or actual loss.\n\"\"\"\n\nimport yaml\nimport json\nimport sys\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Set, Tuple, Optional\nfrom dataclasses import dataclass, asdict\nfrom datetime import datetime\n\n\n@dataclass\nclass LeafNode:\n    path: str\n    is_file: bool\n    size: int = 0\n    semantic_type: str = \"\"\n\n\n@dataclass\nclass BaselineReport:\n    original_leaf_count: int\n    current_leaf_count: int\n    original_leaves: List[LeafNode]\n    current_leaves: List[LeafNode]\n    mapping_analysis: Dict[str, Any]\n    reconciliation_type: str  # \"ZERO_LOSS_PROVEN\" or \"BASELINE_UPDATED\"\n    timestamp: str\n\n\nclass BaselineReconciler:\n    \"\"\"\n    Zero-loss baseline reconciliation engine\n    \n    Analyzes origin",
+  "full_hash": "0d71fd7610a6f83c25e86884a945d1c7fc07a54c062760aa192b0272ac746f09",
+  "generated_at": 1764728345.4268925,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\baseline_reconciler.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"metadata\": {\n    \"schema\": \"LIC_Workflow\",\n    \"version\": \"v10.10\",\n    \"base_version\": \"v9.22\",\n    \"previous_version\": \"v10.00\",\n    \"patch_version\": \"v10.00.1\",\n    \"release_date\": \"2025-10-14\",\n    \"architecture\": \"Clerk, then Artist (Hardened)\",\n    \"status\": \"PRODUCTION_READY\",\n    \"description\": \"Production-ready release with 41 critical gap remediations. Maintains v9.22 architecture while adding boot validation, enhanced RAG pipeline, deterministic classification, complete QA rule coverage, and patch-level hardening for HyDE, confidence scoring, and entity grounding.\",\n    \"changes_summary\": {\n      \"v10.00_remediations\": {\n        \"high_priority\": 14,\n        \"medium_priority\": 20,\n        \"low_priority\": 4,\n        \"total\": 38\n      },\n      \"v10.00.1_patches\": {\n        \"critical\": 2,\n        \"warning\": 1,\n        \"total\": 3\n      },\n      \"v10.10_total_remediations\": 41,\n      \"test_coverage\": \"100% (20/20 tests passing)\",\n      \"regression_count\": 0\n    },\n    \"change",
+  "full_hash": "6d65279ecf44589cdfd7006ebbb9d09399747877256d6134dbf1f257ae1fbc2b",
+  "generated_at": 1764728337.0522695,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-14-2025_v10.10.json"
+}

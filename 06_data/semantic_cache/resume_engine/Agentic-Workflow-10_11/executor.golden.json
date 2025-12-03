@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nDAG executor for r\u00e9sum\u00e9 processing workflow orchestration.\n\nProvides minimal async execution engine for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\n\nfrom typing import Any, Dict, Iterable, Optional, Set, List\n\nfrom orchestration.agent_registry import AgentRegistry\nfrom .models import Graph\n\n\nclass DAGExecutor:\n    \"\"\"\n    Executes directed acyclic graphs for r\u00e9sum\u00e9 processing workflows.\n\n    Orchestrates node execution with proper dependency resolution for r\u00e9sum\u00e9 enhancement.\n    \"\"\"\n\n    def __init__(self, graph: Graph, agent_registry: AgentRegistry | None = None) -> None:\n        self._graph = graph\n        self._agent_registry = agent_registry\n\n    # ------------------------------------------------------------------\n    # Agent selection helpers (Phase-1 agent-aware substrate)\n    # ------------------------------------------------------------------\n\n    def _select_agent_for_node(self, node_id: str) -> str | None:\n        \"\"\"\n        Selects optimal agent for r\u00e9sum\u00e9 process",
+  "full_hash": "01758bef0deac6cbc481cfa3f5b510dabea06a0a68f2c9023d651ae4456aae42",
+  "generated_at": 1764728224.2054744,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\dag_engine\\executor.py"
+}

@@ -1,0 +1,1351 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nUnified Runtime Models (v10_10 · Phase 3 — FINAL)\n=================================================\n\nThis file defines all structured dataclasses and Pydantic models\nused throughout the v10_10 agentic runtime:\n\n    • Core workflow dataclasses\n    • Plans / Results (Strategy, RAG, Drafting, QA, Safety)\n    • RetrievalConfig\n    • PromptDefinition / PromptVersion\n    • ExecutionProfile\n    • Telemetry models (Phase 3 typed events)\n    • CostSnapshot\n    • PolicyDecisionEvent\n    • Skill / Domain classifier results\n    • CouncilVote + CorrectionLoopState (Phase-3 DAG)\n\nDesign constraints:\n\n    1. This module is *data-only* (no I/O, no business logic).\n    2. Models are intentionally verbose and explicit.\n    3. All cross-layer contracts must be defined here (or imported here).\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel'),
+        alias(name='Field')],
+      level=0),
+    ClassDef(
+      name='JobDescription',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='title', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='company', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='ResumeProfile',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='headline', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='summary', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='raw_text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='WorkflowState',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Canonical workflow state.\n\n    This is the single source of truth for all cross-layer state.\n\n    L4 is the *only* layer allowed to mutate instances of this model;\n    other layers must work with copies or immutable views.\n    ')),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job', ctx=Store()),
+          annotation=Name(id='JobDescription', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resume', ctx=Store()),
+          annotation=Name(id='ResumeProfile', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='strategy_notes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rag_context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='draft_text', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa_findings_summary', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_summary', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='slots', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='WorkflowStatePatch',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    A typed, partial update to WorkflowState.\n\n    L2/L3 produce patches; L4 applies them.\n    ')),
+        AnnAssign(
+          target=Name(id='strategy_notes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rag_context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='draft_text', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa_findings_summary', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_summary', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='slots', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='ExecutionContext',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    ExecutionContext is an immutable snapshot of:\n\n        • Runtime configuration (ExecutionProfile / RetrievalConfig)\n        • Routing hints\n        • Meta-profile snapshot\n        • Telemetry / cost containers (read-only at this layer)\n\n    It is passed down the stack but never mutated in-place.\n    ')),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='profile_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval', ctx=Store()),
+          annotation=Constant(value='RetrievalConfig'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='routing_policy', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sandbox_config', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='meta_profile_snapshot', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cost_snapshot', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Constant(value='CostSnapshot'),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        FunctionDef(
+          name='span_context',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(value=Dict())],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='L2ResultBundle',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='strategy', ctx=Store()),
+          annotation=Constant(value='StrategyResult'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rag', ctx=Store()),
+          annotation=Constant(value='RAGResult'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='drafting', ctx=Store()),
+          annotation=Constant(value='DraftingResult'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa', ctx=Store()),
+          annotation=Constant(value='QAResult'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety', ctx=Store()),
+          annotation=Constant(value='SafetyResult'),
+          simple=1),
+        FunctionDef(
+          name='empty_with_error',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='msg',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='cls', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='strategy',
+                    value=Call(
+                      func=Name(id='StrategyResult', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='branches',
+                          value=List(ctx=Load())),
+                        keyword(
+                          arg='chosen_branch_id',
+                          value=Constant(value=None))])),
+                  keyword(
+                    arg='rag',
+                    value=Call(
+                      func=Name(id='RAGResult', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='evidence',
+                          value=List(ctx=Load())),
+                        keyword(
+                          arg='used_hyde',
+                          value=Constant(value=False))])),
+                  keyword(
+                    arg='drafting',
+                    value=Call(
+                      func=Name(id='DraftingResult', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='sections',
+                          value=List(ctx=Load()))])),
+                  keyword(
+                    arg='qa',
+                    value=Call(
+                      func=Name(id='QAResult', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='findings',
+                          value=List(ctx=Load()))])),
+                  keyword(
+                    arg='safety',
+                    value=Call(
+                      func=Name(id='SafetyResult', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='findings',
+                          value=List(
+                            elts=[
+                              Call(
+                                func=Name(id='SafetyFinding', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='check_id',
+                                    value=Constant(value='internal_error')),
+                                  keyword(
+                                    arg='category',
+                                    value=Constant(value='internal')),
+                                  keyword(
+                                    arg='severity',
+                                    value=Constant(value='high')),
+                                  keyword(
+                                    arg='message',
+                                    value=Name(id='msg', ctx=Load())),
+                                  keyword(arg='details', value=Dict())])],
+                            ctx=Load()))]))]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())])]),
+    ClassDef(
+      name='TelemetryEvent',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='ts_ms', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='int', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='span_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parent_span_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='attributes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='RetrievalAttemptEvent',
+      bases=[
+        Name(id='TelemetryEvent', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='method', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)]),
+    ClassDef(
+      name='RetrievalResultEvent',
+      bases=[
+        Name(id='TelemetryEvent', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='method', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='hit_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_hits', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)]),
+    ClassDef(
+      name='RankingEvent',
+      bases=[
+        Name(id='TelemetryEvent', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='stage', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='input_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='output_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='RoutingDecisionEvent',
+      bases=[
+        Name(id='TelemetryEvent', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='agent_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='provider', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reason', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)]),
+    ClassDef(
+      name='CorrectionEvent',
+      bases=[
+        Name(id='TelemetryEvent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Emitted when the workflow graph performs a correction loop\n    (e.g., re-running RAG or QA).\n    ')),
+        AnnAssign(
+          target=Name(id='node', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='iteration', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reason', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)]),
+    ClassDef(
+      name='PromptVersion',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='major', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='minor', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='patch', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='as_str',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='major',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='minor',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='patch',
+                      ctx=Load()),
+                    conversion=-1)]))],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='PromptDefinition',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='version', ctx=Store()),
+          annotation=Name(id='PromptVersion', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='RetrievalConfig',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='strategy', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='hybrid'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='use_rrf', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_hits', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=20),
+          simple=1),
+        AnnAssign(
+          target=Name(id='bm25_k1', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.2),
+          simple=1),
+        AnnAssign(
+          target=Name(id='bm25_b', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.75),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rrf_weights', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='float', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='allow_hyde', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa_council_size', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='qa_council_mode', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='simple'),
+          simple=1)]),
+    ClassDef(
+      name='Evidence',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='RAGResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='evidence', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Evidence', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='used_hyde', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)]),
+    ClassDef(
+      name='RAGPlan',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='allow_hyde', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='require_hybrid', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='strategy_hint', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)]),
+    ClassDef(
+      name='StrategyBranch',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)]),
+    ClassDef(
+      name='StrategyResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='branches', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='StrategyBranch', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='chosen_branch_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        FunctionDef(
+          name='get_chosen_branch_text',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            For(
+              target=Name(id='b', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='branches',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='b', ctx=Load()),
+                      attr='id',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='chosen_branch_id',
+                        ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Attribute(
+                        value=Name(id='b', ctx=Load()),
+                        attr='text',
+                        ctx=Load()))])]),
+            Return(
+              value=Constant(value=''))],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='DraftSection',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='title', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='DraftingResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='DraftSection', ctx=Load()),
+            ctx=Load()),
+          simple=1)]),
+    ClassDef(
+      name='QAFinding',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='category', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='QAResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='findings', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='QAFinding', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='SafetyFinding',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='check_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='category', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='SafetyResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='findings', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SafetyFinding', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='ExecutionProfile',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval', ctx=Store()),
+          annotation=Name(id='RetrievalConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='CostSnapshot',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='input_tokens', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='output_tokens', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_cost_usd', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='call_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cache_hits', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='provider', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_name', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='layer', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)]),
+    ClassDef(
+      name='PolicyDecisionEvent',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='classifier_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='outcome', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='SkillClassifierResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Deterministic classification of user skills (non-LLM).')),
+        AnnAssign(
+          target=Name(id='labels', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='primary_label', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='features', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='DomainClassifierResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Deterministic classification of domain / industry (non-LLM).')),
+        AnnAssign(
+          target=Name(id='labels', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='primary_label', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='features', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)]),
+    ClassDef(
+      name='CouncilVote',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Aggregated vote from a council / committee of agents.')),
+        AnnAssign(
+          target=Name(id='members', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='selected_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='ties', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reason', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)]),
+    ClassDef(
+      name='CorrectionLoopState',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value="Summary of a workflow's correction loop over the DAG.")),
+        AnnAssign(
+          target=Name(id='iteration', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_iterations', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='surfaces_triggered', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='last_signal', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='terminated_reason', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)])])

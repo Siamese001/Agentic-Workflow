@@ -1,0 +1,796 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    FunctionDef(
+      name='_issues',
+      args=arguments(
+        args=[
+          arg(arg='out')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='qa', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa')]),
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='out', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa')]),
+              Dict()])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='qa', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='issues'),
+              List(ctx=Load())]))]),
+    FunctionDef(
+      name='test_confidence_score_numeric_and_in_range',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='ConfidenceTest'),
+                  Constant(value='AI Exec')])])),
+        Assign(
+          targets=[
+            Name(id='qa', ctx=Store())],
+          value=Subscript(
+            value=Subscript(
+              value=Name(id='out', ctx=Load()),
+              slice=Constant(value='resume'),
+              ctx=Load()),
+            slice=Constant(value='qa'),
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Constant(value='confidence'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='qa', ctx=Load())]),
+          msg=Constant(value='QA missing confidence score')),
+        Assign(
+          targets=[
+            Name(id='conf', ctx=Store())],
+          value=Subscript(
+            value=Name(id='qa', ctx=Load()),
+            slice=Constant(value='confidence'),
+            ctx=Load())),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='conf', ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='int', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load())]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Confidence must be numeric; got '),
+              FormattedValue(
+                value=Call(
+                  func=Name(id='type', ctx=Load()),
+                  args=[
+                    Name(id='conf', ctx=Load())]),
+                conversion=-1)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Name(id='conf', ctx=Load()),
+              Constant(value=1)]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='Confidence must be in [0,1], got '),
+              FormattedValue(
+                value=Name(id='conf', ctx=Load()),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_semantic_mismatch_triggers_issues',
+      args=arguments(
+        args=[
+          arg(arg='resume'),
+          arg(arg='jd')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='resume', ctx=Load()),
+                  Name(id='jd', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Name(id='_issues', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='issues', ctx=Load()),
+              Name(id='list', ctx=Load())]),
+          msg=Constant(value='QA issues must be list-like')),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='issues', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          msg=Constant(value='Semantic mismatch between resume and JD went undetected; SemanticValidator or QAValidator may not be firing.'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='resume,jd'),
+            List(
+              elts=[
+                Tuple(
+                  elts=[
+                    Constant(value='Expert in cooking recipes and culinary arts'),
+                    Constant(value='Director, AI')],
+                  ctx=Load()),
+                Tuple(
+                  elts=[
+                    Constant(value='Certified yoga instructor with deep knowledge of anatomy'),
+                    Constant(value='AWS Cloud Security Lead')],
+                  ctx=Load())],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_conflicting_summary_and_rag_claims_flagged',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    If summary contradicts retrieved RAG document signals, SemanticValidator must flag it.\n    A conflict can be simulated by using a special trigger input.\n    ')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='CONFLICT_TRIGGER'),
+                  Constant(value='AI Exec')])])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Name(id='_issues', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='issues', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          msg=Constant(value='Summary/RAG conflict not detected — semantic consistency check failing'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_empty_summary_triggers_qa_issue',
+      args=arguments(
+        args=[
+          arg(arg='text')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='text', ctx=Load()),
+                  Constant(value='Anthropic')])])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Name(id='_issues', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='issues', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          msg=Constant(value='Empty/invalid summary must trigger QA issues'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='text'),
+            List(
+              elts=[
+                Constant(value=''),
+                Constant(value=' '),
+                Constant(value=None)],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_conflicting_claims_not_allowed',
+      args=arguments(
+        args=[
+          arg(arg='resume')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    If resume content produces contradictory outputs across Drafting/RAG/QA,\n    QA must normalize or flag the contradiction.\n    ')),
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='resume', ctx=Load()),
+                  Constant(value='AI Director')])])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Name(id='_issues', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load())])),
+        Assert(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='conflict'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Name(id='str', ctx=Load()),
+                              args=[
+                                Name(id='i', ctx=Load())]),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='i', ctx=Store()),
+                        iter=Name(id='issues', ctx=Load()),
+                        is_async=0)])]),
+              Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='issues', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])]),
+          msg=Constant(value='Conflicting claims not flagged — QA consistency invariant broken'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='resume'),
+            List(
+              elts=[
+                Constant(value='Managed teams of 500 engineers'),
+                Constant(value='Managed teams of 3 engineers')],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_role_semantics_invalid_trigger',
+      args=arguments(
+        args=[
+          arg(arg='role')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='RoleTest'),
+                  Name(id='role', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Name(id='_issues', ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='issues', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          msg=JoinedStr(
+            values=[
+              Constant(value="Invalid or ambiguous JD '"),
+              FormattedValue(
+                value=Name(id='role', ctx=Load()),
+                conversion=-1),
+              Constant(value="' did not produce QA issues")]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='role'),
+            List(
+              elts=[
+                Constant(value='UnknownRoleType'),
+                Constant(value='AmbiguousRole'),
+                Constant(value='Undefined JD')],
+              ctx=Load())])]),
+    FunctionDef(
+      name='test_semantic_validator_updates_metrics',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='MetricsCase'),
+                  Constant(value='AWS')])])),
+        Assign(
+          targets=[
+            Name(id='metrics', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='metrics')]),
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='out', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='metrics')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='keys', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Attribute(
+                value=Name(id='k', ctx=Load()),
+                attr='lower',
+                ctx=Load())),
+            generators=[
+              comprehension(
+                target=Name(id='k', ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='metrics', ctx=Load()),
+                    attr='keys',
+                    ctx=Load())),
+                is_async=0)])),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=BoolOp(
+                  op=Or(),
+                  values=[
+                    Compare(
+                      left=Constant(value='semantic'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='k', ctx=Load())]),
+                    Compare(
+                      left=Constant(value='consistency'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='k', ctx=Load())])]),
+                generators=[
+                  comprehension(
+                    target=Name(id='k', ctx=Store()),
+                    iter=Name(id='keys', ctx=Load()),
+                    is_async=0)])]),
+          msg=JoinedStr(
+            values=[
+              Constant(value='No semantic metrics found. MetricsCollector may not be attached. Keys='),
+              FormattedValue(
+                value=Name(id='keys', ctx=Load()),
+                conversion=-1)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_draft_to_qa_alignment',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='DQATest'),
+                  Constant(value='AI Exec')])])),
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=Subscript(
+            value=Name(id='out', ctx=Load()),
+            slice=Constant(value='resume'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='summary', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='resume', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='summary')])),
+        Assign(
+          targets=[
+            Name(id='qa_sum', ctx=Store())],
+          value=Subscript(
+            value=Subscript(
+              value=Name(id='resume', ctx=Load()),
+              slice=Constant(value='qa'),
+              ctx=Load()),
+            slice=Constant(value='summary'),
+            ctx=Load())),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='qa_sum', ctx=Load()),
+              Name(id='str', ctx=Load())]),
+          msg=Constant(value='QA summary must be string')),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='qa_sum', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          msg=Constant(value='QA summary empty')),
+        Assert(
+          test=Compare(
+            left=Name(id='qa_sum', ctx=Load()),
+            ops=[
+              NotEq()],
+            comparators=[
+              Name(id='summary', ctx=Load())]),
+          msg=Constant(value='QA summary identical to draft summary — no QA transformation detected'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_low_confidence_generates_remediation',
+      args=arguments(
+        args=[
+          arg(arg='resume_text')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Name(id='resume_text', ctx=Load()),
+                  Constant(value='Analyst')])])),
+        Assign(
+          targets=[
+            Name(id='qa', ctx=Store())],
+          value=Subscript(
+            value=Subscript(
+              value=Name(id='out', ctx=Load()),
+              slice=Constant(value='resume'),
+              ctx=Load()),
+            slice=Constant(value='qa'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='qa', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='issues'),
+              List(ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='issues', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          msg=Constant(value='Low-confidence resume did not trigger QA issues')),
+        Assign(
+          targets=[
+            Name(id='suggestions', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='i', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='i', ctx=Store()),
+                iter=Name(id='issues', ctx=Load()),
+                ifs=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Compare(
+                        left=Constant(value='suggest'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Name(id='i', ctx=Load())]),
+                              attr='lower',
+                              ctx=Load()))]),
+                      Compare(
+                        left=Constant(value='improve'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Name(id='i', ctx=Load())]),
+                              attr='lower',
+                              ctx=Load()))])])],
+                is_async=0)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='suggestions', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=1)]),
+          msg=Constant(value='QA issues must include actionable suggestions for low-confidence cases'))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='validation',
+          ctx=Load()),
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='resume_text'),
+            List(
+              elts=[
+                Constant(value='This is vague and incomplete'),
+                Constant(value='Unclear responsibilities')],
+              ctx=Load())])])])

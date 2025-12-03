@@ -1,0 +1,48 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Simulation registry to look up simulator instances.')),
+    ImportFrom(
+      module='simulations.engines',
+      names=[
+        alias(name='DraftSimulator'),
+        alias(name='RAGSimulator'),
+        alias(name='SafetySimulator'),
+        alias(name='StrategySimulator')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='SIMULATION_REGISTRY', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='strategy'),
+          Constant(value='rag'),
+          Constant(value='draft'),
+          Constant(value='safety')],
+        values=[
+          Call(
+            func=Name(id='StrategySimulator', ctx=Load())),
+          Call(
+            func=Name(id='RAGSimulator', ctx=Load())),
+          Call(
+            func=Name(id='DraftSimulator', ctx=Load())),
+          Call(
+            func=Name(id='SafetySimulator', ctx=Load()))])),
+    FunctionDef(
+      name='get_simulator',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Return a simulator instance by name.')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='SIMULATION_REGISTRY', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='name', ctx=Load())]))])])

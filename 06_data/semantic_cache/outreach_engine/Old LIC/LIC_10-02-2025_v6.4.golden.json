@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v4\",\n  \"metadata\": {\n    \"version\": \"LIC_10-02-2025_v6.4\",\n    \"patches\": [\n      \"C001\",\n      \"C002\",\n      \"C003\",\n      \"C004\",\n      \"C005\",\n      \"C006\",\n      \"C007\",\n      \"C008\",\n      \"C009\",\n      \"C010\"\n    ],\n    \"changelog\": \"external://CHANGELOG.md\",\n    \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09\",\n    \"optimization_date\": \"2025-10-03\",\n    \"optimizations_applied\": [\n      \"removed_patch_history\",\n      \"deduplicated_patterns\",\n      \"consolidated_validation_rules\",\n      \"created_base_templates\"\n    ]\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 (Task) in visible output.\",\n    \"Run Section 3 (Context) once and pause - includes routing decision tree, LinkedIn inputs, job application context, and reasoning display preference.\",\n    \"Run Section 4 (Reasoning) with K.1-K.7 execution - use simplified output if SHOW_DETAILED_REASONIN",
+  "full_hash": "a9be4376b4d4003f1dd83c3c758a6ef7a774fa682ed564ebca6ae35e459c23d4",
+  "generated_at": 1764728333.1618786,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-02-2025_v6.4.json"
+}

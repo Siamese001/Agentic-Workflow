@@ -1,0 +1,161 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='orchestration.dag_engine',
+      names=[
+        alias(name='Graph'),
+        alias(name='Node'),
+        alias(name='Edge'),
+        alias(name='DAGExecutor')],
+      level=0),
+    AsyncFunctionDef(
+      name='_id_node',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='dict', ctx=Load()),
+            args=[
+              Name(id='ctx', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_make_cyclic_graph',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='nodes', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='a'),
+              Constant(value='b')],
+            values=[
+              Call(
+                func=Name(id='Node', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='id',
+                    value=Constant(value='a')),
+                  keyword(
+                    arg='fn',
+                    value=Name(id='_id_node', ctx=Load())),
+                  keyword(arg='metadata', value=Dict())]),
+              Call(
+                func=Name(id='Node', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='id',
+                    value=Constant(value='b')),
+                  keyword(
+                    arg='fn',
+                    value=Name(id='_id_node', ctx=Load())),
+                  keyword(arg='metadata', value=Dict())])])),
+        Assign(
+          targets=[
+            Name(id='edges', ctx=Store())],
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='Edge', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='source',
+                    value=Constant(value='a')),
+                  keyword(
+                    arg='target',
+                    value=Constant(value='b'))]),
+              Call(
+                func=Name(id='Edge', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='source',
+                    value=Constant(value='b')),
+                  keyword(
+                    arg='target',
+                    value=Constant(value='a'))])],
+            ctx=Load())),
+        Return(
+          value=Call(
+            func=Name(id='Graph', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='nodes',
+                value=Name(id='nodes', ctx=Load())),
+              keyword(
+                arg='edges',
+                value=Name(id='edges', ctx=Load()))]))],
+      returns=Name(id='Graph', ctx=Load())),
+    FunctionDef(
+      name='test_dag_executor_cycle_detection',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='graph', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_cyclic_graph', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='executor', ctx=Store())],
+          value=Call(
+            func=Name(id='DAGExecutor', ctx=Load()),
+            args=[
+              Name(id='graph', ctx=Load())])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='RuntimeError', ctx=Load())]))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='executor', ctx=Load()),
+                      attr='run',
+                      ctx=Load()))]))])])])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\stubs\\service_stubs.py",
+    "rel_path": "service_stubs.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "71d6bc1b1b4dcad7663ddc4b03e00a102f1a7e9c26e73c26e1d38381a4a207aa",
+    "file_size": 1209,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.5866296
+}

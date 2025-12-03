@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTest KG Retrieval Planning\n\nTests knowledge graph retrieval planning functionality extracted from working legacy tests.\n\"\"\"\n\nimport pytest\nfrom datetime import datetime, UTC\n\n# L1 Components\nfrom l1.kg_retrieval_planning import (\n    KGRetrievalPlanner,\n    KGQueryPlan,\n    QueryType,\n    HopDirection,\n    plan_entity_retrieval,\n)\n\n# Mark all tests as L1 planning tests\npytestmark = [pytest.mark.unit, pytest.mark.l1, pytest.mark.planning]\n\n\nclass TestKGRetrievalPlanning:\n    \"\"\"Test KG retrieval planning functionality.\"\"\"\n    \n    def test_plan_entity_retrieval(self):\n        \"\"\"Test basic entity retrieval planning.\"\"\"\n        plan = plan_entity_retrieval(\n            entity_id=\"entity_1\",\n            max_hops=1\n        )\n        \n        assert isinstance(plan, KGQueryPlan)\n        assert plan.start_entities == [\"entity_1\"]\n        assert plan.query_type == QueryType.ENTITY_FACTS\n        assert plan.max_hops == 1\n    \n    def test_plan_neighborhood_query(self):\n        \"\"\"Test neig",
+  "full_hash": "a1038dc626e9c0852f6846ddca6b47b5753bb636d9e2b468842ac2c8b5c60e99",
+  "generated_at": 1764728226.8543432,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\unit\\test_kg_retrieval_planning.py"
+}

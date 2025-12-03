@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v2\\rag_RES_v2.py",
+    "rel_path": "rag_RES_v2.py",
+    "root_name": "resume_engine/v2",
+    "file_hash": "e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43",
+    "file_size": 53610,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728327.2777607
+}

@@ -1,0 +1,272 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nProvides Redis caching for résumé analysis results to improve processing speed and reduce costs.\n\nImproves résumé processing efficiency by storing LLM outputs and analysis results for fast retrieval across similar job queries.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ClassDef(
+      name='RedisNotConfiguredError',
+      bases=[
+        Name(id='RuntimeError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Indicates résumé caching is unavailable so analysis can continue without performance optimization.\n\n    Improves résumé processing reliability by gracefully handling cache unavailability without breaking analysis workflows.\n    '))]),
+    ClassDef(
+      name='RedisClientError',
+      bases=[
+        Name(id='RuntimeError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Wraps Redis connection issues to maintain résumé analysis stability during cache failures.\n\n    Improves résumé processing reliability by providing clear error handling for cache-related problems without disrupting workflows.\n    '))]),
+    FunctionDef(
+      name='init_redis_client',
+      args=arguments(
+        args=[
+          arg(
+            arg='url',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='timeout_s',
+            annotation=Name(id='float', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=1.0)],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates Redis client for résumé analysis caching to speed up repeated job matching queries.\n\n    Improves résumé processing performance by using provider client instead of direct SDK imports.\n    ')),
+        ImportFrom(
+          module='providers.redis_client',
+          names=[
+            alias(name='init_redis_client', asname='provider_init_redis_client')],
+          level=0),
+        Return(
+          value=Call(
+            func=Name(id='provider_init_redis_client', ctx=Load()),
+            args=[
+              Name(id='url', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='timeout_s',
+                value=Name(id='timeout_s', ctx=Load()))]))]),
+    FunctionDef(
+      name='redis_healthcheck',
+      args=arguments(
+        args=[
+          arg(arg='client')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Checks Redis cache availability to ensure résumé analysis can rely on cached results for optimal performance.\n\n    Improves résumé processing reliability by verifying cache connectivity before attempting to store or retrieve analysis results.\n    ')),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='bool', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='ping',
+                      ctx=Load()))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Return(
+                  value=Constant(value=False))])])],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='get_llm_cache',
+      args=arguments(
+        args=[
+          arg(arg='client'),
+          arg(
+            arg='key',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Retrieves cached résumé analysis results to speed up repeated job matching queries and reduce processing costs.\n\n    Improves résumé processing efficiency by reusing previous LLM reasoning and drafting results for similar job applications.\n    ')),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='client', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='exc',
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='RedisClientError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Redis GET failed for key='),
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=114),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='exc', ctx=Load()),
+                            conversion=-1)])]),
+                  cause=Name(id='exc', ctx=Load()))])]),
+        If(
+          test=Compare(
+            left=Name(id='raw', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='loads',
+                  ctx=Load()),
+                args=[
+                  Name(id='raw', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Return(
+                  value=Name(id='raw', ctx=Load()))])])],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='set_llm_cache',
+      args=arguments(
+        args=[
+          arg(arg='client'),
+          arg(
+            arg='key',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='value',
+            annotation=Name(id='Any', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='ttl_s',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          Constant(value=3600)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Stores résumé analysis results in cache to speed up future job matching queries and reduce processing costs.\n\n    Improves résumé processing efficiency by saving LLM reasoning and drafting results for reuse across similar job applications.\n    ')),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='payload', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='TypeError', ctx=Load()),
+              name='exc',
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='RedisClientError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Value for key='),
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=114),
+                          Constant(value=' is not JSON serialisable: '),
+                          FormattedValue(
+                            value=Name(id='exc', ctx=Load()),
+                            conversion=-1)])]),
+                  cause=Name(id='exc', ctx=Load()))])]),
+        Try(
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='ttl_s', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='set',
+                      ctx=Load()),
+                    args=[
+                      Name(id='key', ctx=Load()),
+                      Name(id='payload', ctx=Load())]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='setex',
+                      ctx=Load()),
+                    args=[
+                      Name(id='key', ctx=Load()),
+                      Name(id='ttl_s', ctx=Load()),
+                      Name(id='payload', ctx=Load())]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='exc',
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='RedisClientError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Redis SET failed for key='),
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=114),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='exc', ctx=Load()),
+                            conversion=-1)])]),
+                  cause=Name(id='exc', ctx=Load()))])])],
+      returns=Constant(value=None))])

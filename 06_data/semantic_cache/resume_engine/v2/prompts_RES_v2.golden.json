@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: prompts_RES.py\n# Version: 17.00 - V2 Agentic Architecture Compatible\n# Prompt Templates module for Resume Workflow\n# Contains all *logic* for loading and formatting prompts from prompts.json\n# V2 UPDATE: Enhanced with CRL integration helpers and v2-specific prompt builders\n\nimport re\nimport json\nimport logging\nimport os\nfrom typing import Dict, List, Tuple, Optional, Any\nfrom collections import defaultdict\n\n# --- REFACTOR: Import global CONFIG ---\nfrom config_RES_v2 import CONFIG\n# --- END REFACTOR ---\n\n# Import models needed for type hinting\nfrom typing import TYPE_CHECKING\nif TYPE_CHECKING:\n    from models_RES import RAGMission, MasterResumeIndex, ThematicAnalysis, ValidationResult\n    from config_RES_v2 import ContentConstraintsConfig, CompetitiveAnalysisConfig\n\n# --- REFACTOR: Load 'Recipe Book' (prompts.json) from global CONFIG ---\ntry:\n    PROMPT_TEMPLATES = CONFIG.prompts.prompts\n    if not PROMPT_TEMPLATES:\n        raise ValueError(\"PROMPT_TEMPLATES dictionary from CONF",
+  "full_hash": "0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9",
+  "generated_at": 1764728327.1736217,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\prompts_RES_v2.py"
+}

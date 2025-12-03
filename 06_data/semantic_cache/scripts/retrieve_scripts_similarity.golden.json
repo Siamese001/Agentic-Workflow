@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - retrieve_scripts_similarity\nImplements L1 Cognitive Planning Layer for retrieve scripts similarity operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RetrieveScriptsSimilarityMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RetrieveScriptsSimilarityMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RetrieveScriptsSimilarityMemoryResult:\n    \"\"\"L5 Result structure wit",
+  "full_hash": "5d2b3e40c4b8086d11ee1c6fd7258b87a3e438115b5cb3fdb4e3f7b662367362",
+  "generated_at": 1764728351.7819276,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\embedding\\compare-meaning\\retrieve_scripts_similarity.py"
+}

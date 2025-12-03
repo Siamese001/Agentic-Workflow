@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Compose outreach drafts using reasoning toggles and retrieval evidence.\"\"\"\nfrom __future__ import annotations\n\nimport hashlib\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom typing import Dict, Iterable, List, Sequence, Tuple\n\nfrom ..rag import ContentStore, EvidenceRegistry, RetrievalPlan\nfrom ..rag.tool_registry import ToolRegistry, ToolResult\nfrom ..reasoning import cot, reflexion, tot\nfrom ..reasoning.toggles import ReasoningToggles\n\n_ANCHOR_WINDOW_S = 60 * 60 * 24 * 90\n\n\n@dataclass(frozen=True)\nclass Draft:\n    subject: str\n    body: str\n\n    def render(self) -> str:\n        return f\"Subject: {self.subject}\\n\\n{self.body}\"\n\n\n@dataclass(frozen=True)\nclass DraftPackage:\n    \"\"\"Container describing the composed draft and supporting evidence.\"\"\"  # pragma: no cover\n\n    draft: str\n    artifacts: Dict[str, str]\n    total_latency_ms: int = 0\n\n    def with_draft(self, new_draft: str) -> \"DraftPackage\":\n        return DraftPackage(new_draft, dict(self.artifacts), s",
+  "full_hash": "ce0edd20dda876b0fc565bf379fd24561ca52a9bbd31d3ae746b516fc11e298c",
+  "generated_at": 1764728330.4771774,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k3_message_architect.py"
+}

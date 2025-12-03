@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\exec-layer\\safety-phase\\check-schema-rules\\policy\\check-safety\\validate_execution_ethics.py",
+    "rel_path": "validate_execution_ethics.py",
+    "root_name": "schemas",
+    "file_hash": "28a5132ba9341e73e889e5255330b8ce5181eb738f53e1e491e8800db5974ab7",
+    "file_size": 1344,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.561683
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\"],\n    \"version\": \"legacy\"\n  },\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\"],\n    \"version\": \"legacy\"\n  }\n}\n",
+  "full_hash": "f225dd4a9dd59c2bb90ffbc749cf6928d44e4503641713747e7884309e910df3",
+  "generated_at": 1764728329.785297,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\baseline_outputs_previous.json"
+}

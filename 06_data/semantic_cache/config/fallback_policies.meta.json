@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\retriever-microagent-layer\\expand-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\fallback_policies.yaml",
+    "rel_path": "fallback_policies.yaml",
+    "root_name": "config",
+    "file_hash": "122caaf76915c8711a7bdf2c503c3962c1270dc02fed7deeb1e5d12f0655d5dd",
+    "file_size": 2505,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.191906
+}

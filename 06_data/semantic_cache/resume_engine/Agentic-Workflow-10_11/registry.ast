@@ -1,0 +1,300 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Registry - Meta Layer\n\nThis module provides strategy and configuration registries.\n\nLayer: Meta\nResponsibilities:\n- RAG strategy registry\n- RetrievalConfig factories\n- Static strategy mappings\n- Prompt registry bridge\n\nNon-responsibilities:\n- Retrieval execution\n- Ranking execution\n- LLM calls\n- Orchestration\n- State mutation\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='RetrievalConfig'),
+        alias(name='PromptDefinition')],
+      level=0),
+    ImportFrom(
+      module='l1.prompt_system_v10_10',
+      names=[
+        alias(name='PROMPT_REGISTRY')],
+      level=0),
+    ClassDef(
+      name='RAGStrategyDefinition',
+      body=[
+        Expr(
+          value=Constant(value='\n    Canonical definition of a RAG strategy used by the registry.\n\n    Fields:\n        name: Human-readable name of the strategy.\n        description: Short description.\n        retrieval_mode: "bm25" | "dense" | "hybrid"\n        use_hyde: Whether HYDE expansion should be used.\n        use_rrf: Whether RRF fusion should be applied.\n        top_k: Max hits to retrieve.\n    ')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_mode', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='use_hyde', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='use_rrf', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='top_k', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    AnnAssign(
+      target=Name(id='_RAG_STRATEGIES', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='RAGStrategyDefinition', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Dict(
+        keys=[
+          Constant(value='bm25_basic'),
+          Constant(value='dense_basic'),
+          Constant(value='hybrid_balanced'),
+          Constant(value='hybrid_hyde')],
+        values=[
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='bm25_basic')),
+              keyword(
+                arg='description',
+                value=Constant(value='Pure BM25 lexical retrieval, no HYDE, no dense.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='bm25')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=False)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=20))]),
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='dense_basic')),
+              keyword(
+                arg='description',
+                value=Constant(value='Dense semantic retrieval only.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='dense')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=False)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=20))]),
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='hybrid_balanced')),
+              keyword(
+                arg='description',
+                value=Constant(value='Balanced hybrid: BM25 + dense with RRF fusion.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='hybrid')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=False)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=True)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=30))]),
+          Call(
+            func=Name(id='RAGStrategyDefinition', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='hybrid_hyde')),
+              keyword(
+                arg='description',
+                value=Constant(value='Hybrid retrieval with HYDE expansion and RRF fusion.')),
+              keyword(
+                arg='retrieval_mode',
+                value=Constant(value='hybrid')),
+              keyword(
+                arg='use_hyde',
+                value=Constant(value=True)),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=True)),
+              keyword(
+                arg='top_k',
+                value=Constant(value=40))])]),
+      simple=1),
+    FunctionDef(
+      name='get_rag_strategy',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Return a RAGStrategyDefinition by name.\n    ')),
+        Return(
+          value=Subscript(
+            value=Name(id='_RAG_STRATEGIES', ctx=Load()),
+            slice=Name(id='name', ctx=Load()),
+            ctx=Load()))],
+      returns=Name(id='RAGStrategyDefinition', ctx=Load())),
+    ClassDef(
+      name='PromptRegistry',
+      body=[
+        Expr(
+          value=Constant(value='Thin wrapper over the core prompt registry used in tests.\n\n    Exposes a get_prompt(prompt_id) method as expected by the\n    test_end_to_end_v10_10 suite while delegating storage to the\n    underlying dict of PromptDefinition objects.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompts',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='PromptDefinition', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_prompts',
+                  ctx=Store())],
+              value=Name(id='prompts', ctx=Load()))]),
+        FunctionDef(
+          name='get_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_prompts',
+                  ctx=Load()),
+                slice=Name(id='prompt_id', ctx=Load()),
+                ctx=Load()))],
+          returns=Name(id='PromptDefinition', ctx=Load()))]),
+    FunctionDef(
+      name='build_default_prompt_registry',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return a PromptRegistry view of the default prompt registry.\n\n    The underlying prompts are seeded at import time by\n    ``prompt_system_v10_10._seed_core_prompts``. Tests and runtime code\n    treat this as an opaque registry object.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='PromptRegistry', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='PROMPT_REGISTRY', ctx=Load())])]))],
+      returns=Name(id='PromptRegistry', ctx=Load())),
+    FunctionDef(
+      name='build_retrieval_config',
+      args=arguments(
+        args=[
+          arg(
+            arg='strategy',
+            annotation=Name(id='RAGStrategyDefinition', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convert a RAGStrategyDefinition → RetrievalConfig (Phase 3).\n\n    Mapping:\n        retrieval_mode → RetrievalConfig.strategy\n        use_hyde      → RetrievalConfig.allow_hyde\n        use_rrf       → RetrievalConfig.use_rrf\n        top_k         → RetrievalConfig.max_hits\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='retrieval_mode',
+                  ctx=Load())),
+              keyword(
+                arg='use_rrf',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='use_rrf',
+                  ctx=Load())),
+              keyword(
+                arg='max_hits',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='top_k',
+                  ctx=Load())),
+              keyword(
+                arg='bm25_k1',
+                value=Constant(value=1.2)),
+              keyword(
+                arg='bm25_b',
+                value=Constant(value=0.75)),
+              keyword(
+                arg='rrf_weights',
+                value=Constant(value=None)),
+              keyword(
+                arg='allow_hyde',
+                value=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='use_hyde',
+                  ctx=Load())),
+              keyword(
+                arg='qa_council_size',
+                value=Constant(value=1)),
+              keyword(
+                arg='qa_council_mode',
+                value=Constant(value='simple'))]))],
+      returns=Name(id='RetrievalConfig', ctx=Load()))])

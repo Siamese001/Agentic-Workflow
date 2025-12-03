@@ -1,0 +1,2217 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='argparse')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='basicConfig',
+          ctx=Load()),
+        keywords=[
+          keyword(
+            arg='level',
+            value=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='INFO',
+              ctx=Load())),
+          keyword(
+            arg='format',
+            value=Constant(value='%(asctime)s - %(name)s - %(levelname)s - %(message)s'))])),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    Try(
+      body=[
+        ImportFrom(
+          module='workflow_RES_v2',
+          names=[
+            alias(name='WorkflowOrchestrator'),
+            alias(name='load_master_resume'),
+            alias(name='__version__')],
+          level=0),
+        ImportFrom(
+          module='config_RES_v2',
+          names=[
+            alias(name='CONFIG'),
+            alias(name='OUTPUT_DIR'),
+            alias(name='DATA_DIR')],
+          level=0)],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          name='e',
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Error: Could not import from refactored modules (workflow_RES_v2.py, config_RES.py)')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Details: '),
+                      FormattedValue(
+                        value=Name(id='e', ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Please ensure workflow_RES_v2.py, config_RES.py, and all other modules are in the same directory.')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=1)]))])]),
+    FunctionDef(
+      name='load_job_input',
+      args=arguments(
+        args=[
+          arg(
+            arg='filename',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Loads the job input JSON file with error handling.')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='os', ctx=Load()),
+                  attr='path',
+                  ctx=Load()),
+                attr='exists',
+                ctx=Load()),
+              args=[
+                Name(id='filename', ctx=Load())])),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='⚠️ FATAL ERROR: '),
+                      FormattedValue(
+                        value=Name(id='filename', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' not found.')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Please create a '"),
+                      FormattedValue(
+                        value=Name(id='filename', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' file in this directory.")])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=1)]))]),
+        Try(
+          body=[
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='filename', ctx=Load()),
+                      Constant(value='r')],
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))]),
+            Return(
+              value=Name(id='data', ctx=Load()))],
+          handlers=[
+            ExceptHandler(
+              type=Attribute(
+                value=Name(id='json', ctx=Load()),
+                attr='JSONDecodeError',
+                ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='⚠️ FATAL ERROR: Failed to parse '),
+                          FormattedValue(
+                            value=Name(id='filename', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='.')])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='   Please check the JSON for errors (e.g., missing comma, extra comma).')])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='   Details: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='⚠️ FATAL ERROR: An unexpected error occurred loading '),
+                          FormattedValue(
+                            value=Name(id='filename', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])])],
+      returns=Name(id='dict', ctx=Load())),
+    FunctionDef(
+      name='list_available_runs',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Lists all available run directories for resume.')),
+        Assign(
+          targets=[
+            Name(id='workflow_outputs_dir', ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Name(id='OUTPUT_DIR', ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='os', ctx=Load()),
+                  attr='path',
+                  ctx=Load()),
+                attr='exists',
+                ctx=Load()),
+              args=[
+                Name(id='workflow_outputs_dir', ctx=Load())])),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='No workflow_outputs directory found. No runs available to resume.')])),
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='run_dirs', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='d', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='d', ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='listdir',
+                    ctx=Load()),
+                  args=[
+                    Name(id='workflow_outputs_dir', ctx=Load())]),
+                ifs=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='os', ctx=Load()),
+                        attr='path',
+                        ctx=Load()),
+                      attr='isdir',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='os', ctx=Load()),
+                            attr='path',
+                            ctx=Load()),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='workflow_outputs_dir', ctx=Load()),
+                          Name(id='d', ctx=Load())])])],
+                is_async=0)])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='run_dirs', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='No runs found in workflow_outputs directory.')])),
+            Return()]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='\nAvailable runs:')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='-'),
+                op=Mult(),
+                right=Constant(value=80))])),
+        For(
+          target=Name(id='run_id', ctx=Store()),
+          iter=Call(
+            func=Name(id='sorted', ctx=Load()),
+            args=[
+              Name(id='run_dirs', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='manifest_path', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_outputs_dir', ctx=Load()),
+                  Name(id='run_id', ctx=Load()),
+                  Constant(value='run_manifest.json')])),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='exists',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest_path', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    With(
+                      items=[
+                        withitem(
+                          context_expr=Call(
+                            func=Name(id='open', ctx=Load()),
+                            args=[
+                              Name(id='manifest_path', ctx=Load()),
+                              Constant(value='r')],
+                            keywords=[
+                              keyword(
+                                arg='encoding',
+                                value=Constant(value='utf-8'))]),
+                          optional_vars=Name(id='f', ctx=Store()))],
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='manifest', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='json', ctx=Load()),
+                              attr='load',
+                              ctx=Load()),
+                            args=[
+                              Name(id='f', ctx=Load())]))]),
+                    Assign(
+                      targets=[
+                        Name(id='company', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='manifest', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='job_input'),
+                              Dict()]),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='company_name'),
+                          Constant(value='Unknown')])),
+                    Assign(
+                      targets=[
+                        Name(id='title', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='manifest', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='job_input'),
+                              Dict()]),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='job_title'),
+                          Constant(value='Unknown')])),
+                    Assign(
+                      targets=[
+                        Name(id='start_time', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='manifest', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='start_time_utc'),
+                          Constant(value='Unknown')])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  '),
+                              FormattedValue(
+                                value=Name(id='run_id', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Name(id='company', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' - '),
+                              FormattedValue(
+                                value=Name(id='title', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' (Started: '),
+                              FormattedValue(
+                                value=Name(id='start_time', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=')')])]))],
+                  handlers=[
+                    ExceptHandler(
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='  '),
+                                  FormattedValue(
+                                    value=Name(id='run_id', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': (manifest unreadable)')])]))])])],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  '),
+                          FormattedValue(
+                            value=Name(id='run_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': (no manifest)')])]))])]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='-'),
+                op=Mult(),
+                right=Constant(value=80))]))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    V2 Launcher for Resume Workflow Engine with async execution.\n    ')),
+        Assign(
+          targets=[
+            Name(id='script_path', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Constant(value='__file__'),
+              ops=[
+                In()],
+              comparators=[
+                Call(
+                  func=Name(id='globals', ctx=Load()))]),
+            body=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='os', ctx=Load()),
+                  attr='path',
+                  ctx=Load()),
+                attr='relpath',
+                ctx=Load()),
+              args=[
+                Name(id='__file__', ctx=Load())]),
+            orelse=Constant(value='run_workflow_RES_v2.py'))),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=JoinedStr(
+                  values=[
+                    Constant(value='Resume Workflow Engine v'),
+                    FormattedValue(
+                      value=Name(id='__version__', ctx=Load()),
+                      conversion=-1),
+                    Constant(value=' - V2 Agentic Architecture')])),
+              keyword(
+                arg='formatter_class',
+                value=Attribute(
+                  value=Name(id='argparse', ctx=Load()),
+                  attr='RawDescriptionHelpFormatter',
+                  ctx=Load())),
+              keyword(
+                arg='epilog',
+                value=JoinedStr(
+                  values=[
+                    Constant(value='\nExamples:\n  # Start a new run (assuming job_input.json is in the data dir)\n  python '),
+                    FormattedValue(
+                      value=Name(id='script_path', ctx=Load()),
+                      conversion=-1),
+                    Constant(value=' --job-input "'),
+                    FormattedValue(
+                      value=BinOp(
+                        left=Name(id='DATA_DIR', ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='job_input.json')),
+                      conversion=-1),
+                    Constant(value='"\n  \n  # Resume an existing run\n  python '),
+                    FormattedValue(
+                      value=Name(id='script_path', ctx=Load()),
+                      conversion=-1),
+                    Constant(value=' --resume-id a6be50ce\n  \n  # List available runs\n  python '),
+                    FormattedValue(
+                      value=Name(id='script_path', ctx=Load()),
+                      conversion=-1),
+                    Constant(value=' --list-runs\n        ')]))])),
+        Assign(
+          targets=[
+            Name(id='new_run_group', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument_group',
+              ctx=Load()),
+            args=[
+              Constant(value='New Run')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='new_run_group', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--job-input')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='metavar',
+                value=Constant(value='PATH')),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to job_input.json file to start a new run.'))])),
+        Assign(
+          targets=[
+            Name(id='resume_run_group', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument_group',
+              ctx=Load()),
+            args=[
+              Constant(value='Resume Run')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='resume_run_group', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--resume-id')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='metavar',
+                value=Constant(value='RUN_ID')),
+              keyword(
+                arg='help',
+                value=Constant(value='A specific run_id (e.g., a6be50ce) to resume.'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--list-runs')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='List all available runs that can be resumed.'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        If(
+          test=Attribute(
+            value=Name(id='args', ctx=Load()),
+            attr='list_runs',
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='list_available_runs', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0)]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='resume_id',
+                  ctx=Load())),
+              UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='job_input',
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Error: You must provide either --job-input or --resume-id.')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='parser', ctx=Load()),
+                  attr='print_help',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=1)]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='resume_id',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='job_input',
+                ctx=Load())]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Error: Cannot specify both --resume-id and --job-input.')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Use --resume-id to resume an existing run, or --job-input to start a new one.')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=1)]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='--- Resume Workflow Engine v'),
+                  FormattedValue(
+                    value=Name(id='__version__', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' (V2 Architecture) ---')])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='Loading master resume data...')])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='master_resume_data', ctx=Store())],
+              value=Call(
+                func=Name(id='load_master_resume', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='✓ Master resume loaded successfully')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='✗ Failed to load master resume: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])]),
+        Assign(
+          targets=[
+            Name(id='orchestrator', ctx=Store())],
+          value=Constant(value=None)),
+        Try(
+          body=[
+            If(
+              test=Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='resume_id',
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Mode: RESUME')])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Attempting to resume workflow for run_id: '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='args', ctx=Load()),
+                              attr='resume_id',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Assign(
+                  targets=[
+                    Name(id='orchestrator', ctx=Store())],
+                  value=Call(
+                    func=Name(id='WorkflowOrchestrator', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='config',
+                        value=Name(id='CONFIG', ctx=Load())),
+                      keyword(
+                        arg='master_resume',
+                        value=Name(id='master_resume_data', ctx=Load())),
+                      keyword(
+                        arg='run_id',
+                        value=Attribute(
+                          value=Name(id='args', ctx=Load()),
+                          attr='resume_id',
+                          ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Run Directory: '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='orchestrator', ctx=Load()),
+                              attr='run_path',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Job: '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='orchestrator', ctx=Load()),
+                                  attr='job_input',
+                                  ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='company_name')]),
+                            conversion=-1),
+                          Constant(value=' - '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='orchestrator', ctx=Load()),
+                                  attr='job_input',
+                                  ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='job_title')]),
+                            conversion=-1)])]))],
+              orelse=[
+                If(
+                  test=Attribute(
+                    value=Name(id='args', ctx=Load()),
+                    attr='job_input',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Mode: NEW RUN')])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Starting new workflow from: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='args', ctx=Load()),
+                                  attr='job_input',
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='job_input_data', ctx=Store())],
+                      value=Call(
+                        func=Name(id='load_job_input', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='job_input',
+                            ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='company_name', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='job_input_data', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='company_name'),
+                              Constant(value='')]),
+                          attr='strip',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='job_title', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='job_input_data', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='job_title'),
+                              Constant(value='')]),
+                          attr='strip',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='job_description', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='job_input_data', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='job_description'),
+                              Constant(value='')]),
+                          attr='strip',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='jd_url', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='job_input_data', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='jd_url'),
+                              Constant(value='')]),
+                          attr='strip',
+                          ctx=Load()))),
+                    If(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Name(id='job_description', ctx=Load())),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              BinOp(
+                                left=Constant(value='='),
+                                op=Mult(),
+                                right=Constant(value=80))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value="⚠️ ERROR: 'job_description' in "),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='args', ctx=Load()),
+                                      attr='job_input',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' is empty.')])])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Please paste the job description into '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='args', ctx=Load()),
+                                      attr='job_input',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' and retry.')])])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              BinOp(
+                                left=Constant(value='='),
+                                op=Mult(),
+                                right=Constant(value=80))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='sys', ctx=Load()),
+                              attr='exit',
+                              ctx=Load()),
+                            args=[
+                              Constant(value=1)]))]),
+                    If(
+                      test=BoolOp(
+                        op=Or(),
+                        values=[
+                          UnaryOp(
+                            op=Not(),
+                            operand=Name(id='company_name', ctx=Load())),
+                          UnaryOp(
+                            op=Not(),
+                            operand=Name(id='job_title', ctx=Load()))]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              BinOp(
+                                left=Constant(value='='),
+                                op=Mult(),
+                                right=Constant(value=80))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value="⚠️ ERROR: 'company_name' or 'job_title' in "),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='args', ctx=Load()),
+                                      attr='job_input',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' is empty.')])])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Please set these variables in '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='args', ctx=Load()),
+                                      attr='job_input',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' and retry.')])])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              BinOp(
+                                left=Constant(value='='),
+                                op=Mult(),
+                                right=Constant(value=80))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='sys', ctx=Load()),
+                              attr='exit',
+                              ctx=Load()),
+                            args=[
+                              Constant(value=1)]))]),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='Workflow Inputs:')])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  Company: '),
+                              FormattedValue(
+                                value=Name(id='company_name', ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  Title: '),
+                              FormattedValue(
+                                value=Name(id='job_title', ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  URL: '),
+                              FormattedValue(
+                                value=IfExp(
+                                  test=Name(id='jd_url', ctx=Load()),
+                                  body=Name(id='jd_url', ctx=Load()),
+                                  orelse=Constant(value='Not provided')),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  Job Description: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='job_description', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=' characters')])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='orchestrator', ctx=Store())],
+                      value=Call(
+                        func=Name(id='WorkflowOrchestrator', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='config',
+                            value=Name(id='CONFIG', ctx=Load())),
+                          keyword(
+                            arg='master_resume',
+                            value=Name(id='master_resume_data', ctx=Load())),
+                          keyword(
+                            arg='job_input',
+                            value=Name(id='job_input_data', ctx=Load()))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Created new run with ID: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='orchestrator', ctx=Load()),
+                                  attr='run_id',
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Run Directory: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='orchestrator', ctx=Load()),
+                                  attr='run_path',
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load())))])])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='FileNotFoundError', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='⚠️ ERROR: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))]),
+            ExceptHandler(
+              type=Name(id='ValueError', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='⚠️ ERROR: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='⚠️ FATAL ERROR during initialization: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Import(
+                  names=[
+                    alias(name='traceback')]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='traceback', ctx=Load()),
+                      attr='print_exc',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='Starting V2 async workflow execution...')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()))),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='workflow_start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='asyncio', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='orchestrator', ctx=Load()),
+                      attr='execute_workflow',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='workflow_end_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='workflow_duration', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BinOp(
+                    left=Name(id='workflow_end_time', ctx=Load()),
+                    op=Sub(),
+                    right=Name(id='workflow_start_time', ctx=Load())),
+                  attr='total_seconds',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='\n'),
+                    op=Add(),
+                    right=BinOp(
+                      left=Constant(value='='),
+                      op=Mult(),
+                      right=Constant(value=80)))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='--- WORKFLOW COMPLETE ---')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Status: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='status')]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Run ID: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='orchestrator', ctx=Load()),
+                          attr='run_id',
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Gate Decision: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='gate_decision')]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Duration: '),
+                      FormattedValue(
+                        value=Name(id='workflow_duration', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.1f')])),
+                      Constant(value=' seconds')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()))),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='status')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='SUCCESS')]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Files Generated:')])),
+                Assign(
+                  targets=[
+                    Name(id='file_paths', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='file_paths'),
+                      Dict()])),
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='file_type', ctx=Store()),
+                      Name(id='file_path', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='file_paths', ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  - '),
+                              FormattedValue(
+                                value=Name(id='file_type', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Name(id='file_path', ctx=Load()),
+                                conversion=-1)])]))]),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load())))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Termination Reason: '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='reason')]),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load())))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Run Directory: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='orchestrator', ctx=Load()),
+                          attr='run_path',
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Log File: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='log_file_path')]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='='),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='status')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='SUCCESS')]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0)]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='KeyboardInterrupt', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='\n'),
+                        op=Add(),
+                        right=BinOp(
+                          left=Constant(value='='),
+                          op=Mult(),
+                          right=Constant(value=80)))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='--- WORKFLOW INTERRUPTED BY USER ---')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Run ID: '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='orchestrator', ctx=Load()),
+                              attr='run_id',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Run can be resumed with: python '),
+                          FormattedValue(
+                            value=Name(id='script_path', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' --resume-id '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='orchestrator', ctx=Load()),
+                              attr='run_id',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=130)]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='\n'),
+                        op=Add(),
+                        right=BinOp(
+                          left=Constant(value='='),
+                          op=Mult(),
+                          right=Constant(value=80)))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='--- WORKFLOW FAILED (UNCAUGHT EXCEPTION) ---')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='An unexpected error occurred: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Import(
+                  names=[
+                    alias(name='traceback')]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='traceback', ctx=Load()),
+                      attr='print_exc',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                If(
+                  test=Name(id='orchestrator', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Run ID: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='orchestrator', ctx=Load()),
+                                  attr='run_id',
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Log File: '),
+                              FormattedValue(
+                                value=IfExp(
+                                  test=Call(
+                                    func=Name(id='hasattr', ctx=Load()),
+                                    args=[
+                                      Name(id='orchestrator', ctx=Load()),
+                                      Constant(value='log_file_path')]),
+                                  body=Attribute(
+                                    value=Name(id='orchestrator', ctx=Load()),
+                                    attr='log_file_path',
+                                    ctx=Load()),
+                                  orelse=Constant(value='N/A')),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Constant(value='='),
+                            op=Mult(),
+                            right=Constant(value=80))]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='main', ctx=Load())))])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nModel routing cache for r\u00e9sum\u00e9 processing workflows.\n\nProvides efficient model choice caching to optimize r\u00e9sum\u00e9 improvement performance.\n\"\"\"\n\nfrom typing import Dict, Tuple\n\nfrom .models import ModelChoice, RoutingContext\n\n\n_CACHE: Dict[Tuple[str, str, str], ModelChoice] = {}\n\n\ndef _key(ctx: RoutingContext) -> Tuple[str, str, str]:\n    \"\"\"\n    Generates cache key for r\u00e9sum\u00e9 processing model routing.\n\n    Ensures consistent cache indexing for optimal r\u00e9sum\u00e9 improvement performance.\n    \"\"\"\n    profile_name = ctx.execution_profile.name if ctx.execution_profile else \"default\"\n    return (ctx.agent_id, ctx.task_type, profile_name)\n\n\ndef get_cached_choice(ctx: RoutingContext) -> ModelChoice | None:\n    \"\"\"\n    Retrieves cached model choice for r\u00e9sum\u00e9 processing workflows.\n\n    Optimizes performance by avoiding redundant routing decisions for r\u00e9sum\u00e9 improvement.\n    \"\"\"\n    return _CACHE.get(_key(ctx))\n\n\ndef set_cached_choice(ctx: RoutingContext, choice: ModelChoice) -> None:\n    \"\"\"\n  ",
+  "full_hash": "f79e35e0fef6db0555539f77b01de070af1b2385f1971ddef918afae2c9758f1",
+  "generated_at": 1764728224.2386794,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\model_routing\\cache.py"
+}

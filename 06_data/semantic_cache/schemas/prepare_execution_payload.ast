@@ -1,0 +1,163 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for execution payload preparation and construction.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='PayloadType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Execution payload types.')),
+        Assign(
+          targets=[
+            Name(id='OPERATION', ctx=Store())],
+          value=Constant(value='operation')),
+        Assign(
+          targets=[
+            Name(id='BATCH', ctx=Store())],
+          value=Constant(value='batch')),
+        Assign(
+          targets=[
+            Name(id='STREAMING', ctx=Store())],
+          value=Constant(value='streaming')),
+        Assign(
+          targets=[
+            Name(id='EVENT', ctx=Store())],
+          value=Constant(value='event'))]),
+    ClassDef(
+      name='PreparationStrategy',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Payload preparation strategies.')),
+        Assign(
+          targets=[
+            Name(id='IMMEDIATE', ctx=Store())],
+          value=Constant(value='immediate')),
+        Assign(
+          targets=[
+            Name(id='LAZY', ctx=Store())],
+          value=Constant(value='lazy')),
+        Assign(
+          targets=[
+            Name(id='CACHED', ctx=Store())],
+          value=Constant(value='cached')),
+        Assign(
+          targets=[
+            Name(id='STREAMING', ctx=Store())],
+          value=Constant(value='streaming'))]),
+    ClassDef(
+      name='PayloadSpecification',
+      body=[
+        Expr(
+          value=Constant(value='Schema for payload specification.')),
+        AnnAssign(
+          target=Name(id='spec_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='payload_type', ctx=Store()),
+          annotation=Name(id='PayloadType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content_size_bytes', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='compression_required', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='encryption_required', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ExecutionPayload',
+      body=[
+        Expr(
+          value=Constant(value='Schema for execution payload.')),
+        AnnAssign(
+          target=Name(id='payload_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='specification', ctx=Store()),
+          annotation=Name(id='PayloadSpecification', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='preparation_strategy', ctx=Store()),
+          annotation=Name(id='PreparationStrategy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='preparation_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PayloadPreparationResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for payload preparation results.')),
+        AnnAssign(
+          target=Name(id='result_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='payload', ctx=Store()),
+          annotation=Name(id='ExecutionPayload', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='preparation_successful', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='preparation_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='preparation_metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

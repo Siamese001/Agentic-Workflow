@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom dotenv import load_dotenv\nload_dotenv() # This loads the variables from .env into os.environ\n\nimport json\nimport re # Added for truncation check logic and new validation rules\nimport hashlib\nimport math\nimport logging\nimport os\nimport time\n\n\n__version__ = \"13.0+0\"\ntry:\n    import google.generativeai as genai\n    GEMINI_AVAILABLE = True\nexcept ImportError:\n    GEMINI_AVAILABLE = False\n    print(\"Warning: google-generativeai package not installed. Web RAG disabled.\")\n\ntry:\n    from sklearn.feature_extraction.text import TfidfVectorizer\n    from sklearn.metrics.pairwise import cosine_similarity\n    SKLEARN_AVAILABLE = True\nexcept ImportError:\n    SKLEARN_AVAILABLE = False\n    print(\"Warning: scikit-learn not installed. Cosine similarity will use basic implementation.\")\n\nimport random\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List, Optional, Any, ClassVar # Added ClassVar\n\n@dataclass\nclass ReasoningConfig:\n    \"\"\"Centralized",
+  "full_hash": "1b9b46c344d1026cee445b2c6ff53a24bb2725f40c29a20fc170f3bfb7a2b1e7",
+  "generated_at": 1764728251.9019446,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v13.00.py"
+}

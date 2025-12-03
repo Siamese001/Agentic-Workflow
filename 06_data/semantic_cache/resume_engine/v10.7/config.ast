@@ -1,0 +1,446 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Configuration helpers for the v10.7 runtime.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='mcp',
+      names=[
+        alias(name='get_schema')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Constant(value='core_v10_7')])),
+    ClassDef(
+      name='ConfigV10_7',
+      body=[
+        Expr(
+          value=Constant(value='Configuration loader for v10.7')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config_path',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='master_config_v10_7.json')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_config',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='get_schema', ctx=Load()),
+                args=[
+                  Name(id='config_path', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='expected_schema', ctx=Store())],
+              value=Constant(value='master_config_v10.7')),
+            Assign(
+              targets=[
+                Name(id='loaded_schema', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_config',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='schema_version')])),
+            If(
+              test=Compare(
+                left=Name(id='loaded_schema', ctx=Load()),
+                ops=[
+                  NotEq()],
+                comparators=[
+                  Name(id='expected_schema', ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Config schema mismatch. Expected '),
+                          FormattedValue(
+                            value=Name(id='expected_schema', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=', got '),
+                          FormattedValue(
+                            value=Name(id='loaded_schema', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Loaded '),
+                      FormattedValue(
+                        value=Name(id='loaded_schema', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' configuration')])]))]),
+        FunctionDef(
+          name='__getattr__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='name')]),
+          body=[
+            Expr(
+              value=Constant(value='Dynamic attribute access for nested config')),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='name', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='_')]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='object', ctx=Load()),
+                      attr='__getattribute__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      Name(id='name', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='section', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_config',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='name', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='section', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='snake_name', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='name', ctx=Load()),
+                      attr='replace',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='-'),
+                      Constant(value='_')])),
+                Assign(
+                  targets=[
+                    Name(id='section', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_config',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='snake_name', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='section', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='AttributeError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="Config section '"),
+                              FormattedValue(
+                                value=Name(id='name', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' or '"),
+                              FormattedValue(
+                                value=Name(id='snake_name', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' not found")])]))])]),
+            Return(
+              value=Call(
+                func=Name(id='ConfigSection', ctx=Load()),
+                args=[
+                  Name(id='section', ctx=Load())]))])]),
+    ClassDef(
+      name='ConfigSection',
+      body=[
+        Expr(
+          value=Constant(value='Wrapper for nested config sections')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='data',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_data',
+                  ctx=Store())],
+              value=Name(id='data', ctx=Load()))]),
+        FunctionDef(
+          name='__getattr__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='name')]),
+          body=[
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='name', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='_')]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='object', ctx=Load()),
+                      attr='__getattribute__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      Name(id='name', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='value', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_data',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='name', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='value', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='snake_name', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='name', ctx=Load()),
+                      attr='replace',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='-'),
+                      Constant(value='_')])),
+                Assign(
+                  targets=[
+                    Name(id='value', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_data',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='snake_name', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='value', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='AttributeError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="Config key '"),
+                              FormattedValue(
+                                value=Name(id='name', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' or '"),
+                              FormattedValue(
+                                value=Name(id='snake_name', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' not found")])]))])]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='ConfigSection', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load())]))]),
+            Return(
+              value=Name(id='value', ctx=Load()))]),
+        FunctionDef(
+          name='__setattr__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='name'),
+              arg(arg='value')]),
+          body=[
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='name', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='_')]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='object', ctx=Load()),
+                      attr='__setattr__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      Name(id='name', ctx=Load()),
+                      Name(id='value', ctx=Load())])),
+                Return()]),
+            Assign(
+              targets=[
+                Name(id='key', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='name', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_data',
+                      ctx=Load())]),
+                body=Name(id='name', ctx=Load()),
+                orelse=Call(
+                  func=Attribute(
+                    value=Name(id='name', ctx=Load()),
+                    attr='replace',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='-'),
+                    Constant(value='_')]))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_data',
+                    ctx=Load()),
+                  slice=Name(id='key', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='value', ctx=Load()))]),
+        FunctionDef(
+          name='get',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='key'),
+              arg(arg='default')],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_data',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load()),
+                  Name(id='default', ctx=Load())]))]),
+        FunctionDef(
+          name='__contains__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='key')]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_data',
+                    ctx=Load())]))])]),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='ConfigV10_7'),
+          Constant(value='ConfigSection')],
+        ctx=Load()))])

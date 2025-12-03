@@ -1,0 +1,154 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='OpenAI client adapter for v10_10.\n\nThis module is the ONLY place where the OpenAI SDK is imported.\nIt exposes a narrow run_llm interface used by runtime_utils.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any')],
+      level=0),
+    FunctionDef(
+      name='run_llm_openai',
+      args=arguments(
+        args=[
+          arg(
+            arg='model',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='prompt',
+            annotation=Name(id='str', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='temperature',
+            annotation=Name(id='float', ctx=Load())),
+          arg(
+            arg='max_tokens',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='timeout_s',
+            annotation=Name(id='int', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='Run an OpenAI chat completion and return the response text.\n\n    This helper performs no routing or caching; it is a thin wrapper\n    around the OpenAI SDK. Errors are allowed to propagate and will be\n    wrapped by the caller (runtime_utils.invoke_model).\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='openai')])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='ImportError', ctx=Load()),
+              name='exc',
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ImportError', ctx=Load()),
+                    args=[
+                      Constant(value='openai package not installed')]),
+                  cause=Name(id='exc', ctx=Load()))])]),
+        Assign(
+          targets=[
+            Name(id='api_key', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='os', ctx=Load()),
+              attr='getenv',
+              ctx=Load()),
+            args=[
+              Constant(value='OPENAI_API_KEY')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='api_key', ctx=Load())),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='RuntimeError', ctx=Load()),
+                args=[
+                  Constant(value='OPENAI_API_KEY must be set for OpenAI provider')]))]),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='openai', ctx=Load()),
+              attr='OpenAI',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='api_key',
+                value=Name(id='api_key', ctx=Load()))])),
+        AnnAssign(
+          target=Name(id='resp', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='client', ctx=Load()),
+                  attr='chat',
+                  ctx=Load()),
+                attr='completions',
+                ctx=Load()),
+              attr='create',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='model',
+                value=Name(id='model', ctx=Load())),
+              keyword(
+                arg='messages',
+                value=List(
+                  elts=[
+                    Dict(
+                      keys=[
+                        Constant(value='role'),
+                        Constant(value='content')],
+                      values=[
+                        Constant(value='user'),
+                        Name(id='prompt', ctx=Load())])],
+                  ctx=Load())),
+              keyword(
+                arg='temperature',
+                value=Name(id='temperature', ctx=Load())),
+              keyword(
+                arg='max_tokens',
+                value=Name(id='max_tokens', ctx=Load())),
+              keyword(
+                arg='timeout',
+                value=Name(id='timeout_s', ctx=Load()))]),
+          simple=1),
+        Return(
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Attribute(
+                      value=Subscript(
+                        value=Attribute(
+                          value=Name(id='resp', ctx=Load()),
+                          attr='choices',
+                          ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load()),
+                      attr='message',
+                      ctx=Load()),
+                    attr='content',
+                    ctx=Load()),
+                  Constant(value='')])]))],
+      returns=Name(id='str', ctx=Load()))])

@@ -1,0 +1,1660 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSemantic Hash Engine for Agentic-Workflow\n\nImplements Phase 0.5 semantic hashing capabilities for K7-K10 validation\n\nProvides semantic hash generation, integrity records, and validation\nfor the SSoT structure and metadata.\n')),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='yaml')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ClassDef(
+      name='SemanticHash',
+      body=[
+        AnnAssign(
+          target=Name(id='path', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content_hash', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='semantic_hash', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='integrity_level', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SemanticHashEngine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Semantic hash generation and validation engine\n    \n    Generates content hashes, semantic hashes, and maintains\n    integrity records for SSoT validation.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workspace_root',
+                annotation=Name(id='Path', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='workspace_root', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml_path',
+                  ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='unified_structure_subatomic.yaml'))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml_path',
+                  ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='unified_structure_subatomic_meta.yaml'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='sys', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='insert',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0),
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='workspace_root',
+                          ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='02_schemas'))])])),
+            ImportFrom(
+              module='ssot_merger',
+              names=[
+                alias(name='SSoTMerger')],
+              level=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='ssot_merger',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SSoTMerger', ctx=Load()),
+                args=[
+                  Name(id='workspace_root', ctx=Load())])),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='semantic_hashes',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='SemanticHash', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='integrity_records',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)]),
+        FunctionDef(
+          name='generate_content_hash',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate SHA-256 content hash')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hashlib', ctx=Load()),
+                      attr='sha256',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='content', ctx=Load()),
+                          attr='encode',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='utf-8')])]),
+                  attr='hexdigest',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='generate_semantic_hash',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='structure',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generate semantic hash based on structure keys and organization')),
+            Assign(
+              targets=[
+                Name(id='semantic_structure', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_extract_semantic_structure',
+                  ctx=Load()),
+                args=[
+                  Name(id='structure', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='semantic_json', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='semantic_structure', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='sort_keys',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='separators',
+                    value=Tuple(
+                      elts=[
+                        Constant(value=','),
+                        Constant(value=':')],
+                      ctx=Load()))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hashlib', ctx=Load()),
+                      attr='sha256',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='semantic_json', ctx=Load()),
+                          attr='encode',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='utf-8')])]),
+                  attr='hexdigest',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_extract_semantic_structure',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='structure',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Extract semantic structure (keys and types) from YAML structure')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='structure', ctx=Load()),
+                    Name(id='dict', ctx=Load())])),
+              body=[
+                Return(value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='semantic', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='structure', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='semantic', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_extract_semantic_structure',
+                          ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='value', ctx=Load()),
+                        ops=[
+                          Is()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='semantic', ctx=Load()),
+                              slice=Name(id='key', ctx=Load()),
+                              ctx=Store())],
+                          value=Constant(value='file'))],
+                      orelse=[
+                        If(
+                          test=Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load()),
+                              Name(id='str', ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='semantic', ctx=Load()),
+                                  slice=Name(id='key', ctx=Load()),
+                                  ctx=Store())],
+                              value=Constant(value='string_content'))],
+                          orelse=[
+                            If(
+                              test=Call(
+                                func=Name(id='isinstance', ctx=Load()),
+                                args=[
+                                  Name(id='value', ctx=Load()),
+                                  Name(id='list', ctx=Load())]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Subscript(
+                                      value=Name(id='semantic', ctx=Load()),
+                                      slice=Name(id='key', ctx=Load()),
+                                      ctx=Store())],
+                                  value=Constant(value='list'))],
+                              orelse=[
+                                Assign(
+                                  targets=[
+                                    Subscript(
+                                      value=Name(id='semantic', ctx=Load()),
+                                      slice=Name(id='key', ctx=Load()),
+                                      ctx=Store())],
+                                  value=Attribute(
+                                    value=Call(
+                                      func=Name(id='type', ctx=Load()),
+                                      args=[
+                                        Name(id='value', ctx=Load())]),
+                                    attr='__name__',
+                                    ctx=Load()))])])])])]),
+            Return(
+              value=Name(id='semantic', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='generate_main_yaml_hashes',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Generate hashes for main YAML file')),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='main_yaml_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='content', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='f', ctx=Load()),
+                          attr='read',
+                          ctx=Load())))]),
+                Assign(
+                  targets=[
+                    Name(id='structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='yaml', ctx=Load()),
+                      attr='safe_load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='content_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_content_hash',
+                      ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='semantic_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_semantic_hash',
+                      ctx=Load()),
+                    args=[
+                      Name(id='structure', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='hash_record', ctx=Store())],
+                  value=Call(
+                    func=Name(id='SemanticHash', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='path',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='main_yaml_path',
+                                  ctx=Load()),
+                                attr='relative_to',
+                                ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='workspace_root',
+                                  ctx=Load())])])),
+                      keyword(
+                        arg='content_hash',
+                        value=Name(id='content_hash', ctx=Load())),
+                      keyword(
+                        arg='semantic_hash',
+                        value=Name(id='semantic_hash', ctx=Load())),
+                      keyword(
+                        arg='timestamp',
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load())),
+                            attr='isoformat',
+                            ctx=Load()))),
+                      keyword(
+                        arg='integrity_level',
+                        value=Constant(value='canonical_ssot'))])),
+                Return(
+                  value=Name(id='hash_record', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to generate main YAML hashes: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Name(id='SemanticHash', ctx=Load())),
+        FunctionDef(
+          name='generate_meta_yaml_hashes',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Generate hashes for META YAML file')),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='meta_yaml_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='content', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='f', ctx=Load()),
+                          attr='read',
+                          ctx=Load())))]),
+                Assign(
+                  targets=[
+                    Name(id='structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='yaml', ctx=Load()),
+                      attr='safe_load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='content_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_content_hash',
+                      ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='semantic_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_semantic_hash',
+                      ctx=Load()),
+                    args=[
+                      Name(id='structure', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='hash_record', ctx=Store())],
+                  value=Call(
+                    func=Name(id='SemanticHash', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='path',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='meta_yaml_path',
+                                  ctx=Load()),
+                                attr='relative_to',
+                                ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='workspace_root',
+                                  ctx=Load())])])),
+                      keyword(
+                        arg='content_hash',
+                        value=Name(id='content_hash', ctx=Load())),
+                      keyword(
+                        arg='semantic_hash',
+                        value=Name(id='semantic_hash', ctx=Load())),
+                      keyword(
+                        arg='timestamp',
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load())),
+                            attr='isoformat',
+                            ctx=Load()))),
+                      keyword(
+                        arg='integrity_level',
+                        value=Constant(value='vocab_constraints'))])),
+                Return(
+                  value=Name(id='hash_record', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to generate META YAML hashes: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Name(id='SemanticHash', ctx=Load())),
+        FunctionDef(
+          name='generate_canonical_ssot_hashes',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Generate hashes for canonical SSoT (merged structure)')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='canonical_ssot', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='ssot_merger',
+                        ctx=Load()),
+                      attr='merge',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='canonical_json', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      Name(id='canonical_ssot', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='sort_keys',
+                        value=Constant(value=True)),
+                      keyword(
+                        arg='separators',
+                        value=Tuple(
+                          elts=[
+                            Constant(value=','),
+                            Constant(value=':')],
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='content_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_content_hash',
+                      ctx=Load()),
+                    args=[
+                      Name(id='canonical_json', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='semantic_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_semantic_hash',
+                      ctx=Load()),
+                    args=[
+                      Name(id='canonical_ssot', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='hash_record', ctx=Store())],
+                  value=Call(
+                    func=Name(id='SemanticHash', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='path',
+                        value=Constant(value='canonical_ssot.json')),
+                      keyword(
+                        arg='content_hash',
+                        value=Name(id='content_hash', ctx=Load())),
+                      keyword(
+                        arg='semantic_hash',
+                        value=Name(id='semantic_hash', ctx=Load())),
+                      keyword(
+                        arg='timestamp',
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load())),
+                            attr='isoformat',
+                            ctx=Load()))),
+                      keyword(
+                        arg='integrity_level',
+                        value=Constant(value='merged_canonical'))])),
+                Return(
+                  value=Name(id='hash_record', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to generate canonical SSoT hashes: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Name(id='SemanticHash', ctx=Load())),
+        FunctionDef(
+          name='validate_integrity',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='expected_hashes',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate current structure against expected hashes')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='current_hashes', ctx=Store())],
+                  value=Dict()),
+                Assign(
+                  targets=[
+                    Name(id='main_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_main_yaml_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='meta_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_meta_yaml_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='canonical_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_canonical_ssot_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='current_hashes', ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='main_hash', ctx=Load()),
+                        attr='path',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='main_hash', ctx=Load()),
+                    attr='content_hash',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='current_hashes', ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='meta_hash', ctx=Load()),
+                        attr='path',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='meta_hash', ctx=Load()),
+                    attr='content_hash',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='current_hashes', ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='canonical_hash', ctx=Load()),
+                        attr='path',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='canonical_hash', ctx=Load()),
+                    attr='content_hash',
+                    ctx=Load())),
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='path', ctx=Store()),
+                      Name(id='expected_hash', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='expected_hashes', ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='path', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='current_hashes', ctx=Load())]),
+                      body=[
+                        Return(
+                          value=Constant(value=False))]),
+                    If(
+                      test=Compare(
+                        left=Subscript(
+                          value=Name(id='current_hashes', ctx=Load()),
+                          slice=Name(id='path', ctx=Load()),
+                          ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Name(id='expected_hash', ctx=Load())]),
+                      body=[
+                        Return(
+                          value=Constant(value=False))])]),
+                Return(
+                  value=Constant(value=True))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Constant(value=False))])])],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='create_integrity_records',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Create comprehensive integrity records')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='main_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_main_yaml_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='meta_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_meta_yaml_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='canonical_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_canonical_ssot_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='semantic_hashes',
+                      ctx=Store())],
+                  value=List(
+                    elts=[
+                      Name(id='main_hash', ctx=Load()),
+                      Name(id='meta_hash', ctx=Load()),
+                      Name(id='canonical_hash', ctx=Load())],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='integrity_record', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='creation_timestamp'),
+                      Constant(value='workspace_root'),
+                      Constant(value='semantic_hashes'),
+                      Constant(value='validation_status'),
+                      Constant(value='total_hashes')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load())),
+                          attr='isoformat',
+                          ctx=Load())),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='workspace_root',
+                            ctx=Load())]),
+                      ListComp(
+                        elt=Dict(
+                          keys=[
+                            Constant(value='path'),
+                            Constant(value='content_hash'),
+                            Constant(value='semantic_hash'),
+                            Constant(value='timestamp'),
+                            Constant(value='integrity_level')],
+                          values=[
+                            Attribute(
+                              value=Name(id='h', ctx=Load()),
+                              attr='path',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='h', ctx=Load()),
+                              attr='content_hash',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='h', ctx=Load()),
+                              attr='semantic_hash',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='h', ctx=Load()),
+                              attr='timestamp',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='h', ctx=Load()),
+                              attr='integrity_level',
+                              ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='h', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='semantic_hashes',
+                              ctx=Load()),
+                            is_async=0)]),
+                      Constant(value='created'),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='semantic_hashes',
+                            ctx=Load())])])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='integrity_records',
+                      ctx=Store())],
+                  value=Name(id='integrity_record', ctx=Load())),
+                Return(
+                  value=Name(id='integrity_record', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to create integrity records: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='load_integrity_records',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='record_path',
+                annotation=Name(id='Path', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Load existing integrity records')),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='record_path', ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='integrity_records',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Return(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='integrity_records',
+                    ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load integrity records: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='save_integrity_records',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output_path',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Path', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Save integrity records to file')),
+            If(
+              test=Compare(
+                left=Name(id='output_path', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=BinOp(
+                    left=BinOp(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workspace_root',
+                        ctx=Load()),
+                      op=Div(),
+                      right=Constant(value='02_schemas')),
+                    op=Div(),
+                    right=Constant(value='semantic_integrity_records.json')))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='output_path', ctx=Load()),
+                    attr='parent',
+                    ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='parents',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='exist_ok',
+                    value=Constant(value=True))])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='integrity_records',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='create_integrity_records',
+                      ctx=Load())))]),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='output_path', ctx=Load()),
+                      Constant(value='w')],
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='integrity_records',
+                        ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2)),
+                      keyword(
+                        arg='ensure_ascii',
+                        value=Constant(value=False))]))]),
+            Return(
+              value=Name(id='output_path', ctx=Load()))],
+          returns=Name(id='Path', ctx=Load())),
+        FunctionDef(
+          name='validate_semantic_consistency',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Validate semantic consistency across all components')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='main_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_main_yaml_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='meta_hash', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generate_meta_yaml_hashes',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='main_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='yaml', ctx=Load()),
+                      attr='safe_load',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='main_yaml_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))])])),
+                Assign(
+                  targets=[
+                    Name(id='meta_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='yaml', ctx=Load()),
+                      attr='safe_load',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='meta_yaml_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))])])),
+                Assign(
+                  targets=[
+                    Name(id='main_domains', ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Name(id='set', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='main_structure', ctx=Load()),
+                            attr='keys',
+                            ctx=Load()))]),
+                    op=Sub(),
+                    right=Set(
+                      elts=[
+                        Constant(value='meta_sidecar'),
+                        Constant(value='canonical_definition')]))),
+                Assign(
+                  targets=[
+                    Name(id='meta_domains', ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='meta_structure', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='domains'),
+                              Dict()]),
+                          attr='keys',
+                          ctx=Load()))])),
+                Return(
+                  value=Compare(
+                    left=Name(id='main_domains', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='meta_domains', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Constant(value=False))])])],
+          returns=Name(id='bool', ctx=Load()))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='CLI entry point for semantic hash engine')),
+        Import(
+          names=[
+            alias(name='argparse')]),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='Semantic hash engine for SSoT validation'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--workspace')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='Path', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='Path', ctx=Load()),
+                    attr='cwd',
+                    ctx=Load()))),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to Agentic-Workflow workspace'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--action')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value='generate')),
+              keyword(
+                arg='choices',
+                value=List(
+                  elts=[
+                    Constant(value='generate'),
+                    Constant(value='validate'),
+                    Constant(value='check-consistency')],
+                  ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Action to perform'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--records')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='Path', ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to integrity records file'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='SemanticHashEngine', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='workspace',
+                ctx=Load())])),
+        Try(
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='action',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='generate')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='records', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='engine', ctx=Load()),
+                      attr='create_integrity_records',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='engine', ctx=Load()),
+                      attr='save_integrity_records',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='records',
+                        ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Generated semantic hashes for '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='records', ctx=Load()),
+                              slice=Constant(value='total_hashes'),
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' components')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Integrity records saved: '),
+                          FormattedValue(
+                            value=Name(id='output_path', ctx=Load()),
+                            conversion=-1)])]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='action',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='validate')]),
+                  body=[
+                    If(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Attribute(
+                          value=Name(id='args', ctx=Load()),
+                          attr='records',
+                          ctx=Load())),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              Constant(value='Error: --records path required for validation')])),
+                        Return(
+                          value=Constant(value=1))]),
+                    Assign(
+                      targets=[
+                        Name(id='expected_records', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='engine', ctx=Load()),
+                          attr='load_integrity_records',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='records',
+                            ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='expected_hashes', ctx=Store())],
+                      value=DictComp(
+                        key=Subscript(
+                          value=Name(id='h', ctx=Load()),
+                          slice=Constant(value='path'),
+                          ctx=Load()),
+                        value=Subscript(
+                          value=Name(id='h', ctx=Load()),
+                          slice=Constant(value='content_hash'),
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='h', ctx=Store()),
+                            iter=Subscript(
+                              value=Name(id='expected_records', ctx=Load()),
+                              slice=Constant(value='semantic_hashes'),
+                              ctx=Load()),
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='is_valid', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='engine', ctx=Load()),
+                          attr='validate_integrity',
+                          ctx=Load()),
+                        args=[
+                          Name(id='expected_hashes', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Integrity validation: '),
+                              FormattedValue(
+                                value=IfExp(
+                                  test=Name(id='is_valid', ctx=Load()),
+                                  body=Constant(value='PASS'),
+                                  orelse=Constant(value='FAIL')),
+                                conversion=-1)])])),
+                    Return(
+                      value=IfExp(
+                        test=Name(id='is_valid', ctx=Load()),
+                        body=Constant(value=0),
+                        orelse=Constant(value=1)))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='args', ctx=Load()),
+                          attr='action',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='check-consistency')]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='is_consistent', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='engine', ctx=Load()),
+                              attr='validate_semantic_consistency',
+                              ctx=Load()))),
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Semantic consistency: '),
+                                  FormattedValue(
+                                    value=IfExp(
+                                      test=Name(id='is_consistent', ctx=Load()),
+                                      body=Constant(value='PASS'),
+                                      orelse=Constant(value='FAIL')),
+                                    conversion=-1)])])),
+                        Return(
+                          value=IfExp(
+                            test=Name(id='is_consistent', ctx=Load()),
+                            body=Constant(value=0),
+                            orelse=Constant(value=1)))])])]),
+            Return(
+              value=Constant(value=0))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=1))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='exit', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='main', ctx=Load()))]))])])

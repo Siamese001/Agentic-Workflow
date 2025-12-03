@@ -1,0 +1,744 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Schema and evidence validation for outreach drafts.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='Sequence'),
+        alias(name='Tuple')],
+      level=0),
+    ClassDef(
+      name='QAResult',
+      body=[
+        Expr(
+          value=Constant(value='Outcome of a QA validation pass.')),
+        AnnAssign(
+          target=Name(id='ok', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reasons', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Constant(value=Ellipsis)],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='missing_sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Constant(value=Ellipsis)],
+              ctx=Load()),
+            ctx=Load()),
+          value=Tuple(ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='missing_artifacts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Constant(value=Ellipsis)],
+              ctx=Load()),
+            ctx=Load()),
+          value=Tuple(ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='__bool__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='ok',
+                ctx=Load()))],
+          returns=Name(id='bool', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='QAValidator',
+      body=[
+        Expr(
+          value=Constant(value='Check structural and evidence requirements for outreach drafts.')),
+        Assign(
+          targets=[
+            Name(id='_OPENER_KEYWORDS', ctx=Store())],
+          value=Tuple(
+            elts=[
+              Constant(value='hello'),
+              Constant(value='hi'),
+              Constant(value='thanks'),
+              Constant(value='thank you'),
+              Constant(value='appreciate')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='_CTA_KEYWORDS', ctx=Store())],
+          value=Tuple(
+            elts=[
+              Constant(value='cta:'),
+              Constant(value='chat'),
+              Constant(value='call'),
+              Constant(value='meeting'),
+              Constant(value='connect')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='_SIGNATURE_KEYWORDS', ctx=Store())],
+          value=Tuple(
+            elts=[
+              Constant(value='regards'),
+              Constant(value='sincerely'),
+              Constant(value='cheers'),
+              Constant(value='best')],
+            ctx=Load())),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwonlyargs=[
+              arg(
+                arg='max_body_chars',
+                annotation=Name(id='int', ctx=Load()))],
+            kw_defaults=[
+              Constant(value=1500)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='max_body_chars',
+                  ctx=Store())],
+              value=Name(id='max_body_chars', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='validate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='draft',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='artifacts',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            kwonlyargs=[
+              arg(
+                arg='pii_placeholders',
+                annotation=Subscript(
+                  value=Name(id='Iterable', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            kw_defaults=[
+              Tuple(ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='line', ctx=Load()),
+                    attr='rstrip',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='line', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='draft', ctx=Load()),
+                        attr='splitlines',
+                        ctx=Load())),
+                    is_async=0)])),
+            AnnAssign(
+              target=Name(id='reasons', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='list', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            AnnAssign(
+              target=Name(id='missing_sections', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='list', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='lines', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Subscript(
+                              value=Name(id='lines', ctx=Load()),
+                              slice=Constant(value=0),
+                              ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        attr='startswith',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='subject:')]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Missing subject line')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='missing_sections', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='subject')]))]),
+            Assign(
+              targets=[
+                Name(id='body_lines', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_body_lines',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='opener_line', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='line', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='line', ctx=Store()),
+                        iter=Name(id='body_lines', ctx=Load()),
+                        ifs=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='line', ctx=Load()),
+                              attr='strip',
+                              ctx=Load()))],
+                        is_async=0)]),
+                  Constant(value='')])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_contains_keyword',
+                    ctx=Load()),
+                  args=[
+                    Name(id='opener_line', ctx=Load()),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_OPENER_KEYWORDS',
+                      ctx=Load())])),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Missing friendly opener')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='missing_sections', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='opener')]))]),
+            Assign(
+              targets=[
+                Name(id='artifact_pattern', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\[artifact_id:([^\\]]+)\\]')])),
+            Assign(
+              targets=[
+                Name(id='artifact_markers', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='artifact_pattern', ctx=Load()),
+                      attr='findall',
+                      ctx=Load()),
+                    args=[
+                      Name(id='draft', ctx=Load())])])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='artifact_markers', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='No evidence anchors present')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='missing_sections', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='value_wedge')]))]),
+            Assign(
+              targets=[
+                Name(id='missing_artifacts', ctx=Store())],
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Call(
+                      func=Name(id='set', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='artifacts', ctx=Load()),
+                            attr='keys',
+                            ctx=Load()))]),
+                    op=Sub(),
+                    right=Name(id='artifact_markers', ctx=Load()))])),
+            If(
+              test=Name(id='missing_artifacts', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='Artifacts missing from draft: '),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Constant(value=', '),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Name(id='missing_artifacts', ctx=Load())]))]))]),
+            Assign(
+              targets=[
+                Name(id='unknown_artifacts', ctx=Store())],
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='artifact_markers', ctx=Load()),
+                    op=Sub(),
+                    right=Call(
+                      func=Name(id='set', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='artifacts', ctx=Load()),
+                            attr='keys',
+                            ctx=Load()))]))])),
+            If(
+              test=Name(id='unknown_artifacts', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='Unknown artifact references: '),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Constant(value=', '),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Name(id='unknown_artifacts', ctx=Load())]))]))]),
+            Assign(
+              targets=[
+                Name(id='body_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='body_lines', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='body_text', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='max_body_chars',
+                    ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Body exceeds character budget')]))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_has_keyword',
+                    ctx=Load()),
+                  args=[
+                    Name(id='body_lines', ctx=Load()),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_CTA_KEYWORDS',
+                      ctx=Load())])),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Missing call-to-action')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='missing_sections', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='cta')]))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_has_keyword',
+                    ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='body_lines', ctx=Load()),
+                      slice=Slice(
+                        lower=UnaryOp(
+                          op=USub(),
+                          operand=Constant(value=3))),
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_SIGNATURE_KEYWORDS',
+                      ctx=Load())])),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reasons', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Missing signature')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='missing_sections', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='signature')]))]),
+            For(
+              target=Name(id='placeholder', ctx=Store()),
+              iter=Name(id='pii_placeholders', ctx=Load()),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='placeholder', ctx=Load()),
+                      Compare(
+                        left=Name(id='placeholder', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='draft', ctx=Load())])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='reasons', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Placeholder '),
+                              FormattedValue(
+                                value=Name(id='placeholder', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' was not restored')])]))])]),
+            Assign(
+              targets=[
+                Name(id='missing_sections', ctx=Store())],
+              value=Call(
+                func=Name(id='tuple', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='dict', ctx=Load()),
+                      attr='fromkeys',
+                      ctx=Load()),
+                    args=[
+                      Name(id='missing_sections', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='QAResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='ok',
+                    value=UnaryOp(
+                      op=Not(),
+                      operand=Name(id='reasons', ctx=Load()))),
+                  keyword(
+                    arg='reasons',
+                    value=Call(
+                      func=Name(id='tuple', ctx=Load()),
+                      args=[
+                        Name(id='reasons', ctx=Load())])),
+                  keyword(
+                    arg='missing_sections',
+                    value=Name(id='missing_sections', ctx=Load())),
+                  keyword(
+                    arg='missing_artifacts',
+                    value=Call(
+                      func=Name(id='tuple', ctx=Load()),
+                      args=[
+                        Name(id='missing_artifacts', ctx=Load())]))])),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Name(id='QAResult', ctx=Load())),
+        FunctionDef(
+          name='_body_lines',
+          args=arguments(
+            args=[
+              arg(
+                arg='lines',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='lines', ctx=Load())),
+              body=[
+                Return(
+                  value=List(ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='body', ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='lines', ctx=Load()),
+                    slice=Slice(
+                      lower=Constant(value=1)),
+                    ctx=Load())])),
+            While(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='body', ctx=Load()),
+                  Compare(
+                    left=Subscript(
+                      value=Name(id='body', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='')])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='body', ctx=Load()),
+                      attr='pop',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0)]))]),
+            Return(
+              value=Name(id='body', ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Sequence', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_contains_keyword',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='keywords',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='lowered', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Return(
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='keyword', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='lowered', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='keyword', ctx=Store()),
+                        iter=Name(id='keywords', ctx=Load()),
+                        is_async=0)])]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='_has_keyword',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='lines',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='keywords',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='cls', ctx=Load()),
+                        attr='_contains_keyword',
+                        ctx=Load()),
+                      args=[
+                        Name(id='line', ctx=Load()),
+                        Name(id='keywords', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='line', ctx=Store()),
+                        iter=Name(id='lines', ctx=Load()),
+                        ifs=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='line', ctx=Load()),
+                              attr='strip',
+                              ctx=Load()))],
+                        is_async=0)])]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Name(id='bool', ctx=Load()))])])

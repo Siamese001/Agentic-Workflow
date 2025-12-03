@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.7\n====================================================\n\nCHANGELOG v11.7 (CRITICAL - Complete QA Gaps Implementation):\n---------------------------------------------------------\n\u2728 NEW: S5_Implement_SelfConsistency (FEATURE 2.3) - C_LEVEL generation now uses N-candidate synthesis\n\u2728 NEW: S6_ValidateMetricContext (GAP 1.4 / LIC-QA-043) - Metrics must have keyword context from RAG\n\u2728 NEW: S6_ValidateSenderClaims (GAP 1.8 / LIC-QA-105) - Team whitelist validation for \"my team\" claims\n\u2728 NEW: S6_ValidateJobTitlePlacement (GAP 1.6 / LIC-QA-075) - Job title in first 50 words (INMAIL)\n\u2728 NEW: S6_ValidateCompanySpelling (GAP 1.7 / LIC-QA-049) - Fuzzy match company name against RAG\n\nCHANGELOG v11.6.1 (PATCH - Test Fixes):\n---------------------------------------------------------\n\ud83d\udd27 FIX: Added \"drive\" to FORBIDDEN_VERBS list (complements existing \"drove\")\n\ud83d\udd27 FIX: Adjusted feasibility heuristic - CONNECTION_REQ now requires 8 words/element (was 5)\n\ud83d\udd27 F",
+  "full_hash": "bb2ea73812df5b3d2bf0045c101dd97f6fec30a7aab6ed58dda031cbfc5a034a",
+  "generated_at": 1764728339.2489002,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_7.py"
+}

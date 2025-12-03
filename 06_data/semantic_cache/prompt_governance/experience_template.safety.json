@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 348,
+  "generated_at": 1764728348.240692,
+  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\templates\\resume\\planner-microagent-layer\\act-phase-group\\tool-adapter-ops\\experience_template.md"
+}

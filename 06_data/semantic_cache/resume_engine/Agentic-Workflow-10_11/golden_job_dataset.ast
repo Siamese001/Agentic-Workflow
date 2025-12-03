@@ -1,0 +1,52 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='version'),
+          Constant(value='description'),
+          Constant(value='samples')],
+        values=[
+          Constant(value='1.0'),
+          Constant(value='Golden dataset for job description testing'),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='title'),
+                  Constant(value='company'),
+                  Constant(value='requirements'),
+                  Constant(value='experience_years')],
+                values=[
+                  Constant(value='job_001'),
+                  Constant(value='Senior Software Engineer'),
+                  Constant(value='Tech Corp'),
+                  List(
+                    elts=[
+                      Constant(value='Python'),
+                      Constant(value='AWS'),
+                      Constant(value='Docker'),
+                      Constant(value='Kubernetes')],
+                    ctx=Load()),
+                  Constant(value=5)]),
+              Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='title'),
+                  Constant(value='company'),
+                  Constant(value='requirements'),
+                  Constant(value='experience_years')],
+                values=[
+                  Constant(value='job_002'),
+                  Constant(value='ML Engineer'),
+                  Constant(value='AI Startup'),
+                  List(
+                    elts=[
+                      Constant(value='Python'),
+                      Constant(value='TensorFlow'),
+                      Constant(value='PyTorch'),
+                      Constant(value='MLOps')],
+                    ctx=Load()),
+                  Constant(value=3)])],
+            ctx=Load())]))])

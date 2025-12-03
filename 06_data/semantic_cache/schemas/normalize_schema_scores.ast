@@ -1,0 +1,162 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema score normalization and standardization.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='NormalizationTechnique',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Score normalization techniques.')),
+        Assign(
+          targets=[
+            Name(id='MIN_MAX_SCALING', ctx=Store())],
+          value=Constant(value='min_max_scaling')),
+        Assign(
+          targets=[
+            Name(id='Z_SCORE_NORMALIZATION', ctx=Store())],
+          value=Constant(value='z_score_normalization')),
+        Assign(
+          targets=[
+            Name(id='RANK_NORMALIZATION', ctx=Store())],
+          value=Constant(value='rank_normalization')),
+        Assign(
+          targets=[
+            Name(id='QUANTILE_NORMALIZATION', ctx=Store())],
+          value=Constant(value='quantile_normalization'))]),
+    ClassDef(
+      name='ScoreDistribution',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Target score distribution types.')),
+        Assign(
+          targets=[
+            Name(id='UNIFORM', ctx=Store())],
+          value=Constant(value='uniform')),
+        Assign(
+          targets=[
+            Name(id='NORMAL', ctx=Store())],
+          value=Constant(value='normal')),
+        Assign(
+          targets=[
+            Name(id='EXPONENTIAL', ctx=Store())],
+          value=Constant(value='exponential')),
+        Assign(
+          targets=[
+            Name(id='CUSTOM', ctx=Store())],
+          value=Constant(value='custom'))]),
+    ClassDef(
+      name='ScoreNormalizationConfig',
+      body=[
+        Expr(
+          value=Constant(value='Schema for score normalization configuration.')),
+        AnnAssign(
+          target=Name(id='technique', ctx=Store()),
+          annotation=Name(id='NormalizationTechnique', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_range', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='float', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_distribution', ctx=Store()),
+          annotation=Name(id='ScoreDistribution', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='preserve_ordering', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='NormalizedScore',
+      body=[
+        Expr(
+          value=Constant(value='Schema for normalized score representation.')),
+        AnnAssign(
+          target=Name(id='original_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='original_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='normalized_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='normalization_metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ScoreNormalizationBatch',
+      body=[
+        Expr(
+          value=Constant(value='Schema for batch score normalization results.')),
+        AnnAssign(
+          target=Name(id='batch_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='normalized_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='NormalizedScore', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='configuration', ctx=Store()),
+          annotation=Name(id='ScoreNormalizationConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='normalization_statistics', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

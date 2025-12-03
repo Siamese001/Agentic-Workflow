@@ -1,0 +1,6 @@
+{
+  "golden_content": ".\n                              +-------------------------------------------------------------------------+\n                              | \ud83d\udcda \"THE LIBRARIAN\" (Offline Nightly Agent)                              |\n                              |   Class: `IntelligenceLibrarian`                                        |\n                              |   File: `intelligence_service_LIC.py`                                   |\n                              |                                                                         |\n                              |   1. Runs deep research RAG on target companies/executives.             |\n                              |   2. Analyzes content using `GeminiLLMClient`.                          |\n                              |   3. Embeds findings (via `google.generativeai.embed_content`).         |\n                              |   4. Writes vectors to persistent \"memory\".                             |\n                              +--------------",
+  "full_hash": "850cf1eb86cfd7a17c0ad87ae14965b34c9a9326e5b5e671c456fbc1e8f9dc35",
+  "generated_at": 1764728331.3076499,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\agentic_design_LIC.md"
+}

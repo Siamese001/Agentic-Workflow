@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Compatibility layer that re-exports stack agents for v10.7.\"\"\"\n\nfrom stacks_v10_7 import *  # noqa: F401,F403\nfrom stacks_v10_7 import __all__ as _STACK_EXPORTS\n\nfrom core_v10_7 import wrap_mcp\n\n__all__ = list(_STACK_EXPORTS) + [\"wrap_mcp\"]\n",
+  "full_hash": "39eb2236b53f1cd2fe8588b4e1bc6ec2cc5fa10fbfb9b79fd8895b52d8d78275",
+  "generated_at": 1764728330.1147687,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agent_stacks_v10_7.py"
+}

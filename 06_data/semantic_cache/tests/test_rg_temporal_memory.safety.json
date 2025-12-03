@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 20,
+  "generated_at": 1764728353.7555046,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\budget-manager-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\test_rg_temporal_memory.py"
+}

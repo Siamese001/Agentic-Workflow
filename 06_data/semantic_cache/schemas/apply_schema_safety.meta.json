@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\safety-phase\\check-schema-rules\\policy\\check-safety\\apply_schema_safety.py",
+    "rel_path": "apply_schema_safety.py",
+    "root_name": "schemas",
+    "file_hash": "8c203775f43927c22ff34418bf4067d59a11606da99b13c36a29f0d804836ed7",
+    "file_size": 1341,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.2620869
+}

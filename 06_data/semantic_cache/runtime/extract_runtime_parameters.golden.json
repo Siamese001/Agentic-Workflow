@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - extract_runtime_parameters\nImplements L1 Cognitive Planning Layer for extract runtime parameters operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ExtractRuntimeParametersPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ExtractRuntimeParametersPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ExtractRuntimeParametersPlanResult:\n    \"\"\"L5 Result structure with full type safety",
+  "full_hash": "09f9ad4aaf053e62b0e47d09facda90d2b7e069f896268154d59ea149e7096cf",
+  "generated_at": 1764728347.4148061,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\plan-layer\\plan-phase\\get-runtime-info\\general\\understand-request\\extract_runtime_parameters.py"
+}

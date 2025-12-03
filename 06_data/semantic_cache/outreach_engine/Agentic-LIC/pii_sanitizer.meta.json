@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\safety\\pii_sanitizer.py",
+    "rel_path": "pii_sanitizer.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "330cb425cf0cb733533a20f6e43aa7a2cc18a1661d7da560d3d0223966105181",
+    "file_size": 1210,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.6999333
+}

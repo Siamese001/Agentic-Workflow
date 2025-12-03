@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\nfrom schema import ResumeOutputSchema\n\n@pytest.mark.parametrize(\"jd\", [\"AWS\",\"Anthropic\",\"Databricks\",\"CoreWeave\",\"Citi\"])\ndef test_resume_schema_compliance(jd):\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\":\"AI Exec\", \"jd\": jd})\n    ResumeOutputSchema(**out[\"resume\"])  # raises if invalid\n\n@pytest.mark.parametrize(\"repeat\", [1,2,3,4,5])\ndef test_idempotency(repeat):\n    ctx={\"compat_mode\": \"v10_7\", \"resume\":\"repeatable\",\"jd\":\"same\"}\n    outs=[run_workflow(ctx) for _ in range(repeat)]\n    assert all(o==outs[0] for o in outs)\n",
+  "full_hash": "5c50d631a3083f0832541f13a77eb686a98788df0bf6cc6f44c959569805c845",
+  "generated_at": 1764728230.453571,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\contracts\\test_contract_schemas_v10_7.py"
+}

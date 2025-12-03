@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.29 - CRITICAL BUG FIXES\n================================================================================\nCRITICAL v5.29 UPDATE: Fixed method signature mismatches causing complete failure\n\n\u2713 FIXED: Method signature mismatches across all K.X generator methods\n\u2713 FIXED: Removed duplicate dataclass definitions\n\u2713 FIXED: Parameter alignment in _generate_artist_output and all K.X methods\n\u2713 FIXED: Removed obsolete k0_output/k2_output parameters\n\u2713 CLEANED: Unified method signatures to use thematic_analysis consistently\n\u2713 VERIFIED: All methods now properly receive ThematicAnalysis object\n\nBUG FIXES v5.29:\n\u2713 Fixed 14 method signatures causing 'NoneType' attribute errors\n\u2713 Removed duplicate ThematicAnalysis dataclass definition\n\u2713 Standardized all K.X methods to consistent signature pattern\n\u2713 All methods now use: (enriched_scaffold, job_description, thematic_analysis, previous_failures)\n\u2713 Cleaned up v5.27 legacy k0_output/k2_output parameters\n\nBASE: v5.28 (5,743 lines",
+  "full_hash": "2fc80380577bbf591797b0457d620f22133d6d881189af7e79147cf0466c4a0f",
+  "generated_at": 1764728302.686194,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_29.py"
+}

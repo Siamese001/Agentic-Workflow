@@ -1,0 +1,1790 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Assign(
+      targets=[
+        Name(id='VENDOR_PATH', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='os', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='join',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='os', ctx=Load()),
+                attr='path',
+                ctx=Load()),
+              attr='dirname',
+              ctx=Load()),
+            args=[
+              Name(id='__file__', ctx=Load())]),
+          Constant(value='vendor')])),
+    If(
+      test=Compare(
+        left=Name(id='VENDOR_PATH', ctx=Load()),
+        ops=[
+          NotIn()],
+        comparators=[
+          Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load())]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='sys', ctx=Load()),
+                attr='path',
+                ctx=Load()),
+              attr='insert',
+              ctx=Load()),
+            args=[
+              Constant(value=0),
+              Name(id='VENDOR_PATH', ctx=Load())]))]),
+    Expr(
+      value=Constant(value='Specialist planner ensemble and coordinator for v10.7 strategies.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='TYPE_CHECKING'),
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='BaseAgent'),
+        alias(name='StrategyPlan'),
+        alias(name='PlannerAssessment'),
+        alias(name='ScenarioSimulationResult')],
+      level=0),
+    If(
+      test=Name(id='TYPE_CHECKING', ctx=Load()),
+      body=[
+        ImportFrom(
+          module='core_v10_7',
+          names=[
+            alias(name='WorkflowContext')],
+          level=0)]),
+    FunctionDef(
+      name='_truncate',
+      args=arguments(
+        args=[
+          arg(
+            arg='text',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='limit',
+            annotation=Name(id='int', ctx=Load()))],
+        defaults=[
+          Constant(value=160)]),
+      body=[
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='text', ctx=Load())]),
+            ops=[
+              LtE()],
+            comparators=[
+              Name(id='limit', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='text', ctx=Load()))]),
+        Return(
+          value=BinOp(
+            left=Subscript(
+              value=Name(id='text', ctx=Load()),
+              slice=Slice(
+                upper=BinOp(
+                  left=Name(id='limit', ctx=Load()),
+                  op=Sub(),
+                  right=Constant(value=3))),
+              ctx=Load()),
+            op=Add(),
+            right=Constant(value='...')))],
+      returns=Name(id='str', ctx=Load())),
+    ClassDef(
+      name='DomainPlannerAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Evaluates strategic alignment with the job domain.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='job_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='job_title', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='job_context', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='job_title')]),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='company', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='job_context', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='company')]),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='focus_matches', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Name(id='focus', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='focus_areas',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='normalized_focus', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='focus', ctx=Load()),
+                      attr='lower',
+                      ctx=Load()))),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='job_title', ctx=Load()),
+                      Compare(
+                        left=Subscript(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='job_title', ctx=Load()),
+                              attr='split',
+                              ctx=Load())),
+                          slice=Constant(value=0),
+                          ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='normalized_focus', ctx=Load())])]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='focus_matches', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1))]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='company', ctx=Load()),
+                      Compare(
+                        left=Name(id='company', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='normalized_focus', ctx=Load())])]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='focus_matches', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1))])]),
+            Assign(
+              targets=[
+                Name(id='vote', ctx=Store())],
+              value=IfExp(
+                test=Name(id='focus_matches', ctx=Load()),
+                body=Constant(value='approve'),
+                orelse=Constant(value='revise'))),
+            Assign(
+              targets=[
+                Name(id='confidence', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='vote', ctx=Load()),
+                  ops=[
+                    Eq()],
+                  comparators=[
+                    Constant(value='approve')]),
+                body=Call(
+                  func=Name(id='min', ctx=Load()),
+                  args=[
+                    Constant(value=1.0),
+                    BinOp(
+                      left=Constant(value=0.55),
+                      op=Add(),
+                      right=BinOp(
+                        left=Constant(value=0.15),
+                        op=Mult(),
+                        right=Name(id='focus_matches', ctx=Load())))]),
+                orelse=Constant(value=0.45))),
+            AnnAssign(
+              target=Name(id='recommended_actions', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='focus_matches', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommended_actions', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Introduce a focus area that explicitly references the job title or company priorities.')]))]),
+            Assign(
+              targets=[
+                Name(id='rationale', ctx=Store())],
+              value=IfExp(
+                test=Name(id='focus_matches', ctx=Load()),
+                body=Constant(value='Focus areas reference role/company context.'),
+                orelse=Constant(value='No explicit domain alignment detected.'))),
+            Assign(
+              targets=[
+                Name(id='assessment', ctx=Store())],
+              value=Call(
+                func=Name(id='PlannerAssessment', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='planner_name',
+                    value=Constant(value='DomainPlanner')),
+                  keyword(
+                    arg='vote',
+                    value=Name(id='vote', ctx=Load())),
+                  keyword(
+                    arg='rationale',
+                    value=Name(id='rationale', ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Call(
+                      func=Name(id='round', ctx=Load()),
+                      args=[
+                        Name(id='confidence', ctx=Load()),
+                        Constant(value=2)])),
+                  keyword(
+                    arg='recommended_actions',
+                    value=Name(id='recommended_actions', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='domain_planner_assessment'),
+                  Constant(value='success'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='assessment', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load()))])),
+            Return(
+              value=Name(id='assessment', ctx=Load()))],
+          returns=Name(id='PlannerAssessment', ctx=Load()))]),
+    ClassDef(
+      name='RiskAssessorAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Assesses risk and potential failure modes in the strategy.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='job_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='focus_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='focus_areas',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='duplicate_focus', ctx=Store())],
+              value=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    SetComp(
+                      elt=Call(
+                        func=Attribute(
+                          value=Name(id='focus', ctx=Load()),
+                          attr='lower',
+                          ctx=Load())),
+                      generators=[
+                        comprehension(
+                          target=Name(id='focus', ctx=Store()),
+                          iter=Attribute(
+                            value=Name(id='plan', ctx=Load()),
+                            attr='focus_areas',
+                            ctx=Load()),
+                          is_async=0)])]),
+                ops=[
+                  NotEq()],
+                comparators=[
+                  Name(id='focus_count', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='overextended', ctx=Store())],
+              value=Compare(
+                left=Name(id='focus_count', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=4)])),
+            Assign(
+              targets=[
+                Name(id='vote', ctx=Store())],
+              value=Constant(value='approve')),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='overextended', ctx=Load()),
+                  Name(id='duplicate_focus', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='vote', ctx=Store())],
+                  value=Constant(value='revise'))]),
+            AnnAssign(
+              target=Name(id='recommended_actions', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=Name(id='overextended', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommended_actions', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Prioritize the top three focus areas to avoid dilution.')]))]),
+            If(
+              test=Name(id='duplicate_focus', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommended_actions', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Merge overlapping focus areas for clarity.')]))]),
+            Assign(
+              targets=[
+                Name(id='risk_signals', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Name(id='overextended', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='risk_signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='focus overextension')]))]),
+            If(
+              test=Name(id='duplicate_focus', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='risk_signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='duplicate focus areas')]))]),
+            Assign(
+              targets=[
+                Name(id='rationale', ctx=Store())],
+              value=IfExp(
+                test=UnaryOp(
+                  op=Not(),
+                  operand=Name(id='risk_signals', ctx=Load())),
+                body=Constant(value='Low strategic risk detected.'),
+                orelse=BinOp(
+                  left=Constant(value='Detected '),
+                  op=Add(),
+                  right=Call(
+                    func=Attribute(
+                      value=Constant(value=', '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Name(id='risk_signals', ctx=Load())])))),
+            Assign(
+              targets=[
+                Name(id='confidence', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='vote', ctx=Load()),
+                  ops=[
+                    Eq()],
+                  comparators=[
+                    Constant(value='approve')]),
+                body=Constant(value=0.7),
+                orelse=Constant(value=0.6))),
+            Assign(
+              targets=[
+                Name(id='assessment', ctx=Store())],
+              value=Call(
+                func=Name(id='PlannerAssessment', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='planner_name',
+                    value=Constant(value='RiskAssessor')),
+                  keyword(
+                    arg='vote',
+                    value=Name(id='vote', ctx=Load())),
+                  keyword(
+                    arg='rationale',
+                    value=Name(id='rationale', ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Name(id='confidence', ctx=Load())),
+                  keyword(
+                    arg='recommended_actions',
+                    value=Name(id='recommended_actions', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='risk_assessment'),
+                  Constant(value='success'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='assessment', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load()))])),
+            Return(
+              value=Name(id='assessment', ctx=Load()))],
+          returns=Name(id='PlannerAssessment', ctx=Load()))]),
+    ClassDef(
+      name='FeasibilityAnalystAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Evaluates whether the plan is grounded in achievable achievements.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='job_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='achievements', ctx=Store())],
+              value=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='key_achievements_to_highlight',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='quantified_achievements', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='a', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='a', ctx=Store()),
+                    iter=Name(id='achievements', ctx=Load()),
+                    ifs=[
+                      Call(
+                        func=Name(id='any', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Call(
+                              func=Attribute(
+                                value=Name(id='ch', ctx=Load()),
+                                attr='isdigit',
+                                ctx=Load())),
+                            generators=[
+                              comprehension(
+                                target=Name(id='ch', ctx=Store()),
+                                iter=Name(id='a', ctx=Load()),
+                                is_async=0)])])],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='vote', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='achievements', ctx=Load())]),
+                  ops=[
+                    GtE()],
+                  comparators=[
+                    Constant(value=2)]),
+                body=Constant(value='approve'),
+                orelse=Constant(value='revise'))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='quantified_achievements', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='vote', ctx=Store())],
+                  value=Constant(value='revise'))]),
+            AnnAssign(
+              target=Name(id='recommended_actions', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='achievements', ctx=Load())]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=2)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommended_actions', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Add at least two concrete achievements to anchor the plan.')]))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='quantified_achievements', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='recommended_actions', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Incorporate quantified outcomes to improve credibility.')]))]),
+            Assign(
+              targets=[
+                Name(id='rationale_parts', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='achievements', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=2)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rationale_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Sufficient achievement coverage.')]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rationale_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Insufficient achievement coverage.')]))]),
+            If(
+              test=Name(id='quantified_achievements', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rationale_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Includes quantified wins.')]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rationale_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Lacks quantified wins.')]))]),
+            Assign(
+              targets=[
+                Name(id='rationale', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='rationale_parts', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='confidence', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='vote', ctx=Load()),
+                  ops=[
+                    Eq()],
+                  comparators=[
+                    Constant(value='approve')]),
+                body=Constant(value=0.75),
+                orelse=Constant(value=0.55))),
+            Assign(
+              targets=[
+                Name(id='assessment', ctx=Store())],
+              value=Call(
+                func=Name(id='PlannerAssessment', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='planner_name',
+                    value=Constant(value='FeasibilityAnalyst')),
+                  keyword(
+                    arg='vote',
+                    value=Name(id='vote', ctx=Load())),
+                  keyword(
+                    arg='rationale',
+                    value=Name(id='rationale', ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Name(id='confidence', ctx=Load())),
+                  keyword(
+                    arg='recommended_actions',
+                    value=Name(id='recommended_actions', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='feasibility_assessment'),
+                  Constant(value='success'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='assessment', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load()))])),
+            Return(
+              value=Name(id='assessment', ctx=Load()))],
+          returns=Name(id='PlannerAssessment', ctx=Load()))]),
+    ClassDef(
+      name='StrategyScenarioSimulatorAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Runs lightweight scenario stress tests on a strategy plan.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='job_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='focus_lower', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='focus', ctx=Load()),
+                    attr='lower',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='focus', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='focus_areas',
+                      ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='technical_focus', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='tech'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='focus', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='focus', ctx=Store()),
+                        iter=Name(id='focus_lower', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='leadership_focus', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='lead'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='focus', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='focus', ctx=Store()),
+                        iter=Name(id='focus_lower', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='quantified', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Name(id='any', ctx=Load()),
+                      args=[
+                        GeneratorExp(
+                          elt=Call(
+                            func=Attribute(
+                              value=Name(id='ch', ctx=Load()),
+                              attr='isdigit',
+                              ctx=Load())),
+                          generators=[
+                            comprehension(
+                              target=Name(id='ch', ctx=Store()),
+                              iter=Name(id='achievement', ctx=Load()),
+                              is_async=0)])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='achievement', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='key_achievements_to_highlight',
+                          ctx=Load()),
+                        is_async=0)])])),
+            AnnAssign(
+              target=Name(id='scenarios', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='ScenarioSimulationResult', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='adoption_risk', ctx=Store())],
+              value=IfExp(
+                test=Name(id='quantified', ctx=Load()),
+                body=Constant(value='low'),
+                orelse=Constant(value='medium'))),
+            Assign(
+              targets=[
+                Name(id='adoption_impact', ctx=Store())],
+              value=IfExp(
+                test=Name(id='quantified', ctx=Load()),
+                body=Constant(value=0.35),
+                orelse=Constant(value=0.65))),
+            Assign(
+              targets=[
+                Name(id='adoption_mitigations', ctx=Store())],
+              value=IfExp(
+                test=Name(id='quantified', ctx=Load()),
+                body=List(ctx=Load()),
+                orelse=List(
+                  elts=[
+                    Constant(value='Add quantified impact statements for key achievements.')],
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scenarios', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='ScenarioSimulationResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='scenario_name',
+                        value=Constant(value='Hiring Manager Adoption')),
+                      keyword(
+                        arg='risk_level',
+                        value=Name(id='adoption_risk', ctx=Load())),
+                      keyword(
+                        arg='impact_score',
+                        value=Name(id='adoption_impact', ctx=Load())),
+                      keyword(
+                        arg='summary',
+                        value=IfExp(
+                          test=Name(id='quantified', ctx=Load()),
+                          body=Constant(value='Metrics-driven achievements improve adoption.'),
+                          orelse=Constant(value='Lack of metrics may slow stakeholder buy-in.'))),
+                      keyword(
+                        arg='mitigation_actions',
+                        value=Name(id='adoption_mitigations', ctx=Load()))])])),
+            Assign(
+              targets=[
+                Name(id='technical_risk', ctx=Store())],
+              value=IfExp(
+                test=Name(id='technical_focus', ctx=Load()),
+                body=Constant(value='low'),
+                orelse=Constant(value='medium'))),
+            Assign(
+              targets=[
+                Name(id='technical_impact', ctx=Store())],
+              value=IfExp(
+                test=Name(id='technical_focus', ctx=Load()),
+                body=Constant(value=0.4),
+                orelse=Constant(value=0.7))),
+            Assign(
+              targets=[
+                Name(id='technical_mitigations', ctx=Store())],
+              value=IfExp(
+                test=Name(id='technical_focus', ctx=Load()),
+                body=List(ctx=Load()),
+                orelse=List(
+                  elts=[
+                    Constant(value='Add a focus area covering technical depth or tooling expertise.')],
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scenarios', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='ScenarioSimulationResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='scenario_name',
+                        value=Constant(value='Technical Deep Dive')),
+                      keyword(
+                        arg='risk_level',
+                        value=Name(id='technical_risk', ctx=Load())),
+                      keyword(
+                        arg='impact_score',
+                        value=Name(id='technical_impact', ctx=Load())),
+                      keyword(
+                        arg='summary',
+                        value=IfExp(
+                          test=Name(id='technical_focus', ctx=Load()),
+                          body=Constant(value='Technical focus prepares for deep dive discussions.'),
+                          orelse=Constant(value='Potential technical grilling may expose gaps in focus areas.'))),
+                      keyword(
+                        arg='mitigation_actions',
+                        value=Name(id='technical_mitigations', ctx=Load()))])])),
+            Assign(
+              targets=[
+                Name(id='cross_functional_risk', ctx=Store())],
+              value=IfExp(
+                test=Name(id='leadership_focus', ctx=Load()),
+                body=Constant(value='low'),
+                orelse=Constant(value='medium'))),
+            Assign(
+              targets=[
+                Name(id='cross_functional_impact', ctx=Store())],
+              value=IfExp(
+                test=Name(id='leadership_focus', ctx=Load()),
+                body=Constant(value=0.3),
+                orelse=Constant(value=0.6))),
+            Assign(
+              targets=[
+                Name(id='cross_functional_mitigations', ctx=Store())],
+              value=IfExp(
+                test=Name(id='leadership_focus', ctx=Load()),
+                body=List(ctx=Load()),
+                orelse=List(
+                  elts=[
+                    Constant(value='Introduce leadership/collaboration narratives into focus areas.')],
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scenarios', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='ScenarioSimulationResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='scenario_name',
+                        value=Constant(value='Cross-Functional Alignment')),
+                      keyword(
+                        arg='risk_level',
+                        value=Name(id='cross_functional_risk', ctx=Load())),
+                      keyword(
+                        arg='impact_score',
+                        value=Name(id='cross_functional_impact', ctx=Load())),
+                      keyword(
+                        arg='summary',
+                        value=IfExp(
+                          test=Name(id='leadership_focus', ctx=Load()),
+                          body=Constant(value='Leadership emphasis supports cross-functional narratives.'),
+                          orelse=Constant(value='Missing leadership signal may reduce collaboration confidence.'))),
+                      keyword(
+                        arg='mitigation_actions',
+                        value=Name(id='cross_functional_mitigations', ctx=Load()))])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='strategy_simulation'),
+                  Constant(value='success'),
+                  Dict(
+                    keys=[
+                      Constant(value='scenarios')],
+                    values=[
+                      ListComp(
+                        elt=Call(
+                          func=Attribute(
+                            value=Name(id='scenario', ctx=Load()),
+                            attr='model_dump',
+                            ctx=Load())),
+                        generators=[
+                          comprehension(
+                            target=Name(id='scenario', ctx=Store()),
+                            iter=Name(id='scenarios', ctx=Load()),
+                            is_async=0)])])])),
+            Return(
+              value=Name(id='scenarios', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ScenarioSimulationResult', ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='StrategyCoordinatorAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Coordinates specialist planner inputs and produces an aggregated plan.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Constant(value='WorkflowContext')),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='domain_planner',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='DomainPlannerAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='risk_assessor',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='RiskAssessorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='feasibility_analyst',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='FeasibilityAnalystAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='scenario_simulator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='StrategyScenarioSimulatorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())]))]),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='base_plan',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='downstream_feedback',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='base_plan', ctx=Load()),
+                  attr='model_copy',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='deep',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='feedback_signals', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_apply_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='downstream_feedback', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='feedback_signals',
+                  ctx=Store())],
+              value=Name(id='feedback_signals', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='assessments', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='asyncio', ctx=Load()),
+                    attr='gather',
+                    ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='domain_planner',
+                          ctx=Load()),
+                        attr='run_async',
+                        ctx=Load()),
+                      args=[
+                        Name(id='plan', ctx=Load()),
+                        Name(id='job_context', ctx=Load()),
+                        Name(id='workflow_id', ctx=Load())]),
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='risk_assessor',
+                          ctx=Load()),
+                        attr='run_async',
+                        ctx=Load()),
+                      args=[
+                        Name(id='plan', ctx=Load()),
+                        Name(id='job_context', ctx=Load()),
+                        Name(id='workflow_id', ctx=Load())]),
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='feasibility_analyst',
+                          ctx=Load()),
+                        attr='run_async',
+                        ctx=Load()),
+                      args=[
+                        Name(id='plan', ctx=Load()),
+                        Name(id='job_context', ctx=Load()),
+                        Name(id='workflow_id', ctx=Load())])]))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='planner_assessments',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='assessments', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='weighted_votes', ctx=Store())],
+              value=Constant(value=0.0)),
+            Assign(
+              targets=[
+                Name(id='total_confidence', ctx=Store())],
+              value=Constant(value=0.0)),
+            AnnAssign(
+              target=Name(id='rationale_parts', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='assessment', ctx=Store()),
+              iter=Name(id='assessments', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='vote_value', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='assessment', ctx=Load()),
+                            attr='vote',
+                            ctx=Load()),
+                          attr='lower',
+                          ctx=Load())),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='approve')]),
+                    body=Constant(value=1.0),
+                    orelse=Constant(value=0.0))),
+                AugAssign(
+                  target=Name(id='weighted_votes', ctx=Store()),
+                  op=Add(),
+                  value=BinOp(
+                    left=Name(id='vote_value', ctx=Load()),
+                    op=Mult(),
+                    right=Attribute(
+                      value=Name(id='assessment', ctx=Load()),
+                      attr='confidence',
+                      ctx=Load()))),
+                AugAssign(
+                  target=Name(id='total_confidence', ctx=Store()),
+                  op=Add(),
+                  value=Attribute(
+                    value=Name(id='assessment', ctx=Load()),
+                    attr='confidence',
+                    ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rationale_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='assessment', ctx=Load()),
+                              attr='planner_name',
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='assessment', ctx=Load()),
+                              attr='vote',
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' ('),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='_truncate', ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='assessment', ctx=Load()),
+                                  attr='rationale',
+                                  ctx=Load()),
+                                Constant(value=80)]),
+                            conversion=-1),
+                          Constant(value=')')])]))]),
+            Assign(
+              targets=[
+                Name(id='aggregated_decision', ctx=Store())],
+              value=Constant(value='undecided')),
+            Assign(
+              targets=[
+                Name(id='aggregated_confidence', ctx=Store())],
+              value=Constant(value=0.0)),
+            If(
+              test=Name(id='total_confidence', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='aggregated_score', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='weighted_votes', ctx=Load()),
+                    op=Div(),
+                    right=Name(id='total_confidence', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='aggregated_confidence', ctx=Store())],
+                  value=Call(
+                    func=Name(id='round', ctx=Load()),
+                    args=[
+                      Name(id='aggregated_score', ctx=Load()),
+                      Constant(value=3)])),
+                Assign(
+                  targets=[
+                    Name(id='aggregated_decision', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='aggregated_score', ctx=Load()),
+                      ops=[
+                        GtE()],
+                      comparators=[
+                        Constant(value=0.5)]),
+                    body=Constant(value='approve'),
+                    orelse=Constant(value='revise')))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='aggregated_decision',
+                  ctx=Store())],
+              value=Name(id='aggregated_decision', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='aggregated_confidence',
+                  ctx=Store())],
+              value=Name(id='aggregated_confidence', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='aggregated_rationale',
+                  ctx=Store())],
+              value=IfExp(
+                test=Name(id='rationale_parts', ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Constant(value=' | '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Name(id='rationale_parts', ctx=Load())]),
+                orelse=Constant(value=None))),
+            Assign(
+              targets=[
+                Name(id='scenario_results', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='scenario_simulator',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='plan', ctx=Load()),
+                    Name(id='job_context', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='scenario_simulations',
+                  ctx=Store())],
+              value=Name(id='scenario_results', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='scenario_summary', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=JoinedStr(
+                      values=[
+                        FormattedValue(
+                          value=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='scenario_name',
+                            ctx=Load()),
+                          conversion=-1),
+                        Constant(value=':'),
+                        FormattedValue(
+                          value=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='risk_level',
+                            ctx=Load()),
+                          conversion=-1)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='result', ctx=Store()),
+                        iter=Name(id='scenario_results', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='feedback_summary', ctx=Store())],
+              value=IfExp(
+                test=Name(id='feedback_signals', ctx=Load()),
+                body=JoinedStr(
+                  values=[
+                    Constant(value=' Feedback signals: '),
+                    FormattedValue(
+                      value=Call(
+                        func=Attribute(
+                          value=Constant(value=', '),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='feedback_signals', ctx=Load())]),
+                      conversion=-1),
+                    Constant(value='.')]),
+                orelse=Constant(value=''))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='coordinator_summary',
+                  ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='Planner consensus: '),
+                  FormattedValue(
+                    value=Name(id='aggregated_decision', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' (confidence '),
+                  FormattedValue(
+                    value=Name(id='aggregated_confidence', ctx=Load()),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='.2f')])),
+                  Constant(value='). Scenarios -> '),
+                  FormattedValue(
+                    value=Name(id='scenario_summary', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='.'),
+                  FormattedValue(
+                    value=Name(id='feedback_summary', ctx=Load()),
+                    conversion=-1)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='strategy_coordinator'),
+                  Constant(value='success'),
+                  Dict(
+                    keys=[
+                      Constant(value='aggregated_decision'),
+                      Constant(value='aggregated_confidence'),
+                      Constant(value='feedback_signals')],
+                    values=[
+                      Name(id='aggregated_decision', ctx=Load()),
+                      Name(id='aggregated_confidence', ctx=Load()),
+                      Name(id='feedback_signals', ctx=Load())])])),
+            Return(
+              value=Name(id='plan', ctx=Load()))],
+          returns=Name(id='StrategyPlan', ctx=Load())),
+        FunctionDef(
+          name='_apply_feedback',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='downstream_feedback',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='downstream_feedback', ctx=Load())),
+              body=[
+                Return(
+                  value=List(ctx=Load()))]),
+            AnnAssign(
+              target=Name(id='signals', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='qa_feedback', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='downstream_feedback', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='downstream_feedback', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='qa')]),
+                orelse=Constant(value=None))),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='qa_feedback', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='jd_skills', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='qa_feedback', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='jd_skills')])),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='jd_skills', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='missing_keywords', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='jd_skills', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='missing_keywords')])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='missing_keywords', ctx=Load()),
+                              Name(id='list', ctx=Load())]),
+                          Name(id='missing_keywords', ctx=Load())]),
+                      body=[
+                        For(
+                          target=Name(id='keyword', ctx=Store()),
+                          iter=Name(id='missing_keywords', ctx=Load()),
+                          body=[
+                            If(
+                              test=Compare(
+                                left=Name(id='keyword', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='plan', ctx=Load()),
+                                    attr='focus_areas',
+                                    ctx=Load())]),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Attribute(
+                                        value=Name(id='plan', ctx=Load()),
+                                        attr='focus_areas',
+                                        ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='keyword', ctx=Load())]))])]),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='signals', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              BinOp(
+                                left=Constant(value='Augmented focus areas with QA missing keywords: '),
+                                op=Add(),
+                                right=Call(
+                                  func=Attribute(
+                                    value=Constant(value=', '),
+                                    attr='join',
+                                    ctx=Load()),
+                                  args=[
+                                    Subscript(
+                                      value=Name(id='missing_keywords', ctx=Load()),
+                                      slice=Slice(
+                                        upper=Constant(value=5)),
+                                      ctx=Load())]))]))])])]),
+            Assign(
+              targets=[
+                Name(id='hil_feedback', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='downstream_feedback', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='downstream_feedback', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='hil')]),
+                orelse=Constant(value=None))),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='hil_feedback', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='payload', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hil_feedback', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='payload')])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='payload', ctx=Load()),
+                          Name(id='str', ctx=Load())]),
+                      Name(id='payload', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='signals', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='HIL payload available for downstream drafting alignment.')]))])]),
+            Return(
+              value=Name(id='signals', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))])])

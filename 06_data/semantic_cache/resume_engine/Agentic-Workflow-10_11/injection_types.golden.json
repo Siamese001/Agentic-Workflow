@@ -1,0 +1,6 @@
+{
+  "golden_content": "| Injection Type                                | Category                    | Purpose / Meaning                                                                                                        | Applies To                                             | Good or Bad?                                  | Example                                                |\n| --------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | --------------------------------------------- | ------------------------------------------------------ |\n| **Dependency Injection (DI)**                 | Software Architecture       | Provide components (adapters, clients, services) via constructor/parameters instead of hard\u2010coding imports               | L1\u2013L5 agent code, services, adapters                   | **Good** (",
+  "full_hash": "5eef2d00a3c4fa30211742f294cf49f496b69ac6998cd9cfbbab10eae856bb6e",
+  "generated_at": 1764728226.172126,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\injection_types.md"
+}

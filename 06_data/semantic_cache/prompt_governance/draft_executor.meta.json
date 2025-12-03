@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\executor-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\draft_executor.json",
+    "rel_path": "draft_executor.json",
+    "root_name": "prompt_governance",
+    "file_hash": "c78647f074a172ca38a09bf690ea3f4d29f468159247a7f2a73ba66680bef6c4",
+    "file_size": 1803,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728348.010195
+}

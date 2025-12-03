@@ -1,0 +1,47 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Observability Telemetry Tests.')),
+    ClassDef(
+      name='TestTelemetry',
+      body=[
+        Expr(
+          value=Constant(value='Tests for observability telemetry.')),
+        FunctionDef(
+          name='test_metric_collection',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test metric collection.')),
+            Assign(
+              targets=[
+                Name(id='metrics', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='latency_ms'),
+                  Constant(value='token_count')],
+                values=[
+                  Constant(value=150),
+                  Constant(value=500)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='metrics', ctx=Load()),
+                  slice=Constant(value='latency_ms'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='metrics', ctx=Load()),
+                  slice=Constant(value='token_count'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))])])])

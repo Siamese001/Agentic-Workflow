@@ -1,0 +1,61 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Light-weight chain-of-thought helpers.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Iterable'),
+        alias(name='List')],
+      level=0),
+    FunctionDef(
+      name='expand',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='steps',
+            annotation=Name(id='int', ctx=Load()))],
+        defaults=[
+          Constant(value=3)]),
+      body=[
+        Expr(
+          value=Constant(value='Return synthetic reasoning steps for testing.')),
+        Return(
+          value=ListComp(
+            elt=JoinedStr(
+              values=[
+                Constant(value='Step '),
+                FormattedValue(
+                  value=BinOp(
+                    left=Name(id='idx', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1)),
+                  conversion=-1),
+                Constant(value=': '),
+                FormattedValue(
+                  value=Name(id='prompt', ctx=Load()),
+                  conversion=-1)]),
+            generators=[
+              comprehension(
+                target=Name(id='idx', ctx=Store()),
+                iter=Call(
+                  func=Name(id='range', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Name(id='max', ctx=Load()),
+                      args=[
+                        Constant(value=1),
+                        Name(id='steps', ctx=Load())])]),
+                is_async=0)]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load()))])

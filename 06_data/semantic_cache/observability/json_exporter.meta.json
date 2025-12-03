@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\observer-microagent-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\json_exporter.py",
+    "rel_path": "json_exporter.py",
+    "root_name": "observability",
+    "file_hash": "13e8721410345de905e15719d7f1c6176cc23c296bc386ab76080273b2a90d7a",
+    "file_size": 42541,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728350.790908
+}

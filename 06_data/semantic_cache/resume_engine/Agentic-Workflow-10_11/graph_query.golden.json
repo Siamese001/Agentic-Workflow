@@ -1,0 +1,6 @@
+{
+  "golden_content": "# graph_query.py\n# L2-safe stub module to satisfy Neo4j import tests.\n\ntry:\n    from neo4j import GraphDatabase\n    _NEO4J_AVAILABLE = True\nexcept Exception:\n    GraphDatabase = None\n    _NEO4J_AVAILABLE = False\n\ndef graph_query(*args, **kwargs):\n    \"\"\"\n    Stubbed query function to satisfy import tests.\n    Does not execute Neo4j operations.\n    \"\"\"\n    if not _NEO4J_AVAILABLE:\n        raise ImportError(\"Neo4j driver not installed\")\n    return {\n        \"status\": \"neo4j_unavailable\",\n        \"results\": [],\n        \"error\": \"Neo4j driver not installed\"\n    }\n\n__all__ = [\"graph_query\", \"GraphDatabase\", \"_NEO4J_AVAILABLE\"]\n",
+  "full_hash": "84c8a8d708421833dde5382a39154d71f5792ee7d2149872cdf3333142b00230",
+  "generated_at": 1764728224.0822732,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\graph_query.py"
+}

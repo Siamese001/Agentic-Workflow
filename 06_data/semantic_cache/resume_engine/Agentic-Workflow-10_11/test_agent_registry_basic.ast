@@ -1,0 +1,205 @@
+Module(
+  body=[
+    ImportFrom(
+      module='orchestration.agent_registry',
+      names=[
+        alias(name='AgentRegistry')],
+      level=0),
+    ImportFrom(
+      module='config.agent_profile',
+      names=[
+        alias(name='AgentCard')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='AgentRole')],
+      level=0),
+    FunctionDef(
+      name='test_agent_registry_register_and_lookup',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='registry', ctx=Store())],
+          value=Call(
+            func=Name(id='AgentRegistry', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='a1', ctx=Store())],
+          value=Call(
+            func=Name(id='AgentCard', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='agent_id',
+                value=Constant(value='planner-1')),
+              keyword(
+                arg='role',
+                value=Attribute(
+                  value=Name(id='AgentRole', ctx=Load()),
+                  attr='PLANNER',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='a2', ctx=Store())],
+          value=Call(
+            func=Name(id='AgentCard', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='agent_id',
+                value=Constant(value='qa-1')),
+              keyword(
+                arg='role',
+                value=Attribute(
+                  value=Name(id='AgentRole', ctx=Load()),
+                  attr='QA',
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='registry', ctx=Load()),
+              attr='register_agent',
+              ctx=Load()),
+            args=[
+              Name(id='a1', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='registry', ctx=Load()),
+              attr='register_agent',
+              ctx=Load()),
+            args=[
+              Name(id='a2', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='registry', ctx=Load()),
+                attr='get_agent',
+                ctx=Load()),
+              args=[
+                Constant(value='planner-1')]),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='a1', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='registry', ctx=Load()),
+                attr='get_agent',
+                ctx=Load()),
+              args=[
+                Constant(value='qa-1')]),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='a2', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='planners', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='registry', ctx=Load()),
+              attr='find_agents_by_type',
+              ctx=Load()),
+            args=[
+              Constant(value='planner')])),
+        Assert(
+          test=Compare(
+            left=Name(id='a1', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='planners', ctx=Load())]))]),
+    FunctionDef(
+      name='test_agent_registry_find_by_capability',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='registry', ctx=Store())],
+          value=Call(
+            func=Name(id='AgentRegistry', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='a1', ctx=Store())],
+          value=Call(
+            func=Name(id='AgentCard', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='agent_id',
+                value=Constant(value='agent-a')),
+              keyword(
+                arg='role',
+                value=Attribute(
+                  value=Name(id='AgentRole', ctx=Load()),
+                  attr='EXECUTION',
+                  ctx=Load())),
+              keyword(
+                arg='capabilities',
+                value=List(
+                  elts=[
+                    Constant(value='write')],
+                  ctx=Load())),
+              keyword(
+                arg='agent_type',
+                value=Constant(value='drafter'))])),
+        Assign(
+          targets=[
+            Name(id='a2', ctx=Store())],
+          value=Call(
+            func=Name(id='AgentCard', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='agent_id',
+                value=Constant(value='agent-b')),
+              keyword(
+                arg='role',
+                value=Attribute(
+                  value=Name(id='AgentRole', ctx=Load()),
+                  attr='EXECUTION',
+                  ctx=Load())),
+              keyword(
+                arg='capabilities',
+                value=List(
+                  elts=[
+                    Constant(value='review')],
+                  ctx=Load())),
+              keyword(
+                arg='agent_type',
+                value=Constant(value='qa'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='registry', ctx=Load()),
+              attr='register_agent',
+              ctx=Load()),
+            args=[
+              Name(id='a1', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='registry', ctx=Load()),
+              attr='register_agent',
+              ctx=Load()),
+            args=[
+              Name(id='a2', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='writers', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='registry', ctx=Load()),
+              attr='find_agents_by_capability',
+              ctx=Load()),
+            args=[
+              Constant(value='write')])),
+        Assert(
+          test=Compare(
+            left=Name(id='a1', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='writers', ctx=Load())]))])])

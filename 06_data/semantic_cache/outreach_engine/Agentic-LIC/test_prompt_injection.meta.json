@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_prompt_injection.py",
+    "rel_path": "test_prompt_injection.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "e7b908a94e4a0556a4f38014d744707de85f41c41948256f2cf6d737662a8757",
+    "file_size": 938,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.1659105
+}

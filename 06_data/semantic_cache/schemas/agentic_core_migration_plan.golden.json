@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"yaml_only_paths\": [],\n  \"fs_only_paths\": [],\n  \"common_paths\": [\n    \"__init__.py\",\n    \"exec-layer\",\n    \"exec-layer/__init__.py\",\n    \"exec-layer/act-phase\",\n    \"exec-layer/act-phase/__init__.py\",\n    \"exec-layer/act-phase/use-core-tools\",\n    \"exec-layer/act-phase/use-core-tools/__init__.py\",\n    \"exec-layer/act-phase/use-core-tools/general\",\n    \"exec-layer/act-phase/use-core-tools/general/__init__.py\",\n    \"exec-layer/act-phase/use-core-tools/general/use-a-tool\",\n    \"exec-layer/act-phase/use-core-tools/general/use-a-tool/__init__.py\",\n    \"exec-layer/act-phase/use-core-tools/general/use-a-tool/execute_core_execution.py\",\n    \"exec-layer/act-phase/use-core-tools/general/use-a-tool/invoke_core_tool.py\",\n    \"exec-layer/act-phase/use-core-tools/general/use-a-tool/perform_core_operation.py\",\n    \"exec-layer/act-phase/use-core-tools/utility\",\n    \"exec-layer/act-phase/use-core-tools/utility/__init__.py\",\n    \"exec-layer/act-phase/use-core-tools/utility/prepare-information\",\n    ",
+  "full_hash": "58cefa44b74b8f8e24d940cc9e8c88a3680f1bfb5b2844d6b6defeae8e4c979c",
+  "generated_at": 1764728345.3911536,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\agentic_core_migration_plan.json"
+}

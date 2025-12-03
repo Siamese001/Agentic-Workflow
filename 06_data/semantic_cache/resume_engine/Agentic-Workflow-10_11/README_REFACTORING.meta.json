@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\README_REFACTORING.md",
+    "rel_path": "README_REFACTORING.md",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "d64058794eacfd1ac311a07d095ddc92ca61402e10d5ecb753342cc79b8d1ab8",
+    "file_size": 493,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728226.2895172
+}

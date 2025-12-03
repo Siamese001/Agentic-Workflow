@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\executor-microagent-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\test_lic_company_research_executor.py",
+    "rel_path": "test_lic_company_research_executor.py",
+    "root_name": "tests",
+    "file_hash": "d67f0b4c83d639ed6c64c4235fec72dc8978f153bd2ff6ffd6aaaa985f8857ce",
+    "file_size": 13591,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.004291
+}

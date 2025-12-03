@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"INSTRUCTIONS_FOR_LLM\": {\n    \"NOTE\": \"This is a consolidated patch file. It includes the strategic overhaul from P870 plus all subsequent configuration changes (word counts, terminology) from our discussion.\"\n  },\n  \"1_metadata\": {\n    \"patch_id\": \"LIC-P-871\",\n    \"patch_name\": \"Phoenix v2 (Strategic Overhaul & Configuration Refinement)\",\n    \"version\": \"2025-10-08_v1\",\n    \"date_created\": \"2025-10-08\",\n    \"author\": \"Gemini System Engineer (Editor)\",\n    \"severity\": \"CRITICAL\",\n    \"purpose\": \"A major strategic and configuration overhaul of the LIC system. Implements new 'On Steroids' reasoning toggles, introduces type-specific word count ranges, corrects workflow logic, hardens validation, and standardizes terminology by replacing 'archetype' with 'type'.\",\n    \"source_version\": \"v8.61\",\n    \"target_version\": \"v8.71\",\n    \"sections_modified\": [\n      \"metadata\",\n      \"1.role\",\n      \"2.task\",\n      \"3.context\",\n      \"4.reasoning\",\n      \"6.validation\"\n    ]\n  },\n  \"2_changes\":",
+  "full_hash": "01bd769a02c691c55dc92912ebb4ef5fa17282caa699df1dea74286c32e7fea0",
+  "generated_at": 1764728336.4457207,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-05-2025_v8.71 Patch.json"
+}

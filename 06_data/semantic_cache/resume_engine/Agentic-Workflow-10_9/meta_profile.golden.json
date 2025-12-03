@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: meta_profile.py\n\"\"\"\nMeta Profile & Adaptive Biases (v10_9) \u2014 META LAYER ONLY (REFINED)\n\nThis module defines the global meta-profile for the v10_9 agentic\narchitecture. It captures *soft preferences* and *learned biases* that\nare NOT part of the core L1\u2013L5 logic, but are used by:\n\n    \u2022 Model routing (e.g., \"prefer_fast\" when planning dominates cost).\n    \u2022 L1 planners (e.g., \"conservative\" when QA repeatedly fails).\n    \u2022 Self-correction (e.g., bias toward replan vs retry vs escalate).\n    \u2022 Meta-learning (e.g., patterns inferred from prior runs).\n    \u2022 Observability (e.g., \"enable more spans when failures accumulate\").\n\nLayer constraints (Agentic Guardrails):\n\n    \u2022 NO L1 planning (no PlanObject creation).\n    \u2022 NO L2 execution (no tool/LLM calls).\n    \u2022 NO L3 DAG/orchestration.\n    \u2022 NO L4 state mutation (no StateAdapter usage).\n    \u2022 NO L5 safety decisions.\n\nThis module is a META layer \u201ctuning brain\u201d that keeps track of\nheuristics such as:\n\n    \u2022 \"we're too slow, route fast\"",
+  "full_hash": "2fa1d708664c07f4497c635645ebfc31d285ee6db42ff1918291a5c8361dd2bf",
+  "generated_at": 1764728228.6700644,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\meta_profile.py"
+}

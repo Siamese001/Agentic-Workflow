@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Smoke-tests for the v10.8 stack scaffolding.\"\"\"\n\nfrom __future__ import annotations\n\nimport pytest\n\nfrom agent_stacks_v10_8 import (\n    BulletExecutionStack,\n    DraftingExecutionStack,\n    HILStackV10_8,\n    QAValidationStack,\n    RAGExecutionStack,\n    SafetyStackV10_8,\n    StateAdapterStack,\n    StrategyStackV10_8,\n    RobustnessStack,\n)\n\n\n@pytest.mark.parametrize(\n    \"stack_cls\",\n    [\n        RAGExecutionStack,\n        QAValidationStack,\n        DraftingExecutionStack,\n        BulletExecutionStack,\n        StrategyStackV10_8,\n        SafetyStackV10_8,\n        HILStackV10_8,\n        RobustnessStack,\n    ],\n)\ndef test_stack_instantiation(stack_cls, mock_workflow_context):\n    stack = stack_cls(mock_workflow_context)\n    assert stack is not None\n\n\ndef test_state_adapter_stack_instantiation(mock_workflow_context):\n    adapter = StateAdapterStack(mock_workflow_context)\n    assert adapter.context is mock_workflow_context\n",
+  "full_hash": "fcf65bc8976acf21c48926df92fd1f7704912018be0793960f2065a1a87be40b",
+  "generated_at": 1764728231.4257085,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\architecture\\test_agent_stacks_v10_8_imports.py"
+}

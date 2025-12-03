@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nQuality assurance planning for resume improvement validation and accuracy.\n\nCreates structured plans to ensure comprehensive resume enhancement\nquality and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List, Optional\n\nfrom core.models.models import (\n    ExecutionContext,\n    DraftingResult,\n    RAGResult,\n)\nfrom l1.builders.prompt_builder import PromptInstance, build_qa_prompt\n\n\n@dataclass(frozen=True)\nclass SemanticQAPlan:\n    \"\"\"\n    Defines semantic quality assurance structure.\n\n    Ensures thorough evaluation of resume improvement content\n    for accuracy and job alignment.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\n@dataclass(frozen=True)\nclass CouncilPlan:\n    \"\"\"\n    Structures council review planning approach.\n\n    Coordinates comprehensive evaluation of resume enhancement\n    recommendations for improved quality.\n    \"\"\"\n\n    prompt: PromptInstance\n\n\ndef plan_semantic_qa(\n    qa_plan: Any,\n    *,\n    ctx",
+  "full_hash": "4053f1f4ac1b00af0329be7f923ac071b0c317fcee67a1e1334fa1bdaacf2caa",
+  "generated_at": 1764728224.7076979,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\qa_planning.py"
+}

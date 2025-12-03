@@ -1,0 +1,6 @@
+{
+  "golden_content": "# hops/00_hop_rag_v1_3.py\n\"\"\"\nHop 0: Job Description Analysis & RAG (v1.3 - Merged)\nCombines v1.1 Agentic Orchestrator with v1.2 Circuit Breaker Integration\nReads job description text, performs agentic, multi-phase RAG analysis,\nand writes the resulting ThematicAnalysis object as JSON.\n\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport os\nimport sys\nimport time\nfrom dataclasses import asdict, dataclass, field\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, Tuple, List\n\n# Imports for enhancements\nimport networkx as nx\nimport numpy as np\n\n# Add project root to path to allow importing shared modules\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components from helpers\nfrom helpers import (\n    setup_workflow_logging, _load_json_data, HopExecutionError, default_serializer,\n    CircuitState\n)\n\n# --- Define Classes needed specifically for HOP-0 ---\n\n# v1.",
+  "full_hash": "500b952f115318c64a1e9a2aec5108ce93e25089ca53bfdea1ce2236c3c3cf36",
+  "generated_at": 1764728231.9266765,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\00_hop_rag_v1_3.py"
+}

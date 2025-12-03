@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\routing.py",
+    "rel_path": "routing.py",
+    "root_name": "resume_engine/Agentic_Workflow-10_10",
+    "file_hash": "98cf2c7310a401a4095be97087bc85c97c9bb6a5d07af6260d1eb0955041fa0e",
+    "file_size": 13339,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728228.4295802
+}

@@ -1,0 +1,923 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSelf-Correction Surfaces (v10_10)\n=================================\n\nv10_10 refactor of the v10_9 self_correction module.\n\nThis version:\n\n    • NO longer operates on raw state dicts.\n    • NO longer uses SelfCorrectionSurface enums or SafetyIssue types.\n    • Operates directly on typed L2 results:\n        - StrategyResult\n        - RAGResult\n        - DraftingResult\n        - QAResult\n        - SafetyResult\n\n    • Provides:\n        - evaluate_all_surfaces(...) → list[CorrectionSignal]\n        - aggregate_correction_signals(...) → best CorrectionSignal | None\n\nResponsibilities:\n    • Detect when a re-run of part of the pipeline would likely improve quality.\n    • NEVER call LLMs or tools.\n    • NEVER mutate WorkflowState.\n    • Provide deterministic, side-effect-free advice to the L3 workflow graph.\n\nThis module is purely META-layer logic:\n\n    - It analyzes L2 outputs (StrategyResult, etc.).\n    - It emits structured CorrectionSignal objects.\n    - L3 (workflow_graph) decides whether/how to apply corrections.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='StrategyResult'),
+        alias(name='RAGResult'),
+        alias(name='DraftingResult'),
+        alias(name='QAResult'),
+        alias(name='SafetyResult')],
+      level=0),
+    ClassDef(
+      name='CorrectionSignal',
+      body=[
+        Expr(
+          value=Constant(value='\n    Correction signal emitted by a surface evaluator.\n\n    Fields:\n        surface           – logical domain ("strategy", "rag", "drafting", "qa", "safety").\n        severity          – 0..3 (0 = none; 1 = mild; 2 = moderate; 3 = severe).\n        reason            – short human-readable explanation.\n        recommended_action – coarse-grained hint for L3 or meta-layer:\n                             "retry_strategy", "retry_rag", "retry_drafting",\n                             "retry_qa", "retry_safety", "none".\n    ')),
+        AnnAssign(
+          target=Name(id='surface', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reason', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recommended_action', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='needs_correction',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Return True if this signal indicates that some correction is needed.')),
+            Return(
+              value=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='severity',
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0)]),
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='recommended_action',
+                      ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Constant(value='none')])]))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='bool', ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='_evaluate_strategy_surface',
+      args=arguments(
+        args=[
+          arg(
+            arg='strategy',
+            annotation=Name(id='StrategyResult', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inspect StrategyResult and decide whether the strategy surface needs correction.\n\n    Heuristics (deterministic, non-LLM):\n\n        • If there are zero branches → severe issue → retry strategy.\n        • If chosen_branch_id is None or invalid:\n             – severity = 3 (severe)\n             – recommended_action = "retry_strategy"\n        • If chosen branch text is suspiciously short (e.g., < 40 chars):\n             – severity = 2 (moderate)\n             – recommended_action = "retry_strategy"\n        • Otherwise:\n             – severity = 0 (no correction)\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='strategy', ctx=Load()),
+              attr='branches',
+              ctx=Load())),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='strategy')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=3)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='No strategy branches were produced.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_strategy'))]))]),
+        Assign(
+          targets=[
+            Name(id='branch_ids', ctx=Store())],
+          value=SetComp(
+            elt=Attribute(
+              value=Name(id='b', ctx=Load()),
+              attr='id',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='b', ctx=Store()),
+                iter=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='branches',
+                  ctx=Load()),
+                is_async=0)])),
+        If(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='strategy', ctx=Load()),
+              attr='chosen_branch_id',
+              ctx=Load()),
+            ops=[
+              NotIn()],
+            comparators=[
+              Name(id='branch_ids', ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='strategy')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=3)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Chosen strategy branch ID is invalid.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_strategy'))]))]),
+        Assign(
+          targets=[
+            Name(id='chosen_text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='strategy', ctx=Load()),
+                  attr='get_chosen_branch_text',
+                  ctx=Load())),
+              attr='strip',
+              ctx=Load()))),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='chosen_text', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=40)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='strategy')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=2)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Chosen strategy branch is too short or uninformative.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_strategy'))]))]),
+        Return(
+          value=Call(
+            func=Name(id='CorrectionSignal', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='surface',
+                value=Constant(value='strategy')),
+              keyword(
+                arg='severity',
+                value=Constant(value=0)),
+              keyword(
+                arg='reason',
+                value=Constant(value='Strategy surface is acceptable.')),
+              keyword(
+                arg='recommended_action',
+                value=Constant(value='none'))]))],
+      returns=Name(id='CorrectionSignal', ctx=Load())),
+    FunctionDef(
+      name='_evaluate_rag_surface',
+      args=arguments(
+        args=[
+          arg(
+            arg='rag',
+            annotation=Name(id='RAGResult', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inspect RAGResult evidence for retrieval/coverage issues.\n\n    Heuristics:\n\n        • If no evidence at all:\n             – severity = 3\n             – recommended_action = "retry_rag"\n        • If evidence exists but is very small (< 3 items) AND none are marked\n          as "hybrid" or "resume_experience":\n             – severity = 2\n             – recommended_action = "retry_rag"\n        • Otherwise:\n             – severity = 0\n    ')),
+        Assign(
+          targets=[
+            Name(id='evidence', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Attribute(
+                value=Name(id='rag', ctx=Load()),
+                attr='evidence',
+                ctx=Load()),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='evidence', ctx=Load())),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='rag')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=3)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='No retrieval evidence was produced.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_rag'))]))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='evidence', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=3)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='has_hybrid', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Attribute(
+                        value=Name(id='ev', ctx=Load()),
+                        attr='source',
+                        ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='hybrid_job_resume')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='ev', ctx=Store()),
+                        iter=Name(id='evidence', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='has_resume', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Attribute(
+                        value=Name(id='ev', ctx=Load()),
+                        attr='source',
+                        ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='resume_experience')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='ev', ctx=Store()),
+                        iter=Name(id='evidence', ctx=Load()),
+                        is_async=0)])])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='has_hybrid', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='has_resume', ctx=Load()))]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='CorrectionSignal', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='surface',
+                        value=Constant(value='rag')),
+                      keyword(
+                        arg='severity',
+                        value=Constant(value=2)),
+                      keyword(
+                        arg='reason',
+                        value=Constant(value='Too few evidence items and no hybrid/resume coverage.')),
+                      keyword(
+                        arg='recommended_action',
+                        value=Constant(value='retry_rag'))]))])]),
+        Return(
+          value=Call(
+            func=Name(id='CorrectionSignal', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='surface',
+                value=Constant(value='rag')),
+              keyword(
+                arg='severity',
+                value=Constant(value=0)),
+              keyword(
+                arg='reason',
+                value=Constant(value='RAG surface is acceptable.')),
+              keyword(
+                arg='recommended_action',
+                value=Constant(value='none'))]))],
+      returns=Name(id='CorrectionSignal', ctx=Load())),
+    FunctionDef(
+      name='_evaluate_drafting_surface',
+      args=arguments(
+        args=[
+          arg(
+            arg='drafting',
+            annotation=Name(id='DraftingResult', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inspect DraftingResult section structure.\n\n    Heuristics:\n\n        • If zero sections, or total characters across sections < 400:\n             – severity = 3\n             – recommended_action = "retry_drafting"\n        • If < 3 sections:\n             – severity = 2\n             – recommended_action = "retry_drafting"\n        • Otherwise:\n             – severity = 0\n    ')),
+        Assign(
+          targets=[
+            Name(id='sections', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Attribute(
+                value=Name(id='drafting', ctx=Load()),
+                attr='sections',
+                ctx=Load()),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='sections', ctx=Load())),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='drafting')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=3)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Drafting produced no sections.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_drafting'))]))]),
+        Assign(
+          targets=[
+            Name(id='total_chars', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='text',
+                          ctx=Load()),
+                        Constant(value='')])]),
+                generators=[
+                  comprehension(
+                    target=Name(id='s', ctx=Store()),
+                    iter=Name(id='sections', ctx=Load()),
+                    is_async=0)])])),
+        If(
+          test=Compare(
+            left=Name(id='total_chars', ctx=Load()),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=400)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='drafting')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=3)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Drafting output is too short.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_drafting'))]))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='sections', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=3)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='drafting')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=2)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Too few sections produced by drafting.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_drafting'))]))]),
+        Return(
+          value=Call(
+            func=Name(id='CorrectionSignal', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='surface',
+                value=Constant(value='drafting')),
+              keyword(
+                arg='severity',
+                value=Constant(value=0)),
+              keyword(
+                arg='reason',
+                value=Constant(value='Drafting surface is acceptable.')),
+              keyword(
+                arg='recommended_action',
+                value=Constant(value='none'))]))],
+      returns=Name(id='CorrectionSignal', ctx=Load())),
+    FunctionDef(
+      name='_evaluate_qa_surface',
+      args=arguments(
+        args=[
+          arg(
+            arg='qa',
+            annotation=Name(id='QAResult', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inspect QAResult for severity of findings.\n\n    Heuristics:\n\n        • If there are ≥ 3 high-severity findings:\n             – severity = 3\n             – recommended_action = "retry_qa"\n        • If there are ≥ 5 total findings (any severity):\n             – severity = 2\n             – recommended_action = "retry_qa"\n        • Otherwise:\n             – severity = 0\n    ')),
+        Assign(
+          targets=[
+            Name(id='checks', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Attribute(
+                value=Name(id='qa', ctx=Load()),
+                attr='checks',
+                ctx=Load()),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='checks', ctx=Load())),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='qa')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=0)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='No QA checks present; treating as neutral.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='none'))]))]),
+        Assign(
+          targets=[
+            Name(id='high_severity', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='chk', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='chk', ctx=Store()),
+                iter=Name(id='checks', ctx=Load()),
+                ifs=[
+                  Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='getattr', ctx=Load()),
+                          args=[
+                            Name(id='chk', ctx=Load()),
+                            Constant(value='severity'),
+                            Constant(value='')]),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='high')])],
+                is_async=0)])),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='high_severity', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=3)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='qa')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=3)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Three or more high-severity QA findings detected.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_qa'))]))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='checks', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=5)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='qa')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=2)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Many QA findings detected; consider retry.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_qa'))]))]),
+        Return(
+          value=Call(
+            func=Name(id='CorrectionSignal', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='surface',
+                value=Constant(value='qa')),
+              keyword(
+                arg='severity',
+                value=Constant(value=0)),
+              keyword(
+                arg='reason',
+                value=Constant(value='QA surface is acceptable.')),
+              keyword(
+                arg='recommended_action',
+                value=Constant(value='none'))]))],
+      returns=Name(id='CorrectionSignal', ctx=Load())),
+    FunctionDef(
+      name='_evaluate_safety_surface',
+      args=arguments(
+        args=[
+          arg(
+            arg='safety',
+            annotation=Name(id='SafetyResult', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inspect SafetyResult for policy violations.\n\n    Heuristics:\n\n        • Any "high" severity finding:\n             – severity = 3\n             – recommended_action = "retry_safety"\n        • ≥ 3 total findings of any severity:\n             – severity = 2\n             – recommended_action = "retry_safety"\n        • Otherwise:\n             – severity = 0\n    ')),
+        Assign(
+          targets=[
+            Name(id='findings', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Attribute(
+                value=Name(id='safety', ctx=Load()),
+                attr='findings',
+                ctx=Load()),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='findings', ctx=Load())),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='safety')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=0)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='No safety findings present.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='none'))]))]),
+        Assign(
+          targets=[
+            Name(id='high', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='f', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='f', ctx=Store()),
+                iter=Name(id='findings', ctx=Load()),
+                ifs=[
+                  Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='getattr', ctx=Load()),
+                          args=[
+                            Name(id='f', ctx=Load()),
+                            Constant(value='severity'),
+                            Constant(value='')]),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='high')])],
+                is_async=0)])),
+        If(
+          test=Name(id='high', ctx=Load()),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='safety')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=3)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='High-severity safety findings present.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_safety'))]))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='findings', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=3)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Constant(value='safety')),
+                  keyword(
+                    arg='severity',
+                    value=Constant(value=2)),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Multiple safety findings present.')),
+                  keyword(
+                    arg='recommended_action',
+                    value=Constant(value='retry_safety'))]))]),
+        Return(
+          value=Call(
+            func=Name(id='CorrectionSignal', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='surface',
+                value=Constant(value='safety')),
+              keyword(
+                arg='severity',
+                value=Constant(value=0)),
+              keyword(
+                arg='reason',
+                value=Constant(value='Safety surface is acceptable.')),
+              keyword(
+                arg='recommended_action',
+                value=Constant(value='none'))]))],
+      returns=Name(id='CorrectionSignal', ctx=Load())),
+    FunctionDef(
+      name='evaluate_all_surfaces',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='strategy',
+            annotation=Name(id='StrategyResult', ctx=Load())),
+          arg(
+            arg='rag',
+            annotation=Name(id='RAGResult', ctx=Load())),
+          arg(
+            arg='drafting',
+            annotation=Name(id='DraftingResult', ctx=Load())),
+          arg(
+            arg='qa',
+            annotation=Name(id='QAResult', ctx=Load())),
+          arg(
+            arg='safety',
+            annotation=Name(id='SafetyResult', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Evaluate all L2 surfaces and return a list of CorrectionSignal.\n\n    The list will contain one signal per surface:\n        ["strategy", "rag", "drafting", "qa", "safety"]\n\n    Each signal may have severity 0..3 and a recommended_action.\n    ')),
+        AnnAssign(
+          target=Name(id='signals', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='CorrectionSignal', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='signals', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_evaluate_strategy_surface', ctx=Load()),
+                args=[
+                  Name(id='strategy', ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='signals', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_evaluate_rag_surface', ctx=Load()),
+                args=[
+                  Name(id='rag', ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='signals', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_evaluate_drafting_surface', ctx=Load()),
+                args=[
+                  Name(id='drafting', ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='signals', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_evaluate_qa_surface', ctx=Load()),
+                args=[
+                  Name(id='qa', ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='signals', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_evaluate_safety_surface', ctx=Load()),
+                args=[
+                  Name(id='safety', ctx=Load())])])),
+        Return(
+          value=Name(id='signals', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='aggregate_correction_signals',
+      args=arguments(
+        args=[
+          arg(
+            arg='signals',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='CorrectionSignal', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Aggregate a list of CorrectionSignal into a single best signal.\n\n    Rules:\n\n        • Ignore all signals where needs_correction is False.\n        • If none need correction, return None.\n        • Otherwise, pick the signal with highest severity.\n        • If multiple share the highest severity, pick the first\n          in canonical order (strategy → rag → drafting → qa → safety).\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='signals', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        Assign(
+          targets=[
+            Name(id='needing', ctx=Store())],
+          value=ListComp(
+            elt=Name(id='s', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='s', ctx=Store()),
+                iter=Name(id='signals', ctx=Load()),
+                ifs=[
+                  Attribute(
+                    value=Name(id='s', ctx=Load()),
+                    attr='needs_correction',
+                    ctx=Load())],
+                is_async=0)])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='needing', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        Assign(
+          targets=[
+            Name(id='best', ctx=Store())],
+          value=Call(
+            func=Name(id='max', ctx=Load()),
+            args=[
+              Name(id='needing', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='s')]),
+                  body=Attribute(
+                    value=Name(id='s', ctx=Load()),
+                    attr='severity',
+                    ctx=Load())))])),
+        Return(
+          value=Name(id='best', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load()))])

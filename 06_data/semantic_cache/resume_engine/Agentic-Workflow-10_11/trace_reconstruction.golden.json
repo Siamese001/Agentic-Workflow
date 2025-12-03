@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom runtime.observability.collectors import get_events\n\n\ndef get_routing_trace() -> List[Dict[str, Any]]:\n    \"\"\"Return a structured trace of routing decisions from telemetry.\n\n    This mirrors the real runtime.trace.trace_reconstruction helper but lives\n    inside the Agentic-Workflow-10_10 snapshot so that\n    ``from runtime.trace.trace_reconstruction import get_routing_trace`` works\n    when tests are run with rootdir=Agentic-Workflow-10_10.\n    \"\"\"\n\n    trace: List[Dict[str, Any]] = []\n    try:\n        for evt in get_events():\n            if getattr(evt, \"name\", \"\") != \"routing_decision\":\n                continue\n            attrs = getattr(evt, \"attributes\", {}) or {}\n            trace.append(\n                {\n                    \"task\": attrs.get(\"task\"),\n                    \"agent_role\": attrs.get(\"agent_role\"),\n                    \"reason\": attrs.get(\"reason\"),\n                    \"has_council\": attrs.get",
+  "full_hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
+  "generated_at": 1764728226.4493132,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\trace\\trace_reconstruction.py"
+}

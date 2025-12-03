@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Service Stubs for Testing.\"\"\"\n\nclass StubRAGService:\n    \"\"\"Stub RAG service for testing.\"\"\"\n    \n    def __init__(self):\n        self.queries = []\n    \n    def search(self, query, top_k=10):\n        \"\"\"Stub search method.\"\"\"\n        self.queries.append(query)\n        return [{\"id\": f\"doc_{i}\", \"score\": 0.9 - i * 0.1} for i in range(min(top_k, 3))]\n\nclass StubLLMService:\n    \"\"\"Stub LLM service for testing.\"\"\"\n    \n    def __init__(self, responses=None):\n        self.responses = responses or [\"Default response\"]\n        self.call_count = 0\n    \n    def generate(self, prompt):\n        \"\"\"Stub generate method.\"\"\"\n        response = self.responses[self.call_count % len(self.responses)]\n        self.call_count += 1\n        return response\n\ndef test_stub_rag_service():\n    \"\"\"Test StubRAGService.\"\"\"\n    rag = StubRAGService()\n    results = rag.search(\"python developer\")\n    assert len(results) == 3\n    assert len(rag.queries) == 1\n\ndef test_stub_llm_service():\n    \"\"\"Test StubLLMService.",
+  "full_hash": "71d6bc1b1b4dcad7663ddc4b03e00a102f1a7e9c26e73c26e1d38381a4a207aa",
+  "generated_at": 1764728227.5847785,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\stubs\\service_stubs.py"
+}

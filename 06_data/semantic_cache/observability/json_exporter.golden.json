@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: validator_RES_v2.py\n# Core Validator Orchestrator Module - V18 Architecture (Refactored)\n# Version: 18.00 (Split into validation/ package)\n# This file contains only the PreFlightValidator, which orchestrates\n# the engine, context, and rules from its sub-modules.\n\nimport re\nimport json\nimport logging\nfrom datetime import datetime\nfrom typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable\nfrom collections import defaultdict\nfrom functools import partial\n\n# Import dependencies from new modules\nfrom config_RES_v2 import CONFIG, COVER_LETTER_SIGNATURE_TEMPLATE\nfrom models_RES import (\n    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,\n    ImmutableStagingBuffer, GateDecision, BulletProvenance,\n    FactualFailureException\n)\nfrom utils_RES_v2 import text_utils, calculate_signal_score\nfrom interpreter_RES_v2 import CodeInterpreterTool\n\n# --- V18 REFACTOR: Import from new validation package ---\nfrom validation.engine import ValidationEngine, Valida",
+  "full_hash": "13e8721410345de905e15719d7f1c6176cc23c296bc386ab76080273b2a90d7a",
+  "generated_at": 1764728350.787311,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\observer-microagent-layer\\refine-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\json_exporter.py"
+}

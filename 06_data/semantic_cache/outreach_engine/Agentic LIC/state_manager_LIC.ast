@@ -1,0 +1,2196 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='13.0')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    Import(
+      names=[
+        alias(name='shutil')]),
+    ClassDef(
+      name='StateManager',
+      body=[
+        Expr(
+          value=Constant(value='\n    v13.0: Explicit state management for HOP architecture\n    \n    Each HOP (single-responsibility agent) reads from and writes to the\n    state/ directory. This creates an auditable trail and enables:\n    - Debugging: Inspect state at any HOP\n    - Resumability: Re-run from any HOP\n    - Auditability: Complete record of workflow decisions\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='mission_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='state_directory',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='create_if_missing',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value='state'),
+              Constant(value=True)]),
+          body=[
+            Expr(
+              value=Constant(value="\n        Initialize state manager for a mission\n        \n        Args:\n            mission_id: Unique mission identifier\n            state_directory: Base directory for state files\n            create_if_missing: Create directory if it doesn't exist\n        ")),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_id',
+                  ctx=Store())],
+              value=Name(id='mission_id', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='base_dir',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='state_directory', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='base_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=Name(id='mission_id', ctx=Load()))),
+            If(
+              test=Name(id='create_if_missing', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='mission_dir',
+                        ctx=Load()),
+                      attr='mkdir',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='parents',
+                        value=Constant(value=True)),
+                      keyword(
+                        arg='exist_ok',
+                        value=Constant(value=True))]))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] Initialized for mission: '),
+                      FormattedValue(
+                        value=Name(id='mission_id', ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] State directory: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='mission_dir',
+                          ctx=Load()),
+                        conversion=-1)])]))]),
+        FunctionDef(
+          name='write_state',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='data',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='atomic',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=True)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Write state file for a HOP\n        \n        Args:\n            hop_id: HOP identifier (e.g., "HOP-1", "1_profile_analysis")\n            data: State data to write\n            atomic: Use atomic write (write to temp file, then rename)\n        \n        Returns:\n            Path to written file\n        ')),
+            Assign(
+              targets=[
+                Name(id='filename', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_sanitize_filename',
+                  ctx=Load()),
+                args=[
+                  Name(id='hop_id', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='filename', ctx=Load()),
+                    attr='endswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='.json')])),
+              body=[
+                AugAssign(
+                  target=Name(id='filename', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value='.json'))]),
+            Assign(
+              targets=[
+                Name(id='filepath', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=Name(id='filename', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='data_with_metadata', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='hop_id'),
+                  Constant(value='mission_id'),
+                  Constant(value='timestamp'),
+                  Constant(value='schema_version'),
+                  None],
+                values=[
+                  Name(id='hop_id', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='mission_id',
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Constant(value='13.0'),
+                  Name(id='data', ctx=Load())])),
+            If(
+              test=Name(id='atomic', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_filepath', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='filepath', ctx=Load()),
+                      attr='with_suffix',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='.tmp')])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='temp_filepath', ctx=Load()),
+                          Constant(value='w')]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Name(id='data_with_metadata', ctx=Load()),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='default',
+                            value=Name(id='str', ctx=Load()))]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='temp_filepath', ctx=Load()),
+                      attr='replace',
+                      ctx=Load()),
+                    args=[
+                      Name(id='filepath', ctx=Load())]))],
+              orelse=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='filepath', ctx=Load()),
+                          Constant(value='w')]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Name(id='data_with_metadata', ctx=Load()),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='default',
+                            value=Name(id='str', ctx=Load()))]))])]),
+            Assign(
+              targets=[
+                Name(id='checksum', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_calculate_checksum',
+                  ctx=Load()),
+                args=[
+                  Name(id='filepath', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] Wrote state: '),
+                      FormattedValue(
+                        value=Name(id='filename', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' (checksum: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='checksum', ctx=Load()),
+                          slice=Slice(
+                            upper=Constant(value=8)),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='...)')])])),
+            Return(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='filepath', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='read_state',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='validate_checksum',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Expr(
+              value=Constant(value="\n        Read state file for a HOP\n        \n        Args:\n            hop_id: HOP identifier\n            validate_checksum: Verify file integrity\n        \n        Returns:\n            State data dictionary\n        \n        Raises:\n            FileNotFoundError: If state file doesn't exist\n            ValueError: If checksum validation fails\n        ")),
+            Assign(
+              targets=[
+                Name(id='filename', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_sanitize_filename',
+                  ctx=Load()),
+                args=[
+                  Name(id='hop_id', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='filename', ctx=Load()),
+                    attr='endswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='.json')])),
+              body=[
+                AugAssign(
+                  target=Name(id='filename', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value='.json'))]),
+            Assign(
+              targets=[
+                Name(id='filepath', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=Name(id='filename', ctx=Load()))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='filepath', ctx=Load()),
+                    attr='exists',
+                    ctx=Load()))),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='FileNotFoundError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='State file not found: '),
+                          FormattedValue(
+                            value=Name(id='filepath', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Name(id='validate_checksum', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='stored_checksum', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_get_stored_checksum',
+                      ctx=Load()),
+                    args=[
+                      Name(id='hop_id', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='current_checksum', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_calculate_checksum',
+                      ctx=Load()),
+                    args=[
+                      Name(id='filepath', ctx=Load())])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='stored_checksum', ctx=Load()),
+                      Compare(
+                        left=Name(id='stored_checksum', ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Name(id='current_checksum', ctx=Load())])]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Checksum mismatch for '),
+                              FormattedValue(
+                                value=Name(id='filename', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': file may be corrupted')])]))])]),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='filepath', ctx=Load()),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] Read state: '),
+                      FormattedValue(
+                        value=Name(id='filename', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Name(id='data', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='state_exists',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Check if state file exists for a HOP\n        \n        Args:\n            hop_id: HOP identifier\n        \n        Returns:\n            True if state file exists\n        ')),
+            Assign(
+              targets=[
+                Name(id='filename', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_sanitize_filename',
+                  ctx=Load()),
+                args=[
+                  Name(id='hop_id', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='filename', ctx=Load()),
+                    attr='endswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='.json')])),
+              body=[
+                AugAssign(
+                  target=Name(id='filename', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value='.json'))]),
+            Assign(
+              targets=[
+                Name(id='filepath', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=Name(id='filename', ctx=Load()))),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filepath', ctx=Load()),
+                  attr='exists',
+                  ctx=Load())))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='list_states',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        List all state files for this mission\n        \n        Returns:\n            List of state file names\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='mission_dir',
+                      ctx=Load()),
+                    attr='exists',
+                    ctx=Load()))),
+              body=[
+                Return(
+                  value=List(ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='state_files', ctx=Store())],
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='f', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='mission_dir',
+                              ctx=Load()),
+                            attr='iterdir',
+                            ctx=Load())),
+                        ifs=[
+                          BoolOp(
+                            op=And(),
+                            values=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='f', ctx=Load()),
+                                  attr='is_file',
+                                  ctx=Load())),
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='f', ctx=Load()),
+                                  attr='suffix',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='.json')])])],
+                        is_async=0)])])),
+            Return(
+              value=Name(id='state_files', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_workflow_progress',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Get workflow progress summary\n        \n        Returns:\n            Dictionary with progress information\n        ')),
+            Assign(
+              targets=[
+                Name(id='states', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='list_states',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='completed_hops', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='state_file', ctx=Store()),
+              iter=Name(id='states', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='parts', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='state_file', ctx=Load()),
+                          attr='replace',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='.json'),
+                          Constant(value='')]),
+                      attr='split',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='_')])),
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='parts', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          attr='replace',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='.'),
+                          Constant(value='')]),
+                      attr='isdigit',
+                      ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='completed_hops', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='parts', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load())]))])]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='mission_id'),
+                  Constant(value='total_states'),
+                  Constant(value='completed_hops'),
+                  Constant(value='state_files')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='mission_id',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='states', ctx=Load())]),
+                  Call(
+                    func=Name(id='sorted', ctx=Load()),
+                    args=[
+                      Name(id='completed_hops', ctx=Load())]),
+                  Name(id='states', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='create_checkpoint',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='checkpoint_name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Create a checkpoint of all current state files\n        \n        Args:\n            checkpoint_name: Name for the checkpoint\n        \n        Returns:\n            Path to checkpoint directory\n        ')),
+            Assign(
+              targets=[
+                Name(id='checkpoint_dir', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=JoinedStr(
+                  values=[
+                    Constant(value='checkpoint_'),
+                    FormattedValue(
+                      value=Name(id='checkpoint_name', ctx=Load()),
+                      conversion=-1)]))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='checkpoint_dir', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='exist_ok',
+                    value=Constant(value=True))])),
+            For(
+              target=Name(id='state_file', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='list_states',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='src', ctx=Store())],
+                  value=BinOp(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='mission_dir',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Name(id='state_file', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='dst', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='checkpoint_dir', ctx=Load()),
+                    op=Div(),
+                    right=Name(id='state_file', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='shutil', ctx=Load()),
+                      attr='copy2',
+                      ctx=Load()),
+                    args=[
+                      Name(id='src', ctx=Load()),
+                      Name(id='dst', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='metadata', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='checkpoint_name'),
+                  Constant(value='created_at'),
+                  Constant(value='mission_id'),
+                  Constant(value='state_files')],
+                values=[
+                  Name(id='checkpoint_name', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='mission_id',
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='list_states',
+                      ctx=Load()))])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='checkpoint_dir', ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='checkpoint_metadata.json')),
+                      Constant(value='w')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metadata', ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2))]))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] Created checkpoint: '),
+                      FormattedValue(
+                        value=Name(id='checkpoint_name', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='checkpoint_dir', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='restore_checkpoint',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='checkpoint_name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value="\n        Restore state from a checkpoint\n        \n        Args:\n            checkpoint_name: Name of checkpoint to restore\n        \n        Raises:\n            FileNotFoundError: If checkpoint doesn't exist\n        ")),
+            Assign(
+              targets=[
+                Name(id='checkpoint_dir', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=JoinedStr(
+                  values=[
+                    Constant(value='checkpoint_'),
+                    FormattedValue(
+                      value=Name(id='checkpoint_name', ctx=Load()),
+                      conversion=-1)]))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='checkpoint_dir', ctx=Load()),
+                    attr='exists',
+                    ctx=Load()))),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='FileNotFoundError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Checkpoint not found: '),
+                          FormattedValue(
+                            value=Name(id='checkpoint_name', ctx=Load()),
+                            conversion=-1)])]))]),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='checkpoint_dir', ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='checkpoint_metadata.json')),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))]),
+            For(
+              target=Name(id='state_file', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='list_states',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='mission_dir',
+                          ctx=Load()),
+                        op=Div(),
+                        right=Name(id='state_file', ctx=Load())),
+                      attr='unlink',
+                      ctx=Load())))]),
+            For(
+              target=Name(id='state_file', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='metadata', ctx=Load()),
+                slice=Constant(value='state_files'),
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='src', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='checkpoint_dir', ctx=Load()),
+                    op=Div(),
+                    right=Name(id='state_file', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='dst', ctx=Store())],
+                  value=BinOp(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='mission_dir',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Name(id='state_file', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='shutil', ctx=Load()),
+                      attr='copy2',
+                      ctx=Load()),
+                    args=[
+                      Name(id='src', ctx=Load()),
+                      Name(id='dst', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] Restored checkpoint: '),
+                      FormattedValue(
+                        value=Name(id='checkpoint_name', ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] Restored '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='metadata', ctx=Load()),
+                              slice=Constant(value='state_files'),
+                              ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' state files')])]))]),
+        FunctionDef(
+          name='delete_state',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Delete state file for a HOP\n        \n        Args:\n            hop_id: HOP identifier\n        ')),
+            Assign(
+              targets=[
+                Name(id='filename', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_sanitize_filename',
+                  ctx=Load()),
+                args=[
+                  Name(id='hop_id', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='filename', ctx=Load()),
+                    attr='endswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='.json')])),
+              body=[
+                AugAssign(
+                  target=Name(id='filename', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value='.json'))]),
+            Assign(
+              targets=[
+                Name(id='filepath', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=Name(id='filename', ctx=Load()))),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='filepath', ctx=Load()),
+                  attr='exists',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='filepath', ctx=Load()),
+                      attr='unlink',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='[StateManager] Deleted state: '),
+                          FormattedValue(
+                            value=Name(id='filename', ctx=Load()),
+                            conversion=-1)])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='[StateManager] State not found (already deleted): '),
+                          FormattedValue(
+                            value=Name(id='filename', ctx=Load()),
+                            conversion=-1)])]))])]),
+        FunctionDef(
+          name='clear_all_states',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        DANGER: Delete all state files for this mission\n        ')),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] WARNING: Clearing all state files for mission '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='mission_id',
+                          ctx=Load()),
+                        conversion=-1)])])),
+            For(
+              target=Name(id='state_file', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='list_states',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='mission_dir',
+                          ctx=Load()),
+                        op=Div(),
+                        right=Name(id='state_file', ctx=Load())),
+                      attr='unlink',
+                      ctx=Load())))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] All states cleared')])]))]),
+        FunctionDef(
+          name='export_mission_archive',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output_path',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Export all mission state files as a compressed archive\n        \n        Args:\n            output_path: Optional path for archive (defaults to mission_id.tar.gz)\n        \n        Returns:\n            Path to archive file\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='output_path', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='mission_id',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='_archive.tar.gz')]))]),
+            Import(
+              names=[
+                alias(name='tarfile')]),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tarfile', ctx=Load()),
+                      attr='open',
+                      ctx=Load()),
+                    args=[
+                      Name(id='output_path', ctx=Load()),
+                      Constant(value='w:gz')]),
+                  optional_vars=Name(id='tar', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='tar', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='mission_dir',
+                        ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='arcname',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='mission_id',
+                          ctx=Load()))]))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='[StateManager] Exported mission archive: '),
+                      FormattedValue(
+                        value=Name(id='output_path', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Name(id='output_path', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_sanitize_filename',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Sanitize HOP ID for use as filename\n        \n        Args:\n            hop_id: HOP identifier\n        \n        Returns:\n            Sanitized filename\n        ')),
+            Assign(
+              targets=[
+                Name(id='sanitized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='hop_id', ctx=Load()),
+                          attr='replace',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='/'),
+                          Constant(value='_')]),
+                      attr='replace',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='\\'),
+                      Constant(value='_')]),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value=' '),
+                  Constant(value='_')])),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='sanitized', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='HOP-')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='sanitized', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='sanitized', ctx=Load()),
+                    slice=Slice(
+                      lower=Constant(value=4)),
+                    ctx=Load()))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sanitized', ctx=Load()),
+                  attr='lower',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_calculate_checksum',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='filepath',
+                annotation=Name(id='Path', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Calculate SHA256 checksum of a file\n        \n        Args:\n            filepath: Path to file\n        \n        Returns:\n            Hexadecimal checksum string\n        ')),
+            Assign(
+              targets=[
+                Name(id='sha256', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='hashlib', ctx=Load()),
+                  attr='sha256',
+                  ctx=Load()))),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='filepath', ctx=Load()),
+                      Constant(value='rb')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                For(
+                  target=Name(id='chunk', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='iter', ctx=Load()),
+                    args=[
+                      Lambda(
+                        args=arguments(),
+                        body=Call(
+                          func=Attribute(
+                            value=Name(id='f', ctx=Load()),
+                            attr='read',
+                            ctx=Load()),
+                          args=[
+                            Constant(value=4096)])),
+                      Constant(value=b'')]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='sha256', ctx=Load()),
+                          attr='update',
+                          ctx=Load()),
+                        args=[
+                          Name(id='chunk', ctx=Load())]))])]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sha256', ctx=Load()),
+                  attr='hexdigest',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_get_stored_checksum',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Get stored checksum for a state file\n        \n        Args:\n            hop_id: HOP identifier\n        \n        Returns:\n            Stored checksum or None if not found\n        ')),
+            Assign(
+              targets=[
+                Name(id='checksums_file', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='checksums.json'))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='checksums_file', ctx=Load()),
+                    attr='exists',
+                    ctx=Load()))),
+              body=[
+                Return(
+                  value=Constant(value=None))]),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='checksums_file', ctx=Load()),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='checksums', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='checksums', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='hop_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_store_checksum',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='checksum',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Store checksum for a state file\n        \n        Args:\n            hop_id: HOP identifier\n            checksum: Checksum to store\n        ')),
+            Assign(
+              targets=[
+                Name(id='checksums_file', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='mission_dir',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='checksums.json'))),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='checksums_file', ctx=Load()),
+                  attr='exists',
+                  ctx=Load())),
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='checksums_file', ctx=Load()),
+                          Constant(value='r')]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='checksums', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))])],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='checksums', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='checksums', ctx=Load()),
+                  slice=Name(id='hop_id', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='checksum', ctx=Load())),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='checksums_file', ctx=Load()),
+                      Constant(value='w')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='checksums', ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2))]))])])]),
+    ClassDef(
+      name='StateValidator',
+      body=[
+        Expr(
+          value=Constant(value='\n    Validates state files against expected schemas\n    ')),
+        Assign(
+          targets=[
+            Name(id='SCHEMAS', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='HOP-1'),
+              Constant(value='HOP-2'),
+              Constant(value='HOP-3'),
+              Constant(value='HOP-4'),
+              Constant(value='HOP-4.5'),
+              Constant(value='HOP-5'),
+              Constant(value='HOP-6'),
+              Constant(value='HOP-7')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='required_fields'),
+                  Constant(value='archetype_values')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='archetype'),
+                      Constant(value='confidence'),
+                      Constant(value='reasoning'),
+                      Constant(value='key_indicators')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='C_LEVEL'),
+                      Constant(value='EXECUTIVE'),
+                      Constant(value='SENIOR_TA'),
+                      Constant(value='RECRUITER')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_fields'),
+                  Constant(value='rag_result_fields')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='recipient_insights'),
+                      Constant(value='company_context'),
+                      Constant(value='rag_results')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='source'),
+                      Constant(value='source_type'),
+                      Constant(value='text')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_fields')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='team_members'),
+                      Constant(value='products'),
+                      Constant(value='case_studies')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_fields'),
+                  Constant(value='route_values')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='route'),
+                      Constant(value='reasoning')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='INMAIL'),
+                      Constant(value='CONNECTION_REQ'),
+                      Constant(value='EMAIL'),
+                      Constant(value='FOLLOW_UP')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_fields')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='route'),
+                      Constant(value='archetype'),
+                      Constant(value='sections'),
+                      Constant(value='constraints')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_fields')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='candidates'),
+                      Constant(value='generation_temperature'),
+                      Constant(value='generation_attempts')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_fields')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='validation_results'),
+                      Constant(value='passed'),
+                      Constant(value='critical_issues'),
+                      Constant(value='high_issues')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_fields'),
+                  Constant(value='decision_values')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='decision'),
+                      Constant(value='reasoning')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='FACTUAL_FAILURE'),
+                      Constant(value='CREATIVE_FAILURE'),
+                      Constant(value='PASS')],
+                    ctx=Load())])])),
+        FunctionDef(
+          name='validate_state',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='state_data',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validate state data against expected schema\n        \n        Args:\n            hop_id: HOP identifier\n            state_data: State data to validate\n        \n        Returns:\n            (is_valid, list_of_errors)\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='hop_id', ctx=Load()),
+                    attr='startswith',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='HOP-')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='hop_id', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='HOP-'),
+                      FormattedValue(
+                        value=Name(id='hop_id', ctx=Load()),
+                        conversion=-1)]))]),
+            If(
+              test=Compare(
+                left=Name(id='hop_id', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='cls', ctx=Load()),
+                    attr='SCHEMAS',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Constant(value=True),
+                      List(ctx=Load())],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='schema', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='cls', ctx=Load()),
+                  attr='SCHEMAS',
+                  ctx=Load()),
+                slice=Name(id='hop_id', ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='field', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='schema', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='required_fields'),
+                  List(ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='field', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='state_data', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='errors', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Missing required field: '),
+                              FormattedValue(
+                                value=Name(id='field', ctx=Load()),
+                                conversion=-1)])]))])]),
+            For(
+              target=Name(id='field_suffix', ctx=Store()),
+              iter=List(
+                elts=[
+                  Constant(value='values')],
+                ctx=Load()),
+              body=[
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='key', ctx=Store()),
+                      Name(id='valid_values', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='schema', ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='key', ctx=Load()),
+                          attr='endswith',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='_'),
+                              FormattedValue(
+                                value=Name(id='field_suffix', ctx=Load()),
+                                conversion=-1)])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='field_name', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='key', ctx=Load()),
+                              attr='replace',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='_'),
+                                  FormattedValue(
+                                    value=Name(id='field_suffix', ctx=Load()),
+                                    conversion=-1)]),
+                              Constant(value='')])),
+                        If(
+                          test=Compare(
+                            left=Name(id='field_name', ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='state_data', ctx=Load())]),
+                          body=[
+                            If(
+                              test=Compare(
+                                left=Subscript(
+                                  value=Name(id='state_data', ctx=Load()),
+                                  slice=Name(id='field_name', ctx=Load()),
+                                  ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Name(id='valid_values', ctx=Load())]),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='errors', ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Invalid value for '),
+                                          FormattedValue(
+                                            value=Name(id='field_name', ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=': '),
+                                          FormattedValue(
+                                            value=Subscript(
+                                              value=Name(id='state_data', ctx=Load()),
+                                              slice=Name(id='field_name', ctx=Load()),
+                                              ctx=Load()),
+                                            conversion=-1)])]))])])])])]),
+            Assign(
+              targets=[
+                Name(id='is_valid', ctx=Store())],
+              value=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='is_valid', ctx=Load()),
+                  Name(id='errors', ctx=Load())],
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='bool', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='test_state_manager',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Test the state manager\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n=== Testing State Manager ===\n')])),
+        Assign(
+          targets=[
+            Name(id='manager', ctx=Store())],
+          value=Call(
+            func=Name(id='StateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='mission_id',
+                value=Constant(value='test_mission_001'))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='--- Writing test states ---')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='write_state',
+              ctx=Load()),
+            args=[
+              Constant(value='HOP-1'),
+              Dict(
+                keys=[
+                  Constant(value='archetype'),
+                  Constant(value='confidence'),
+                  Constant(value='reasoning'),
+                  Constant(value='key_indicators')],
+                values=[
+                  Constant(value='C_LEVEL'),
+                  Constant(value=0.95),
+                  Constant(value='Title indicates CEO'),
+                  List(
+                    elts=[
+                      Constant(value='ceo')],
+                    ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='write_state',
+              ctx=Load()),
+            args=[
+              Constant(value='HOP-2'),
+              Dict(
+                keys=[
+                  Constant(value='recipient_insights'),
+                  Constant(value='company_context'),
+                  Constant(value='rag_results')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='Strategic AI leader')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Enterprise AI platform')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='source'),
+                          Constant(value='source_type'),
+                          Constant(value='text')],
+                        values=[
+                          Constant(value='LinkedIn'),
+                          Constant(value='RECIPIENT_LINKEDIN_ABOUT'),
+                          Constant(value='Profile text')])],
+                    ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='write_state',
+              ctx=Load()),
+            args=[
+              Constant(value='HOP-4'),
+              Dict(
+                keys=[
+                  Constant(value='route'),
+                  Constant(value='reasoning')],
+                values=[
+                  Constant(value='INMAIL'),
+                  Constant(value='Not connected, first message')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Reading test states ---')])),
+        Assign(
+          targets=[
+            Name(id='state_1', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='read_state',
+              ctx=Load()),
+            args=[
+              Constant(value='HOP-1')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='HOP-1 archetype: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='state_1', ctx=Load()),
+                      slice=Constant(value='archetype'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Assign(
+          targets=[
+            Name(id='state_2', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='read_state',
+              ctx=Load()),
+            args=[
+              Constant(value='HOP-2')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='HOP-2 insights: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='state_2', ctx=Load()),
+                      slice=Constant(value='recipient_insights'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Listing all states ---')])),
+        Assign(
+          targets=[
+            Name(id='states', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='list_states',
+              ctx=Load()))),
+        For(
+          target=Name(id='state_file', ctx=Store()),
+          iter=Name(id='states', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  - '),
+                      FormattedValue(
+                        value=Name(id='state_file', ctx=Load()),
+                        conversion=-1)])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Workflow progress ---')])),
+        Assign(
+          targets=[
+            Name(id='progress', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='get_workflow_progress',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Completed HOPs: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='progress', ctx=Load()),
+                      slice=Constant(value='completed_hops'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Validating states ---')])),
+        For(
+          target=Name(id='hop_id', ctx=Store()),
+          iter=List(
+            elts=[
+              Constant(value='HOP-1'),
+              Constant(value='HOP-2'),
+              Constant(value='HOP-4')],
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='manager', ctx=Load()),
+                  attr='read_state',
+                  ctx=Load()),
+                args=[
+                  Name(id='hop_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='is_valid', ctx=Store()),
+                    Name(id='errors', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='StateValidator', ctx=Load()),
+                  attr='validate_state',
+                  ctx=Load()),
+                args=[
+                  Name(id='hop_id', ctx=Load()),
+                  Name(id='state', ctx=Load())])),
+            If(
+              test=Name(id='is_valid', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  '),
+                          FormattedValue(
+                            value=Name(id='hop_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': ✓ Valid')])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  '),
+                          FormattedValue(
+                            value=Name(id='hop_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': ✗ Invalid - '),
+                          FormattedValue(
+                            value=Name(id='errors', ctx=Load()),
+                            conversion=-1)])]))])]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Creating checkpoint ---')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='create_checkpoint',
+              ctx=Load()),
+            args=[
+              Constant(value='before_validation')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Exporting archive ---')])),
+        Assign(
+          targets=[
+            Name(id='archive_path', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='export_mission_archive',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Archive created: '),
+                  FormattedValue(
+                    value=Name(id='archive_path', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n--- Cleanup ---')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='clear_all_states',
+              ctx=Load()))),
+        Import(
+          names=[
+            alias(name='shutil')]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='shutil', ctx=Load()),
+              attr='rmtree',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='manager', ctx=Load()),
+                attr='mission_dir',
+                ctx=Load())])),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='os', ctx=Load()),
+                attr='path',
+                ctx=Load()),
+              attr='exists',
+              ctx=Load()),
+            args=[
+              Name(id='archive_path', ctx=Load())]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='os', ctx=Load()),
+                  attr='remove',
+                  ctx=Load()),
+                args=[
+                  Name(id='archive_path', ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Test complete\n')]))]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Test the state manager\n    \n    Usage:\n        python state_manager_LIC.py\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='test_state_manager', ctx=Load())))])])

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 246,
+  "generated_at": 1764728348.2214751,
+  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\templates\\resume\\executor-microagent-layer\\retry-phase-group\\backoff-policy-ops\\skills_template.md"
+}

@@ -1,0 +1,689 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='11.10')),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='uuid',
+      names=[
+        alias(name='uuid4')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='workflow',
+      names=[
+        alias(name='WorkflowOrchestrator')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='OutreachMission')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='11.10')),
+    FunctionDef(
+      name='load_mission_input',
+      args=arguments(
+        args=[
+          arg(
+            arg='filename',
+            annotation=Name(id='str', ctx=Load()))],
+        defaults=[
+          Constant(value='mission_input.json')]),
+      body=[
+        Expr(
+          value=Constant(value='Loads the mission input JSON file.')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='os', ctx=Load()),
+                  attr='path',
+                  ctx=Load()),
+                attr='exists',
+                ctx=Load()),
+              args=[
+                Name(id='filename', ctx=Load())])),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='FATAL: '),
+                      FormattedValue(
+                        value=Name(id='filename', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' not found. Please create it.')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=1)]))]),
+        Try(
+          body=[
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='filename', ctx=Load()),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))])],
+          handlers=[
+            ExceptHandler(
+              type=Attribute(
+                value=Name(id='json', ctx=Load()),
+                attr='JSONDecodeError',
+                ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='FATAL: Error decoding '),
+                          FormattedValue(
+                            value=Name(id='filename', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])])],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='create_orchestrator',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Create orchestrator instance')),
+        Return(
+          value=Call(
+            func=Name(id='WorkflowOrchestrator', ctx=Load())))],
+      returns=Name(id='WorkflowOrchestrator', ctx=Load())),
+    AsyncFunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Main execution')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=80)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='LIC v'),
+                  FormattedValue(
+                    value=Name(id='__version__', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' - LinkedIn Outreach Orchestrator (Dual-Loop Agentic)')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nLoading mission from mission_input.json...')])),
+        Assign(
+          targets=[
+            Name(id='input_data', ctx=Store())],
+          value=Call(
+            func=Name(id='load_mission_input', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='sender_profile', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='input_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='sender_profile'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='recipient_profile', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='input_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='recipient_profile'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='job_description', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='input_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='job_description'),
+              Dict()])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='all', ctx=Load()),
+              args=[
+                List(
+                  elts=[
+                    Name(id='sender_profile', ctx=Load()),
+                    Name(id='recipient_profile', ctx=Load()),
+                    Name(id='job_description', ctx=Load())],
+                  ctx=Load())])),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value="FATAL: mission_input.json is missing one or more required top-level keys: 'sender_profile', 'recipient_profile', 'job_description'")])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=1)]))]),
+        Assign(
+          targets=[
+            Name(id='mission', ctx=Store())],
+          value=Call(
+            func=Name(id='OutreachMission', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='mission_id',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Name(id='uuid4', ctx=Load()))])),
+              keyword(
+                arg='sender_profile',
+                value=Name(id='sender_profile', ctx=Load())),
+              keyword(
+                arg='recipient_profile',
+                value=Name(id='recipient_profile', ctx=Load())),
+              keyword(
+                arg='job_description',
+                value=Name(id='job_description', ctx=Load())),
+              keyword(
+                arg='connection_status',
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='recipient_profile', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='connection_status'),
+                    Constant(value='not_connected')])),
+              keyword(
+                arg='prior_message_count',
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='recipient_profile', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='prior_message_count'),
+                    Constant(value=0)]))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n'),
+                  FormattedValue(
+                    value=BinOp(
+                      left=Constant(value='='),
+                      op=Mult(),
+                      right=Constant(value=80)),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='LIC v11.10 - Workflow Execution')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=BinOp(
+                      left=Constant(value='='),
+                      op=Mult(),
+                      right=Constant(value=80)),
+                    conversion=-1),
+                  Constant(value='\n')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Mission ID: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='mission', ctx=Load()),
+                      attr='mission_id',
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Sender: '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='mission', ctx=Load()),
+                          attr='sender_profile',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='name'),
+                        Constant(value='N/A')]),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Recipient: '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='mission', ctx=Load()),
+                          attr='recipient_profile',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='name'),
+                        Constant(value='N/A')]),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Job: '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='mission', ctx=Load()),
+                          attr='job_description',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='title'),
+                        Constant(value='N/A')]),
+                    conversion=-1),
+                  Constant(value=' at '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='mission', ctx=Load()),
+                          attr='job_description',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='company'),
+                        Constant(value='N/A')]),
+                    conversion=-1)])])),
+        Assign(
+          targets=[
+            Name(id='orchestrator', ctx=Store())],
+          value=Call(
+            func=Name(id='create_orchestrator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='orchestrator', ctx=Load()),
+                attr='execute_workflow',
+                ctx=Load()),
+              args=[
+                Name(id='mission', ctx=Load())]))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n'),
+                  FormattedValue(
+                    value=BinOp(
+                      left=Constant(value='='),
+                      op=Mult(),
+                      right=Constant(value=80)),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='WORKFLOW RESULTS')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=BinOp(
+                      left=Constant(value='='),
+                      op=Mult(),
+                      right=Constant(value=80)),
+                    conversion=-1),
+                  Constant(value='\n')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Status: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='status'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        If(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='result', ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='success')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Production Ready: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='production_ready'),
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Workflow Time: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='workflow_time'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='s')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\nGenerated Message ('),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='word_count'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' words):')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='message'),
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='-'),
+                    op=Mult(),
+                    right=Constant(value=80))])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\nQA Summary:')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Critical: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='qa_summary'),
+                            ctx=Load()),
+                          slice=Constant(value='critical_issues'),
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  High: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='qa_summary'),
+                            ctx=Load()),
+                          slice=Constant(value='high_issues'),
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Medium: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='qa_summary'),
+                            ctx=Load()),
+                          slice=Constant(value='errors'),
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  Warnings: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='qa_summary'),
+                            ctx=Load()),
+                          slice=Constant(value='warnings'),
+                          ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='qa_report'),
+                    ctx=Load())]))],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Error: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='error'),
+                            Constant(value='Unknown error')]),
+                        conversion=-1)])]))]),
+        Return(
+          value=Name(id='result', ctx=Load()))]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Import(
+          names=[
+            alias(name='asyncio')]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='main', ctx=Load()))]))])])

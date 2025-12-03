@@ -1,0 +1,127 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nModel selection orchestration for résumé processing workflows.\n\nCoordinates policy evaluation and caching for optimal résumé improvement performance.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ExecutionProfile')],
+      level=0),
+    ImportFrom(
+      module='cache',
+      names=[
+        alias(name='get_cached_choice'),
+        alias(name='set_cached_choice')],
+      level=1),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='ModelChoice'),
+        alias(name='RoutingContext')],
+      level=1),
+    ImportFrom(
+      module='policies',
+      names=[
+        alias(name='choose_provider_and_model'),
+        alias(name='enforce_budget')],
+      level=1),
+    FunctionDef(
+      name='select_model',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='RoutingContext', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='requested_model',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='execution_profile',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='ExecutionProfile', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Selects optimal model for résumé processing workflows with caching.\n\n    Ensures efficient model choice and budget enforcement for comprehensive résumé enhancement.\n    ')),
+        Assign(
+          targets=[
+            Name(id='cached', ctx=Store())],
+          value=Call(
+            func=Name(id='get_cached_choice', ctx=Load()),
+            args=[
+              Name(id='ctx', ctx=Load())])),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='cached', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Name(id='requested_model', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Return(
+              value=Name(id='cached', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='base_choice', ctx=Store())],
+          value=Call(
+            func=Name(id='choose_provider_and_model', ctx=Load()),
+            args=[
+              Name(id='ctx', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='requested_model',
+                value=Name(id='requested_model', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='final_choice', ctx=Store())],
+          value=Call(
+            func=Name(id='enforce_budget', ctx=Load()),
+            args=[
+              Name(id='base_choice', ctx=Load()),
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='execution_profile', ctx=Load()),
+                  Attribute(
+                    value=Name(id='ctx', ctx=Load()),
+                    attr='execution_profile',
+                    ctx=Load())])])),
+        If(
+          test=Compare(
+            left=Name(id='requested_model', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='set_cached_choice', ctx=Load()),
+                args=[
+                  Name(id='ctx', ctx=Load()),
+                  Name(id='final_choice', ctx=Load())]))]),
+        Return(
+          value=Name(id='final_choice', ctx=Load()))],
+      returns=Name(id='ModelChoice', ctx=Load()))])

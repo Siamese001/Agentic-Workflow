@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# ---------------------------------------------------------------\n# Helper: detect fields for RAG correctness\n# ---------------------------------------------------------------\ndef _extract_rag_block(out):\n    # RAG block may be top-level or inside resume\n    return (\n        out.get(\"rag\")\n        or out.get(\"resume\", {}).get(\"rag\")\n        or {}\n    )\n\n\n# ---------------------------------------------------------------\n# 1. RAG output must differ from the raw query\n# ---------------------------------------------------------------\n@pytest.mark.rag\n@pytest.mark.parametrize(\"query\", [\n    \"cloud infrastructure\",\n    \"generative AI leadership\",\n    \"risk modeling optimization\",\n])\ndef test_rag_not_query_echo(query):\n    out = run_workflow({\"compat_mode\": \"v10_7\", \"resume\": \"RAG Test User\", \"jd\": query})\n    rag = _extract_rag_block(out)\n\n    assert rag, \"Missing RAG block\"\n    doc = rag.get(\"document\") or rag.get(\"top_document\")\n\n   ",
+  "full_hash": "55b79136b94ac0caa8abb40e8238c5acd72d5166de3d897a4b58565d215a3344",
+  "generated_at": 1764728230.6917152,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\rag\\test_rag_invariants_v10_7.py"
+}

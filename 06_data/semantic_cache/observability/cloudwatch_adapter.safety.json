@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 404,
+  "generated_at": 1764728351.360338,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\retriever-microagent-layer\\refine-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\cloudwatch_adapter.py"
+}

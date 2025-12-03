@@ -1,0 +1,426 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest KG Retrieval Planning\n\nTests knowledge graph retrieval planning functionality extracted from working legacy tests.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    ImportFrom(
+      module='l1.kg_retrieval_planning',
+      names=[
+        alias(name='KGRetrievalPlanner'),
+        alias(name='KGQueryPlan'),
+        alias(name='QueryType'),
+        alias(name='HopDirection'),
+        alias(name='plan_entity_retrieval')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='unit',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='l1',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='planning',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='TestKGRetrievalPlanning',
+      body=[
+        Expr(
+          value=Constant(value='Test KG retrieval planning functionality.')),
+        FunctionDef(
+          name='test_plan_entity_retrieval',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test basic entity retrieval planning.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='plan_entity_retrieval', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='entity_id',
+                    value=Constant(value='entity_1')),
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=1))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='KGQueryPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='start_entities',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='entity_1')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='query_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='QueryType', ctx=Load()),
+                    attr='ENTITY_FACTS',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='max_hops',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))]),
+        FunctionDef(
+          name='test_plan_neighborhood_query',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test neighborhood query planning.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan_query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='NEIGHBORHOOD',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='entity_1')],
+                      ctx=Load())),
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=2))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='KGQueryPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='start_entities',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='entity_1')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='query_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='QueryType', ctx=Load()),
+                    attr='NEIGHBORHOOD',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='max_hops',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)]))]),
+        FunctionDef(
+          name='test_plan_with_template',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test planning with query templates.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan_query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='PATTERN_MATCH',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='entity_1')],
+                      ctx=Load())),
+                  keyword(
+                    arg='template_name',
+                    value=Constant(value='test_template'))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='KGQueryPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='start_entities',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='entity_1')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='query_type',
+                  ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  List(
+                    elts=[
+                      Attribute(
+                        value=Name(id='QueryType', ctx=Load()),
+                        attr='PATTERN_MATCH',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='QueryType', ctx=Load()),
+                        attr='NEIGHBORHOOD',
+                        ctx=Load())],
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_hop_direction_planning',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test hop direction specification in planning.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan_query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='ENTITY_FACTS',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='entity_1')],
+                      ctx=Load())),
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=1))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='KGQueryPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='start_entities',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='entity_1')],
+                    ctx=Load())])),
+            If(
+              test=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='hops',
+                ctx=Load()),
+              body=[
+                Assert(
+                  test=Call(
+                    func=Name(id='all', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Call(
+                          func=Name(id='isinstance', ctx=Load()),
+                          args=[
+                            Name(id='hop', ctx=Load()),
+                            Call(
+                              func=Name(id='type', ctx=Load()),
+                              args=[
+                                Subscript(
+                                  value=Attribute(
+                                    value=Name(id='plan', ctx=Load()),
+                                    attr='hops',
+                                    ctx=Load()),
+                                  slice=Constant(value=0),
+                                  ctx=Load())])]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='hop', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='plan', ctx=Load()),
+                              attr='hops',
+                              ctx=Load()),
+                            is_async=0)])]))])]),
+        FunctionDef(
+          name='test_l1_pure_planning',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify L1 planner produces plans without execution.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan_query',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='QueryType', ctx=Load()),
+                      attr='ENTITY_FACTS',
+                      ctx=Load())),
+                  keyword(
+                    arg='start_entities',
+                    value=List(
+                      elts=[
+                        Constant(value='entity_1')],
+                      ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='KGQueryPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='start_entities',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='entity_1')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='query_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='QueryType', ctx=Load()),
+                    attr='ENTITY_FACTS',
+                    ctx=Load())]))])])])

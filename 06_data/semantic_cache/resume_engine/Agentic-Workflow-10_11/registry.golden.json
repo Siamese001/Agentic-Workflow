@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Registry - Meta Layer\n\nThis module provides strategy and configuration registries.\n\nLayer: Meta\nResponsibilities:\n- RAG strategy registry\n- RetrievalConfig factories\n- Static strategy mappings\n- Prompt registry bridge\n\nNon-responsibilities:\n- Retrieval execution\n- Ranking execution\n- LLM calls\n- Orchestration\n- State mutation\n\"\"\"\n\n# FILE: registry.py\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Any\n\nfrom core.models.models import RetrievalConfig, PromptDefinition\nfrom l1.prompt_system_v10_10 import PROMPT_REGISTRY\n\n\n# =============================================================================\n# RAG STRATEGY DEFINITIONS (PHASE 3)\n# =============================================================================\n\n# Each strategy defines:\n#   \u2022 retrieval_mode: \"bm25\" | \"dense\" | \"hybrid\"\n#   \u2022 use_hyde:       bool\n#   \u2022 use_rrf:        bool\n#   \u2022 top_k:          int\n\n\n@dataclass(frozen=True)\nclass RAGStrategyDefinition:\n    \"\"\"\n    Cano",
+  "full_hash": "6e6886d9ee7258b8cf6c4e7b12ae22e59cad3d51bcba1aa0d2b965cf91347294",
+  "generated_at": 1764728228.035668,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\registry.py"
+}

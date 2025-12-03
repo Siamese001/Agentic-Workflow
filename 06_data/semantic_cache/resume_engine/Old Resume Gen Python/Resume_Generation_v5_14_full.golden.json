@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.14 - ENHANCED WORD COUNT TABLE\n================================================================================\nPATCH NOTES v5.14 (October 2025):\n\u2713 Output 4: Complete rewrite using v4.4.4 structure (17 sections + total)\n\u2713 Added 5th column: \"Comment\" (max 5 words explaining variance rationale)\n\u2713 All 17 sections from v4.4.4: Name, Headline, Contact, Exec Summary, all role sections\n\u2713 Baseline metrics preserved from v4.4.4 SECTION_BASELINES\n\nPATCH NOTES v5.12 (October 2025):\n\u2713 Reordered: Output 4 = Word Table, Output 5 = QA Report (swapped positions)\n\u2713 Final order: Resume, Skills, Cover Letter, Word Table, QA Report, App Tracker\n\nPATCH NOTES v5.8 (October 2025):\n\u2713 Output 5: Application tracker with all 56 App_Schema_v4 fields populated\n\u2713 Auto-populated: Company, Job Title, Application Date, Base/Versioned Resume\n\u2713 All remaining fields ready for user input\n\u2713 Validation: Log-only mode (no output blocking)\nNOTE: v5.9 replaces App Tracker + CoC Ledger with singl",
+  "full_hash": "a0ed0d35b807da4a200343b7090ad7dc014ceb4b588103c92456aac1ab947840",
+  "generated_at": 1764728300.4077616,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_14_full.py"
+}

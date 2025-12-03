@@ -1,0 +1,11 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    FunctionDef(
+      name='test_e2e',
+      args=arguments(),
+      body=[
+        Assert(
+          test=Constant(value=True))])])

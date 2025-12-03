@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: run_batch_v7_0.py\n# Overwrites: run_batch_v6_5.py\n# Version: 7.0 (LangGraph + Redis)\n#\n# v7.0 (Phase 1) CHANGES:\n# - Imports from v7_0.\n# - DELETED 'WorkflowV65' import, as it no longer exists.\n# - Replaced 'process_single_job' logic to invoke the LangGraph app,\n#   mimicking main_v7_0.py's setup for each parallel process.\n\nimport os\nimport csv\nimport json\nimport logging\nimport shutil\nimport concurrent.futures\nimport uuid\nfrom datetime import datetime\nfrom typing import Dict, Any\n\n# Imports from its *own* versioned files (v7.0)\nfrom main_v7_0 import setup_logging, load_job_input # Import helpers from main\nfrom core_v7_0 import CONFIG, CircuitBreakerOpenError\n\n# v7.0: Import the graph builder and checkpointer\nfrom agent_swarm_v7_0 import get_graph_app\nfrom langgraph.checkpoint.redis import RedisSaver\n\n# v7.0: Import the meta-learner\ntry:\n    from run_learning_v7_0 import run_meta_learning\n    META_LEARNER_AVAILABLE = True\nexcept ImportError:\n    META_LEARNER_AVAILABLE = False\n\n\n",
+  "full_hash": "f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca",
+  "generated_at": 1764728327.7535884,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\run_batch_v7_0.py"
+}

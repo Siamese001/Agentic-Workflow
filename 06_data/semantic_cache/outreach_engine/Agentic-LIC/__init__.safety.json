@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 100,
+  "generated_at": 1764728330.8886092,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\__init__.py"
+}

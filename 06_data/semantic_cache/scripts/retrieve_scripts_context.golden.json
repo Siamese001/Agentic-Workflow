@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - retrieve_scripts_context\nImplements L1 Cognitive Planning Layer for retrieve scripts context operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RetrieveScriptsContextMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RetrieveScriptsContextMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RetrieveScriptsContextMemoryResult:\n    \"\"\"L5 Result structure with full type saf",
+  "full_hash": "81a5261b6f78828e91007f6047f3af03406604cbb5cd99a6753cf195ebc911d2",
+  "generated_at": 1764728351.8258283,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\mem-layer\\retrieve-phase\\get-scripts-info\\general\\understand-request\\retrieve_scripts_context.py"
+}

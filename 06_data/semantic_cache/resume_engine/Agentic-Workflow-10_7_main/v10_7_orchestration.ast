@@ -1,0 +1,1972 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='importlib.util')]),
+    Import(
+      names=[
+        alias(name='inspect')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Type'),
+        alias(name='Optional'),
+        alias(name='Tuple'),
+        alias(name='Callable'),
+        alias(name='Awaitable'),
+        alias(name='Sequence'),
+        alias(name='Set'),
+        alias(name='Iterable')],
+      level=0),
+    ImportFrom(
+      module='functools',
+      names=[
+        alias(name='wraps'),
+        alias(name='partial')],
+      level=0),
+    ClassDef(
+      name='WorkflowContext',
+      body=[
+        Pass()]),
+    ClassDef(
+      name='ConfigV10_7',
+      body=[
+        Pass()]),
+    ClassDef(
+      name='ArbitrationEngine',
+      body=[
+        Pass()]),
+    ClassDef(
+      name='PolicyAutoTuner',
+      body=[
+        Pass()]),
+    ClassDef(
+      name='BaseAgent',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='WorkflowContext', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Store())],
+              value=Name(id='context', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_info',
+                  ctx=Store())],
+              value=Lambda(
+                args=arguments(
+                  args=[
+                    arg(arg='msg')]),
+                body=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='logging', ctx=Load()),
+                        attr='getLogger',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='ORCH_AGENT')]),
+                    attr='info',
+                    ctx=Load()),
+                  args=[
+                    Name(id='msg', ctx=Load())]))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_error',
+                  ctx=Store())],
+              value=Lambda(
+                args=arguments(
+                  args=[
+                    arg(arg='msg')]),
+                body=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='logging', ctx=Load()),
+                        attr='getLogger',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='ORCH_AGENT')]),
+                    attr='error',
+                    ctx=Load()),
+                  args=[
+                    Name(id='msg', ctx=Load())]))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Store())],
+              value=Lambda(
+                args=arguments(
+                  vararg=arg(arg='args'),
+                  kwarg=arg(arg='kwargs')),
+                body=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='logging', ctx=Load()),
+                        attr='getLogger',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='ORCH_AGENT')]),
+                    attr='info',
+                    ctx=Load()),
+                  args=[
+                    JoinedStr(
+                      values=[
+                        Constant(value='FEEDBACK: '),
+                        FormattedValue(
+                          value=Name(id='args', ctx=Load()),
+                          conversion=-1)])]))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='self_correction_manager',
+                  ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Load()),
+                attr='self_correction_manager',
+                ctx=Load()))])]),
+    ClassDef(
+      name='BaseTool',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='StrategyPlan',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='ConstitutionalReviewResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='HILAmbiguityReport',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='A2AMessage',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='A2AContext',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='MainGraphState',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='NodeResult',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Pass()]),
+    ClassDef(
+      name='NodeStatus',
+      body=[
+        Assign(
+          targets=[
+            Name(id='SUCCESS', ctx=Store())],
+          value=Constant(value='success')),
+        Assign(
+          targets=[
+            Name(id='FAILURE', ctx=Store())],
+          value=Constant(value='failure'))]),
+    FunctionDef(
+      name='_extract_node_payload',
+      args=arguments(
+        args=[
+          arg(arg='state')]),
+      body=[
+        Return(
+          value=Name(id='state', ctx=Load()))]),
+    FunctionDef(
+      name='_ensure_node_result',
+      args=arguments(
+        args=[
+          arg(arg='name'),
+          arg(arg='result')]),
+      body=[
+        Return(
+          value=Name(id='result', ctx=Load()))]),
+    FunctionDef(
+      name='_read_arbitration_route',
+      args=arguments(
+        args=[
+          arg(arg='state'),
+          arg(arg='stage')]),
+      body=[
+        Return(
+          value=Tuple(
+            elts=[
+              Constant(value=''),
+              Constant(value=False)],
+            ctx=Load()))]),
+    FunctionDef(
+      name='unwrap_node_result',
+      args=arguments(
+        args=[
+          arg(arg='result')]),
+      body=[
+        Return(
+          value=Name(id='result', ctx=Load()))]),
+    Try(
+      body=[
+        ImportFrom(
+          module='langgraph.graph',
+          names=[
+            alias(name='StateGraph'),
+            alias(name='END')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='HIL_AVAILABLE', ctx=Store())],
+          value=Constant(value=True))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='StateGraph', ctx=Store())],
+              value=Name(id='object', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='END', ctx=Store())],
+              value=Constant(value='END_STATE')),
+            Assign(
+              targets=[
+                Name(id='HIL_AVAILABLE', ctx=Store())],
+              value=Constant(value=False))])]),
+    FunctionDef(
+      name='detect_bias',
+      args=arguments(
+        args=[
+          arg(arg='context'),
+          arg(arg='text'),
+          arg(arg='wf_id')],
+        defaults=[
+          Constant(value='')]),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='bias_detected'),
+              Constant(value='patterns')],
+            values=[
+              Constant(value=False),
+              List(ctx=Load())]))]),
+    ClassDef(
+      name='PIISanitizerAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='PII_PATTERNS', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='EMAIL')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b')])])),
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='resume',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='loads',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      Name(id='resume', ctx=Load())])]))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_pii_sanitizer')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='BiasDetectorAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='detect_bias', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Name(id='text', ctx=Load()),
+                  Name(id='workflow_id', ctx=Load())]))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_bias_detector')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='PromptInjectionDetectorAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        ClassDef(
+          name='PIDetectionOutput',
+          bases=[
+            Name(id='BaseModel', ctx=Load())],
+          body=[
+            AnnAssign(
+              target=Name(id='injection_detected', ctx=Store()),
+              annotation=Name(id='bool', ctx=Load()),
+              value=Call(
+                func=Name(id='Field', ctx=Load()),
+                args=[
+                  Constant(value=Ellipsis)],
+                keywords=[
+                  keyword(
+                    arg='description',
+                    value=Constant(value='True if an attack was detected'))]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='reason', ctx=Store()),
+              annotation=Name(id='str', ctx=Load()),
+              value=Call(
+                func=Name(id='Field', ctx=Load()),
+                args=[
+                  Constant(value=Ellipsis)],
+                keywords=[
+                  keyword(
+                    arg='description',
+                    value=Constant(value='Explanation for the detection'))]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='confidence', ctx=Store()),
+              annotation=Name(id='float', ctx=Load()),
+              value=Call(
+                func=Name(id='Field', ctx=Load()),
+                args=[
+                  Constant(value=Ellipsis)],
+                keywords=[
+                  keyword(
+                    arg='ge',
+                    value=Constant(value=0.0)),
+                  keyword(
+                    arg='le',
+                    value=Constant(value=1.0)),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='Confidence in the detection'))]),
+              simple=1)]),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='user_input',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='injection_detected'),
+                  Constant(value='reason'),
+                  Constant(value='confidence')],
+                values=[
+                  Constant(value=False),
+                  Constant(value='Stub success'),
+                  Constant(value=0.9)]))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_pi_detector')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='ConstitutionalReviewerAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='final_draft',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='ConstitutionalReviewResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='review_passed',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='violations_found',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='feedback',
+                    value=Constant(value='OK'))]))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_constitutional_review')])],
+          returns=Name(id='ConstitutionalReviewResult', ctx=Load()))]),
+    ClassDef(
+      name='SafetyStackV10_8',
+      body=[
+        Expr(
+          value=Constant(value='Wrapper that exposes safety-only capabilities.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Store())],
+              value=Name(id='context', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_pii_sanitizer',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='PIISanitizerAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_bias_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='BiasDetectorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_prompt_injection_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='PromptInjectionDetectorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_constitutional_reviewer',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='ConstitutionalReviewerAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='sanitize_resume',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='resume',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_pii_sanitizer',
+                    ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Name(id='resume', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='detect_bias',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_bias_detector',
+                    ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load()),
+                  Name(id='workflow_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='detect_prompt_injection_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='user_input',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_prompt_injection_detector',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='user_input', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())])))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='run_constitutional_review_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='final_draft',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_constitutional_reviewer',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='final_draft', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())])))],
+          returns=Name(id='Any', ctx=Load())),
+        AsyncFunctionDef(
+          name='constitutional_review_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='qa')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='constitutional_review')],
+                    values=[
+                      Call(
+                        func=Name(id='ConstitutionalReviewResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='review_passed',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='violations_found',
+                            value=List(ctx=Load())),
+                          keyword(
+                            arg='feedback',
+                            value=Constant(value='OK'))])])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='QAValidationStack',
+      body=[
+        Expr(
+          value=Constant(value='Runs the QA tool suite and emits a normalized patch.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            kwonlyargs=[
+              arg(
+                arg='validators',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Sequence', ctx=Load()),
+                    slice=Subscript(
+                      value=Name(id='Tuple', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            kw_defaults=[
+              Constant(value=None)],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Store())],
+              value=Name(id='context', ctx=Load()))],
+          returns=Constant(value=None)),
+        AsyncFunctionDef(
+          name='run_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='qa')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='issues'),
+                      Constant(value='qa_passed')],
+                    values=[
+                      List(ctx=Load()),
+                      Constant(value=True)])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='HILAmbiguityDetectorAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='strategy',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='ambiguity_report')],
+                values=[
+                  Call(
+                    func=Name(id='HILAmbiguityReport', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='ambiguity_detected',
+                        value=Constant(value=False)),
+                      keyword(
+                        arg='confidence',
+                        value=Constant(value=1.0))])]))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_ambiguity_detector')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='HILFeedbackRouterAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='human_feedback',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='state_snapshot',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='next_step'),
+                  Constant(value='payload')],
+                values=[
+                  Constant(value='DRAFTING'),
+                  Constant(value='Reroute to drafting')]))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_feedback_router')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='HILStackV10_8',
+      body=[
+        Expr(
+          value=Constant(value='Wrapper that exposes HIL capabilities.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_router',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='HILFeedbackRouterAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())]))],
+          returns=Constant(value=None)),
+        AsyncFunctionDef(
+          name='detect_ambiguity_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='strategy_plan',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='ambiguity_report')],
+                values=[
+                  Call(
+                    func=Name(id='HILAmbiguityReport', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='ambiguity_detected',
+                        value=Constant(value=False)),
+                      keyword(
+                        arg='confidence',
+                        value=Constant(value=1.0))])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='route_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_router',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='human_feedback_stub'),
+                    Name(id='workflow_id', ctx=Load()),
+                    Name(id='state', ctx=Load())])))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='inject_edit_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='draft')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='sections')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='summary')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='draft')],
+                            values=[
+                              Constant(value='Updated by human.')])])])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='RAGExecutionStack',
+      body=[
+        AsyncFunctionDef(
+          name='run_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='resume')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='experience_bullets')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='RAG result 1')],
+                        ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='DraftingExecutionStack',
+      body=[
+        AsyncFunctionDef(
+          name='run_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='draft')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='sections')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='summary')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='draft')],
+                            values=[
+                              Constant(value='Drafting complete.')])])])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='RAGOrchestratorStack',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Coordinates RAG planning and execution with retries and A2A.')),
+        AsyncFunctionDef(
+          name='run_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Name(id='state', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='DraftOrchestratorStack',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Runs the deterministic sequencing for bullets + draft assembly.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='state_snapshot',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Name(id='state', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='ConceptualNode',
+      body=[
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='concrete_nodes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    AnnAssign(
+      target=Name(id='CONCEPTUAL_DAG', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='ConceptualNode', ctx=Load()),
+        ctx=Load()),
+      value=List(
+        elts=[
+          Call(
+            func=Name(id='ConceptualNode', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='SafetyGuardStack')),
+              keyword(
+                arg='concrete_nodes',
+                value=List(
+                  elts=[
+                    Constant(value='run_sanitize_pii'),
+                    Constant(value='run_detect_prompt_injection')],
+                  ctx=Load()))]),
+          Call(
+            func=Name(id='ConceptualNode', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='StrategyStack')),
+              keyword(
+                arg='concrete_nodes',
+                value=List(
+                  elts=[
+                    Constant(value='run_classify_complexity'),
+                    Constant(value='run_tot_strategy')],
+                  ctx=Load()))]),
+          Call(
+            func=Name(id='ConceptualNode', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='RAGStack')),
+              keyword(
+                arg='concrete_nodes',
+                value=List(
+                  elts=[
+                    Constant(value='prepare_parallel_run'),
+                    Constant(value='run_prompt_engineering'),
+                    Constant(value='run_rag_stack')],
+                  ctx=Load()))]),
+          Call(
+            func=Name(id='ConceptualNode', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='BulletStack')),
+              keyword(
+                arg='concrete_nodes',
+                value=List(
+                  elts=[
+                    Constant(value='run_generate_bullets'),
+                    Constant(value='run_critique_bullets')],
+                  ctx=Load()))]),
+          Call(
+            func=Name(id='ConceptualNode', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='DraftingStack')),
+              keyword(
+                arg='concrete_nodes',
+                value=List(
+                  elts=[
+                    Constant(value='run_drafting')],
+                  ctx=Load()))]),
+          Call(
+            func=Name(id='ConceptualNode', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='QAStack')),
+              keyword(
+                arg='concrete_nodes',
+                value=List(
+                  elts=[
+                    Constant(value='run_qa_validation'),
+                    Constant(value='run_constitutional_review')],
+                  ctx=Load()))]),
+          Call(
+            func=Name(id='ConceptualNode', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='HILInteractionStack')),
+              keyword(
+                arg='concrete_nodes',
+                value=List(
+                  elts=[
+                    Constant(value='HIL_PAUSE'),
+                    Constant(value='run_feedback_router')],
+                  ctx=Load()))])],
+        ctx=Load()),
+      simple=1),
+    AsyncFunctionDef(
+      name='run_sanitize_pii',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_sanitize_pii'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_detect_prompt_injection',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_detect_prompt_injection'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_classify_complexity',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_classify_complexity'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_tot_strategy',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_tot_strategy'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='prepare_parallel_run',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='prepare_parallel_run'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_prompt_engineering',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_prompt_engineering'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_rag_stack',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_rag_stack'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_generate_bullets',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_generate_bullets'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_critique_bullets',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_critique_bullets'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_drafting',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_drafting'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_qa_validation',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_qa_validation'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_constitutional_review',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_constitutional_review'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    FunctionDef(
+      name='human_in_the_loop_node',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='HIL_PAUSE'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_feedback_router',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_feedback_router'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_inject_hil_edit',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_inject_hil_edit'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    AsyncFunctionDef(
+      name='run_reconcile_specialists',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='_ensure_node_result', ctx=Load()),
+            args=[
+              Constant(value='run_reconcile_specialists'),
+              Name(id='state', ctx=Load())]))],
+      returns=Name(id='dict', ctx=Load())),
+    FunctionDef(
+      name='check_prompt_injection',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Return(
+          value=Constant(value='injection_safe'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='check_ambiguity',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Return(
+          value=Constant(value='continue_workflow'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='check_bullets_passed',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(arg='context')]),
+      body=[
+        Return(
+          value=Constant(value='bullets_passed'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='check_qa_passed',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(arg='context')]),
+      body=[
+        Return(
+          value=Constant(value='qa_passed'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='check_constitution',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Return(
+          value=Constant(value='passed_constitution'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='route_feedback',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Return(
+          value=Constant(value='to_drafting'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='check_hil_reentry_allowed',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(arg='context')]),
+      body=[
+        Return(
+          value=Constant(value='halt'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='get_graph_app',
+      args=arguments(
+        args=[
+          arg(
+            arg='checkpointer',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='workflow_context',
+            annotation=Name(id='WorkflowContext', ctx=Load())),
+          arg(
+            arg='enable_hil',
+            annotation=Name(id='bool', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='enable_mcp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='bool', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None)],
+        defaults=[
+          Constant(value=True)]),
+      body=[
+        Expr(
+          value=Constant(value='Build complete LangGraph workflow with v10.7 resilience.')),
+        Assign(
+          targets=[
+            Name(id='workflow', ctx=Store())],
+          value=Call(
+            func=Name(id='StateGraph', ctx=Load()),
+            args=[
+              Name(id='dict', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_node',
+              ctx=Load()),
+            args=[
+              Constant(value='run_sanitize_pii'),
+              Name(id='run_sanitize_pii', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_node',
+              ctx=Load()),
+            args=[
+              Constant(value='run_detect_prompt_injection'),
+              Name(id='run_detect_prompt_injection', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_node',
+              ctx=Load()),
+            args=[
+              Constant(value='run_classify_complexity'),
+              Name(id='run_classify_complexity', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_node',
+              ctx=Load()),
+            args=[
+              Constant(value='run_tot_strategy'),
+              Name(id='run_tot_strategy', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='set_entry_point',
+              ctx=Load()),
+            args=[
+              Constant(value='run_sanitize_pii')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_edge',
+              ctx=Load()),
+            args=[
+              Constant(value='run_sanitize_pii'),
+              Constant(value='run_detect_prompt_injection')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_conditional_edges',
+              ctx=Load()),
+            args=[
+              Constant(value='run_detect_prompt_injection'),
+              Name(id='check_prompt_injection', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='injection_detected'),
+                  Constant(value='injection_safe')],
+                values=[
+                  Name(id='END', ctx=Load()),
+                  Constant(value='run_classify_complexity')])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_edge',
+              ctx=Load()),
+            args=[
+              Constant(value='run_classify_complexity'),
+              Constant(value='run_tot_strategy')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_edge',
+              ctx=Load()),
+            args=[
+              Constant(value='run_tot_strategy'),
+              Constant(value='prepare_parallel_run')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_edge',
+              ctx=Load()),
+            args=[
+              Constant(value='prepare_parallel_run'),
+              Constant(value='run_prompt_engineering')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='add_edge',
+              ctx=Load()),
+            args=[
+              Constant(value='prepare_parallel_run'),
+              Constant(value='run_rag_stack')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='workflow', ctx=Load()),
+              attr='compile',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='checkpointer',
+                value=Name(id='checkpointer', ctx=Load()))]))])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Orchestration-level regression tests for state mutation guarantees.\"\"\"\n\nfrom __future__ import annotations\n\nimport copy\n\nimport pytest\n\nfrom agent_orchestration_v10_7 import run_inject_hil_edit\nfrom core_v10_7 import MainGraphState\n\n\n@pytest.mark.asyncio\nasync def test_run_inject_hil_edit_keeps_input_state_immutable(workflow_context):\n    typed_state = MainGraphState()\n    typed_state.metadata.workflow_id = \"wf-immutability\"\n    typed_state.draft.sections = {\"summary\": {\"draft\": \"Original summary\"}}\n    state = typed_state.to_dict()\n    state.setdefault(\"hil\", {})[\"payload\"] = \"Add new summary\"\n\n    baseline = copy.deepcopy(state)\n    updated = await run_inject_hil_edit(state, workflow_context)\n\n    assert state == baseline, \"Orchestration nodes must not mutate the incoming state\"\n    assert (\n        updated[\"draft\"][\"sections\"][\"summary\"][\"draft\"].startswith(\"[EDITED BY HUMAN]\")\n    )\n",
+  "full_hash": "d368124db602dd3208a81b687fff02469ea4667b4ee1573e403688032a08c596",
+  "generated_at": 1764728231.5228329,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\orchestration\\test_orchestration_state_isolation.py"
+}

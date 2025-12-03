@@ -1,0 +1,2246 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nComprehensive Pytest Suite for Resume Workflow v16_00 Refactoring\nTests all three specification implementations:\n1. Spec 1: Dormant Retry Logic (Pre-flight + Failure Classification)\n2. Spec 2: Agentic RAG Feature Activation\n3. Spec 3: Code Cleanup Refactoring\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock'),
+        alias(name='MagicMock'),
+        alias(name='patch'),
+        alias(name='call')],
+      level=0),
+    ImportFrom(
+      module='collections',
+      names=[
+        alias(name='defaultdict')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Any')],
+      level=0),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='insert',
+          ctx=Load()),
+        args=[
+          Constant(value=0),
+          Constant(value='/home/claude')])),
+    ImportFrom(
+      module='resume_workflow_v16_20',
+      names=[
+        alias(name='WorkflowOrchestrator'),
+        alias(name='ConstraintFailureClassifier'),
+        alias(name='ValidationResult'),
+        alias(name='ValidationSeverity'),
+        alias(name='ValidationEngine'),
+        alias(name='ValidationRule'),
+        alias(name='ArtistGenerator'),
+        alias(name='PreFlightValidator'),
+        alias(name='ResumeSection'),
+        alias(name='HopExecutionError'),
+        alias(name='AppTrackerQAValidator'),
+        alias(name='GeminiWebSearchClient'),
+        alias(name='WebSearchRAG'),
+        alias(name='RAGMission'),
+        alias(name='PhaseExecutor'),
+        alias(name='__version__')],
+      level=0),
+    ClassDef(
+      name='TestSpec1_1_PreFlightConstraintTest',
+      body=[
+        Expr(
+          value=Constant(value='Test Suite for Spec 1.1: Pre-flight Constraint Stress Test Integration')),
+        FunctionDef(
+          name='test_version_updated',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify version is updated to 16_20')),
+            Assert(
+              test=Compare(
+                left=Name(id='__version__', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='16_20')]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Version should be 16_20, got '),
+                  FormattedValue(
+                    value=Name(id='__version__', ctx=Load()),
+                    conversion=-1)]))]),
+        FunctionDef(
+          name='test_preflight_called_for_all_sections',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_validator_init'),
+              arg(arg='mock_artist_init'),
+              arg(arg='mock_preflight')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that pre-flight test is called for all LLM sections')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_artist_init', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_validator_init', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_preflight', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Name(id='mock_artist', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_artist', ctx=Load()),
+                  attr='SECTION_GENERATION_SPECS',
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K1_EXECUTIVE_SUMMARY',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K0_HEADLINE',
+                    ctx=Load())],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='generation_method'),
+                      Constant(value='context_builder'),
+                      Constant(value='prompt_template')],
+                    values=[
+                      Constant(value='_generate_section_generic'),
+                      Constant(value='_build_context_k1_summary'),
+                      Constant(value='Test prompt with {min_wc} and {max_wc}')]),
+                  Dict(
+                    keys=[
+                      Constant(value='generation_method'),
+                      Constant(value='context_builder'),
+                      Constant(value='prompt_template')],
+                    values=[
+                      Constant(value='_generate_section_generic'),
+                      Constant(value='_build_context_k0_headline'),
+                      Constant(value='Headline prompt')])])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_artist', ctx=Load()),
+                  attr='_build_context_k1_summary',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='return_value',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_wc'),
+                        Constant(value='max_wc')],
+                      values=[
+                        Constant(value=100),
+                        Constant(value=150)]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_artist', ctx=Load()),
+                  attr='_build_context_k0_headline',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='return_value',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_wc'),
+                        Constant(value='max_wc')],
+                      values=[
+                        Constant(value=10),
+                        Constant(value=15)]))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_artist', ctx=Load()),
+                  attr='_pre_flight_constraint_test',
+                  ctx=Store())],
+              value=Name(id='mock_preflight', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='all_llm_sections', ctx=Store())],
+              value=Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K1_EXECUTIVE_SUMMARY',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K0_HEADLINE',
+                    ctx=Load())])),
+            For(
+              target=Name(id='section_enum', ctx=Store()),
+              iter=Name(id='all_llm_sections', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='spec', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='mock_artist', ctx=Load()),
+                        attr='SECTION_GENERATION_SPECS',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section_enum', ctx=Load())])),
+                If(
+                  test=Name(id='spec', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='context_builder_name', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='spec', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='context_builder')])),
+                    If(
+                      test=Name(id='context_builder_name', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='context_builder', ctx=Store())],
+                          value=Call(
+                            func=Name(id='getattr', ctx=Load()),
+                            args=[
+                              Name(id='mock_artist', ctx=Load()),
+                              Name(id='context_builder_name', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='context', ctx=Store())],
+                          value=Call(
+                            func=Name(id='context_builder', ctx=Load()),
+                            args=[
+                              Name(id='section_enum', ctx=Load())])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='mock_artist', ctx=Load()),
+                              attr='_pre_flight_constraint_test',
+                              ctx=Load()),
+                            args=[
+                              Name(id='section_enum', ctx=Load()),
+                              Constant(value='test prompt'),
+                              Name(id='context', ctx=Load())]))])])]),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='mock_preflight', ctx=Load()),
+                  attr='call_count',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Pre-flight should be called twice, was called '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='mock_preflight', ctx=Load()),
+                      attr='call_count',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' times')]))],
+          decorator_list=[
+            Call(
+              func=Name(id='patch', ctx=Load()),
+              args=[
+                Constant(value='resume_workflow_v16_20.ArtistGenerator._pre_flight_constraint_test')]),
+            Call(
+              func=Name(id='patch', ctx=Load()),
+              args=[
+                Constant(value='resume_workflow_v16_20.ArtistGenerator.__init__')]),
+            Call(
+              func=Name(id='patch', ctx=Load()),
+              args=[
+                Constant(value='resume_workflow_v16_20.PreFlightValidator.__init__')])]),
+        FunctionDef(
+          name='test_preflight_failure_raises_hop_error',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that pre-flight failure raises HopExecutionError')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='resume_workflow_v16_20.ArtistGenerator._pre_flight_constraint_test')]),
+                  optional_vars=Name(id='mock_preflight', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_preflight', ctx=Load()),
+                      attr='return_value',
+                      ctx=Store())],
+                  value=Constant(value=False)),
+                Assign(
+                  targets=[
+                    Name(id='is_achievable', ctx=Store())],
+                  value=Call(
+                    func=Name(id='mock_preflight', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='ResumeSection', ctx=Load()),
+                        attr='K1_EXECUTIVE_SUMMARY',
+                        ctx=Load()),
+                      Constant(value='test prompt'),
+                      Dict(
+                        keys=[
+                          Constant(value='min_wc'),
+                          Constant(value='max_wc')],
+                        values=[
+                          Constant(value=100),
+                          Constant(value=150)])])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='is_achievable', ctx=Load())),
+                  body=[
+                    With(
+                      items=[
+                        withitem(
+                          context_expr=Call(
+                            func=Attribute(
+                              value=Name(id='pytest', ctx=Load()),
+                              attr='raises',
+                              ctx=Load()),
+                            args=[
+                              Name(id='HopExecutionError', ctx=Load())]))],
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='HopExecutionError', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Constraint Pre-flight FAILED for K1_EXECUTIVE_SUMMARY. Constraints are likely impossible to meet.')])]))])])])]),
+        FunctionDef(
+          name='test_preflight_skips_sections_without_context_builder',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that pre-flight gracefully skips sections without context builders')),
+            Assign(
+              targets=[
+                Name(id='mock_artist', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_artist', ctx=Load()),
+                  attr='SECTION_GENERATION_SPECS',
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K7_EDUCATION',
+                    ctx=Load())],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='generation_method'),
+                      Constant(value='master_data_key')],
+                    values=[
+                      Constant(value='_copy_from_master'),
+                      Constant(value='education')])])),
+            Assign(
+              targets=[
+                Name(id='all_llm_sections', ctx=Store())],
+              value=Set(
+                elts=[
+                  Attribute(
+                    value=Name(id='ResumeSection', ctx=Load()),
+                    attr='K7_EDUCATION',
+                    ctx=Load())])),
+            For(
+              target=Name(id='section_enum', ctx=Store()),
+              iter=Name(id='all_llm_sections', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='spec', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='mock_artist', ctx=Load()),
+                        attr='SECTION_GENERATION_SPECS',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='section_enum', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='context_builder_name', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='spec', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='context_builder')])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='context_builder_name', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  msg=Constant(value='Copy sections should not have context builders'))])])]),
+    ClassDef(
+      name='TestSpec1_2_FailureClassification',
+      body=[
+        Expr(
+          value=Constant(value='Test Suite for Spec 1.2: Constraint Failure Classifier Integration')),
+        FunctionDef(
+          name='test_failure_classifier_classify_mechanical',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that mechanical failures are correctly classified')),
+            Assign(
+              targets=[
+                Name(id='vr', ctx=Store())],
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='WORD_COUNT_K1_SUMMARY')),
+                  keyword(
+                    arg='passed',
+                    value=Constant(value=False)),
+                  keyword(
+                    arg='severity',
+                    value=Attribute(
+                      value=Name(id='ValidationSeverity', ctx=Load()),
+                      attr='CRITICAL',
+                      ctx=Load())),
+                  keyword(
+                    arg='message',
+                    value=Constant(value='Word count out of range'))])),
+            Assign(
+              targets=[
+                Name(id='category', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ConstraintFailureClassifier', ctx=Load()),
+                  attr='classify_failure',
+                  ctx=Load()),
+                args=[
+                  Name(id='vr', ctx=Load()),
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Name(id='category', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='MECHANICAL')]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Word count failure should be MECHANICAL, got '),
+                  FormattedValue(
+                    value=Name(id='category', ctx=Load()),
+                    conversion=-1)]))]),
+        FunctionDef(
+          name='test_failure_classifier_classify_creative',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that creative failures are correctly classified')),
+            Assign(
+              targets=[
+                Name(id='vr', ctx=Store())],
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='PLACEHOLDER_CONTENT_DETECTED')),
+                  keyword(
+                    arg='passed',
+                    value=Constant(value=False)),
+                  keyword(
+                    arg='severity',
+                    value=Attribute(
+                      value=Name(id='ValidationSeverity', ctx=Load()),
+                      attr='HIGH',
+                      ctx=Load())),
+                  keyword(
+                    arg='message',
+                    value=Constant(value='Found placeholder text'))])),
+            Assign(
+              targets=[
+                Name(id='category', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ConstraintFailureClassifier', ctx=Load()),
+                  attr='classify_failure',
+                  ctx=Load()),
+                args=[
+                  Name(id='vr', ctx=Load()),
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Name(id='category', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='CREATIVE')]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Placeholder failure should be CREATIVE, got '),
+                  FormattedValue(
+                    value=Name(id='category', ctx=Load()),
+                    conversion=-1)]))]),
+        FunctionDef(
+          name='test_failure_classifier_classify_semantic',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that semantic failures are correctly classified')),
+            Assign(
+              targets=[
+                Name(id='vr', ctx=Store())],
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='FORBIDDEN_VERB_DETECTED')),
+                  keyword(
+                    arg='passed',
+                    value=Constant(value=False)),
+                  keyword(
+                    arg='severity',
+                    value=Attribute(
+                      value=Name(id='ValidationSeverity', ctx=Load()),
+                      attr='HIGH',
+                      ctx=Load())),
+                  keyword(
+                    arg='message',
+                    value=Constant(value='Found forbidden verb'))])),
+            Assign(
+              targets=[
+                Name(id='category', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ConstraintFailureClassifier', ctx=Load()),
+                  attr='classify_failure',
+                  ctx=Load()),
+                args=[
+                  Name(id='vr', ctx=Load()),
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Name(id='category', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='SEMANTIC')]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Forbidden verb failure should be SEMANTIC, got '),
+                  FormattedValue(
+                    value=Name(id='category', ctx=Load()),
+                    conversion=-1)]))]),
+        FunctionDef(
+          name='test_failure_analysis_aggregation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that failure analysis correctly aggregates categories')),
+            Assign(
+              targets=[
+                Name(id='failed_rules', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Constant(value='WORD_COUNT_K1'),
+                      Constant(value=False),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='CRITICAL',
+                        ctx=Load()),
+                      Constant(value='wc')]),
+                  Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Constant(value='SENTENCE_COUNT_K1'),
+                      Constant(value=False),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='CRITICAL',
+                        ctx=Load()),
+                      Constant(value='sc')]),
+                  Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Constant(value='PLACEHOLDER_K2'),
+                      Constant(value=False),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='HIGH',
+                        ctx=Load()),
+                      Constant(value='ph')])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='failure_analysis', ctx=Store())],
+              value=Call(
+                func=Name(id='defaultdict', ctx=Load()),
+                args=[
+                  Name(id='int', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='temperature', ctx=Store())],
+              value=Constant(value=0.8)),
+            For(
+              target=Name(id='vr', ctx=Store()),
+              iter=Name(id='failed_rules', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='category', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ConstraintFailureClassifier', ctx=Load()),
+                      attr='classify_failure',
+                      ctx=Load()),
+                    args=[
+                      Name(id='vr', ctx=Load()),
+                      Name(id='temperature', ctx=Load())])),
+                AugAssign(
+                  target=Subscript(
+                    value=Name(id='failure_analysis', ctx=Load()),
+                    slice=Name(id='category', ctx=Load()),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='failure_analysis', ctx=Load()),
+                  slice=Constant(value='MECHANICAL'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Should have 2 MECHANICAL failures, got '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='failure_analysis', ctx=Load()),
+                      slice=Constant(value='MECHANICAL'),
+                      ctx=Load()),
+                    conversion=-1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='failure_analysis', ctx=Load()),
+                  slice=Constant(value='CREATIVE'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Should have 1 CREATIVE failure, got '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='failure_analysis', ctx=Load()),
+                      slice=Constant(value='CREATIVE'),
+                      ctx=Load()),
+                    conversion=-1)]))]),
+        FunctionDef(
+          name='test_creative_failure_halts_when_dominant',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that creative failures halt when >= mechanical failures')),
+            Assign(
+              targets=[
+                Name(id='failure_analysis', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='CREATIVE'),
+                  Constant(value='MECHANICAL'),
+                  Constant(value='SEMANTIC')],
+                values=[
+                  Constant(value=3),
+                  Constant(value=2),
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='creative_failures', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='failure_analysis', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='CREATIVE'),
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Name(id='mechanical_failures', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='failure_analysis', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='MECHANICAL'),
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Name(id='should_halt', ctx=Store())],
+              value=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='creative_failures', ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0)]),
+                  Compare(
+                    left=Name(id='creative_failures', ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Name(id='mechanical_failures', ctx=Load())])])),
+            Assert(
+              test=Name(id='should_halt', ctx=Load()),
+              msg=Constant(value='Should halt when creative failures >= mechanical failures')),
+            If(
+              test=Name(id='should_halt', ctx=Load()),
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='raises',
+                          ctx=Load()),
+                        args=[
+                          Name(id='HopExecutionError', ctx=Load())]))],
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Creative Failure detected ('),
+                              FormattedValue(
+                                value=Name(id='creative_failures', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' creative vs. '),
+                              FormattedValue(
+                                value=Name(id='mechanical_failures', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' mechanical). Lowering temperature will not fix this. Halting.')])]))])])])]),
+    ClassDef(
+      name='TestSpec1_3_DeprecatedFunctionsRemoved',
+      body=[
+        Expr(
+          value=Constant(value='Test Suite for Spec 1.3: Verify deprecated functions are removed')),
+        FunctionDef(
+          name='test_should_reduce_temperature_removed',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that should_reduce_temperature method is removed')),
+            Assert(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='ConstraintFailureClassifier', ctx=Load()),
+                    Constant(value='should_reduce_temperature')])),
+              msg=Constant(value='should_reduce_temperature should be removed from ConstraintFailureClassifier'))]),
+        FunctionDef(
+          name='test_get_feedback_instruction_removed',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that _get_feedback_instruction method is removed')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='resume_workflow_v16_20.ArtistGenerator.__init__')]))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='artist', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ArtistGenerator', ctx=Load()),
+                      attr='__new__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='ArtistGenerator', ctx=Load())])),
+                Assert(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='artist', ctx=Load()),
+                        Constant(value='_get_feedback_instruction')])),
+                  msg=Constant(value='_get_feedback_instruction should be removed from ArtistGenerator'))])]),
+        FunctionDef(
+          name='test_deprecated_comments_present',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify deprecation comments are in the code')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='/home/claude/resume_workflow_v16_20.py'),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='read',
+                      ctx=Load())))]),
+            Assert(
+              test=Compare(
+                left=Constant(value='# DEPRECATED: Removed should_reduce_temperature (Spec 1.3)'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())]),
+              msg=Constant(value='Should have deprecation comment for should_reduce_temperature')),
+            Assert(
+              test=Compare(
+                left=Constant(value='# DEPRECATED: Removed _get_feedback_instruction (Spec 1.3)'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())]),
+              msg=Constant(value='Should have deprecation comment for _get_feedback_instruction'))])]),
+    ClassDef(
+      name='TestSpec2_AgenticRAGActivation',
+      body=[
+        Expr(
+          value=Constant(value='Test Suite for Spec 2: Agentic RAG Feature Activation')),
+        FunctionDef(
+          name='test_phase1_uses_agentic_rag',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_agentic')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that phase1_thematic_research uses agentic RAG')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_agentic', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='search_summary'),
+                      Constant(value='thematic_analysis')],
+                    values=[
+                      Constant(value='test'),
+                      Dict()]),
+                  Constant(value=10),
+                  Call(
+                    func=Name(id='Mock', ctx=Load()))],
+                ctx=Load())),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='resume_workflow_v16_20.WebSearchRAG.__init__')]),
+                  optional_vars=Name(id='mock_init', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_init', ctx=Load()),
+                      attr='return_value',
+                      ctx=Store())],
+                  value=Constant(value=None)),
+                Assign(
+                  targets=[
+                    Name(id='rag', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='WebSearchRAG', ctx=Load()),
+                      attr='__new__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='WebSearchRAG', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='rag', ctx=Load()),
+                      attr='client',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='Mock', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='rag', ctx=Load()),
+                        attr='client',
+                        ctx=Load()),
+                      attr='agentic_search_and_analyze',
+                      ctx=Store())],
+                  value=Name(id='mock_agentic', ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='rag', ctx=Load()),
+                      attr='executor',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='Mock', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='rag', ctx=Load()),
+                      attr='_build_phase1_prompt',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='Mock', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='return_value',
+                        value=Constant(value='test prompt'))])),
+                FunctionDef(
+                  name='main_phase1',
+                  args=arguments(),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='prompt', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='rag', ctx=Load()),
+                          attr='_build_phase1_prompt',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='job desc'),
+                          Call(
+                            func=Name(id='Mock', ctx=Load()))])),
+                    Assign(
+                      targets=[
+                        Tuple(
+                          elts=[
+                            Name(id='result_dict', ctx=Store()),
+                            Name(id='calls_made', ctx=Store()),
+                            Name(id='rag_state', ctx=Store())],
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='rag', ctx=Load()),
+                            attr='client',
+                            ctx=Load()),
+                          attr='agentic_search_and_analyze',
+                          ctx=Load()),
+                        args=[
+                          Name(id='prompt', ctx=Load()),
+                          Constant(value='Phase 1: Thematic Research')])),
+                    Return(
+                      value=Tuple(
+                        elts=[
+                          Name(id='result_dict', ctx=Load()),
+                          Name(id='calls_made', ctx=Load())],
+                        ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='main_phase1', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='mock_agentic', ctx=Load()),
+                      attr='assert_called_once',
+                      ctx=Load()))),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='result', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=2)]),
+                  msg=Constant(value='Should return 2-tuple for executor')),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value=1),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=10)]),
+                  msg=Constant(value='Should return API call count'))])],
+          decorator_list=[
+            Call(
+              func=Attribute(
+                value=Name(id='patch', ctx=Load()),
+                attr='object',
+                ctx=Load()),
+              args=[
+                Name(id='GeminiWebSearchClient', ctx=Load()),
+                Constant(value='agentic_search_and_analyze')])]),
+        FunctionDef(
+          name='test_phase2_uses_agentic_rag',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_agentic')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that phase2_authenticity_patterns uses agentic RAG')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_agentic', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='patterns')],
+                    values=[
+                      List(ctx=Load())]),
+                  Constant(value=8),
+                  Call(
+                    func=Name(id='Mock', ctx=Load()))],
+                ctx=Load())),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='resume_workflow_v16_20.WebSearchRAG.__init__')]),
+                  optional_vars=Name(id='mock_init', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_init', ctx=Load()),
+                      attr='return_value',
+                      ctx=Store())],
+                  value=Constant(value=None)),
+                Assign(
+                  targets=[
+                    Name(id='rag', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='WebSearchRAG', ctx=Load()),
+                      attr='__new__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='WebSearchRAG', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='rag', ctx=Load()),
+                      attr='client',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='Mock', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='rag', ctx=Load()),
+                        attr='client',
+                        ctx=Load()),
+                      attr='agentic_search_and_analyze',
+                      ctx=Store())],
+                  value=Name(id='mock_agentic', ctx=Load())),
+                FunctionDef(
+                  name='main_phase2',
+                  args=arguments(),
+                  body=[
+                    Assign(
+                      targets=[
+                        Tuple(
+                          elts=[
+                            Name(id='result_dict', ctx=Store()),
+                            Name(id='calls_made', ctx=Store()),
+                            Name(id='rag_state', ctx=Store())],
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='rag', ctx=Load()),
+                            attr='client',
+                            ctx=Load()),
+                          attr='agentic_search_and_analyze',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='prompt'),
+                          Constant(value='Phase 2: Authenticity Patterns')])),
+                    Return(
+                      value=Tuple(
+                        elts=[
+                          Name(id='result_dict', ctx=Load()),
+                          Name(id='calls_made', ctx=Load())],
+                        ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='main_phase2', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='mock_agentic', ctx=Load()),
+                      attr='assert_called_once',
+                      ctx=Load())))])],
+          decorator_list=[
+            Call(
+              func=Attribute(
+                value=Name(id='patch', ctx=Load()),
+                attr='object',
+                ctx=Load()),
+              args=[
+                Name(id='GeminiWebSearchClient', ctx=Load()),
+                Constant(value='agentic_search_and_analyze')])]),
+        FunctionDef(
+          name='test_phase3_uses_agentic_rag',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_agentic')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that phase3_competitive_positioning uses agentic RAG')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_agentic', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='competitive_intel')],
+                    values=[
+                      Dict()]),
+                  Constant(value=12),
+                  Call(
+                    func=Name(id='Mock', ctx=Load()))],
+                ctx=Load())),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='resume_workflow_v16_20.WebSearchRAG.__init__')]),
+                  optional_vars=Name(id='mock_init', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_init', ctx=Load()),
+                      attr='return_value',
+                      ctx=Store())],
+                  value=Constant(value=None)),
+                Assign(
+                  targets=[
+                    Name(id='rag', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='WebSearchRAG', ctx=Load()),
+                      attr='__new__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='WebSearchRAG', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='rag', ctx=Load()),
+                      attr='client',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='Mock', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='rag', ctx=Load()),
+                        attr='client',
+                        ctx=Load()),
+                      attr='agentic_search_and_analyze',
+                      ctx=Store())],
+                  value=Name(id='mock_agentic', ctx=Load())),
+                FunctionDef(
+                  name='main_phase3',
+                  args=arguments(),
+                  body=[
+                    Assign(
+                      targets=[
+                        Tuple(
+                          elts=[
+                            Name(id='result_dict', ctx=Store()),
+                            Name(id='calls_made', ctx=Store()),
+                            Name(id='rag_state', ctx=Store())],
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='rag', ctx=Load()),
+                            attr='client',
+                            ctx=Load()),
+                          attr='agentic_search_and_analyze',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='prompt'),
+                          Constant(value='Phase 3: Competitive Positioning')])),
+                    Return(
+                      value=Tuple(
+                        elts=[
+                          Name(id='result_dict', ctx=Load()),
+                          Name(id='calls_made', ctx=Load())],
+                        ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='main_phase3', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='mock_agentic', ctx=Load()),
+                      attr='assert_called_once',
+                      ctx=Load())))])],
+          decorator_list=[
+            Call(
+              func=Attribute(
+                value=Name(id='patch', ctx=Load()),
+                attr='object',
+                ctx=Load()),
+              args=[
+                Name(id='GeminiWebSearchClient', ctx=Load()),
+                Constant(value='agentic_search_and_analyze')])]),
+        FunctionDef(
+          name='test_phase4_uses_agentic_rag',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_agentic')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that phase4_narrative_mining uses agentic RAG')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='mock_agentic', ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='narrative')],
+                    values=[
+                      Dict()]),
+                  Constant(value=9),
+                  Call(
+                    func=Name(id='Mock', ctx=Load()))],
+                ctx=Load())),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='resume_workflow_v16_20.WebSearchRAG.__init__')]),
+                  optional_vars=Name(id='mock_init', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_init', ctx=Load()),
+                      attr='return_value',
+                      ctx=Store())],
+                  value=Constant(value=None)),
+                Assign(
+                  targets=[
+                    Name(id='rag', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='WebSearchRAG', ctx=Load()),
+                      attr='__new__',
+                      ctx=Load()),
+                    args=[
+                      Name(id='WebSearchRAG', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='rag', ctx=Load()),
+                      attr='client',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='Mock', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='rag', ctx=Load()),
+                        attr='client',
+                        ctx=Load()),
+                      attr='agentic_search_and_analyze',
+                      ctx=Store())],
+                  value=Name(id='mock_agentic', ctx=Load())),
+                FunctionDef(
+                  name='main_phase4',
+                  args=arguments(),
+                  body=[
+                    Assign(
+                      targets=[
+                        Tuple(
+                          elts=[
+                            Name(id='result_dict', ctx=Store()),
+                            Name(id='calls_made', ctx=Store()),
+                            Name(id='rag_state', ctx=Store())],
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='rag', ctx=Load()),
+                            attr='client',
+                            ctx=Load()),
+                          attr='agentic_search_and_analyze',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='prompt'),
+                          Constant(value='Phase 4: Narrative Mining')])),
+                    Return(
+                      value=Tuple(
+                        elts=[
+                          Name(id='result_dict', ctx=Load()),
+                          Name(id='calls_made', ctx=Load())],
+                        ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='main_phase4', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='mock_agentic', ctx=Load()),
+                      attr='assert_called_once',
+                      ctx=Load())))])],
+          decorator_list=[
+            Call(
+              func=Attribute(
+                value=Name(id='patch', ctx=Load()),
+                attr='object',
+                ctx=Load()),
+              args=[
+                Name(id='GeminiWebSearchClient', ctx=Load()),
+                Constant(value='agentic_search_and_analyze')])]),
+        FunctionDef(
+          name='test_agentic_spec_comments_present',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify agentic RAG spec comments are in the code')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='/home/claude/resume_workflow_v16_20.py'),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='read',
+                      ctx=Load())))]),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='content', ctx=Load()),
+                    attr='count',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='# --- SPEC 2: ACTIVATE AGENTIC RAG ---')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=4)]),
+              msg=Constant(value='Should have 4 agentic RAG activation comments')),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='content', ctx=Load()),
+                    attr='count',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='# --- END SPEC 2 ---')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=4)]),
+              msg=Constant(value='Should have 4 agentic RAG end comments'))])]),
+    ClassDef(
+      name='TestSpec3_1_BulkRuleRegistration',
+      body=[
+        Expr(
+          value=Constant(value='Test Suite for Spec 3.1: ValidationEngine.register_rules Integration')),
+        FunctionDef(
+          name='test_register_rules_called_once',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='mock_register_rules')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that register_rules is called once with all rules')),
+            Assign(
+              targets=[
+                Name(id='engine', ctx=Store())],
+              value=Call(
+                func=Name(id='ValidationEngine', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='rules_to_register', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='ValidationRule', ctx=Load()),
+                    args=[
+                      Constant(value='TEST_1'),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='HIGH',
+                        ctx=Load()),
+                      Constant(value='test'),
+                      Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='x')]),
+                        body=Constant(value=True)),
+                      Constant(value='msg1')]),
+                  Call(
+                    func=Name(id='ValidationRule', ctx=Load()),
+                    args=[
+                      Constant(value='TEST_2'),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='MEDIUM',
+                        ctx=Load()),
+                      Constant(value='test'),
+                      Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='x')]),
+                        body=Constant(value=True)),
+                      Constant(value='msg2')]),
+                  Call(
+                    func=Name(id='ValidationRule', ctx=Load()),
+                    args=[
+                      Constant(value='TEST_3'),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='LOW',
+                        ctx=Load()),
+                      Constant(value='test'),
+                      Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='x')]),
+                        body=Constant(value=True)),
+                      Constant(value='msg3')])],
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='engine', ctx=Load()),
+                  attr='register_rules',
+                  ctx=Load()),
+                args=[
+                  Name(id='rules_to_register', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='mock_register_rules', ctx=Load()),
+                  attr='assert_called_once',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='call_args', ctx=Store())],
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='mock_register_rules', ctx=Load()),
+                    attr='call_args',
+                    ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='call_args', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)]),
+              msg=JoinedStr(
+                values=[
+                  Constant(value='Should register 3 rules in one call, got '),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='call_args', ctx=Load())]),
+                    conversion=-1)]))],
+          decorator_list=[
+            Call(
+              func=Attribute(
+                value=Name(id='patch', ctx=Load()),
+                attr='object',
+                ctx=Load()),
+              args=[
+                Name(id='ValidationEngine', ctx=Load()),
+                Constant(value='register_rules')])]),
+        FunctionDef(
+          name='test_bulk_registration_spec_comments_present',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify bulk registration spec comments are in the code')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='/home/claude/resume_workflow_v16_20.py'),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='read',
+                      ctx=Load())))]),
+            Assert(
+              test=Compare(
+                left=Constant(value='# --- SPEC 3.1: USE BULK REGISTRATION ---'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())]),
+              msg=Constant(value='Should have bulk registration activation comment')),
+            Assert(
+              test=Compare(
+                left=Constant(value='# Single bulk registration call'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())]),
+              msg=Constant(value='Should have comment about single call')),
+            Assert(
+              test=Compare(
+                left=Constant(value='self.engine.register_rules(rules_to_register)'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())]),
+              msg=Constant(value='Should call register_rules instead of register_rule'))])]),
+    ClassDef(
+      name='TestSpec3_2_StringFieldHelper',
+      body=[
+        Expr(
+          value=Constant(value='Test Suite for Spec 3.2: _validate_string_field Helper Integration')),
+        FunctionDef(
+          name='test_validate_string_field_empty',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test _validate_string_field with empty value')),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='AppTrackerQAValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='errors',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='rule_pass_counts',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='rule_fail_counts',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='row', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Company')],
+                values=[
+                  Constant(value='')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='_validate_string_field',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0),
+                  Name(id='row', ctx=Load()),
+                  Constant(value='Company'),
+                  Constant(value='R21'),
+                  Constant(value='Company')],
+                keywords=[
+                  keyword(
+                    arg='min_length',
+                    value=Constant(value=2))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='errors',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              msg=Constant(value='Should log error for empty company')),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='errors',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  slice=Constant(value='RULE_ID'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='R21')])),
+            Assert(
+              test=Compare(
+                left=Constant(value='cannot be empty'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Subscript(
+                      value=Attribute(
+                        value=Name(id='validator', ctx=Load()),
+                        attr='errors',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    slice=Constant(value='message'),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_validate_string_field_too_short',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test _validate_string_field with value too short')),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='AppTrackerQAValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='errors',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='rule_pass_counts',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='rule_fail_counts',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='row', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Job Title')],
+                values=[
+                  Constant(value='AI')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='_validate_string_field',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0),
+                  Name(id='row', ctx=Load()),
+                  Constant(value='Job Title'),
+                  Constant(value='R22'),
+                  Constant(value='Job Title')],
+                keywords=[
+                  keyword(
+                    arg='min_length',
+                    value=Constant(value=3))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='errors',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              msg=Constant(value='Should log error for short job title')),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='errors',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  slice=Constant(value='RULE_ID'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='R22')])),
+            Assert(
+              test=Compare(
+                left=Constant(value='too short'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Subscript(
+                      value=Attribute(
+                        value=Name(id='validator', ctx=Load()),
+                        attr='errors',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    slice=Constant(value='message'),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_validate_string_field_valid',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test _validate_string_field with valid value')),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='AppTrackerQAValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='errors',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='rule_pass_counts',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='rule_fail_counts',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='row', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Company')],
+                values=[
+                  Constant(value='Microsoft')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='_validate_string_field',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0),
+                  Name(id='row', ctx=Load()),
+                  Constant(value='Company'),
+                  Constant(value='R21'),
+                  Constant(value='Company')],
+                keywords=[
+                  keyword(
+                    arg='min_length',
+                    value=Constant(value=2))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='errors',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]),
+              msg=Constant(value='Should not log error for valid company')),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='rule_pass_counts',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='R21'),
+                    Constant(value=0)]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              msg=Constant(value='Should log pass'))]),
+        FunctionDef(
+          name='test_string_field_helper_spec_comments_present',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify string field helper spec comments are in the code')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='/home/claude/resume_workflow_v16_20.py'),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='read',
+                      ctx=Load())))]),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='content', ctx=Load()),
+                    attr='count',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='# --- SPEC 3.2: USE STRING FIELD HELPER ---')]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=3)]),
+              msg=Constant(value='Should have at least 3 string field helper comments')),
+            Assert(
+              test=Compare(
+                left=Constant(value='self._validate_string_field'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())]),
+              msg=Constant(value='Should use _validate_string_field helper'))])]),
+    ClassDef(
+      name='TestIntegration',
+      body=[
+        Expr(
+          value=Constant(value='Integration tests verifying all specs work together')),
+        FunctionDef(
+          name='test_all_spec_comments_present',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify all specification comments are present in refactored code')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='/home/claude/resume_workflow_v16_20.py'),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='read',
+                      ctx=Load())))]),
+            Assert(
+              test=Compare(
+                left=Constant(value='# --- SPEC 1.1: PRE-FLIGHT CONSTRAINT STRESS TEST ---'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='# --- END SPEC 1.1 ---'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='# --- SPEC 1.2: FAILURE CLASSIFICATION ---'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='# --- END SPEC 1.2 ---'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='# DEPRECATED: Removed should_reduce_temperature (Spec 1.3)'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='# DEPRECATED: Removed _get_feedback_instruction (Spec 1.3)'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='content', ctx=Load()),
+                    attr='count',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='# --- SPEC 2: ACTIVATE AGENTIC RAG ---')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=4)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='# --- SPEC 3.1: USE BULK REGISTRATION ---'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='content', ctx=Load()),
+                    attr='count',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='# --- SPEC 3.2: USE STRING FIELD HELPER ---')]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=3)]))]),
+        FunctionDef(
+          name='test_version_is_16_20',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify version is correctly set to 16_20')),
+            Assert(
+              test=Compare(
+                left=Name(id='__version__', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='16_20')]))]),
+        FunctionDef(
+          name='test_imports_still_work',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Verify all critical classes still import correctly')),
+            Assert(
+              test=Compare(
+                left=Name(id='WorkflowOrchestrator', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='ConstraintFailureClassifier', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='ValidationEngine', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='ArtistGenerator', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='PreFlightValidator', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='WebSearchRAG', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='AppTrackerQAValidator', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='main',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='__file__', ctx=Load()),
+                  Constant(value='-v'),
+                  Constant(value='--tb=short')],
+                ctx=Load())]))])])

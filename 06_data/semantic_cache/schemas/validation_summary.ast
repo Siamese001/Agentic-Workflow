@@ -1,0 +1,26 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='total_keys'),
+          Constant(value='pass_count'),
+          Constant(value='fail_count'),
+          Constant(value='not_testable_count'),
+          Constant(value='pass_rate'),
+          Constant(value='max_depth'),
+          Constant(value='single_child_count'),
+          Constant(value='domains_count'),
+          Constant(value='layers_count'),
+          Constant(value='phases_count')],
+        values=[
+          Constant(value=40),
+          Constant(value=37),
+          Constant(value=0),
+          Constant(value=3),
+          Constant(value='92.5%'),
+          Constant(value=5),
+          Constant(value=241),
+          Constant(value=12),
+          Constant(value=5),
+          Constant(value=4)]))])

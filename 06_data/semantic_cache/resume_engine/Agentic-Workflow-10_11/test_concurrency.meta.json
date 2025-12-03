@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\stress\\concurrency\\test_concurrency.py",
+    "rel_path": "test_concurrency.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "cb809f83cebcb13d97f7719c5c64a1dca8ea2570b6fb154ea95fb8372ef8dc9c",
+    "file_size": 920,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.614693
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v4.4.4 - FIXED VERSION\n======================================================\n\nFIXES FROM v4.4.3:\n- Added ASCII horizontal bar chart in Output 3 showing actual vs target signal\n- Fixed QA word count target from 1032 to 1052 (+/- 50 words)\n- Enforced exact header preservation between master and customized resumes\n- Fixed certification verbatim copy issue\n- Corrected name word count (2 words not 1)\n- Added headline customization based on role\n- Fixed executive summary to enforce 100-150 word requirement\n\nVersion: 4.4.4-FIXED\nDate: October 18, 2025\n\"\"\"\n\nimport re\nfrom typing import Dict, List, Tuple, Optional, Callable\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom enum import Enum\nimport math\n\n__version__ = \"4.4.4-FIXED\"\n__all__ = [\n    'MasterResume',\n    'SaaSRoleProfiles',\n    'AppTrackerSchema',\n    'AppTrackerQA',\n    'HyphenationRules',\n    'TemperatureMode',\n    'SignalCalibrationConfigV4',\n    'PerSectionTolerance',\n    'S",
+  "full_hash": "e8c9bdfaba2c8d6146d3d38e6e2c8c5e75a275bfc8e7f71ebc87858d177d173a",
+  "generated_at": 1764728297.0602908,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_4_4_final.py"
+}

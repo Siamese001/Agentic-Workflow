@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L2 LLM Caller for resume processing execution.\n\nProvides pure LLM execution for resume improvement workflows.\n\"\"\"\n\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\n\nclass LLMCaller:\n    \"\"\"\n    Pure LLM execution for resume processing workflows.\n\n    Handles LLM calls without planning or orchestration logic\n    for resume improvement and job alignment.\n    \"\"\"\n    \n    def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\n        self.routing_policy = routing_policy\n        self.sandbox = sandbox\n        self.meta_profile = meta_profile\n    \n    def call_llm(self, prompt: str, task_type: str = \"default\") -> str:\n        \"\"\"Executes pure LLM call for resume processing work",
+  "full_hash": "c487e1bd8b4a9ed571a2a6c203fb64f2dc254b0b0dab4d302e899022b8d1b996",
+  "generated_at": 1764728225.029846,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\llm_caller.py"
+}

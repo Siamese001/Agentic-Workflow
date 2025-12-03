@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedInCanonical.md",
+    "rel_path": "LinkedInCanonical.md",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "159a32cb5eeb2cbcaf695ec11f1cc779b341e01d704fab04c0b0d0a1fd436a07",
+    "file_size": 19047,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728339.7718651
+}

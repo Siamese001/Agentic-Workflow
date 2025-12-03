@@ -1,0 +1,1558 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='argparse')]),
+    Import(
+      names=[
+        alias(name='uuid')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='ConfigV10_7'),
+        alias(name='WorkflowContext'),
+        alias(name='MainGraphState'),
+        alias(name='FileIOError'),
+        alias(name='CostCeilingExceededError'),
+        alias(name='WorkflowError'),
+        alias(name='create_workflow_context'),
+        alias(name='cleanup_workflow_chroma_collection'),
+        alias(name='get_checkpointer')],
+      level=0),
+    ImportFrom(
+      module='agent_orchestration_v10_7',
+      names=[
+        alias(name='get_graph_app')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Constant(value='main_v10_7')])),
+    FunctionDef(
+      name='setup_logging',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load())),
+          arg(
+            arg='debug_mode',
+            annotation=Name(id='bool', ctx=Load()))],
+        defaults=[
+          Constant(value=False)]),
+      body=[
+        Expr(
+          value=Constant(value='Configure logging, now accepts a config object.')),
+        Assign(
+          targets=[
+            Name(id='log_dir', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='os', ctx=Load()),
+                attr='path',
+                ctx=Load()),
+              attr='dirname',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='logging_config',
+                  ctx=Load()),
+                attr='log_file',
+                ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='os', ctx=Load()),
+              attr='makedirs',
+              ctx=Load()),
+            args=[
+              Name(id='log_dir', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='exist_ok',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='level', ctx=Store())],
+          value=IfExp(
+            test=Name(id='debug_mode', ctx=Load()),
+            body=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='DEBUG',
+              ctx=Load()),
+            orelse=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='INFO',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='basicConfig',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='level',
+                value=Name(id='level', ctx=Load())),
+              keyword(
+                arg='format',
+                value=Constant(value='%(asctime)s - %(name)s - %(levelname)s - %(message)s')),
+              keyword(
+                arg='handlers',
+                value=List(
+                  elts=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='logging', ctx=Load()),
+                        attr='FileHandler',
+                        ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='config', ctx=Load()),
+                            attr='logging_config',
+                            ctx=Load()),
+                          attr='log_file',
+                          ctx=Load())]),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='logging', ctx=Load()),
+                        attr='StreamHandler',
+                        ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='sys', ctx=Load()),
+                          attr='stdout',
+                          ctx=Load())])],
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='metrics_log_path', ctx=Store())],
+          value=Attribute(
+            value=Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='logging_config',
+              ctx=Load()),
+            attr='metrics_log_path',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='metrics_logger', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='getLogger',
+              ctx=Load()),
+            args=[
+              Constant(value='core_v10_7.MetricsCollector')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='metrics_logger', ctx=Load()),
+              attr='setLevel',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='logging', ctx=Load()),
+                attr='INFO',
+                ctx=Load())])),
+        Try(
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='metrics_logger', ctx=Load()),
+                  attr='addHandler',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='FileHandler',
+                      ctx=Load()),
+                    args=[
+                      Name(id='metrics_log_path', ctx=Load())])]))],
+          handlers=[
+            ExceptHandler(
+              type=Tuple(
+                elts=[
+                  Name(id='IOError', ctx=Load()),
+                  Name(id='OSError', ctx=Load())],
+                ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to add file handler for metrics logger: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])]))])]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='v10.7 Logging initialized: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='logging_config',
+                        ctx=Load()),
+                      attr='log_file',
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='v10.7 Metrics logging to: '),
+                  FormattedValue(
+                    value=Name(id='metrics_log_path', ctx=Load()),
+                    conversion=-1)])]))]),
+    FunctionDef(
+      name='load_job_input',
+      args=arguments(
+        args=[
+          arg(
+            arg='path',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Load job input JSON')),
+        Try(
+          body=[
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='path', ctx=Load()),
+                      Constant(value='r')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='data', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Loaded job input: '),
+                      FormattedValue(
+                        value=Name(id='path', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Name(id='data', ctx=Load()))],
+          handlers=[
+            ExceptHandler(
+              type=Tuple(
+                elts=[
+                  Name(id='IOError', ctx=Load()),
+                  Name(id='OSError', ctx=Load())],
+                ctx=Load()),
+              name='e',
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='FileIOError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to load '),
+                          FormattedValue(
+                            value=Name(id='path', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])]))]),
+            ExceptHandler(
+              type=Attribute(
+                value=Name(id='json', ctx=Load()),
+                attr='JSONDecodeError',
+                ctx=Load()),
+              name='e',
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='FileIOError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Invalid JSON in '),
+                          FormattedValue(
+                            value=Name(id='path', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])]))])])],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    AsyncFunctionDef(
+      name='run_workflow_async',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load())),
+          arg(
+            arg='job_input_path',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='master_resume_path',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='debug_mode',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='enable_hil',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='enable_mcp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='bool', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=False),
+          Constant(value=True),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Run workflow asynchronously with v10.7 streaming and validation')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='===== Starting v10.7 Instructional Injection Workflow =====')])])),
+        Assign(
+          targets=[
+            Name(id='job_input_data', ctx=Store())],
+          value=Call(
+            func=Name(id='load_job_input', ctx=Load()),
+            args=[
+              Name(id='job_input_path', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='master_resume', ctx=Store())],
+          value=Call(
+            func=Name(id='load_job_input', ctx=Load()),
+            args=[
+              Name(id='master_resume_path', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='company', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='job_input_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='company_name'),
+              Constant(value='N/A')])),
+        Assign(
+          targets=[
+            Name(id='title', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='job_input_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='job_title'),
+              Constant(value='N/A')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Job: '),
+                  FormattedValue(
+                    value=Name(id='company', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' - '),
+                  FormattedValue(
+                    value=Name(id='title', ctx=Load()),
+                    conversion=-1)])])),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='create_workflow_context', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='db',
+                value=Attribute(
+                  value=Attribute(
+                    value=Name(id='config', ctx=Load()),
+                    attr='redis_config',
+                    ctx=Load()),
+                  attr='db',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='checkpointer', ctx=Store())],
+          value=Call(
+            func=Name(id='get_checkpointer', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='app', ctx=Store())],
+          value=Call(
+            func=Name(id='get_graph_app', ctx=Load()),
+            args=[
+              Name(id='checkpointer', ctx=Load()),
+              Name(id='context', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='enable_hil',
+                value=Name(id='enable_hil', ctx=Load())),
+              keyword(
+                arg='enable_mcp',
+                value=Name(id='enable_mcp', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='workflow_id', ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='uuid', ctx=Load()),
+                  attr='uuid4',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='context', ctx=Load()),
+              attr='workflow_id',
+              ctx=Store())],
+          value=Name(id='workflow_id', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='run_config', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='configurable')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='thread_id')],
+                values=[
+                  Name(id='workflow_id', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='initial_state', ctx=Store())],
+          value=Call(
+            func=Name(id='MainGraphState', ctx=Load()))),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='initial_state', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              attr='master_resume',
+              ctx=Store())],
+          value=Name(id='master_resume', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='initial_state', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              attr='raw_jd',
+              ctx=Store())],
+          value=Subscript(
+            value=Name(id='job_input_data', ctx=Load()),
+            slice=Constant(value='job_description'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='initial_state', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              attr='company',
+              ctx=Store())],
+          value=Subscript(
+            value=Name(id='job_input_data', ctx=Load()),
+            slice=Constant(value='company_name'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='initial_state', ctx=Load()),
+                attr='job',
+                ctx=Load()),
+              attr='job_title',
+              ctx=Store())],
+          value=Subscript(
+            value=Name(id='job_input_data', ctx=Load()),
+            slice=Constant(value='job_title'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='initial_state', ctx=Load()),
+                attr='metadata',
+                ctx=Load()),
+              attr='workflow_id',
+              ctx=Store())],
+          value=Name(id='workflow_id', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='state_dict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='initial_state', ctx=Load()),
+              attr='to_dict',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Workflow ID: '),
+                  FormattedValue(
+                    value=Name(id='workflow_id', ctx=Load()),
+                    conversion=-1)])])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='final_state_dict', ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='current_node', ctx=Store())],
+              value=Constant(value='')),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='\n--- Workflow Stream (v10.7) ---')],
+                keywords=[
+                  keyword(
+                    arg='flush',
+                    value=Constant(value=True))])),
+            AsyncFor(
+              target=Name(id='event', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='app', ctx=Load()),
+                  attr='astream_events',
+                  ctx=Load()),
+                args=[
+                  Name(id='state_dict', ctx=Load()),
+                  Name(id='run_config', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='version',
+                    value=Constant(value='v1'))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='kind', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='event', ctx=Load()),
+                    slice=Constant(value='event'),
+                    ctx=Load())),
+                If(
+                  test=Compare(
+                    left=Name(id='kind', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='on_graph_start')]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Graph execution started.')])]))]),
+                If(
+                  test=Compare(
+                    left=Name(id='kind', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='on_node_start')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='current_node', ctx=Store())],
+                      value=Subscript(
+                        value=Subscript(
+                          value=Name(id='event', ctx=Load()),
+                          slice=Constant(value='data'),
+                          ctx=Load()),
+                        slice=Constant(value='name'),
+                        ctx=Load())),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='\n--- Executing Node: '),
+                              FormattedValue(
+                                value=Name(id='current_node', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' ---')])]))]),
+                If(
+                  test=Compare(
+                    left=Name(id='kind', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='on_chat_model_stream')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='chunk', ctx=Store())],
+                      value=Subscript(
+                        value=Subscript(
+                          value=Name(id='event', ctx=Load()),
+                          slice=Constant(value='data'),
+                          ctx=Load()),
+                        slice=Constant(value='chunk'),
+                        ctx=Load())),
+                    If(
+                      test=Attribute(
+                        value=Name(id='chunk', ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='chunk', ctx=Load()),
+                                attr='content',
+                                ctx=Load())],
+                            keywords=[
+                              keyword(
+                                arg='end',
+                                value=Constant(value='')),
+                              keyword(
+                                arg='flush',
+                                value=Constant(value=True))]))])]),
+                If(
+                  test=Compare(
+                    left=Name(id='kind', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='on_node_end')]),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='current_node', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Subscript(
+                            value=Subscript(
+                              value=Name(id='event', ctx=Load()),
+                              slice=Constant(value='data'),
+                              ctx=Load()),
+                            slice=Constant(value='output'),
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='final_state_dict', ctx=Store())],
+                          value=Subscript(
+                            value=Subscript(
+                              value=Subscript(
+                                value=Name(id='event', ctx=Load()),
+                                slice=Constant(value='data'),
+                                ctx=Load()),
+                              slice=Constant(value='output'),
+                              ctx=Load()),
+                            slice=Name(id='current_node', ctx=Load()),
+                            ctx=Load()))]),
+                    If(
+                      test=Compare(
+                        left=Name(id='current_node', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='HIL_PAUSE')]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              Constant(value='\n')],
+                            keywords=[
+                              keyword(
+                                arg='flush',
+                                value=Constant(value=True))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              BinOp(
+                                left=Constant(value='='),
+                                op=Mult(),
+                                right=Constant(value=80))])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='🛑 WORKFLOW PAUSED: HUMAN INPUT REQUIRED 🛑')])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Please review and provide feedback for: '),
+                                  FormattedValue(
+                                    value=Name(id='workflow_id', ctx=Load()),
+                                    conversion=-1)])])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='warning',
+                              ctx=Load()),
+                            args=[
+                              BinOp(
+                                left=Constant(value='='),
+                                op=Mult(),
+                                right=Constant(value=80))]))])]),
+                If(
+                  test=Compare(
+                    left=Name(id='kind', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='on_graph_end')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='final_state_dict', ctx=Store())],
+                      value=Subscript(
+                        value=Subscript(
+                          value=Name(id='event', ctx=Load()),
+                          slice=Constant(value='data'),
+                          ctx=Load()),
+                        slice=Constant(value='output'),
+                        ctx=Load())),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          Constant(value='\n--- Workflow Stream Complete ---')],
+                        keywords=[
+                          keyword(
+                            arg='flush',
+                            value=Constant(value=True))]))])]),
+            If(
+              test=Compare(
+                left=Name(id='final_state_dict', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='WorkflowError', ctx=Load()),
+                    args=[
+                      Constant(value='Graph stream finished with no final state.')]))]),
+            If(
+              test=Compare(
+                left=Constant(value='REJECT_JOB'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='final_state_dict', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Workflow '),
+                          FormattedValue(
+                            value=Name(id='workflow_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' REJECTED.')])])),
+                Raise(
+                  exc=Call(
+                    func=Name(id='WorkflowError', ctx=Load()),
+                    args=[
+                      Constant(value='Workflow rejected, likely due to prompt injection.')]))]),
+            If(
+              test=Compare(
+                left=Constant(value='failed_constitution'),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='final_state_dict', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='qa'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='constitutional_review'),
+                      Dict()])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Workflow '),
+                          FormattedValue(
+                            value=Name(id='workflow_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' FAILED CONSTITUTIONAL REVIEW.')])])),
+                Raise(
+                  exc=Call(
+                    func=Name(id='WorkflowError', ctx=Load()),
+                    args=[
+                      Constant(value='Workflow rejected due to constitutional failure.')]))]),
+            Assign(
+              targets=[
+                Name(id='final_state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='MainGraphState', ctx=Load()),
+                  attr='from_dict',
+                  ctx=Load()),
+                args=[
+                  Name(id='final_state_dict', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='cache_stats', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='context', ctx=Load()),
+                    attr='cache_manager',
+                    ctx=Load()),
+                  attr='get_stats',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Cache performance: '),
+                      FormattedValue(
+                        value=Name(id='cache_stats', ctx=Load()),
+                        conversion=-1)])])),
+            Assign(
+              targets=[
+                Name(id='cost_summary', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='context', ctx=Load()),
+                    attr='cost_tracker',
+                    ctx=Load()),
+                  attr='get_cost_summary',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Total workflow cost: $'),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='cost_summary', ctx=Load()),
+                          slice=Constant(value='total_workflow_cost'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.4f')]))])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='--- Workflow Metrics Summary (v10.7) ---')])])),
+            For(
+              target=Name(id='metric', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='context', ctx=Load()),
+                    attr='metrics_collector',
+                    ctx=Load()),
+                  attr='get_summary',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='  - '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='metric', ctx=Load()),
+                              slice=Constant(value='agent_name'),
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value='::'),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='metric', ctx=Load()),
+                              slice=Constant(value='task_name'),
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' | '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='metric', ctx=Load()),
+                              slice=Constant(value='duration_ms'),
+                              ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value='ms | Success: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='metric', ctx=Load()),
+                              slice=Constant(value='success'),
+                              ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Name(id='cleanup_workflow_chroma_collection', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='status'),
+                  Constant(value='workflow_id'),
+                  Constant(value='cost'),
+                  Constant(value='cache_stats'),
+                  Constant(value='final_artifacts')],
+                values=[
+                  Constant(value='SUCCESS'),
+                  Name(id='workflow_id', ctx=Load()),
+                  Subscript(
+                    value=Name(id='cost_summary', ctx=Load()),
+                    slice=Constant(value='total_workflow_cost'),
+                    ctx=Load()),
+                  Name(id='cache_stats', ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='final_state', ctx=Load()),
+                      attr='artifacts',
+                      ctx=Load()),
+                    attr='artifacts',
+                    ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Workflow failed: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=True))])),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='status'),
+                      Constant(value='workflow_id'),
+                      Constant(value='error')],
+                    values=[
+                      Constant(value='FAILED_FATAL'),
+                      Name(id='workflow_id', ctx=Load()),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='e', ctx=Load())])]))])],
+          finalbody=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='===== v10.7 Workflow Complete =====')])]))])],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Main CLI entry point')),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='Resume Generation Engine v10.7'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='-j'),
+              Constant(value='--job')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to job_input.json'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='-m'),
+              Constant(value='--master')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to master_resume.json'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--debug')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Enable debug logging'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--no-hil')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Disable Human-in-the-Loop'))])),
+        Assign(
+          targets=[
+            Name(id='mcp_group', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_mutually_exclusive_group',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='mcp_group', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--disable-mcp')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Disable MCP wrapping even if config enables it'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='mcp_group', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--enable-mcp')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Force enable MCP wrapping even if config disables it'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='ConfigV10_7', ctx=Load()),
+                args=[
+                  Constant(value='master_config_v10_7.json')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='FATAL: Failed to load master_config_v10_7.json: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='file',
+                        value=Attribute(
+                          value=Name(id='sys', ctx=Load()),
+                          attr='stderr',
+                          ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])]),
+        Expr(
+          value=Call(
+            func=Name(id='setup_logging', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='debug_mode',
+                value=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='debug',
+                  ctx=Load()))])),
+        AnnAssign(
+          target=Name(id='mcp_toggle', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='bool', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        If(
+          test=Attribute(
+            value=Name(id='args', ctx=Load()),
+            attr='disable_mcp',
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='mcp_toggle', ctx=Store())],
+              value=Constant(value=False))],
+          orelse=[
+            If(
+              test=Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='enable_mcp',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='mcp_toggle', ctx=Store())],
+                  value=Constant(value=True))])]),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='run_workflow_async', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='config',
+                    value=Name(id='config', ctx=Load())),
+                  keyword(
+                    arg='job_input_path',
+                    value=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='job',
+                      ctx=Load())),
+                  keyword(
+                    arg='master_resume_path',
+                    value=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='master',
+                      ctx=Load())),
+                  keyword(
+                    arg='debug_mode',
+                    value=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='debug',
+                      ctx=Load())),
+                  keyword(
+                    arg='enable_hil',
+                    value=UnaryOp(
+                      op=Not(),
+                      operand=Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='no_hil',
+                        ctx=Load()))),
+                  keyword(
+                    arg='enable_mcp',
+                    value=Name(id='mcp_toggle', ctx=Load()))])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=80)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='WORKFLOW RESULT: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='status'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Workflow ID: '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='workflow_id')]),
+                    conversion=-1)])])),
+        If(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='result', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='status')]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='SUCCESS')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Total Cost: $'),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='cost'),
+                            Constant(value=0.0)]),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.4f')]))])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Cache Stats: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='cache_stats')]),
+                        conversion=-1)])]))],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Error: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='error')]),
+                        conversion=-1)])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        If(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='result', ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='SUCCESS')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0)]))],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sys', ctx=Load()),
+                  attr='exit',
+                  ctx=Load()),
+                args=[
+                  Constant(value=1)]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='main', ctx=Load())))])])

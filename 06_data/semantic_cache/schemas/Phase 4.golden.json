@@ -1,0 +1,6 @@
+{
+  "golden_content": "# =====================================================================\n\n# PHASE 4 \u2014 CRYPTOGRAPHIC FREEZE (ZERO-LOSS OVERWRITE)\n\n# =====================================================================\n\n# PURPOSE:\n\n#   Produce a deterministic, machine-verifiable cryptographic snapshot of\n\n#   the post-Phase-3 tree under <TARGET_ROOT>/ by hashing:\n\n#       \u2022 all file paths (relative)\n\n#       \u2022 all file contents (sha256)\n\n#       \u2022 all file sizes (bytes)\n#\n\n#   and writing a SINGLE freeze report INSIDE <TARGET_ROOT>/ ONLY.\n#\n\n#   Phase 4 MUST:\n\n#       \u2022 perform NO structural mutation\n\n#       \u2022 perform NO code mutation\n\n#       \u2022 never touch semantic cache contents\n\n#       \u2022 be fully deterministic and reproducible\n#\n\n#   Phase 4 MUST be runnable standalone given:\n\n#       \u2022 SSoT YAML (unified_structure_subatomic.yaml)\n\n#       \u2022 final FS state after Phase 3\n\n# =====================================================================\n\n# ======================================================",
+  "full_hash": "10acded5467e5357bc814ee394e61cdffbb9e3f3479172bec8eec05281f9f120",
+  "generated_at": 1764728346.5089447,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\Phase 4.md"
+}

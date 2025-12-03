@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.26 - EY & EARLY CAREER CUSTOMIZATION\n================================================================================\nCRITICAL v5.26 UPDATE: Implements LLM-driven customization for EY and Early Career sections\n\n\u2713 MODIFIED: SECTION_CONSTRAINTS_V521 - Removed EY/Early Career from source_requirements\n\u2713 ADDED: Bullet word tolerance \u00b110% for EY and Early Career sections  \n\u2713 ADDED: K.7A/K.7B methods for EY highlight/overview generation\n\u2713 ADDED: K.10A/K.10B methods for Early Career highlight/overview generation\n\u2713 ADDED: TraderSense K.7.5A/K.7.5B methods for verbatim copying (unchanged)\n\u2713 UPGRADED: FileRenderer to include TraderSense, EY, and Early Career sections\n\u2713 UPGRADED: PreFlightValidator to apply \u00b110% bullet tolerance for EY/Early Career\n\u2713 PROVENANCE: EY uses 1V-1T-0S, Early Career uses 0V-1T-0S tracking\n\u2713 EMPHASIS: Risk management focus for EY, quantitative foundation for Early Career\n\u2713 VALIDATION: All word count tolerances properly enforced at HOP-5/HOP",
+  "full_hash": "772d9d53005fe3d715d724d4381cd7c64627bac1121416708d2da78928f86624",
+  "generated_at": 1764728302.15985,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_26.py"
+}

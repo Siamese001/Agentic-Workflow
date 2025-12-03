@@ -1,0 +1,326 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Iterable'),
+        alias(name='Mapping')],
+      level=0),
+    FunctionDef(
+      name='_as_mapping',
+      args=arguments(
+        args=[
+          arg(
+            arg='obj',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Name(id='Mapping', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='obj', ctx=Load()))]),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Constant(value='model_dump')]),
+          body=[
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='obj', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load())))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='TypeError', ctx=Load()),
+                  body=[
+                    Pass()])])]),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Constant(value='dict')]),
+          body=[
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='obj', ctx=Load()),
+                      attr='dict',
+                      ctx=Load())))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='TypeError', ctx=Load()),
+                  body=[
+                    Pass()])])]),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load()),
+              Constant(value='__dict__')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='obj', ctx=Load()),
+                    attr='__dict__',
+                    ctx=Load())]))]),
+        Return(value=Dict())],
+      returns=Subscript(
+        value=Name(id='Mapping', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='compute_collaboration_score',
+      args=arguments(
+        args=[
+          arg(
+            arg='outputs',
+            annotation=Subscript(
+              value=Name(id='Iterable', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value="Compute a simple collaboration score over simulation outputs.\n\n    The current implementation looks for a ``golden_eval_score`` field in\n    each output's ``outcome`` mapping and returns the average. Missing\n    scores are treated as zero.\n    ")),
+        Assign(
+          targets=[
+            Name(id='total', ctx=Store())],
+          value=Constant(value=0.0)),
+        Assign(
+          targets=[
+            Name(id='count', ctx=Store())],
+          value=Constant(value=0)),
+        For(
+          target=Name(id='out', ctx=Store()),
+          iter=Name(id='outputs', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='m', ctx=Store())],
+              value=Call(
+                func=Name(id='_as_mapping', ctx=Load()),
+                args=[
+                  Name(id='out', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='outcome', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='m', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='outcome')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='m', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='average_scores')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='outcome_map', ctx=Store())],
+              value=Call(
+                func=Name(id='_as_mapping', ctx=Load()),
+                args=[
+                  Name(id='outcome', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='score', ctx=Store())],
+              value=Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='outcome_map', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='golden_eval_score')]),
+                      Constant(value=0.0)])])),
+            AugAssign(
+              target=Name(id='total', ctx=Store()),
+              op=Add(),
+              value=Name(id='score', ctx=Load())),
+            AugAssign(
+              target=Name(id='count', ctx=Store()),
+              op=Add(),
+              value=Constant(value=1))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='count', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=0.0))]),
+        Return(
+          value=BinOp(
+            left=Name(id='total', ctx=Load()),
+            op=Div(),
+            right=Call(
+              func=Name(id='float', ctx=Load()),
+              args=[
+                Name(id='count', ctx=Load())])))],
+      returns=Name(id='float', ctx=Load())),
+    FunctionDef(
+      name='compute_conflict_index',
+      args=arguments(
+        args=[
+          arg(
+            arg='outputs',
+            annotation=Subscript(
+              value=Name(id='Iterable', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Compute a heuristic conflict index from simulation outputs.\n\n    We treat any ``correction_iterations`` > 0 or explicit\n    ``agent_conflict_count`` > 0 as evidence of conflict and return the\n    fraction of outputs exhibiting such signals.\n    ')),
+        Assign(
+          targets=[
+            Name(id='conflict', ctx=Store())],
+          value=Constant(value=0)),
+        Assign(
+          targets=[
+            Name(id='total', ctx=Store())],
+          value=Constant(value=0)),
+        For(
+          target=Name(id='out', ctx=Store()),
+          iter=Name(id='outputs', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='m', ctx=Store())],
+              value=Call(
+                func=Name(id='_as_mapping', ctx=Load()),
+                args=[
+                  Name(id='out', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='outcome', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='m', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='outcome')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='outcome_map', ctx=Store())],
+              value=Call(
+                func=Name(id='_as_mapping', ctx=Load()),
+                args=[
+                  Name(id='outcome', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='corr_iters', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='outcome_map', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='correction_iterations'),
+                          Constant(value=0)]),
+                      Constant(value=0)])])),
+            Assign(
+              targets=[
+                Name(id='agent_conflicts', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='m', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='agent_conflict_count'),
+                          Constant(value=0)]),
+                      Constant(value=0)])])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Name(id='corr_iters', ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0)]),
+                  Compare(
+                    left=Name(id='agent_conflicts', ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0)])]),
+              body=[
+                AugAssign(
+                  target=Name(id='conflict', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            AugAssign(
+              target=Name(id='total', ctx=Store()),
+              op=Add(),
+              value=Constant(value=1))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='total', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=0.0))]),
+        Return(
+          value=BinOp(
+            left=Name(id='conflict', ctx=Load()),
+            op=Div(),
+            right=Call(
+              func=Name(id='float', ctx=Load()),
+              args=[
+                Name(id='total', ctx=Load())])))],
+      returns=Name(id='float', ctx=Load()))])

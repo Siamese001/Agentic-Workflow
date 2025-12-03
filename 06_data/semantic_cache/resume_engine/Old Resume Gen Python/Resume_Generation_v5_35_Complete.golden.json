@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.35 - COMPREHENSIVE HYPHENATION & ENHANCED QA\n\nv5.35 CHANGES FROM v5.34:\n\u2713 REPLACED: Simple hyphenation rules with comprehensive Hyphenation_Rules.json (44+ terms)\n\u2713 ENHANCED: TextSanitizer with 7-layer sanitization suite:\n  - Unicode normalization (smart quotes, em-dashes, ellipsis)\n  - Punctuation spacing correction\n  - Markdown artifact removal (asterisks, underscores, backticks)\n  - Corporate jargon simplification (utilize\u2192use, leverage\u2192use)\n  - Filler word reduction (In order to\u2192To, Due to the fact that\u2192Because)\n\u2713 ADDED: EnhancedQAValidator with bullet provenance tracking (M/D/N notation)\n\u2713 ADDED: JDAlignmentScorer for skills/competencies ordering by JD relevance\n\u2713 ADDED: QA tables for Unify bullets (provenance + word count adherence)\n\u2713 ADDED: QA tables for IBM bullets (provenance + word count adherence)\n\u2713 ADDED: Skills (1-12) ordered by JD alignment score\n\u2713 ADDED: Competencies (6) ordered by JD alignment score\n\u2713 ADDED: Temperature tracking per secti",
+  "full_hash": "5e267994f4ad1189a212a694f281eebc8bf1a4a39cc9e680517c9febe9a43659",
+  "generated_at": 1764728303.6820345,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_35_Complete.py"
+}

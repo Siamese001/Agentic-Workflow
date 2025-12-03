@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - assess_tests_risk\nImplements L5 Safety/Policy Layer for assess tests risk operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass AssessTestsRiskSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass AssessTestsRiskSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass AssessTestsRiskSafetyResult:\n    \"\"\"L5 Safety result with full type safety\"\"",
+  "full_hash": "677110f0616f831728080b71a5d88cc0b4140a6883d059e3d45685c455f12828",
+  "generated_at": 1764728354.96825,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\safe-layer\\safety-phase\\check-tests-rules\\semantic\\adjust-scores\\assess_tests_risk.py"
+}

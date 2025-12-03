@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Monolith\\TEST_FINDINGS_REPORT.md",
+    "rel_path": "TEST_FINDINGS_REPORT.md",
+    "root_name": "resume_engine/Monolith",
+    "file_hash": "47ee9307dad89753456eabc7ede20c3812bac0315e370fac13940e17415d818b",
+    "file_size": 8836,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728233.13369
+}

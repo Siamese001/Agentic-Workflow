@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nPhase 0.5 Semantic Cache Rebuild - Main Execution Script\n\nOrchestrates the complete semantic cache rebuild process for both Resume Engine (RG)\nand Outreach Engine (LIC) archives with strict engine separation and zero-loss guarantee.\n\nUsage:\n    python scripts/run_phase_0_5_semantic_cache.py [--dry-run] [--validate-only] [--engine RG|LIC]\n\"\"\"\n\nimport argparse\nimport json\nimport logging\nimport sys\nimport time\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, List, Optional, Any\n\n# Add project paths for imports\nproject_root = Path(__file__).parent.parent\nsys.path.append(str(project_root / \"schemas\"))\nsys.path.append(str(project_root / \"runtime\"))\n\nfrom semantic_lineage import EngineType, GlobalCacheReport\nfrom semantic_scanner import SemanticScanner, ScanConfiguration\n\n\nclass Phase05Orchestrator:\n    \"\"\"Main orchestrator for Phase 0.5 semantic cache rebuild\"\"\"\n    \n    def __init__(self, config: ScanConfiguration):\n        self.conf",
+  "full_hash": "ca6ee59d3080a889b885b9e9e7a0456f0c0f8147502161f174a2e038fe5a56f3",
+  "generated_at": 1764728346.2166495,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\run_phase_0_5_semantic_cache.py"
+}

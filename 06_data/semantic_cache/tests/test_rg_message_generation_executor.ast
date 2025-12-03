@@ -1,0 +1,2751 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Executes message generation to create high-impact executive outreach with archetype-specific temperature control.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='time')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='l4.schema.outreach_schema',
+      names=[
+        alias(name='OutreachRAGResult')],
+      level=0),
+    ImportFrom(
+      module='runtime.telemetry_bus',
+      names=[
+        alias(name='get_telemetry_bus')],
+      level=0),
+    ImportFrom(
+      module='runtime.execution_budget_manager',
+      names=[
+        alias(name='get_budget_manager')],
+      level=0),
+    ClassDef(
+      name='MessageSection',
+      body=[
+        Expr(
+          value=Constant(value='Captures generated section with temperature control for executive message optimization.')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='temperature_used', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tokens_used', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MessageResult',
+      body=[
+        Expr(
+          value=Constant(value='Contains generated executive message with temperature schedule and evidence sources.')),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='MessageSection', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='temperature_schedule', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='signals_used', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='OutreachRAGResult', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_tokens', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='generation_strategy', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='sequential'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='GenerationContext',
+      body=[
+        Expr(
+          value=Constant(value='Provides generation context with archetype parameters for executive message optimization.')),
+        AnnAssign(
+          target=Name(id='mission_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='archetype', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_role', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_company', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='value_proposition', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='personalization_points', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='constraints', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MessageGenerationExecutor',
+      body=[
+        Expr(
+          value=Constant(value='Executes message generation with archetype-specific temperature control to maximize executive reply rates.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='llm_client',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='safety_validator',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='routing_policy',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='budget_manager',
+                annotation=Name(id='Any', ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Initializes executor with LLM client, safety validator, routing policy, and budget manager for archetype-optimized message generation.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='llm_client',
+                  ctx=Store())],
+              value=Name(id='llm_client', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='safety_validator',
+                  ctx=Store())],
+              value=Name(id='safety_validator', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='routing_policy',
+                  ctx=Store())],
+              value=Name(id='routing_policy', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='budget_manager',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='budget_manager', ctx=Load()),
+                  Call(
+                    func=Name(id='get_budget_manager', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='telemetry_bus',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='get_telemetry_bus', ctx=Load())))]),
+        FunctionDef(
+          name='generate_message',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message_plan',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='generation_context',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='research_results',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='OutreachRAGResult', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generates high-impact executive message using archetype-specific temperature control.')),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='telemetry_bus',
+                        ctx=Load()),
+                      attr='record_event',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='phase_start'),
+                      Constant(value='L2'),
+                      Dict(
+                        keys=[
+                          Constant(value='workflow_type'),
+                          Constant(value='stage')],
+                        values=[
+                          Constant(value='outreach'),
+                          Constant(value='message_generation')])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Assign(
+              targets=[
+                Name(id='estimated_tokens', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_estimate_generation_tokens',
+                  ctx=Load()),
+                args=[
+                  Name(id='message_plan', ctx=Load()),
+                  Name(id='generation_context', ctx=Load()),
+                  Name(id='research_results', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='budget_manager',
+                      ctx=Load()),
+                    attr='check_token_budget',
+                    ctx=Load()))),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='MessageResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='message',
+                        value=Constant(value='')),
+                      keyword(arg='sections', value=Dict()),
+                      keyword(arg='temperature_schedule', value=Dict()),
+                      keyword(
+                        arg='signals_used',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='error'),
+                            Constant(value='estimated_tokens'),
+                            Constant(value='workflow_type')],
+                          values=[
+                            Constant(value='token_budget_exceeded'),
+                            Name(id='estimated_tokens', ctx=Load()),
+                            Constant(value='outreach')]))]))]),
+            Assign(
+              targets=[
+                Name(id='temperature_schedule', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='message_plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='temperature_schedule'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='subject_plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='message_plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='subject_plan'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='hook_plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='message_plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='hook_plan'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='value_plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='message_plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='value_plan'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='cta_plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='message_plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='cta_plan'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='signature_plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='message_plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='signature_plan'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='signals_used', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_select_signals',
+                  ctx=Load()),
+                args=[
+                  Name(id='research_results', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='signal_context', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_signal_context',
+                  ctx=Load()),
+                args=[
+                  Name(id='signals_used', ctx=Load())])),
+            AnnAssign(
+              target=Name(id='sections', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='MessageSection', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='subject_temperature', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='subject_plan', ctx=Load()),
+                    Constant(value='temperature')]),
+                body=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='subject_plan', ctx=Load()),
+                    Constant(value='temperature'),
+                    Constant(value=0.7)]),
+                orelse=Call(
+                  func=Attribute(
+                    value=Name(id='temperature_schedule', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='subject'),
+                    Constant(value=0.7)]))),
+            Assign(
+              targets=[
+                Name(id='subject_section', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_section',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_name',
+                    value=Constant(value='subject')),
+                  keyword(
+                    arg='plan',
+                    value=Name(id='subject_plan', ctx=Load())),
+                  keyword(
+                    arg='temperature',
+                    value=Name(id='subject_temperature', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='generation_context', ctx=Load())),
+                  keyword(
+                    arg='signal_context',
+                    value=Name(id='signal_context', ctx=Load())),
+                  keyword(
+                    arg='reasoning_metadata',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='message_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='metadata'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='subject'),
+                  ctx=Store())],
+              value=Name(id='subject_section', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='hook_temperature', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='hook_plan', ctx=Load()),
+                    Constant(value='temperature')]),
+                body=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='hook_plan', ctx=Load()),
+                    Constant(value='temperature'),
+                    Constant(value=0.9)]),
+                orelse=Call(
+                  func=Attribute(
+                    value=Name(id='temperature_schedule', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='hook'),
+                    Constant(value=0.9)]))),
+            Assign(
+              targets=[
+                Name(id='hook_section', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_section',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_name',
+                    value=Constant(value='hook')),
+                  keyword(
+                    arg='plan',
+                    value=Name(id='hook_plan', ctx=Load())),
+                  keyword(
+                    arg='temperature',
+                    value=Name(id='hook_temperature', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='generation_context', ctx=Load())),
+                  keyword(
+                    arg='signal_context',
+                    value=Name(id='signal_context', ctx=Load())),
+                  keyword(
+                    arg='reasoning_metadata',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='message_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='metadata'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='hook'),
+                  ctx=Store())],
+              value=Name(id='hook_section', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='value_temperature', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='value_plan', ctx=Load()),
+                    Constant(value='temperature')]),
+                body=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='value_plan', ctx=Load()),
+                    Constant(value='temperature'),
+                    Constant(value=0.8)]),
+                orelse=Call(
+                  func=Attribute(
+                    value=Name(id='temperature_schedule', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='value'),
+                    Constant(value=0.8)]))),
+            Assign(
+              targets=[
+                Name(id='value_section', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_section',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_name',
+                    value=Constant(value='value')),
+                  keyword(
+                    arg='plan',
+                    value=Name(id='value_plan', ctx=Load())),
+                  keyword(
+                    arg='temperature',
+                    value=Name(id='value_temperature', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='generation_context', ctx=Load())),
+                  keyword(
+                    arg='signal_context',
+                    value=Name(id='signal_context', ctx=Load())),
+                  keyword(
+                    arg='reasoning_metadata',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='message_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='metadata'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='value'),
+                  ctx=Store())],
+              value=Name(id='value_section', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='cta_temperature', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='cta_plan', ctx=Load()),
+                    Constant(value='temperature')]),
+                body=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='cta_plan', ctx=Load()),
+                    Constant(value='temperature'),
+                    Constant(value=0.6)]),
+                orelse=Call(
+                  func=Attribute(
+                    value=Name(id='temperature_schedule', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='cta'),
+                    Constant(value=0.6)]))),
+            Assign(
+              targets=[
+                Name(id='cta_section', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_section',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_name',
+                    value=Constant(value='cta')),
+                  keyword(
+                    arg='plan',
+                    value=Name(id='cta_plan', ctx=Load())),
+                  keyword(
+                    arg='temperature',
+                    value=Name(id='cta_temperature', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='generation_context', ctx=Load())),
+                  keyword(
+                    arg='signal_context',
+                    value=Name(id='signal_context', ctx=Load())),
+                  keyword(
+                    arg='reasoning_metadata',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='message_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='metadata'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='cta'),
+                  ctx=Store())],
+              value=Name(id='cta_section', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='signature_temperature', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='signature_plan', ctx=Load()),
+                    Constant(value='temperature')]),
+                body=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='signature_plan', ctx=Load()),
+                    Constant(value='temperature'),
+                    Constant(value=0.3)]),
+                orelse=Call(
+                  func=Attribute(
+                    value=Name(id='temperature_schedule', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='signature'),
+                    Constant(value=0.3)]))),
+            Assign(
+              targets=[
+                Name(id='signature_section', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_section',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_name',
+                    value=Constant(value='signature')),
+                  keyword(
+                    arg='plan',
+                    value=Name(id='signature_plan', ctx=Load())),
+                  keyword(
+                    arg='temperature',
+                    value=Name(id='signature_temperature', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='generation_context', ctx=Load())),
+                  keyword(
+                    arg='signal_context',
+                    value=Constant(value='')),
+                  keyword(
+                    arg='reasoning_metadata',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='message_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='metadata'),
+                        Dict()]))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='sections', ctx=Load()),
+                  slice=Constant(value='signature'),
+                  ctx=Store())],
+              value=Name(id='signature_section', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='message', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_assemble_message',
+                  ctx=Load()),
+                args=[
+                  Name(id='sections', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='total_tokens', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Attribute(
+                      value=Name(id='s', ctx=Load()),
+                      attr='tokens_used',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='sections', ctx=Load()),
+                            attr='values',
+                            ctx=Load())),
+                        is_async=0)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='budget_manager',
+                    ctx=Load()),
+                  attr='record_tokens',
+                  ctx=Load()),
+                args=[
+                  Constant(value='message_generation'),
+                  Name(id='total_tokens', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='actual_temperature_schedule', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='section_name', ctx=Store()),
+                  Name(id='section', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='sections', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='actual_temperature_schedule', ctx=Load()),
+                      slice=Name(id='section_name', ctx=Load()),
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='section', ctx=Load()),
+                    attr='temperature_used',
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='generation_strategy', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='message_plan', ctx=Load()),
+                  Constant(value='generation_strategy'),
+                  Constant(value='sequential')])),
+            If(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='generation_strategy', ctx=Load()),
+                  Constant(value='_mock_name')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='generation_strategy', ctx=Store())],
+                  value=Constant(value='sequential'))]),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='safety_validator',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='safety_result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='safety_validator',
+                        ctx=Load()),
+                      attr='validate_layer_input',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='L2'),
+                      Name(id='message', ctx=Load()),
+                      Name(id='generation_context', ctx=Load())])),
+                If(
+                  test=Attribute(
+                    value=Name(id='safety_result', ctx=Load()),
+                    attr='findings',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='metadata', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='mission_id'),
+                          Constant(value='archetype'),
+                          Constant(value='signal_count'),
+                          Constant(value='safety_check'),
+                          Constant(value='safety_violations')],
+                        values=[
+                          Attribute(
+                            value=Name(id='generation_context', ctx=Load()),
+                            attr='mission_id',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='generation_context', ctx=Load()),
+                            attr='archetype',
+                            ctx=Load()),
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='signals_used', ctx=Load())]),
+                          Constant(value='failed'),
+                          ListComp(
+                            elt=Attribute(
+                              value=Name(id='f', ctx=Load()),
+                              attr='__dict__',
+                              ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='f', ctx=Store()),
+                                iter=Attribute(
+                                  value=Name(id='safety_result', ctx=Load()),
+                                  attr='findings',
+                                  ctx=Load()),
+                                is_async=0)])]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='metadata', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='mission_id'),
+                          Constant(value='archetype'),
+                          Constant(value='signal_count'),
+                          Constant(value='safety_check')],
+                        values=[
+                          Attribute(
+                            value=Name(id='generation_context', ctx=Load()),
+                            attr='mission_id',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='generation_context', ctx=Load()),
+                            attr='archetype',
+                            ctx=Load()),
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='signals_used', ctx=Load())]),
+                          Constant(value='passed')]))])],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='mission_id'),
+                      Constant(value='archetype'),
+                      Constant(value='signal_count')],
+                    values=[
+                      Attribute(
+                        value=Name(id='generation_context', ctx=Load()),
+                        attr='mission_id',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='generation_context', ctx=Load()),
+                        attr='archetype',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='signals_used', ctx=Load())])]))]),
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='telemetry_bus',
+                        ctx=Load()),
+                      attr='record_event',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='phase_end'),
+                      Constant(value='L2'),
+                      Dict(
+                        keys=[
+                          Constant(value='workflow_type'),
+                          Constant(value='stage'),
+                          Constant(value='success'),
+                          Constant(value='duration')],
+                        values=[
+                          Constant(value='outreach'),
+                          Constant(value='message_generation'),
+                          Constant(value=True),
+                          BinOp(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='time', ctx=Load()),
+                                attr='time',
+                                ctx=Load())),
+                            op=Sub(),
+                            right=Name(id='start_time', ctx=Load()))])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Return(
+              value=Call(
+                func=Name(id='MessageResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='message',
+                    value=Name(id='message', ctx=Load())),
+                  keyword(
+                    arg='sections',
+                    value=Name(id='sections', ctx=Load())),
+                  keyword(
+                    arg='temperature_schedule',
+                    value=Name(id='actual_temperature_schedule', ctx=Load())),
+                  keyword(
+                    arg='signals_used',
+                    value=Name(id='signals_used', ctx=Load())),
+                  keyword(
+                    arg='total_tokens',
+                    value=Name(id='total_tokens', ctx=Load())),
+                  keyword(
+                    arg='generation_strategy',
+                    value=Name(id='generation_strategy', ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Name(id='metadata', ctx=Load()))]))],
+          returns=Name(id='MessageResult', ctx=Load())),
+        FunctionDef(
+          name='_generate_section',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='section_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate a single message section.\n        \n        Uses runtime LLM client with specified temperature.\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_section_prompt',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='section_name',
+                    value=Name(id='section_name', ctx=Load())),
+                  keyword(
+                    arg='plan',
+                    value=Name(id='plan', ctx=Load())),
+                  keyword(
+                    arg='ctx',
+                    value=Name(id='ctx', ctx=Load())),
+                  keyword(
+                    arg='signal_context',
+                    value=Name(id='signal_context', ctx=Load())),
+                  keyword(
+                    arg='reasoning_metadata',
+                    value=Name(id='reasoning_metadata', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='selected_model', ctx=Store())],
+              value=Constant(value=None)),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='routing_policy',
+                ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    ImportFrom(
+                      module='l1.outreach_dataclasses',
+                      names=[
+                        alias(name='ArchetypeType')],
+                      level=0),
+                    Assign(
+                      targets=[
+                        Name(id='archetype', ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='ctx', ctx=Load()),
+                          Constant(value='archetype'),
+                          Constant(value='EXECUTIVE')])),
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='archetype', ctx=Load()),
+                          Name(id='str', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='archetype_map', ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='C_LEVEL'),
+                              Constant(value='EXECUTIVE'),
+                              Constant(value='SENIOR_TA'),
+                              Constant(value='RECRUITER')],
+                            values=[
+                              Attribute(
+                                value=Name(id='ArchetypeType', ctx=Load()),
+                                attr='C_LEVEL',
+                                ctx=Load()),
+                              Attribute(
+                                value=Name(id='ArchetypeType', ctx=Load()),
+                                attr='EXECUTIVE',
+                                ctx=Load()),
+                              Attribute(
+                                value=Name(id='ArchetypeType', ctx=Load()),
+                                attr='SENIOR_TA',
+                                ctx=Load()),
+                              Attribute(
+                                value=Name(id='ArchetypeType', ctx=Load()),
+                                attr='RECRUITER',
+                                ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='archetype', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='archetype_map', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='archetype', ctx=Load()),
+                                  attr='upper',
+                                  ctx=Load())),
+                              Attribute(
+                                value=Name(id='ArchetypeType', ctx=Load()),
+                                attr='EXECUTIVE',
+                                ctx=Load())]))]),
+                    Assign(
+                      targets=[
+                        Name(id='selected_model', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='routing_policy',
+                            ctx=Load()),
+                          attr='select_model',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='stage',
+                            value=Constant(value='message_generation')),
+                          keyword(
+                            arg='archetype',
+                            value=Name(id='archetype', ctx=Load())),
+                          keyword(
+                            arg='complexity',
+                            value=Constant(value='medium')),
+                          keyword(
+                            arg='budget_manager',
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='budget_manager',
+                              ctx=Load()))]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='selected_model', ctx=Store())],
+                          value=Constant(value=None))])])]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='selected_model', ctx=Load()),
+                  Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='llm_client',
+                        ctx=Load()),
+                      Constant(value='generate_with_model')])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='llm_client',
+                        ctx=Load()),
+                      attr='generate_with_model',
+                      ctx=Load()),
+                    args=[
+                      Name(id='prompt', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='model',
+                        value=Name(id='selected_model', ctx=Load()))]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='content', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='llm_client',
+                        ctx=Load()),
+                      attr='generate',
+                      ctx=Load()),
+                    args=[
+                      Name(id='prompt', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='content_text', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load()),
+                  Constant(value='content'),
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='tokens_used', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='content_text', ctx=Load()),
+                        attr='split',
+                        ctx=Load()))]),
+                op=Mult(),
+                right=Constant(value=2))),
+            Return(
+              value=Call(
+                func=Name(id='MessageSection', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='section_name', ctx=Load())),
+                  keyword(
+                    arg='content',
+                    value=Name(id='content', ctx=Load())),
+                  keyword(
+                    arg='temperature_used',
+                    value=Name(id='temperature', ctx=Load())),
+                  keyword(
+                    arg='tokens_used',
+                    value=Name(id='tokens_used', ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='plan')],
+                      values=[
+                        Name(id='plan', ctx=Load())]))]))],
+          returns=Name(id='MessageSection', ctx=Load())),
+        FunctionDef(
+          name='_build_section_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='section_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Build prompt for section generation.')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='prompts', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='subject'),
+                  Constant(value='hook'),
+                  Constant(value='value'),
+                  Constant(value='cta'),
+                  Constant(value='signature')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_build_subject_prompt',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_build_hook_prompt',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_build_value_prompt',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_build_cta_prompt',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_build_signature_prompt',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='builder', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prompts', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='section_name', ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_build_generic_prompt',
+                    ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='builder', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='ctx', ctx=Load()),
+                  Name(id='signal_context', ctx=Load()),
+                  Name(id='reasoning_metadata', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_build_reasoning_instructions',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='section_name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Build reasoning-intensity instructions based on metadata.')),
+            Assign(
+              targets=[
+                Name(id='reasoning_intensity', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='reasoning_metadata', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='reasoning_intensity'),
+                  Constant(value='low')])),
+            Assign(
+              targets=[
+                Name(id='cot_depth', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='reasoning_metadata', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='cot_depth'),
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='tot_branches', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='reasoning_metadata', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='tot_branches'),
+                  Constant(value=1)])),
+            If(
+              test=Compare(
+                left=Name(id='section_name', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='value'),
+                      Constant(value='hook')],
+                    ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='reasoning_intensity', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='extreme')]),
+                  body=[
+                    Return(
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='\nREASONING INTENSITY: EXTREME\n- Use multi-step justification with explicit reasoning chains\n- Provide 3-4 distinct value dimensions with specific examples\n- Include strategic implications and business impact quantification\n- Apply Chain-of-Thought depth: '),
+                          FormattedValue(
+                            value=Name(id='cot_depth', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' steps, Tree-of-Thought branches: '),
+                          FormattedValue(
+                            value=Name(id='tot_branches', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='\n- Emphasize precision, specificity, and quantifiable outcomes')]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='reasoning_intensity', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='high')]),
+                      body=[
+                        Return(
+                          value=JoinedStr(
+                            values=[
+                              Constant(value='\nREASONING INTENSITY: HIGH  \n- Use structured reasoning with clear justification steps\n- Provide 2-3 value dimensions with concrete examples\n- Include business impact and team outcomes\n- Apply Chain-of-Thought depth: '),
+                              FormattedValue(
+                                value=Name(id='cot_depth', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' steps, Tree-of-Thought branches: '),
+                              FormattedValue(
+                                value=Name(id='tot_branches', ctx=Load()),
+                                conversion=-1),
+                              Constant(value='\n- Focus on strategic alignment and specific metrics')]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='reasoning_intensity', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='medium')]),
+                          body=[
+                            Return(
+                              value=JoinedStr(
+                                values=[
+                                  Constant(value='\nREASONING INTENSITY: MEDIUM\n- Use clear reasoning with some justification\n- Provide 1-2 key value points with brief examples\n- Apply Chain-of-Thought depth: '),
+                                  FormattedValue(
+                                    value=Name(id='cot_depth', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' steps, Tree-of-Thought branches: '),
+                                  FormattedValue(
+                                    value=Name(id='tot_branches', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='\n- Balance conciseness with informative content')]))])])])],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='section_name', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='subject'),
+                          Constant(value='cta')],
+                        ctx=Load())]),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='reasoning_intensity', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='extreme')]),
+                      body=[
+                        Return(
+                          value=Constant(value='\nREASONING INTENSITY: EXTREME\n- Use precise, strategic language that reflects executive-level thinking\n- Emphasize high-value partnership or strategic opportunity framing'))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='reasoning_intensity', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='high')]),
+                          body=[
+                            Return(
+                              value=Constant(value='\nREASONING INTENSITY: HIGH\n- Use professional, benefit-oriented language\n- Emphasize business value and collaboration'))])])],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='section_name', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='signature')]),
+                      body=[
+                        If(
+                          test=Compare(
+                            left=Name(id='reasoning_intensity', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='extreme')]),
+                          body=[
+                            Return(
+                              value=Constant(value='\nREASONING INTENSITY: EXTREME\n- Include strategic partnership language in signature'))])])])]),
+            Return(
+              value=Constant(value=''))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_build_subject_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Build prompt for subject line generation.')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='reasoning_instructions', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_reasoning_instructions',
+                  ctx=Load()),
+                args=[
+                  Name(id='reasoning_metadata', ctx=Load()),
+                  Constant(value='subject')])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Generate a compelling email subject line for outreach.\n\nTarget: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_role',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' at '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_company',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nArchetype: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='archetype',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nValue Proposition: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='value_proposition',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nPlanning guidance: '),
+                  FormattedValue(
+                    value=Name(id='plan', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='signal_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='reasoning_instructions', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nGenerate a concise, engaging subject line (max 60 characters):')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_build_hook_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Build prompt for hook/opening generation.')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='personalization', ctx=Store())],
+              value=IfExp(
+                test=Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='personalization_points',
+                  ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='personalization_points',
+                      ctx=Load())]),
+                orelse=Constant(value='None specified'))),
+            Assign(
+              targets=[
+                Name(id='reasoning_instructions', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_reasoning_instructions',
+                  ctx=Load()),
+                args=[
+                  Name(id='reasoning_metadata', ctx=Load()),
+                  Constant(value='hook')])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Generate an engaging opening hook for outreach email.\n\nTarget: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_role',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' at '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_company',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nArchetype: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='archetype',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nPersonalization points: '),
+                  FormattedValue(
+                    value=Name(id='personalization', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nPlanning guidance: '),
+                  FormattedValue(
+                    value=Name(id='plan', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='signal_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='reasoning_instructions', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nGenerate a compelling, personalized opening (2-3 sentences):')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_build_value_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Build prompt for value proposition body generation.')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='reasoning_instructions', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_reasoning_instructions',
+                  ctx=Load()),
+                args=[
+                  Name(id='reasoning_metadata', ctx=Load()),
+                  Constant(value='value')])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Generate the value proposition body for outreach email.\n\nTarget: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_role',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' at '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_company',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nArchetype: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='archetype',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nCore value proposition: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='value_proposition',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nPlanning guidance: '),
+                  FormattedValue(
+                    value=Name(id='plan', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='signal_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='reasoning_instructions', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nGenerate a compelling value proposition (2-4 sentences):')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_build_cta_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Build prompt for call-to-action generation.')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='reasoning_instructions', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_reasoning_instructions',
+                  ctx=Load()),
+                args=[
+                  Name(id='reasoning_metadata', ctx=Load()),
+                  Constant(value='cta')])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Generate a clear call-to-action for outreach email.\n\nTarget: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_role',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' at '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_company',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nArchetype: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='archetype',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nPlanning guidance: '),
+                  FormattedValue(
+                    value=Name(id='plan', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='reasoning_instructions', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nGenerate a low-friction, specific call-to-action (1-2 sentences):')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_build_signature_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Build prompt for signature generation.')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='reasoning_instructions', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_reasoning_instructions',
+                  ctx=Load()),
+                args=[
+                  Name(id='reasoning_metadata', ctx=Load()),
+                  Constant(value='signature')])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Generate a professional email signature.\n\nPlanning guidance: '),
+                  FormattedValue(
+                    value=Name(id='plan', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='reasoning_instructions', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nGenerate a clean, professional signature:')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_build_generic_prompt',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='signal_context',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reasoning_metadata',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Build generic prompt for unknown sections.')),
+            If(
+              test=Compare(
+                left=Name(id='reasoning_metadata', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_metadata', ctx=Store())],
+                  value=Dict())]),
+            Assign(
+              targets=[
+                Name(id='reasoning_instructions', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_reasoning_instructions',
+                  ctx=Load()),
+                args=[
+                  Name(id='reasoning_metadata', ctx=Load()),
+                  Constant(value='generic')])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Generate content for outreach email section.\n\nTarget: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_role',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' at '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='ctx', ctx=Load()),
+                      attr='target_company',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\nPlanning guidance: '),
+                  FormattedValue(
+                    value=Name(id='plan', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='signal_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Name(id='reasoning_instructions', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\nGenerate appropriate content:')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_select_signals',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='research_data',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='OutreachRAGResult', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='max_signals',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=3)]),
+          body=[
+            Expr(
+              value=Constant(value='Select top signals from research data.')),
+            Assign(
+              targets=[
+                Name(id='candidates', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='r', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='research_data', ctx=Load()),
+                    ifs=[
+                      Attribute(
+                        value=Name(id='r', ctx=Load()),
+                        attr='is_signal_candidate',
+                        ctx=Load())],
+                    is_async=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='candidates', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='r')]),
+                      body=Attribute(
+                        value=Name(id='r', ctx=Load()),
+                        attr='signal_score',
+                        ctx=Load()))),
+                  keyword(
+                    arg='reverse',
+                    value=Constant(value=True))])),
+            Return(
+              value=Subscript(
+                value=Name(id='candidates', ctx=Load()),
+                slice=Slice(
+                  upper=Name(id='max_signals', ctx=Load())),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='OutreachRAGResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_build_signal_context',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='signals',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='OutreachRAGResult', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Build context string from selected signals.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='signals', ctx=Load())),
+              body=[
+                Return(
+                  value=Constant(value=''))]),
+            Assign(
+              targets=[
+                Name(id='lines', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Relevant signals to incorporate:')],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='signal', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='signals', ctx=Load()),
+                  Constant(value=1)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='signal_type', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Attribute(
+                        value=Name(id='signal', ctx=Load()),
+                        attr='signal_type',
+                        ctx=Load()),
+                      Constant(value='general')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='i', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='. ['),
+                          FormattedValue(
+                            value=Name(id='signal_type', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='] '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Attribute(
+                                value=Name(id='signal', ctx=Load()),
+                                attr='text',
+                                ctx=Load()),
+                              slice=Slice(
+                                upper=Constant(value=200)),
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value='...')])]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='lines', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_estimate_generation_tokens',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message_plan',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='generation_context',
+                annotation=Name(id='GenerationContext', ctx=Load())),
+              arg(
+                arg='research_results',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='OutreachRAGResult', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Estimate tokens needed for message generation.')),
+            Assign(
+              targets=[
+                Name(id='total_chars', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='message_plan', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='total_chars', ctx=Store()),
+                      op=Add(),
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='hasattr', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Constant(value='__dict__')]),
+                      body=[
+                        AugAssign(
+                          target=Name(id='total_chars', ctx=Store()),
+                          op=Add(),
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='value', ctx=Load()),
+                                    attr='__dict__',
+                                    ctx=Load())])]))])])]),
+            AugAssign(
+              target=Name(id='total_chars', ctx=Store()),
+              op=Add(),
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='generation_context', ctx=Load()),
+                    attr='value_proposition',
+                    ctx=Load())])),
+            AugAssign(
+              target=Name(id='total_chars', ctx=Store()),
+              op=Add(),
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Constant(value=' '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='generation_context', ctx=Load()),
+                        attr='personalization_points',
+                        ctx=Load())])])),
+            AugAssign(
+              target=Name(id='total_chars', ctx=Store()),
+              op=Add(),
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Constant(value=' '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='generation_context', ctx=Load()),
+                        attr='constraints',
+                        ctx=Load())])])),
+            For(
+              target=Name(id='result', ctx=Store()),
+              iter=Name(id='research_results', ctx=Load()),
+              body=[
+                AugAssign(
+                  target=Name(id='total_chars', ctx=Store()),
+                  op=Add(),
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      BoolOp(
+                        op=Or(),
+                        values=[
+                          Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='text',
+                            ctx=Load()),
+                          Constant(value='')])]))]),
+            Assign(
+              targets=[
+                Name(id='estimated_tokens', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='total_chars', ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=0.25))])),
+            AugAssign(
+              target=Name(id='estimated_tokens', ctx=Store()),
+              op=Add(),
+              value=Constant(value=500)),
+            Return(
+              value=Name(id='estimated_tokens', ctx=Load()))],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='_assemble_message',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='sections',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='MessageSection', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Assemble complete message from sections.')),
+            Assign(
+              targets=[
+                Name(id='parts', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Compare(
+                left=Constant(value='subject'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='sections', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='subject_content', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='sections', ctx=Load()),
+                          slice=Constant(value='subject'),
+                          ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      Constant(value='content'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Subscript(
+                              value=Name(id='sections', ctx=Load()),
+                              slice=Constant(value='subject'),
+                              ctx=Load()),
+                            attr='content',
+                            ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Subject: '),
+                          FormattedValue(
+                            value=Name(id='subject_content', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='')]))]),
+            If(
+              test=Compare(
+                left=Constant(value='hook'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='sections', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='hook_content', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='sections', ctx=Load()),
+                          slice=Constant(value='hook'),
+                          ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      Constant(value='content'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Subscript(
+                              value=Name(id='sections', ctx=Load()),
+                              slice=Constant(value='hook'),
+                              ctx=Load()),
+                            attr='content',
+                            ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='hook_content', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='')]))]),
+            If(
+              test=Compare(
+                left=Constant(value='value'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='sections', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='value_content', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='sections', ctx=Load()),
+                          slice=Constant(value='value'),
+                          ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      Constant(value='content'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Subscript(
+                              value=Name(id='sections', ctx=Load()),
+                              slice=Constant(value='value'),
+                              ctx=Load()),
+                            attr='content',
+                            ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='value_content', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='')]))]),
+            If(
+              test=Compare(
+                left=Constant(value='cta'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='sections', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='cta_content', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='sections', ctx=Load()),
+                          slice=Constant(value='cta'),
+                          ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      Constant(value='content'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Subscript(
+                              value=Name(id='sections', ctx=Load()),
+                              slice=Constant(value='cta'),
+                              ctx=Load()),
+                            attr='content',
+                            ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='cta_content', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='')]))]),
+            If(
+              test=Compare(
+                left=Constant(value='signature'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='sections', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='signature_content', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='sections', ctx=Load()),
+                          slice=Constant(value='signature'),
+                          ctx=Load()),
+                        attr='content',
+                        ctx=Load()),
+                      Constant(value='content'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Subscript(
+                              value=Name(id='sections', ctx=Load()),
+                              slice=Constant(value='signature'),
+                              ctx=Load()),
+                            attr='content',
+                            ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='signature_content', ctx=Load())]))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='parts', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load()))])])

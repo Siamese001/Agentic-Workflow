@@ -1,0 +1,151 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='agent_stacks_v10_8.safety_stack',
+      names=[
+        alias(name='SafetyStackV10_8')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='ConstitutionalReviewResult')],
+      level=0),
+    AsyncFunctionDef(
+      name='test_constitutional_review_from_state_async_serializes_patch',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch'),
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='SafetyStackV10_8', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='metadata'),
+              Constant(value='draft')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='workflow_id')],
+                values=[
+                  Constant(value='wf-safety')]),
+              Dict(
+                keys=[
+                  Constant(value='sections')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='summary')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='draft')],
+                        values=[
+                          Constant(value='Final resume ready.')])])])])),
+        AsyncFunctionDef(
+          name='fake_review',
+          args=arguments(
+            args=[
+              arg(arg='final_draft'),
+              arg(arg='workflow_id')]),
+          body=[
+            Assert(
+              test=Compare(
+                left=Constant(value='Final resume'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='final_draft', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='workflow_id', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='wf-safety')])),
+            Return(
+              value=Call(
+                func=Name(id='ConstitutionalReviewResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='review_passed',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='violations_found',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='feedback',
+                    value=Constant(value='ok'))]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='stack', ctx=Load()),
+              Constant(value='run_constitutional_review_async'),
+              Name(id='fake_review', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='stack', ctx=Load()),
+                attr='constitutional_review_from_state_async',
+                ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load()),
+                Constant(value='wf-safety')]))),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='qa'),
+                  ctx=Load()),
+                slice=Constant(value='constitutional_review'),
+                ctx=Load()),
+              slice=Constant(value='review_passed'),
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='qa'),
+                  ctx=Load()),
+                slice=Constant(value='constitutional_review'),
+                ctx=Load()),
+              slice=Constant(value='feedback'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='ok')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

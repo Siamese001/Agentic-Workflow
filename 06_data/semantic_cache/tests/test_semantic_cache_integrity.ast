@@ -1,0 +1,2970 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest suite for semantic cache integrity and validation\n\nTests integrity signals, validation checks, and completeness verification\nfor both Resume Engine (RG) and Outreach Engine (LIC) semantic cache.\n')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    Import(
+      names=[
+        alias(name='tempfile')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='project_root', ctx=Store())],
+      value=Attribute(
+        value=Attribute(
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Name(id='__file__', ctx=Load())]),
+          attr='parent',
+          ctx=Load()),
+        attr='parent',
+        ctx=Load())),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='schemas'))])])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='runtime'))])])),
+    ImportFrom(
+      module='semantic_lineage',
+      names=[
+        alias(name='EngineType'),
+        alias(name='SemanticCacheEntry'),
+        alias(name='FileSignature'),
+        alias(name='ASTSignature'),
+        alias(name='EmbeddingVector'),
+        alias(name='IntegritySignals'),
+        alias(name='SemanticLineageValidator'),
+        alias(name='calculate_file_hash'),
+        alias(name='ArchiveManifest'),
+        alias(name='GlobalCacheReport')],
+      level=0),
+    ImportFrom(
+      module='semantic_scanner',
+      names=[
+        alias(name='IntegritySignalGenerator')],
+      level=0),
+    ClassDef(
+      name='TestIntegritySignals',
+      body=[
+        Expr(
+          value=Constant(value='Test integrity signal generation')),
+        FunctionDef(
+          name='test_integrity_signals_creation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test creation of integrity signals')),
+            Assign(
+              targets=[
+                Name(id='signals', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='content_hash',
+                    value=BinOp(
+                      left=Constant(value='a'),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='structure_hash',
+                    value=BinOp(
+                      left=Constant(value='b'),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='semantic_hash',
+                    value=BinOp(
+                      left=Constant(value='c'),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='version_id',
+                    value=Constant(value='v1.0_abcdef1234567890')),
+                  keyword(
+                    arg='lineage_chain',
+                    value=List(
+                      elts=[
+                        Constant(value='v0.9'),
+                        Constant(value='v1.0')],
+                      ctx=Load())),
+                  keyword(
+                    arg='verification_status',
+                    value=Constant(value=True))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='content_hash',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=64)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='structure_hash',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=64)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='semantic_hash',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=64)])),
+            Assert(
+              test=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='signals', ctx=Load()),
+                    attr='version_id',
+                    ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='v1.0_')])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='lineage_chain',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='signals', ctx=Load()),
+                  attr='verification_status',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)]))]),
+        FunctionDef(
+          name='test_integrity_signals_serialization',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test integrity signals serialization')),
+            Assign(
+              targets=[
+                Name(id='signals', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='content_hash',
+                    value=Constant(value='hash1')),
+                  keyword(
+                    arg='structure_hash',
+                    value=Constant(value='hash2')),
+                  keyword(
+                    arg='semantic_hash',
+                    value=Constant(value='hash3')),
+                  keyword(
+                    arg='version_id',
+                    value=Constant(value='v1.0_test')),
+                  keyword(
+                    arg='lineage_chain',
+                    value=List(
+                      elts=[
+                        Constant(value='v0.9')],
+                      ctx=Load())),
+                  keyword(
+                    arg='verification_status',
+                    value=Constant(value=False))])),
+            Assign(
+              targets=[
+                Name(id='signals_dict', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='signals', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='signals_dict', ctx=Load()),
+                  slice=Constant(value='content_hash'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='hash1')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='signals_dict', ctx=Load()),
+                  slice=Constant(value='structure_hash'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='hash2')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='signals_dict', ctx=Load()),
+                  slice=Constant(value='semantic_hash'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='hash3')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='signals_dict', ctx=Load()),
+                  slice=Constant(value='version_id'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='v1.0_test')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='signals_dict', ctx=Load()),
+                  slice=Constant(value='lineage_chain'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='v0.9')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='signals_dict', ctx=Load()),
+                  slice=Constant(value='verification_status'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)]))])]),
+    ClassDef(
+      name='TestIntegritySignalGenerator',
+      body=[
+        Expr(
+          value=Constant(value='Test integrity signal generation functionality')),
+        FunctionDef(
+          name='test_generate_integrity_signals',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test generation of integrity signals')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='test_file', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='test.py'))),
+                Assign(
+                  targets=[
+                    Name(id='test_content', ctx=Store())],
+                  value=Constant(value="def hello():\n    print('Hello, World!')")),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='test_file', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_content', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='test_file', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='test_content', ctx=Load()),
+                                attr='encode',
+                                ctx=Load()))])),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Constant(value=None))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ASTSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='signature',
+                        value=Name(id='file_signature', ctx=Load())),
+                      keyword(
+                        arg='root_nodes',
+                        value=List(ctx=Load())),
+                      keyword(arg='import_graph', value=Dict()),
+                      keyword(
+                        arg='function_signatures',
+                        value=Dict(
+                          keys=[
+                            Constant(value='hello')],
+                          values=[
+                            Constant(value='hello()')])),
+                      keyword(arg='class_signatures', value=Dict()),
+                      keyword(arg='complexity_metrics', value=Dict())])),
+                Assign(
+                  targets=[
+                    Name(id='embedding', ctx=Store())],
+                  value=Call(
+                    func=Name(id='EmbeddingVector', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='vector_hash',
+                        value=Constant(value='embed_hash')),
+                      keyword(
+                        arg='embedding_model',
+                        value=Constant(value='test_model')),
+                      keyword(
+                        arg='vector_dimensions',
+                        value=Constant(value=64)),
+                      keyword(
+                        arg='embedding_data',
+                        value=BinOp(
+                          left=List(
+                            elts=[
+                              Constant(value=0.1)],
+                            ctx=Load()),
+                          op=Mult(),
+                          right=Constant(value=64))),
+                      keyword(
+                        arg='confidence_score',
+                        value=Constant(value=0.9)),
+                      keyword(
+                        arg='semantic_tags',
+                        value=List(
+                          elts=[
+                            Constant(value='test')],
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='generator', ctx=Store())],
+                  value=Call(
+                    func=Name(id='IntegritySignalGenerator', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='signals', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='generator', ctx=Load()),
+                      attr='generate_integrity_signals',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_file', ctx=Load()),
+                      Name(id='ast_signature', ctx=Load()),
+                      Name(id='embedding', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='signals', ctx=Load()),
+                          attr='content_hash',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=64)])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='signals', ctx=Load()),
+                          attr='structure_hash',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=64)])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='signals', ctx=Load()),
+                          attr='semantic_hash',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=64)])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='version_id',
+                      ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='signals', ctx=Load()),
+                        attr='lineage_chain',
+                        ctx=Load()),
+                      Name(id='list', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='signals', ctx=Load()),
+                        attr='verification_status',
+                        ctx=Load()),
+                      Name(id='bool', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_content_hash_generation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test content hash generation')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='file1', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='file1.txt'))),
+                Assign(
+                  targets=[
+                    Name(id='file2', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='file2.txt'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='file1', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Hello, World!')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='file2', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Hello, Universe!')])),
+                Assign(
+                  targets=[
+                    Name(id='hash1', ctx=Store())],
+                  value=Call(
+                    func=Name(id='calculate_file_hash', ctx=Load()),
+                    args=[
+                      Name(id='file1', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='hash2', ctx=Store())],
+                  value=Call(
+                    func=Name(id='calculate_file_hash', ctx=Load()),
+                    args=[
+                      Name(id='file2', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='hash1', ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Name(id='hash2', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='hash1', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=64)])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='hash2', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=64)])),
+                Assign(
+                  targets=[
+                    Name(id='file3', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='file3.txt'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='file3', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Hello, World!')])),
+                Assign(
+                  targets=[
+                    Name(id='hash3', ctx=Store())],
+                  value=Call(
+                    func=Name(id='calculate_file_hash', ctx=Load()),
+                    args=[
+                      Name(id='file3', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='hash1', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='hash3', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_structure_hash_generation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test structure hash generation')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='test_file', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='test.py'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='test_file', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='def func(): pass')])),
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='test_file', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Constant(value=100)),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Constant(value=None))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_sig1', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ASTSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='signature',
+                        value=Name(id='file_signature', ctx=Load())),
+                      keyword(
+                        arg='root_nodes',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='import_graph',
+                        value=Dict(
+                          keys=[
+                            Constant(value='os')],
+                          values=[
+                            List(
+                              elts=[
+                                Constant(value='line_1')],
+                              ctx=Load())])),
+                      keyword(
+                        arg='function_signatures',
+                        value=Dict(
+                          keys=[
+                            Constant(value='func')],
+                          values=[
+                            Constant(value='func()')])),
+                      keyword(arg='class_signatures', value=Dict()),
+                      keyword(arg='complexity_metrics', value=Dict())])),
+                Assign(
+                  targets=[
+                    Name(id='ast_sig2', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ASTSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='signature',
+                        value=Name(id='file_signature', ctx=Load())),
+                      keyword(
+                        arg='root_nodes',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='import_graph',
+                        value=Dict(
+                          keys=[
+                            Constant(value='sys')],
+                          values=[
+                            List(
+                              elts=[
+                                Constant(value='line_1')],
+                              ctx=Load())])),
+                      keyword(
+                        arg='function_signatures',
+                        value=Dict(
+                          keys=[
+                            Constant(value='func')],
+                          values=[
+                            Constant(value='func()')])),
+                      keyword(arg='class_signatures', value=Dict()),
+                      keyword(arg='complexity_metrics', value=Dict())])),
+                Assign(
+                  targets=[
+                    Name(id='embedding', ctx=Store())],
+                  value=Call(
+                    func=Name(id='EmbeddingVector', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='vector_hash',
+                        value=Constant(value='embed_hash')),
+                      keyword(
+                        arg='embedding_model',
+                        value=Constant(value='test_model')),
+                      keyword(
+                        arg='vector_dimensions',
+                        value=Constant(value=64)),
+                      keyword(
+                        arg='embedding_data',
+                        value=BinOp(
+                          left=List(
+                            elts=[
+                              Constant(value=0.1)],
+                            ctx=Load()),
+                          op=Mult(),
+                          right=Constant(value=64))),
+                      keyword(
+                        arg='confidence_score',
+                        value=Constant(value=0.9)),
+                      keyword(
+                        arg='semantic_tags',
+                        value=List(
+                          elts=[
+                            Constant(value='test')],
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='generator', ctx=Store())],
+                  value=Call(
+                    func=Name(id='IntegritySignalGenerator', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='signals1', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='generator', ctx=Load()),
+                      attr='generate_integrity_signals',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_file', ctx=Load()),
+                      Name(id='ast_sig1', ctx=Load()),
+                      Name(id='embedding', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='signals2', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='generator', ctx=Load()),
+                      attr='generate_integrity_signals',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_file', ctx=Load()),
+                      Name(id='ast_sig2', ctx=Load()),
+                      Name(id='embedding', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='signals1', ctx=Load()),
+                      attr='structure_hash',
+                      ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='signals2', ctx=Load()),
+                        attr='structure_hash',
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_semantic_hash_generation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test semantic hash generation')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='test_file', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='test.py'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='test_file', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='def func(): pass')])),
+                Assign(
+                  targets=[
+                    Name(id='file_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FileSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='file_path',
+                        value=Name(id='test_file', ctx=Load())),
+                      keyword(
+                        arg='file_hash',
+                        value=Constant(value='test_hash')),
+                      keyword(
+                        arg='size_bytes',
+                        value=Constant(value=100)),
+                      keyword(
+                        arg='last_modified',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='test_version')),
+                      keyword(
+                        arg='file_extension',
+                        value=Constant(value=None))])),
+                Assign(
+                  targets=[
+                    Name(id='ast_signature', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ASTSignature', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='signature',
+                        value=Name(id='file_signature', ctx=Load())),
+                      keyword(
+                        arg='root_nodes',
+                        value=List(ctx=Load())),
+                      keyword(arg='import_graph', value=Dict()),
+                      keyword(arg='function_signatures', value=Dict()),
+                      keyword(arg='class_signatures', value=Dict()),
+                      keyword(arg='complexity_metrics', value=Dict())])),
+                Assign(
+                  targets=[
+                    Name(id='embed1', ctx=Store())],
+                  value=Call(
+                    func=Name(id='EmbeddingVector', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='vector_hash',
+                        value=Constant(value='embed_hash1')),
+                      keyword(
+                        arg='embedding_model',
+                        value=Constant(value='test_model')),
+                      keyword(
+                        arg='vector_dimensions',
+                        value=Constant(value=64)),
+                      keyword(
+                        arg='embedding_data',
+                        value=BinOp(
+                          left=List(
+                            elts=[
+                              Constant(value=0.1)],
+                            ctx=Load()),
+                          op=Mult(),
+                          right=Constant(value=64))),
+                      keyword(
+                        arg='confidence_score',
+                        value=Constant(value=0.9)),
+                      keyword(
+                        arg='semantic_tags',
+                        value=List(
+                          elts=[
+                            Constant(value='test')],
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='embed2', ctx=Store())],
+                  value=Call(
+                    func=Name(id='EmbeddingVector', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='vector_hash',
+                        value=Constant(value='embed_hash2')),
+                      keyword(
+                        arg='embedding_model',
+                        value=Constant(value='test_model')),
+                      keyword(
+                        arg='vector_dimensions',
+                        value=Constant(value=64)),
+                      keyword(
+                        arg='embedding_data',
+                        value=BinOp(
+                          left=List(
+                            elts=[
+                              Constant(value=0.2)],
+                            ctx=Load()),
+                          op=Mult(),
+                          right=Constant(value=64))),
+                      keyword(
+                        arg='confidence_score',
+                        value=Constant(value=0.9)),
+                      keyword(
+                        arg='semantic_tags',
+                        value=List(
+                          elts=[
+                            Constant(value='test')],
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='generator', ctx=Store())],
+                  value=Call(
+                    func=Name(id='IntegritySignalGenerator', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='signals1', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='generator', ctx=Load()),
+                      attr='generate_integrity_signals',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_file', ctx=Load()),
+                      Name(id='ast_signature', ctx=Load()),
+                      Name(id='embed1', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='signals2', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='generator', ctx=Load()),
+                      attr='generate_integrity_signals',
+                      ctx=Load()),
+                    args=[
+                      Name(id='test_file', ctx=Load()),
+                      Name(id='ast_signature', ctx=Load()),
+                      Name(id='embed2', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='signals1', ctx=Load()),
+                      attr='semantic_hash',
+                      ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='signals2', ctx=Load()),
+                        attr='semantic_hash',
+                        ctx=Load())]))])])]),
+    ClassDef(
+      name='TestSemanticLineageValidator',
+      body=[
+        Expr(
+          value=Constant(value='Test semantic lineage validation')),
+        FunctionDef(
+          name='create_valid_cache_entry',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Create a valid semantic cache entry for testing')),
+            Assign(
+              targets=[
+                Name(id='file_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='FileSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/file.py')])),
+                  keyword(
+                    arg='file_hash',
+                    value=BinOp(
+                      left=Constant(value='a'),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='size_bytes',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='last_modified',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='test_version')),
+                  keyword(
+                    arg='file_extension',
+                    value=Constant(value=None))])),
+            Assign(
+              targets=[
+                Name(id='ast_signature', ctx=Store())],
+              value=Call(
+                func=Name(id='ASTSignature', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='root_nodes',
+                    value=List(
+                      elts=[
+                        Constant(value='class_def'),
+                        Constant(value='function_def')],
+                      ctx=Load())),
+                  keyword(arg='import_graph', value=Dict()),
+                  keyword(arg='function_signatures', value=Dict()),
+                  keyword(arg='class_signatures', value=Dict()),
+                  keyword(arg='complexity_metrics', value=Dict())])),
+            Assign(
+              targets=[
+                Name(id='embedding', ctx=Store())],
+              value=Call(
+                func=Name(id='EmbeddingVector', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='vector_hash',
+                    value=Constant(value='embed_hash')),
+                  keyword(
+                    arg='embedding_model',
+                    value=Constant(value='test_model')),
+                  keyword(
+                    arg='vector_dimensions',
+                    value=Constant(value=64)),
+                  keyword(
+                    arg='embedding_data',
+                    value=BinOp(
+                      left=List(
+                        elts=[
+                          Constant(value=0.1)],
+                        ctx=Load()),
+                      op=Mult(),
+                      right=Constant(value=64))),
+                  keyword(
+                    arg='confidence_score',
+                    value=Constant(value=0.9)),
+                  keyword(
+                    arg='semantic_tags',
+                    value=List(
+                      elts=[
+                        Constant(value='test')],
+                      ctx=Load()))])),
+            ImportFrom(
+              module='semantic_lineage',
+              names=[
+                alias(name='ToolUsageSignature'),
+                alias(name='SafetySignature'),
+                alias(name='GoldenProjection')],
+              level=0),
+            Assign(
+              targets=[
+                Name(id='tool_usage', ctx=Store())],
+              value=Call(
+                func=Name(id='ToolUsageSignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='safety', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetySignature', ctx=Load()),
+                args=[
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='golden', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenProjection', ctx=Load()),
+                args=[
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  Constant(value=''),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='integrity', ctx=Store())],
+              value=Call(
+                func=Name(id='IntegritySignals', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Constant(value='a'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='b'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  BinOp(
+                    left=Constant(value='c'),
+                    op=Mult(),
+                    right=Constant(value=64)),
+                  Constant(value='v1.0'),
+                  List(ctx=Load()),
+                  Constant(value=True)])),
+            Return(
+              value=Call(
+                func=Name(id='SemanticCacheEntry', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='file_signature',
+                    value=Name(id='file_signature', ctx=Load())),
+                  keyword(
+                    arg='ast_signature',
+                    value=Name(id='ast_signature', ctx=Load())),
+                  keyword(
+                    arg='embedding',
+                    value=Name(id='embedding', ctx=Load())),
+                  keyword(
+                    arg='tool_usage',
+                    value=Name(id='tool_usage', ctx=Load())),
+                  keyword(
+                    arg='safety',
+                    value=Name(id='safety', ctx=Load())),
+                  keyword(
+                    arg='semantic_diff',
+                    value=Constant(value=None)),
+                  keyword(
+                    arg='golden_projection',
+                    value=Name(id='golden', ctx=Load())),
+                  keyword(
+                    arg='integrity',
+                    value=Name(id='integrity', ctx=Load())),
+                  keyword(
+                    arg='processing_timestamp',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))]))],
+          returns=Name(id='SemanticCacheEntry', ctx=Load())),
+        FunctionDef(
+          name='test_validate_cache_entry_valid',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of valid cache entry')),
+            Assign(
+              targets=[
+                Name(id='entry', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_valid_cache_entry',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_validate_cache_entry_missing_hash',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of cache entry with missing hash')),
+            Assign(
+              targets=[
+                Name(id='entry', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_valid_cache_entry',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='entry', ctx=Load()),
+                    attr='file_signature',
+                    ctx=Load()),
+                  attr='file_hash',
+                  ctx=Store())],
+              value=Constant(value='')),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='hash'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_validate_cache_entry_empty_ast',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of cache entry with empty AST')),
+            Assign(
+              targets=[
+                Name(id='entry', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_valid_cache_entry',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='entry', ctx=Load()),
+                    attr='ast_signature',
+                    ctx=Load()),
+                  attr='root_nodes',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=BoolOp(
+                      op=Or(),
+                      values=[
+                        Compare(
+                          left=Constant(value='ast'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='error', ctx=Load()),
+                                attr='lower',
+                                ctx=Load()))]),
+                        Compare(
+                          left=Constant(value='empty'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='error', ctx=Load()),
+                                attr='lower',
+                                ctx=Load()))])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_validate_cache_entry_empty_embedding',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of cache entry with empty embedding')),
+            Assign(
+              targets=[
+                Name(id='entry', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_valid_cache_entry',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='entry', ctx=Load()),
+                    attr='embedding',
+                    ctx=Load()),
+                  attr='embedding_data',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='embedding'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_validate_cache_entry_integrity_failure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of cache entry with integrity failure')),
+            Assign(
+              targets=[
+                Name(id='entry', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='create_valid_cache_entry',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Name(id='entry', ctx=Load()),
+                    attr='integrity',
+                    ctx=Load()),
+                  attr='verification_status',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_cache_entry',
+                  ctx=Load()),
+                args=[
+                  Name(id='entry', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='integrity'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_validate_archive_manifest_valid',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of valid archive manifest')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Call(
+                func=Name(id='ArchiveManifest', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='v10.7')),
+                  keyword(
+                    arg='archive_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/archive')])),
+                  keyword(
+                    arg='total_files',
+                    value=Constant(value=100)),
+                  keyword(
+                    arg='processed_files',
+                    value=Constant(value=95)),
+                  keyword(
+                    arg='failed_files',
+                    value=List(
+                      elts=[
+                        Constant(value='file1.py'),
+                        Constant(value='file2.py')],
+                      ctx=Load())),
+                  keyword(
+                    arg='file_hashes',
+                    value=Set(
+                      elts=[
+                        Constant(value='hash1'),
+                        Constant(value='hash2'),
+                        Constant(value='hash3')])),
+                  keyword(
+                    arg='completeness_score',
+                    value=Constant(value=0.95)),
+                  keyword(
+                    arg='processing_start',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='processing_end',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_manifest',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_validate_manifest_zero_files',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of manifest with zero files')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Call(
+                func=Name(id='ArchiveManifest', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='v10.7')),
+                  keyword(
+                    arg='archive_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/archive')])),
+                  keyword(
+                    arg='total_files',
+                    value=Constant(value=0)),
+                  keyword(
+                    arg='processed_files',
+                    value=Constant(value=0)),
+                  keyword(
+                    arg='failed_files',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='file_hashes',
+                    value=Call(
+                      func=Name(id='set', ctx=Load()))),
+                  keyword(
+                    arg='completeness_score',
+                    value=Constant(value=0.0)),
+                  keyword(
+                    arg='processing_start',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='processing_end',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_manifest',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='zero'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_validate_manifest_processed_exceeds_total',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of manifest where processed exceeds total')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Call(
+                func=Name(id='ArchiveManifest', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='v10.7')),
+                  keyword(
+                    arg='archive_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/archive')])),
+                  keyword(
+                    arg='total_files',
+                    value=Constant(value=10)),
+                  keyword(
+                    arg='processed_files',
+                    value=Constant(value=15)),
+                  keyword(
+                    arg='failed_files',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='file_hashes',
+                    value=Call(
+                      func=Name(id='set', ctx=Load()))),
+                  keyword(
+                    arg='completeness_score',
+                    value=Constant(value=1.5)),
+                  keyword(
+                    arg='processing_start',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='processing_end',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_manifest',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=BoolOp(
+                      op=Or(),
+                      values=[
+                        Compare(
+                          left=Constant(value='exceeds'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='error', ctx=Load()),
+                                attr='lower',
+                                ctx=Load()))]),
+                        Compare(
+                          left=Constant(value='processed'),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='error', ctx=Load()),
+                                attr='lower',
+                                ctx=Load()))])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='completeness'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_validate_manifest_invalid_completeness',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of manifest with invalid completeness score')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Call(
+                func=Name(id='ArchiveManifest', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='engine',
+                    value=Attribute(
+                      value=Name(id='EngineType', ctx=Load()),
+                      attr='RESUME_ENGINE',
+                      ctx=Load())),
+                  keyword(
+                    arg='archive_version',
+                    value=Constant(value='v10.7')),
+                  keyword(
+                    arg='archive_path',
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Constant(value='/test/archive')])),
+                  keyword(
+                    arg='total_files',
+                    value=Constant(value=10)),
+                  keyword(
+                    arg='processed_files',
+                    value=Constant(value=5)),
+                  keyword(
+                    arg='failed_files',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='file_hashes',
+                    value=Call(
+                      func=Name(id='set', ctx=Load()))),
+                  keyword(
+                    arg='completeness_score',
+                    value=Constant(value=1.5)),
+                  keyword(
+                    arg='processing_start',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load()))),
+                  keyword(
+                    arg='processing_end',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())))])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticLineageValidator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='errors', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_manifest',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='errors', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='completeness'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='lower',
+                            ctx=Load()))]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Name(id='errors', ctx=Load()),
+                        is_async=0)])]))])]),
+    ClassDef(
+      name='TestCacheCompleteness',
+      body=[
+        Expr(
+          value=Constant(value='Test cache completeness verification')),
+        FunctionDef(
+          name='test_required_archives_presence',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test presence of required archives')),
+            Assign(
+              targets=[
+                Name(id='required_rg_archives', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11'),
+                  Constant(value='C:\\Git\\Resume Engine Archive\\v2'),
+                  Constant(value='C:\\Git\\Resume Engine Archive\\v10.7')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='required_lic_archives', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='C:\\Git\\Reachout Engine Archive\\Agentic-LIC'),
+                  Constant(value='C:\\Git\\Reachout Engine Archive\\Monolithic')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='existing_rg', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='path', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='path', ctx=Store()),
+                    iter=Name(id='required_rg_archives', ctx=Load()),
+                    ifs=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Name(id='Path', ctx=Load()),
+                            args=[
+                              Name(id='path', ctx=Load())]),
+                          attr='exists',
+                          ctx=Load()))],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='existing_lic', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='path', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='path', ctx=Store()),
+                    iter=Name(id='required_lic_archives', ctx=Load()),
+                    ifs=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Name(id='Path', ctx=Load()),
+                            args=[
+                              Name(id='path', ctx=Load())]),
+                          attr='exists',
+                          ctx=Load()))],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='rg_completeness', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='existing_rg', ctx=Load())]),
+                op=Div(),
+                right=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='required_rg_archives', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='lic_completeness', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='existing_lic', ctx=Load())]),
+                op=Div(),
+                right=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='required_lic_archives', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='overall_completeness', ctx=Store())],
+              value=BinOp(
+                left=BinOp(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='existing_rg', ctx=Load())]),
+                  op=Add(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='existing_lic', ctx=Load())])),
+                op=Div(),
+                right=BinOp(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='required_rg_archives', ctx=Load())]),
+                  op=Add(),
+                  right=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='required_lic_archives', ctx=Load())])))),
+            Assert(
+              test=Compare(
+                left=Constant(value=0.0),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='rg_completeness', ctx=Load()),
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0.0),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='lic_completeness', ctx=Load()),
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0.0),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='overall_completeness', ctx=Load()),
+                  Constant(value=1.0)]))]),
+        FunctionDef(
+          name='test_engine_separation_validation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of engine separation')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='cache_root', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='semantic_cache'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='cache_root', ctx=Load()),
+                      attr='mkdir',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='rg_dir', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='cache_root', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='resume_engine'))),
+                Assign(
+                  targets=[
+                    Name(id='lic_dir', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='cache_root', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='outreach_engine'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rg_dir', ctx=Load()),
+                      attr='mkdir',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lic_dir', ctx=Load()),
+                      attr='mkdir',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Name(id='rg_dir', ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='v10.7')),
+                      attr='mkdir',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Name(id='lic_dir', ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='Agentic-LIC')),
+                      attr='mkdir',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='rg_exists', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rg_dir', ctx=Load()),
+                      attr='exists',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='lic_exists', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lic_dir', ctx=Load()),
+                      attr='exists',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='separation_valid', ctx=Store())],
+                  value=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='rg_exists', ctx=Load()),
+                      Name(id='lic_exists', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='separation_valid', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=True)])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Name(id='rg_dir', ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='Agentic-LIC')),
+                      attr='mkdir',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='validator', ctx=Store())],
+                  value=Call(
+                    func=Name(id='SemanticLineageValidator', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='errors', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='validate_engine_separation',
+                      ctx=Load()),
+                    args=[
+                      Name(id='cache_root', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='errors', ctx=Load())]),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0)])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='Engine separation violation'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='errors', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_artifact_integrity_validation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of artifact integrity')),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='tempfile', ctx=Load()),
+                      attr='TemporaryDirectory',
+                      ctx=Load())),
+                  optional_vars=Name(id='temp_dir', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='temp_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Name(id='temp_dir', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='cache_root', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='temp_path', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='semantic_cache'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='cache_root', ctx=Load()),
+                      attr='mkdir',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='version_dir', ctx=Store())],
+                  value=BinOp(
+                    left=BinOp(
+                      left=Name(id='cache_root', ctx=Load()),
+                      op=Div(),
+                      right=Constant(value='resume_engine')),
+                    op=Div(),
+                    right=Constant(value='v10.7'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='version_dir', ctx=Load()),
+                      attr='mkdir',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='parents',
+                        value=Constant(value=True))])),
+                Assign(
+                  targets=[
+                    Name(id='valid_artifact', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='version_dir', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='test_hash.ast'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='valid_artifact', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='{"test": "valid json"}')])),
+                Assign(
+                  targets=[
+                    Name(id='invalid_artifact', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='version_dir', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='invalid_hash.ast'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='invalid_artifact', ctx=Load()),
+                      attr='write_text',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='{"test": "invalid json"')])),
+                Assign(
+                  targets=[
+                    Name(id='total_artifacts', ctx=Store())],
+                  value=Constant(value=0)),
+                Assign(
+                  targets=[
+                    Name(id='valid_artifacts', ctx=Store())],
+                  value=Constant(value=0)),
+                Assign(
+                  targets=[
+                    Name(id='corrupted_artifacts', ctx=Store())],
+                  value=Constant(value=0)),
+                For(
+                  target=Name(id='artifact_file', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='version_dir', ctx=Load()),
+                      attr='glob',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='*.json')]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='total_artifacts', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    Try(
+                      body=[
+                        With(
+                          items=[
+                            withitem(
+                              context_expr=Call(
+                                func=Name(id='open', ctx=Load()),
+                                args=[
+                                  Name(id='artifact_file', ctx=Load()),
+                                  Constant(value='r')],
+                                keywords=[
+                                  keyword(
+                                    arg='encoding',
+                                    value=Constant(value='utf-8'))]),
+                              optional_vars=Name(id='f', ctx=Store()))],
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='json', ctx=Load()),
+                                  attr='load',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='f', ctx=Load())]))]),
+                        AugAssign(
+                          target=Name(id='valid_artifacts', ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='JSONDecodeError',
+                            ctx=Load()),
+                          body=[
+                            AugAssign(
+                              target=Name(id='corrupted_artifacts', ctx=Store()),
+                              op=Add(),
+                              value=Constant(value=1))])])]),
+                Assign(
+                  targets=[
+                    Name(id='ast_files', ctx=Store())],
+                  value=Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='version_dir', ctx=Load()),
+                          attr='glob',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='*.ast')])])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='ast_files', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=2)])),
+                For(
+                  target=Name(id='ast_file', ctx=Store()),
+                  iter=Name(id='ast_files', ctx=Load()),
+                  body=[
+                    Try(
+                      body=[
+                        With(
+                          items=[
+                            withitem(
+                              context_expr=Call(
+                                func=Name(id='open', ctx=Load()),
+                                args=[
+                                  Name(id='ast_file', ctx=Load()),
+                                  Constant(value='r')],
+                                keywords=[
+                                  keyword(
+                                    arg='encoding',
+                                    value=Constant(value='utf-8'))]),
+                              optional_vars=Name(id='f', ctx=Store()))],
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='json', ctx=Load()),
+                                  attr='load',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='f', ctx=Load())]))]),
+                        AugAssign(
+                          target=Name(id='valid_artifacts', ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='JSONDecodeError',
+                            ctx=Load()),
+                          body=[
+                            AugAssign(
+                              target=Name(id='corrupted_artifacts', ctx=Store()),
+                              op=Add(),
+                              value=Constant(value=1))])])]),
+                Assert(
+                  test=Compare(
+                    left=Name(id='valid_artifacts', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='corrupted_artifacts', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)]))])])]),
+    ClassDef(
+      name='TestGlobalCacheReport',
+      body=[
+        Expr(
+          value=Constant(value='Test global cache report functionality')),
+        FunctionDef(
+          name='test_global_cache_report_creation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test creation of global cache report')),
+            Assign(
+              targets=[
+                Name(id='resume_manifests', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='v10.7')],
+                values=[
+                  Call(
+                    func=Name(id='ArchiveManifest', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='RESUME_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='v10.7')),
+                      keyword(
+                        arg='archive_path',
+                        value=Call(
+                          func=Name(id='Path', ctx=Load()),
+                          args=[
+                            Constant(value='/test/rg/v10.7')])),
+                      keyword(
+                        arg='total_files',
+                        value=Constant(value=100)),
+                      keyword(
+                        arg='processed_files',
+                        value=Constant(value=95)),
+                      keyword(
+                        arg='failed_files',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='file_hashes',
+                        value=Call(
+                          func=Name(id='set', ctx=Load()))),
+                      keyword(
+                        arg='completeness_score',
+                        value=Constant(value=0.95)),
+                      keyword(
+                        arg='processing_start',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='processing_end',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())))])])),
+            Assign(
+              targets=[
+                Name(id='outreach_manifests', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Agentic-LIC')],
+                values=[
+                  Call(
+                    func=Name(id='ArchiveManifest', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='engine',
+                        value=Attribute(
+                          value=Name(id='EngineType', ctx=Load()),
+                          attr='OUTREACH_ENGINE',
+                          ctx=Load())),
+                      keyword(
+                        arg='archive_version',
+                        value=Constant(value='Agentic-LIC')),
+                      keyword(
+                        arg='archive_path',
+                        value=Call(
+                          func=Name(id='Path', ctx=Load()),
+                          args=[
+                            Constant(value='/test/lic/agentic-lic')])),
+                      keyword(
+                        arg='total_files',
+                        value=Constant(value=50)),
+                      keyword(
+                        arg='processed_files',
+                        value=Constant(value=48)),
+                      keyword(
+                        arg='failed_files',
+                        value=List(ctx=Load())),
+                      keyword(
+                        arg='file_hashes',
+                        value=Call(
+                          func=Name(id='set', ctx=Load()))),
+                      keyword(
+                        arg='completeness_score',
+                        value=Constant(value=0.96)),
+                      keyword(
+                        arg='processing_start',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load()))),
+                      keyword(
+                        arg='processing_end',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())))])])),
+            Assign(
+              targets=[
+                Name(id='global_integrity', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='total_archives'),
+                  Constant(value='successful_archives'),
+                  Constant(value='total_files_processed'),
+                  Constant(value='integrity_violations')],
+                values=[
+                  Constant(value=2),
+                  Constant(value=2),
+                  Constant(value=143),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='drift_report', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='semantic_drift'),
+                  Constant(value='api_drift')],
+                values=[
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='orphan_report', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='orphaned_files'),
+                  Constant(value='unreferenced_hashes')],
+                values=[
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='completeness_report', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='required_archives'),
+                  Constant(value='missing_archives'),
+                  Constant(value='overall_completeness')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='v10.7'),
+                      Constant(value='Agentic-LIC')],
+                    ctx=Load()),
+                  List(ctx=Load()),
+                  Constant(value=1.0)])),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Name(id='GlobalCacheReport', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='resume_engine_manifests',
+                    value=Name(id='resume_manifests', ctx=Load())),
+                  keyword(
+                    arg='outreach_engine_manifests',
+                    value=Name(id='outreach_manifests', ctx=Load())),
+                  keyword(
+                    arg='global_integrity',
+                    value=Name(id='global_integrity', ctx=Load())),
+                  keyword(
+                    arg='drift_report',
+                    value=Name(id='drift_report', ctx=Load())),
+                  keyword(
+                    arg='orphan_report',
+                    value=Name(id='orphan_report', ctx=Load())),
+                  keyword(
+                    arg='completeness_report',
+                    value=Name(id='completeness_report', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='report', ctx=Load()),
+                      attr='resume_engine_manifests',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='report', ctx=Load()),
+                      attr='outreach_engine_manifests',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='report', ctx=Load()),
+                    attr='global_integrity',
+                    ctx=Load()),
+                  slice=Constant(value='total_archives'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='report', ctx=Load()),
+                    attr='completeness_report',
+                    ctx=Load()),
+                  slice=Constant(value='overall_completeness'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.0)]))]),
+        FunctionDef(
+          name='test_global_cache_report_serialization',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test global cache report serialization')),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Name(id='GlobalCacheReport', ctx=Load()),
+                keywords=[
+                  keyword(arg='resume_engine_manifests', value=Dict()),
+                  keyword(arg='outreach_engine_manifests', value=Dict()),
+                  keyword(
+                    arg='global_integrity',
+                    value=Dict(
+                      keys=[
+                        Constant(value='total_archives')],
+                      values=[
+                        Constant(value=0)])),
+                  keyword(
+                    arg='drift_report',
+                    value=Dict(
+                      keys=[
+                        Constant(value='semantic_drift')],
+                      values=[
+                        List(ctx=Load())])),
+                  keyword(
+                    arg='orphan_report',
+                    value=Dict(
+                      keys=[
+                        Constant(value='orphaned_files')],
+                      values=[
+                        List(ctx=Load())])),
+                  keyword(
+                    arg='completeness_report',
+                    value=Dict(
+                      keys=[
+                        Constant(value='overall_completeness')],
+                      values=[
+                        Constant(value=0.0)]))])),
+            Assign(
+              targets=[
+                Name(id='report_dict', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='report', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Constant(value='resume_engine_manifests'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='report_dict', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='outreach_engine_manifests'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='report_dict', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='global_integrity'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='report_dict', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='drift_report'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='report_dict', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='orphan_report'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='report_dict', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='completeness_report'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='report_dict', ctx=Load())]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='main',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='__file__', ctx=Load()),
+                  Constant(value='-v')],
+                ctx=Load())]))])])

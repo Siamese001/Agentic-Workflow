@@ -1,0 +1,15 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='python.testing.pytestEnabled'),
+          Constant(value='python.testing.pytestArgs'),
+          Constant(value='python.testing.unittestEnabled')],
+        values=[
+          Name(id='true', ctx=Load()),
+          List(
+            elts=[
+              Constant(value='tests')],
+            ctx=Load()),
+          Name(id='false', ctx=Load())]))])

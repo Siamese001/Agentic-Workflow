@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: v10_7_runtime.py\n# CONSOLIDATED: Entrypoints, Batch Runner, and Meta-Learning Loop\n# STATUS: Production Ready (v10.7 Baseline)\n\nfrom __future__ import annotations\nimport asyncio\nimport json\nimport logging\nimport os\nimport uuid\nimport sys\nimport csv\nimport shutil\nfrom datetime import datetime\nfrom typing import Any, Dict, List, Optional, Tuple\nfrom functools import wraps\n\n# Assuming Core/Models/Clients/Orchestration are available from the consolidated scope.\n# Base classes and Pydantic models are assumed to be available from v10_7_foundations.py\nfrom v10_7_foundations import (\n    ConfigV10_7, WorkflowContext, MainGraphState, CircuitBreaker, \n    CircuitBreakerOpenError, WorkflowError, PydanticSchemaError, \n    cleanup_workflow_chroma_collection, create_workflow_context, get_timeout_decorator,\n    unwrap_node_result, BaseAgent, BaseTool, log_event, _format_prompt_with_defaults\n)\nfrom v10_7_orchestration import get_graph_app, QAConductorAgent # Assuming the QAConductor is needed ",
+  "full_hash": "d719a92f54ee73d6cc18a42cd16af3e14dc09bfafaf30f53ce3662536f946ba1",
+  "generated_at": 1764728229.0897973,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7_consolidated\\v10_7_runtime.py"
+}

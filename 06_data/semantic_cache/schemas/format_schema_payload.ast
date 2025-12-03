@@ -1,0 +1,164 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema payload formatting and structuring.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='PayloadFormat',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Payload formatting options.')),
+        Assign(
+          targets=[
+            Name(id='COMPACT', ctx=Store())],
+          value=Constant(value='compact')),
+        Assign(
+          targets=[
+            Name(id='VERBOSE', ctx=Store())],
+          value=Constant(value='verbose')),
+        Assign(
+          targets=[
+            Name(id='STRUCTURED', ctx=Store())],
+          value=Constant(value='structured')),
+        Assign(
+          targets=[
+            Name(id='FLATTENED', ctx=Store())],
+          value=Constant(value='flattened'))]),
+    ClassDef(
+      name='FormattingStyle',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Payload formatting styles.')),
+        Assign(
+          targets=[
+            Name(id='INDENTED', ctx=Store())],
+          value=Constant(value='indented')),
+        Assign(
+          targets=[
+            Name(id='MINIFIED', ctx=Store())],
+          value=Constant(value='minified')),
+        Assign(
+          targets=[
+            Name(id='PRETTY_PRINT', ctx=Store())],
+          value=Constant(value='pretty_print')),
+        Assign(
+          targets=[
+            Name(id='CUSTOM', ctx=Store())],
+          value=Constant(value='custom'))]),
+    ClassDef(
+      name='PayloadFormattingConfig',
+      body=[
+        Expr(
+          value=Constant(value='Schema for payload formatting configuration.')),
+        AnnAssign(
+          target=Name(id='format', ctx=Store()),
+          annotation=Name(id='PayloadFormat', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='style', ctx=Store()),
+          annotation=Name(id='FormattingStyle', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_types', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_descriptions', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sort_keys', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='FormattedPayload',
+      body=[
+        Expr(
+          value=Constant(value='Schema for formatted payload representation.')),
+        AnnAssign(
+          target=Name(id='payload_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='format', ctx=Store()),
+          annotation=Name(id='PayloadFormat', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='formatted_data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='size_bytes', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='formatting_metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PayloadFormattingResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for payload formatting results.')),
+        AnnAssign(
+          target=Name(id='formatting_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='configuration', ctx=Store()),
+          annotation=Name(id='PayloadFormattingConfig', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='formatted_payload', ctx=Store()),
+          annotation=Name(id='FormattedPayload', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='formatting_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='original_size_bytes', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

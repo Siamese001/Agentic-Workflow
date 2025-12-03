@@ -1,0 +1,1641 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nValidates SDK installations for resume generation system functionality.\n\nEnsures all dependencies are properly installed to maintain\nresume generation quality and system reliability.\n')),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    AnnAssign(
+      target=Name(id='results', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()),
+      value=List(ctx=Load()),
+      simple=1),
+    FunctionDef(
+      name='record_test_result',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='status',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='details',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='error',
+            annotation=Name(id='str', ctx=Load()))],
+        defaults=[
+          Constant(value=''),
+          Constant(value='')]),
+      body=[
+        Expr(
+          value=Constant(value='Records SDK validation test results for system reliability.\n\n    Ensures resume generation dependencies are properly validated\n    for consistent and quality output generation.\n    ')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='results', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='sdk_name'),
+                  Constant(value='install_status'),
+                  Constant(value='test_results'),
+                  Constant(value='details'),
+                  Constant(value='error'),
+                  Constant(value='follow_up')],
+                values=[
+                  Name(id='name', ctx=Load()),
+                  IfExp(
+                    test=Compare(
+                      left=Name(id='status', ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='PASS')]),
+                    body=Constant(value='SUCCESS'),
+                    orelse=Constant(value='FAILED')),
+                  Name(id='status', ctx=Load()),
+                  Name(id='details', ctx=Load()),
+                  Name(id='error', ctx=Load()),
+                  IfExp(
+                    test=Compare(
+                      left=Name(id='status', ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='PASS')]),
+                    body=Constant(value=''),
+                    orelse=Constant(value='Review error and reinstall if needed'))])]))]),
+    FunctionDef(
+      name='test_core_dependencies',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests core Python dependencies for resume generation functionality.\n\n    Ensures essential libraries work properly for reliable\n    resume processing and quality output generation.\n    ')),
+        Try(
+          body=[
+            ImportFrom(
+              module='pydantic',
+              names=[
+                alias(name='BaseModel'),
+                alias(name='Field')],
+              level=0),
+            ClassDef(
+              name='TestModel',
+              bases=[
+                Name(id='BaseModel', ctx=Load())],
+              body=[
+                AnnAssign(
+                  target=Name(id='name', ctx=Store()),
+                  annotation=Name(id='str', ctx=Load()),
+                  simple=1),
+                AnnAssign(
+                  target=Name(id='value', ctx=Store()),
+                  annotation=Name(id='int', ctx=Load()),
+                  value=Call(
+                    func=Name(id='Field', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='gt',
+                        value=Constant(value=0))]),
+                  simple=1)]),
+            Assign(
+              targets=[
+                Name(id='obj', ctx=Store())],
+              value=Call(
+                func=Name(id='TestModel', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Constant(value='test')),
+                  keyword(
+                    arg='value',
+                    value=Constant(value=42))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='obj', ctx=Load()),
+                  attr='name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='test')])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='pydantic'),
+                  Constant(value='PASS'),
+                  Constant(value='Version check passed, schema validation working')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='pydantic'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='numpy', asname='np')]),
+            Assign(
+              targets=[
+                Name(id='arr', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='np', ctx=Load()),
+                  attr='array',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Constant(value=1),
+                      Constant(value=2),
+                      Constant(value=3)],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='arr', ctx=Load()),
+                    attr='sum',
+                    ctx=Load())),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=6)])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='numpy'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='np', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', operations working')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='numpy'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='pandas', asname='pd')]),
+            Assign(
+              targets=[
+                Name(id='df', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pd', ctx=Load()),
+                  attr='DataFrame',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='a'),
+                      Constant(value='b')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value=1),
+                          Constant(value=2)],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value=3),
+                          Constant(value=4)],
+                        ctx=Load())])])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='df', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='pandas'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='pd', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', DataFrame operations working')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='pandas'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            ImportFrom(
+              module='tenacity',
+              names=[
+                alias(name='retry'),
+                alias(name='stop_after_attempt')],
+              level=0),
+            FunctionDef(
+              name='test_func',
+              args=arguments(),
+              body=[
+                Return(
+                  value=Constant(value='success'))],
+              decorator_list=[
+                Call(
+                  func=Name(id='retry', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='stop',
+                      value=Call(
+                        func=Name(id='stop_after_attempt', ctx=Load()),
+                        args=[
+                          Constant(value=1)]))])]),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='test_func', ctx=Load())),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='success')])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='tenacity'),
+                  Constant(value='PASS'),
+                  Constant(value='Retry decorator working')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='tenacity'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            ImportFrom(
+              module='rich.console',
+              names=[
+                alias(name='Console')],
+              level=0),
+            Expr(
+              value=Call(
+                func=Name(id='Console', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='rich'),
+                  Constant(value='PASS'),
+                  Constant(value='Console initialization successful')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='rich'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='dotenv')]),
+            Expr(
+              value=Name(id='dotenv', ctx=Load())),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='python-dotenv'),
+                  Constant(value='PASS'),
+                  Constant(value='Import successful')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='python-dotenv'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='httpx')]),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='httpx'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='httpx', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1)])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='httpx'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='test_llm_providers',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests LLM provider SDKs for resume content generation.\n\n    Ensures all language model integrations work properly\n    for high-quality resume text generation.\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='openai')]),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='openai'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='openai', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', SDK import successful')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='openai'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='anthropic')]),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='anthropic'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='anthropic', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', SDK import successful')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='anthropic'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='google.generativeai', asname='genai')]),
+            Expr(
+              value=Name(id='genai', ctx=Load())),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='google-generativeai'),
+                  Constant(value='PASS'),
+                  Constant(value='SDK import successful')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='google-generativeai'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='test_vector_databases',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests vector database SDKs for resume knowledge retrieval.\n\n    Ensures efficient storage and retrieval of resume-related\n    information for improved content accuracy.\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='redis')]),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='redis'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='redis', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', SDK import successful')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='redis'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='chromadb')]),
+            Assign(
+              targets=[
+                Name(id='version', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='chromadb', ctx=Load()),
+                  Constant(value='__version__'),
+                  Constant(value='unknown')])),
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='chromadb', ctx=Load()),
+                      attr='Client',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='chromadb'),
+                      Constant(value='PASS'),
+                      JoinedStr(
+                        values=[
+                          Constant(value='Version: '),
+                          FormattedValue(
+                            value=Name(id='version', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=', Basic client initialization successful')])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Constant(value='unable to infer type'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='e', ctx=Load())])]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='record_test_result', ctx=Load()),
+                            args=[
+                              Constant(value='chromadb'),
+                              Constant(value='WARNING'),
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Version: '),
+                                  FormattedValue(
+                                    value=Name(id='version', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=', Basic functionality works but with type inference warning (Python 3.14+ compatibility issue)')])]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='record_test_result', ctx=Load()),
+                            args=[
+                              Constant(value='chromadb'),
+                              Constant(value='WARNING')],
+                            keywords=[
+                              keyword(
+                                arg='error',
+                                value=JoinedStr(
+                                  values=[
+                                    Constant(value='Unexpected error (Python 3.14+ compatibility?): '),
+                                    FormattedValue(
+                                      value=Call(
+                                        func=Name(id='str', ctx=Load()),
+                                        args=[
+                                          Name(id='e', ctx=Load())]),
+                                      conversion=-1)]))]))])])])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='ImportError', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='chromadb'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=JoinedStr(
+                          values=[
+                            Constant(value='SDK not installed: '),
+                            FormattedValue(
+                              value=Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Name(id='e', ctx=Load())]),
+                              conversion=-1)]))]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='chromadb'),
+                      Constant(value='WARNING')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=JoinedStr(
+                          values=[
+                            Constant(value='Unexpected error (Python 3.14+ compatibility?): '),
+                            FormattedValue(
+                              value=Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Name(id='e', ctx=Load())]),
+                              conversion=-1)]))]))])]),
+        Try(
+          body=[
+            Try(
+              body=[
+                Import(
+                  names=[
+                    alias(name='pinecone')]),
+                Expr(
+                  value=Name(id='pinecone', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='pinecone-client'),
+                      Constant(value='PASS'),
+                      Constant(value='SDK import successful (legacy package)')]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_test_result', ctx=Load()),
+                        args=[
+                          Constant(value='pinecone-client'),
+                          Constant(value='FAIL'),
+                          Constant(value='Package not found')]))])])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='pinecone-client'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='faiss')]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='faiss', ctx=Load()),
+                  attr='IndexFlatL2',
+                  ctx=Load()),
+                args=[
+                  Constant(value=128)])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='faiss-cpu'),
+                  Constant(value='PASS'),
+                  Constant(value='Index creation successful')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='faiss-cpu'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='test_ml_libraries',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests ML/NLP libraries for resume content processing.\n\n    Ensures machine learning components work properly for\n    intelligent resume generation and optimization.\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='sklearn')]),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='scikit-learn'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='sklearn', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1)])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='scikit-learn'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='sentence_transformers')]),
+            Assign(
+              targets=[
+                Name(id='version', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='sentence_transformers', ctx=Load()),
+                  Constant(value='__version__'),
+                  Constant(value='unknown')])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='sentence-transformers'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Name(id='version', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', Import successful')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='sentence-transformers'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='test_observability',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests observability libraries for resume generation monitoring.\n\n    Ensures tracking and logging capabilities work properly\n    for quality assurance and debugging.\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='opentelemetry')]),
+            Assign(
+              targets=[
+                Name(id='version', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='opentelemetry', ctx=Load()),
+                  Constant(value='__version__'),
+                  Constant(value='unknown')])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='opentelemetry-api'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Name(id='version', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', Core API import successful')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='opentelemetry-api'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Try(
+              body=[
+                ImportFrom(
+                  module='opentelemetry.sdk.trace',
+                  names=[
+                    alias(name='TracerProvider')],
+                  level=0),
+                Expr(
+                  value=Call(
+                    func=Name(id='TracerProvider', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='opentelemetry-sdk'),
+                      Constant(value='PASS'),
+                      Constant(value='TracerProvider initialization successful')]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='ImportError', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_test_result', ctx=Load()),
+                        args=[
+                          Constant(value='opentelemetry-sdk'),
+                          Constant(value='WARNING'),
+                          Constant(value='SDK not installed, but API available')]))])])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='opentelemetry-sdk'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='test_testing_frameworks',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests testing frameworks for resume generation quality assurance.\n\n    Ensures testing infrastructure works properly for\n    maintaining code quality and reliability.\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='pytest')]),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='pytest'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='__version__',
+                          ctx=Load()),
+                        conversion=-1)])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='pytest'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='pytest_asyncio')]),
+            Assign(
+              targets=[
+                Name(id='version', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='pytest_asyncio', ctx=Load()),
+                  Constant(value='__version__'),
+                  Constant(value='unknown')])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='pytest-asyncio'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='Version: '),
+                      FormattedValue(
+                        value=Name(id='version', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=', Import successful')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='pytest-asyncio'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='test_mcp_sdk',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests MCP SDK for resume generation integration capabilities.\n\n    Ensures external integrations work properly for enhanced\n    resume processing functionality.\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='mcp')]),
+            Assign(
+              targets=[
+                Name(id='version', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='mcp', ctx=Load()),
+                  Constant(value='__version__'),
+                  Constant(value='unknown')])),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='mcp'),
+                  Constant(value='PASS'),
+                  JoinedStr(
+                    values=[
+                      Constant(value='SDK import successful (version: '),
+                      FormattedValue(
+                        value=Name(id='version', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=')')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='mcp'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='test_project_imports',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Tests project-specific imports for resume generation modules.\n\n    Ensures all internal components can be imported properly\n    for seamless resume processing functionality.\n    ')),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='infra.storage.cache_redis')]),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='cache_redis (project)'),
+                  Constant(value='PASS'),
+                  Constant(value='Project module import successful')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='cache_redis (project)'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='infra.storage.vector_store_chroma')]),
+            Expr(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='infra', ctx=Load()),
+                  attr='storage',
+                  ctx=Load()),
+                attr='vector_store_chroma',
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='vector_store_chroma (project)'),
+                  Constant(value='PASS'),
+                  Constant(value='Project module import successful')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='vector_store_chroma (project)'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])]),
+        Try(
+          body=[
+            Import(
+              names=[
+                alias(name='providers')]),
+            Expr(
+              value=Name(id='providers', ctx=Load())),
+            Expr(
+              value=Call(
+                func=Name(id='record_test_result', ctx=Load()),
+                args=[
+                  Constant(value='providers (project)'),
+                  Constant(value='PASS'),
+                  Constant(value='All provider modules import successful')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='record_test_result', ctx=Load()),
+                    args=[
+                      Constant(value='providers (project)'),
+                      Constant(value='FAIL')],
+                    keywords=[
+                      keyword(
+                        arg='error',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='e', ctx=Load())]))]))])])]),
+    FunctionDef(
+      name='print_results_table',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Prints validation results in a formatted table for clarity.\n\n    Ensures SDK validation results are clearly displayed\n    for easy system reliability assessment.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=120)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='SDK VALIDATION TEST RESULTS')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=120))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Constant(value='SDK Name'),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='<35')])),
+                  Constant(value=' '),
+                  FormattedValue(
+                    value=Constant(value='Install Status'),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='<15')])),
+                  Constant(value=' '),
+                  FormattedValue(
+                    value=Constant(value='Test Results'),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='<15')])),
+                  Constant(value=' '),
+                  FormattedValue(
+                    value=Constant(value='Details/Error'),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='<55')]))])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='-'),
+                op=Mult(),
+                right=Constant(value=120))])),
+        For(
+          target=Name(id='result', ctx=Store()),
+          iter=Name(id='results', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='test_results'),
+                    ctx=Load()),
+                  ops=[
+                    Eq()],
+                  comparators=[
+                    Constant(value='PASS')]),
+                body=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='details'),
+                  ctx=Load()),
+                orelse=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='error'),
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='details', ctx=Load())]),
+                  ops=[
+                    Gt()],
+                  comparators=[
+                    Constant(value=55)]),
+                body=BinOp(
+                  left=Subscript(
+                    value=Name(id='details', ctx=Load()),
+                    slice=Slice(
+                      upper=Constant(value=52)),
+                    ctx=Load()),
+                  op=Add(),
+                  right=Constant(value='...')),
+                orelse=Name(id='details', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='sdk_name'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='<35')])),
+                      Constant(value=' '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='install_status'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='<15')])),
+                      Constant(value=' '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='test_results'),
+                          ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='<15')])),
+                      Constant(value=' '),
+                      FormattedValue(
+                        value=Name(id='details', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='<55')]))])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='-'),
+                op=Mult(),
+                right=Constant(value=120))])),
+        Assign(
+          targets=[
+            Name(id='passed', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='results', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Subscript(
+                          value=Name(id='r', ctx=Load()),
+                          slice=Constant(value='test_results'),
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='PASS')])],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='failed', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='results', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Subscript(
+                          value=Name(id='r', ctx=Load()),
+                          slice=Constant(value='test_results'),
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='FAIL')])],
+                    is_async=0)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='SUMMARY: '),
+                  FormattedValue(
+                    value=Name(id='passed', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' PASSED, '),
+                  FormattedValue(
+                    value=Name(id='failed', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' FAILED out of '),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='results', ctx=Load())]),
+                    conversion=-1),
+                  Constant(value=' tests')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=120)),
+                op=Add(),
+                right=Constant(value='\n'))]))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Runs all SDK validation tests for system reliability.\n\n    Ensures resume generation system dependencies are properly\n    validated for consistent and quality output.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Starting SDK validation tests...')])),
+        Expr(
+          value=Call(
+            func=Name(id='test_core_dependencies', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_llm_providers', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_vector_databases', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_ml_libraries', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_observability', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_testing_frameworks', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_mcp_sdk', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='test_project_imports', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='print_results_table', ctx=Load()))),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Constant(value='sdk_validation_results.json'),
+                  Constant(value='w')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dump',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load()),
+                  Name(id='f', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='indent',
+                    value=Constant(value=2))]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Results saved to sdk_validation_results.json')])),
+        Assign(
+          targets=[
+            Name(id='failed', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Name(id='results', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Subscript(
+                          value=Name(id='r', ctx=Load()),
+                          slice=Constant(value='test_results'),
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='FAIL')])],
+                    is_async=0)])])),
+        Return(
+          value=IfExp(
+            test=Compare(
+              left=Name(id='failed', ctx=Load()),
+              ops=[
+                Gt()],
+              comparators=[
+                Constant(value=0)]),
+            body=Constant(value=1),
+            orelse=Constant(value=0)))]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='sys', ctx=Load()),
+              attr='exit',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='main', ctx=Load()))]))])])

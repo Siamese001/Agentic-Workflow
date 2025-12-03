@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\dependency_report.json",
+    "rel_path": "dependency_report.json",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "d5290bd1911264cdfa931a01735d67c49941659bc23f762135466585b783cf8e",
+    "file_size": 133765,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.8948126
+}

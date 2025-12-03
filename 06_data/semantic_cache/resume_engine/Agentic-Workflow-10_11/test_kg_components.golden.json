@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Tests for Temporal KG Components - Triplets, Entities, Multi-hop Retrieval\n\nThis module tests the new KG components:\n- L4 TripletStore and EntityRegistry\n- L2 Triplet Extraction and KG Retrieval Executors\n- L1 KG Retrieval Planner\n- L3 KG-First Retrieval Orchestration\n\"\"\"\n\nimport pytest\nfrom datetime import datetime, UTC\n\n# L4 Components\nfrom l4.triplet_store import (\n    TripletStore,\n    Triplet,\n    TripletQuery,\n    TemporalType,\n    TripletStatus,\n    create_triplet,\n    PREDICATES,\n)\nfrom l4.entity_resolution import (\n    EntityRegistry,\n    EntityType,\n    CanonicalEntity,\n    EntityMention,\n    create_entity,\n    create_mention,\n)\n\n# L1 Components\nfrom l1.kg_retrieval_planning import (\n    KGRetrievalPlanner,\n    KGQueryPlan,\n    QueryType,\n    HopDirection,\n    plan_entity_retrieval,\n)\n\n# L2 Components\nfrom l2.kg_retrieval_executor import (\n    KGRetrievalExecutor,\n    KGRetrievalResult,\n    execute_entity_query,\n)\nfrom l2.triplet_extraction_executor import (\n    TripletExt",
+  "full_hash": "db593b0b37559f126e081814ad324c8165ff6e0c0548221085bab6a4a0888395",
+  "generated_at": 1764728227.765955,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_kg_components.py"
+}

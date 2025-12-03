@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Job Factory for Testing.\"\"\"\n\nclass JobFactory:\n    \"\"\"Factory for creating Job test objects.\"\"\"\n    \n    @staticmethod\n    def create(\n        title=\"Software Engineer\",\n        company=\"Tech Corp\",\n        requirements=None,\n        experience_years=3\n    ):\n        \"\"\"Create a Job dict.\"\"\"\n        return {\n            \"title\": title,\n            \"company\": company,\n            \"requirements\": requirements or [\"Python\", \"AWS\"],\n            \"experience_years\": experience_years,\n        }\n\nclass ResumeFactory:\n    \"\"\"Factory for creating Resume test objects.\"\"\"\n    \n    @staticmethod\n    def create(\n        name=\"John Doe\",\n        summary=\"Experienced developer\",\n        skills=None,\n        experience_years=5\n    ):\n        \"\"\"Create a Resume dict.\"\"\"\n        return {\n            \"name\": name,\n            \"summary\": summary,\n            \"skills\": skills or [\"Python\", \"JavaScript\", \"AWS\"],\n            \"experience_years\": experience_years,\n        }\n\ndef test_job_factory():\n    \"\"\"Te",
+  "full_hash": "1de71d106ff28b5cc42049ff9e2dcd17c7185ef8cb1ec4213d75c3fc940de4cc",
+  "generated_at": 1764728227.5204911,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\factories\\job_factory.py"
+}

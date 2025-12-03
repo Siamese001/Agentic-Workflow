@@ -1,0 +1,119 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='name'),
+          Constant(value='description'),
+          Constant(value='version'),
+          Constant(value='schema'),
+          Constant(value='template'),
+          Constant(value='latest'),
+          Constant(value='versions')],
+        values=[
+          Constant(value='analysis_prompt'),
+          Constant(value='Prompt for data analysis and insights generation'),
+          Constant(value='1.0.0'),
+          Dict(
+            keys=[
+              Constant(value='type'),
+              Constant(value='properties'),
+              Constant(value='required')],
+            values=[
+              Constant(value='object'),
+              Dict(
+                keys=[
+                  Constant(value='data_type'),
+                  Constant(value='analysis_goal'),
+                  Constant(value='context')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='type'),
+                      Constant(value='enum'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value='string'),
+                      List(
+                        elts=[
+                          Constant(value='numerical'),
+                          Constant(value='text'),
+                          Constant(value='mixed')],
+                        ctx=Load()),
+                      Constant(value='Type of data to analyze')]),
+                  Dict(
+                    keys=[
+                      Constant(value='type'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value='string'),
+                      Constant(value='Goal or objective of the analysis')]),
+                  Dict(
+                    keys=[
+                      Constant(value='type'),
+                      Constant(value='description')],
+                    values=[
+                      Constant(value='string'),
+                      Constant(value='Additional context for the analysis')])]),
+              List(
+                elts=[
+                  Constant(value='data_type'),
+                  Constant(value='analysis_goal')],
+                ctx=Load())]),
+          Constant(value='You are a data analyst. Analyze the provided {{data_type}} data with the goal of {{analysis_goal}}. Context: {{context}}. Provide clear insights and actionable recommendations.'),
+          Dict(
+            keys=[
+              Constant(value='version'),
+              Constant(value='prompt'),
+              Constant(value='examples')],
+            values=[
+              Constant(value='1.0.0'),
+              Constant(value='You are a data analyst. Analyze the provided {{data_type}} data with the goal of {{analysis_goal}}. Context: {{context}}. Provide clear insights and actionable recommendations.'),
+              List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='input'),
+                      Constant(value='output')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='data_type'),
+                          Constant(value='analysis_goal'),
+                          Constant(value='context')],
+                        values=[
+                          Constant(value='numerical'),
+                          Constant(value='identify trends'),
+                          Constant(value='sales data from last quarter')]),
+                      Constant(value='Based on the numerical sales data analysis, I observe a clear upward trend in monthly revenue with a 15% increase compared to the previous quarter. Key recommendations include focusing on the product categories showing strongest growth...')])],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='1.0.0')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='prompt'),
+                  Constant(value='created_at'),
+                  Constant(value='examples')],
+                values=[
+                  Constant(value='You are a data analyst. Analyze the provided {{data_type}} data with the goal of {{analysis_goal}}. Context: {{context}}. Provide clear insights and actionable recommendations.'),
+                  Constant(value='2024-01-01T00:00:00Z'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='input'),
+                          Constant(value='output')],
+                        values=[
+                          Dict(
+                            keys=[
+                              Constant(value='data_type'),
+                              Constant(value='analysis_goal'),
+                              Constant(value='context')],
+                            values=[
+                              Constant(value='numerical'),
+                              Constant(value='identify trends'),
+                              Constant(value='sales data from last quarter')]),
+                          Constant(value='Based on the numerical sales data analysis, I observe a clear upward trend in monthly revenue with a 15% increase compared to the previous quarter. Key recommendations include focusing on the product categories showing strongest growth...')])],
+                    ctx=Load())])])]))])

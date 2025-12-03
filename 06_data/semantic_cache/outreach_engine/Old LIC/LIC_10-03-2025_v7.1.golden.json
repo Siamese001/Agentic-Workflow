@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v4\",\n  \"metadata\": {\n    \"version\": \"LIC_10-03-2025_v7.1\",\n    \"patches\": [\n      \"C001\",\n      \"C002\",\n      \"C003\",\n      \"C004\",\n      \"C005\",\n      \"C006\",\n      \"C007\",\n      \"C008\",\n      \"C009\",\n      \"C010\",\n      \"C011\",\n      \"C012\",\n      \"C013\",\n      \"C014\",\n      \"C015\",\n      \"C016\",\n      \"C017\",\n      \"C018\",\n      \"C019\",\n      \"C020\",\n      \"C021\",\n      \"C022\",\n      \"C023\",\n      \"C024\"\n    ],\n    \"changelog\": \"external://CHANGELOG.md\",\n    \"sha256\": \"e63f2cce657a0ea2cbe7a6e409b4cf43aec954a796fc37e2ad5c6c0a7995c83f\",\n    \"optimization_date\": \"2025-10-03\",\n    \"optimizations_applied\": [\n      \"removed_patch_history\",\n      \"deduplicated_patterns\",\n      \"consolidated_validation_rules\",\n      \"created_base_templates\",\n      \"integrated_reasoning_transformer_v4\"\n    ]\n  },\n  \"instructions\": [\n    \"Do not emit Section 1 (Role) or Section 2 (Task) in visible output.\",\n    \"Run Section 3",
+  "full_hash": "907204304722097bc77285ed2839cce5aedfa83843d937c50b867d3cdc7e8737",
+  "generated_at": 1764728333.6977088,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v7.1.json"
+}

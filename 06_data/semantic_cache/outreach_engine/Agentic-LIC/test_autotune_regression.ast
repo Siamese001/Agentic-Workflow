@@ -1,0 +1,89 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.telemetry',
+      names=[
+        alias(name='PolicyController')],
+      level=0),
+    FunctionDef(
+      name='test_budget_adjustment_trends_down_on_latency_pressure',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='controller', ctx=Store())],
+          value=Call(
+            func=Name(id='PolicyController', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='register_tool',
+              ctx=Load()),
+            args=[
+              Constant(value='web_search_v1')],
+            keywords=[
+              keyword(
+                arg='quarantined',
+                value=Constant(value=False))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='update',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='latency_p95_ms',
+                value=Constant(value=4200)),
+              keyword(
+                arg='qa_pass_rate',
+                value=Constant(value=0.9))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='update',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='latency_p95_ms',
+                value=Constant(value=4600)),
+              keyword(
+                arg='qa_pass_rate',
+                value=Constant(value=0.88))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='budget_multiplier',
+              ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=1.0)])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='update',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='latency_p95_ms',
+                value=Constant(value=3000)),
+              keyword(
+                arg='qa_pass_rate',
+                value=Constant(value=0.9))])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0.7),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Attribute(
+                value=Name(id='controller', ctx=Load()),
+                attr='budget_multiplier',
+                ctx=Load()),
+              Constant(value=1.3)]))])])

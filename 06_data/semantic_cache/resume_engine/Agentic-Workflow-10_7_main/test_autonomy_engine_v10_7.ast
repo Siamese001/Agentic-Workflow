@@ -1,0 +1,624 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='MethodType'),
+        alias(name='SimpleNamespace')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7.services',
+      names=[
+        alias(name='AutonomyEngine')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.components.drafting',
+      names=[
+        alias(name='DraftingGuildCoordinator')],
+      level=0),
+    ClassDef(
+      name='_DummyMetrics',
+      body=[
+        FunctionDef(
+          name='record',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            vararg=arg(arg='_'),
+            kwarg=arg(arg='__')),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        FunctionDef(
+          name='get_average_latency',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            vararg=arg(arg='_'),
+            kwarg=arg(arg='__')),
+          body=[
+            Return(
+              value=Constant(value=None))])]),
+    FunctionDef(
+      name='_build_agent',
+      args=arguments(
+        args=[
+          arg(arg='agent_cls'),
+          arg(arg='context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent_cls', ctx=Load()),
+              attr='__new__',
+              ctx=Load()),
+            args=[
+              Name(id='agent_cls', ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='context',
+              ctx=Store())],
+          value=Name(id='context', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='config',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='context', ctx=Load()),
+            attr='config',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='logger',
+              ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='getLogger',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='agent_cls', ctx=Load()),
+                attr='__name__',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='debug_mode',
+              ctx=Store())],
+          value=Constant(value=False)),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='prompt_manager',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='context', ctx=Load()),
+            attr='prompt_manager',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='validator',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='context', ctx=Load()),
+            attr='response_validator',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='budget_manager',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='context', ctx=Load()),
+            attr='context_budget_manager',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='metrics',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='context', ctx=Load()),
+            attr='metrics_collector',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='self_correction_manager',
+              ctx=Store())],
+          value=Constant(value=None)),
+        Return(
+          value=Name(id='agent', ctx=Load()))]),
+    FunctionDef(
+      name='test_autonomy_disabled_noop',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='autonomy_config',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=False))]))])),
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='AutonomyEngine', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='metrics',
+                value=Constant(value=None))])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='engine', ctx=Load()),
+                attr='enabled',
+                ctx=Load())),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='engine', ctx=Load()),
+                attr='decide',
+                ctx=Load()),
+              args=[
+                Constant(value='wf-0')]),
+            ops=[
+              Eq()],
+            comparators=[
+              Dict()]))]),
+    FunctionDef(
+      name='test_autonomy_generates_routing_hints_from_signals',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='events', ctx=Store())],
+          value=List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='event')],
+                values=[
+                  Constant(value='rag_iteration')]),
+              Dict(
+                keys=[
+                  Constant(value='event')],
+                values=[
+                  Constant(value='qa_validation')])],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='episodic_memory', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='get',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='_workflow_id')]),
+                  body=Dict(
+                    keys=[
+                      Constant(value='events')],
+                    values=[
+                      Name(id='events', ctx=Load())])))])),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='autonomy_config',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=True))]))])),
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='AutonomyEngine', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='metrics',
+                value=Constant(value=None)),
+              keyword(
+                arg='episodic_memory',
+                value=Name(id='episodic_memory', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='hints', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='engine', ctx=Load()),
+              attr='decide',
+              ctx=Load()),
+            args=[
+              Constant(value='wf-123')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='hints', ctx=Load()),
+              slice=Constant(value='rag_branch_factor'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=2)])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='hints', ctx=Load()),
+              slice=Constant(value='qa_temperature_bias'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              UnaryOp(
+                op=USub(),
+                operand=Constant(value=0.1))]))]),
+    AsyncFunctionDef(
+      name='test_autonomy_injected_into_stacks_without_breakage',
+      args=arguments(),
+      body=[
+        ClassDef(
+          name='_StubAutonomy',
+          body=[
+            FunctionDef(
+              name='__init__',
+              args=arguments(
+                args=[
+                  arg(arg='self')]),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='calls',
+                      ctx=Store())],
+                  value=List(ctx=Load()))]),
+            FunctionDef(
+              name='enabled',
+              args=arguments(
+                args=[
+                  arg(arg='self')]),
+              body=[
+                Return(
+                  value=Constant(value=True))]),
+            FunctionDef(
+              name='decide',
+              args=arguments(
+                args=[
+                  arg(arg='self'),
+                  arg(arg='workflow_id')]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='calls',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='workflow_id', ctx=Load())])),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='drafting_override')],
+                    values=[
+                      Constant(value=True)]))])]),
+        Assign(
+          targets=[
+            Name(id='predictive_cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='enabled',
+                value=Constant(value=False)),
+              keyword(
+                arg='max_background_tasks',
+                value=Constant(value=0))])),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='predictive_caching_config',
+                value=Name(id='predictive_cfg', ctx=Load())),
+              keyword(
+                arg='auto_tuning_config',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Constant(value=False))])),
+              keyword(
+                arg='agent_stacks',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='conductor_max_steps',
+                      value=Constant(value=1))]))])),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='SimpleNamespace', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='predictive_cache_manager',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Lambda(
+                        args=arguments(),
+                        body=Constant(value=False))),
+                    keyword(
+                      arg='schedule',
+                      value=Lambda(
+                        args=arguments(
+                          vararg=arg(arg='_')),
+                        body=Constant(value=None))),
+                    keyword(
+                      arg='run_scheduled',
+                      value=Lambda(
+                        args=arguments(),
+                        body=Constant(value=None)))])),
+              keyword(
+                arg='precompute_engine',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()))),
+              keyword(
+                arg='metrics_collector',
+                value=Call(
+                  func=Name(id='_DummyMetrics', ctx=Load()))),
+              keyword(
+                arg='prompt_manager',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='goal_state',
+                      value=Constant(value='')),
+                    keyword(
+                      arg='top_failures',
+                      value=Constant(value='')),
+                    keyword(
+                      arg='get_template',
+                      value=Lambda(
+                        args=arguments(
+                          vararg=arg(arg='_')),
+                        body=Constant(value='')))])),
+              keyword(
+                arg='response_validator',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()))),
+              keyword(
+                arg='context_budget_manager',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()))),
+              keyword(
+                arg='self_correction_manager',
+                value=Constant(value=None)),
+              keyword(
+                arg='is_mcp_enabled',
+                value=Lambda(
+                  args=arguments(),
+                  body=Constant(value=False))),
+              keyword(
+                arg='ensure_mcp_clients',
+                value=Lambda(args=arguments(), body=Dict())),
+              keyword(
+                arg='policy_auto_tuner',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='enabled',
+                      value=Lambda(
+                        args=arguments(),
+                        body=Constant(value=False)))])),
+              keyword(
+                arg='tuning_profile',
+                value=Call(
+                  func=Name(id='SimpleNamespace', ctx=Load()))),
+              keyword(
+                arg='episodic_memory',
+                value=Constant(value=None)),
+              keyword(
+                arg='autonomy_engine',
+                value=Call(
+                  func=Name(id='_StubAutonomy', ctx=Load())))])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='_build_agent', ctx=Load()),
+            args=[
+              Name(id='DraftingGuildCoordinator', ctx=Load()),
+              Name(id='context', ctx=Load())])),
+        AsyncFunctionDef(
+          name='fake_execute',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='task_context'),
+              arg(arg='workflow_id'),
+              arg(arg='overrides')],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Tuple(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='final_output')],
+                    values=[
+                      Dict()]),
+                  Dict()],
+                ctx=Load()))]),
+        AsyncFunctionDef(
+          name='fake_self_correct',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='task_context'),
+              arg(arg='workflow_id'),
+              arg(arg='base_result'),
+              arg(arg='meta')]),
+          body=[
+            Return(
+              value=Name(id='base_result', ctx=Load()))]),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='_execute_guild',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='MethodType', ctx=Load()),
+            args=[
+              Name(id='fake_execute', ctx=Load()),
+              Name(id='agent', ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='_maybe_self_correct',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='MethodType', ctx=Load()),
+            args=[
+              Name(id='fake_self_correct', ctx=Load()),
+              Name(id='agent', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='metadata')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='workflow_id')],
+                values=[
+                  Constant(value='wf-test')])])),
+        Assign(
+          targets=[
+            Name(id='task_context', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='bullets'),
+              Constant(value='strategy'),
+              Constant(value='resume')],
+            values=[
+              List(ctx=Load()),
+              Dict(),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='run_async',
+                ctx=Load()),
+              args=[
+                Name(id='task_context', ctx=Load()),
+                Constant(value='wf-test')],
+              keywords=[
+                keyword(
+                  arg='state',
+                  value=Name(id='state', ctx=Load()))]))),
+        Assert(
+          test=Compare(
+            left=Name(id='result', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Dict(
+                keys=[
+                  Constant(value='final_output')],
+                values=[
+                  Dict()])])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Name(id='state', ctx=Load()),
+                slice=Constant(value='autonomy_hints'),
+                ctx=Load()),
+              slice=Constant(value='drafting_override'),
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

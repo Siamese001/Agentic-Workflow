@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\plan-phase\\get-data-info\\general\\understand-request\\load_data_planning.py",
+    "rel_path": "load_data_planning.py",
+    "root_name": "data_source",
+    "file_hash": "f3da6ffc6b2d9d77b30ec96f4769f160cdb051402a4b6144d2dd66d472b53bbe",
+    "file_size": 6622,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.9664958
+}

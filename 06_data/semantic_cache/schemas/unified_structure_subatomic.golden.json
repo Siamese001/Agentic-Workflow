@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Add explicit header that this YAML requires a meta sidecar\nmeta_sidecar: unified_structure_subatomic_meta.yaml\ncanonical_definition: \"Canonical SSoT = MERGE(main_yaml, meta_yaml)\"\n\nagentic_core:\n  L1_cognition:\n    P1_retrieve:\n      __init__.py: null\n      check_rules:\n        __init__.py: null\n        policy_check_safety:\n          __init__.py: null\n          check_registry_policy.py: null\n          enforce_boundaries.py: null\n          validate_constraints.py: null\n      get_info:\n        __init__.py: null\n        understand_request:\n          __init__.py: null\n          build_core_query.py: null\n          extract_layer_parameters.py: null\n          fetch_core_history.py: null\n          parse_registry_intent.py: null\n          query_core_store.py: null\n          retrieve_core_context.py: null\n        utility_prepare_information:\n          __init__.py: null\n          build_filters.py: null\n          format_registry_context.py: null\n          prepare_payload.py: null\n        embeddi",
+  "full_hash": "920e3f508d1b3a1f92de006a965337953472cb83012f7ffe1c50585f280da854",
+  "generated_at": 1764728346.5270174,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\unified_structure_subatomic.yaml"
+}

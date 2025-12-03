@@ -1,0 +1,728 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Selection logic for MCP-discovered tools.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List'),
+        alias(name='Sequence')],
+      level=0),
+    ImportFrom(
+      module='mcp',
+      names=[
+        alias(name='MCPClient'),
+        alias(name='ToolSpec')],
+      level=2),
+    ImportFrom(
+      module='telemetry',
+      names=[
+        alias(name='PolicyController')],
+      level=2),
+    Assign(
+      targets=[
+        Name(id='_TRUST_SCORE', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='low'),
+          Constant(value='medium'),
+          Constant(value='high')],
+        values=[
+          Constant(value=0.4),
+          Constant(value=0.7),
+          Constant(value=1.0)])),
+    ClassDef(
+      name='SelectedTool',
+      body=[
+        Expr(
+          value=Constant(value='Tool selection decision returned by :class:`MCPSelector`.')),
+        AnnAssign(
+          target=Name(id='spec', ctx=Store()),
+          annotation=Name(id='ToolSpec', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='quarantined', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='budget_multiplier', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='MCPSelector',
+      body=[
+        Expr(
+          value=Constant(value='Rank tools from the MCP registry using trust and policy signals.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='client',
+                annotation=Name(id='MCPClient', ctx=Load())),
+              arg(
+                arg='policy',
+                annotation=Name(id='PolicyController', ctx=Load()))],
+            kwonlyargs=[
+              arg(
+                arg='allowlist',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            kw_defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_client',
+                  ctx=Store())],
+              value=Name(id='client', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_policy',
+                  ctx=Store())],
+              value=Name(id='policy', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_allowlist',
+                  ctx=Store())],
+              value=SetComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='item', ctx=Load()),
+                    attr='lower',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='item', ctx=Store()),
+                    iter=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='allowlist', ctx=Load()),
+                        List(ctx=Load())]),
+                    is_async=0)])),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_promoted',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='bool', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='client',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_client',
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='MCPClient', ctx=Load())),
+        FunctionDef(
+          name='policy',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_policy',
+                ctx=Load()))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='PolicyController', ctx=Load())),
+        FunctionDef(
+          name='discover',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='capability',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='constraints',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='object', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Return ranked tools that satisfy the provided constraints.')),
+            Assign(
+              targets=[
+                Name(id='specs', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_client',
+                    ctx=Load()),
+                  attr='discover',
+                  ctx=Load()),
+                args=[
+                  Name(id='capability', ctx=Load()),
+                  Name(id='constraints', ctx=Load())])),
+            AnnAssign(
+              target=Name(id='selections', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='SelectedTool', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='spec', ctx=Store()),
+              iter=Name(id='specs', ctx=Load()),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_allowlist',
+                        ctx=Load()),
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Attribute(
+                              value=Name(id='spec', ctx=Load()),
+                              attr='id',
+                              ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_allowlist',
+                            ctx=Load())]),
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Attribute(
+                              value=Name(id='spec', ctx=Load()),
+                              attr='name',
+                              ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_allowlist',
+                            ctx=Load())])]),
+                  body=[
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='quarantined', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='policy',
+                            ctx=Load()),
+                          attr='quarantine_status',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='spec', ctx=Load()),
+                            attr='id',
+                            ctx=Load())]),
+                      UnaryOp(
+                        op=Not(),
+                        operand=Call(
+                          func=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_promoted',
+                              ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='spec', ctx=Load()),
+                              attr='id',
+                              ctx=Load()),
+                            Constant(value=False)]))])),
+                Assign(
+                  targets=[
+                    Name(id='score', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_score',
+                      ctx=Load()),
+                    args=[
+                      Name(id='spec', ctx=Load()),
+                      Name(id='quarantined', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='budget', ctx=Store())],
+                  value=BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='policy',
+                        ctx=Load()),
+                      attr='budget_multiplier',
+                      ctx=Load()),
+                    op=Mult(),
+                    right=IfExp(
+                      test=Name(id='quarantined', ctx=Load()),
+                      body=Constant(value=0.7),
+                      orelse=Constant(value=1.0)))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='selections', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='SelectedTool', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='spec',
+                            value=Name(id='spec', ctx=Load())),
+                          keyword(
+                            arg='score',
+                            value=Name(id='score', ctx=Load())),
+                          keyword(
+                            arg='quarantined',
+                            value=Name(id='quarantined', ctx=Load())),
+                          keyword(
+                            arg='budget_multiplier',
+                            value=Name(id='budget', ctx=Load()))])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='selections', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='item')]),
+                      body=Attribute(
+                        value=Name(id='item', ctx=Load()),
+                        attr='score',
+                        ctx=Load()))),
+                  keyword(
+                    arg='reverse',
+                    value=Constant(value=True))])),
+            Return(
+              value=Name(id='selections', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SelectedTool', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='mark_promoted',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_promoted',
+                    ctx=Load()),
+                  slice=Name(id='tool_id', ctx=Load()),
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='policy',
+                    ctx=Load()),
+                  attr='promote_tool',
+                  ctx=Load()),
+                args=[
+                  Name(id='tool_id', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='quarantine',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_promoted',
+                    ctx=Load()),
+                  slice=Name(id='tool_id', ctx=Load()),
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='policy',
+                    ctx=Load()),
+                  attr='set_quarantine',
+                  ctx=Load()),
+                args=[
+                  Name(id='tool_id', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_score',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='spec',
+                annotation=Name(id='ToolSpec', ctx=Load())),
+              arg(
+                arg='quarantined',
+                annotation=Name(id='bool', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='trust', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='_TRUST_SCORE', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='spec', ctx=Load()),
+                        attr='trust_tier',
+                        ctx=Load()),
+                      attr='lower',
+                      ctx=Load())),
+                  Constant(value=0.2)])),
+            Assign(
+              targets=[
+                Name(id='cost_factor', ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=0.1),
+                  BinOp(
+                    left=Constant(value=1.2),
+                    op=Sub(),
+                    right=Attribute(
+                      value=Name(id='spec', ctx=Load()),
+                      attr='cost',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='latency_factor', ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=0.2),
+                  BinOp(
+                    left=Constant(value=1.0),
+                    op=Sub(),
+                    right=BinOp(
+                      left=Attribute(
+                        value=Name(id='spec', ctx=Load()),
+                        attr='latency_ms',
+                        ctx=Load()),
+                      op=Div(),
+                      right=Constant(value=2000)))])),
+            Assign(
+              targets=[
+                Name(id='penalty', ctx=Store())],
+              value=IfExp(
+                test=Name(id='quarantined', ctx=Load()),
+                body=Constant(value=0.6),
+                orelse=Constant(value=1.0))),
+            Return(
+              value=BinOp(
+                left=BinOp(
+                  left=BinOp(
+                    left=Name(id='trust', ctx=Load()),
+                    op=Mult(),
+                    right=Name(id='cost_factor', ctx=Load())),
+                  op=Mult(),
+                  right=Name(id='latency_factor', ctx=Load())),
+                op=Mult(),
+                right=Name(id='penalty', ctx=Load())))],
+          returns=Name(id='float', ctx=Load()))]),
+    FunctionDef(
+      name='register_discovered_tools',
+      args=arguments(
+        args=[
+          arg(arg='registry'),
+          arg(
+            arg='selector',
+            annotation=Name(id='MCPSelector', ctx=Load())),
+          arg(
+            arg='capability',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='constraints',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='object', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Discover tools and register them with the given registry.')),
+        Assign(
+          targets=[
+            Name(id='selections', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='selector', ctx=Load()),
+              attr='discover',
+              ctx=Load()),
+            args=[
+              Name(id='capability', ctx=Load()),
+              Name(id='constraints', ctx=Load())])),
+        For(
+          target=Name(id='selection', ctx=Store()),
+          iter=Name(id='selections', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='tool_id', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='selection', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                attr='id',
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='selector', ctx=Load()),
+                    attr='policy',
+                    ctx=Load()),
+                  attr='register_tool',
+                  ctx=Load()),
+                args=[
+                  Name(id='tool_id', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='quarantined',
+                    value=Attribute(
+                      value=Name(id='selection', ctx=Load()),
+                      attr='quarantined',
+                      ctx=Load()))])),
+            If(
+              test=Compare(
+                left=Name(id='tool_id', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='registry', ctx=Load()),
+                      attr='available',
+                      ctx=Load()))]),
+              body=[
+                ImportFrom(
+                  module='tool_registry',
+                  names=[
+                    alias(name='BaseTool'),
+                    alias(name='ToolResult')],
+                  level=1),
+                ClassDef(
+                  name='MCPToolAdapter',
+                  bases=[
+                    Name(id='BaseTool', ctx=Load())],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='name', ctx=Store())],
+                      value=Name(id='tool_id', ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='cost', ctx=Store())],
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='selection', ctx=Load()),
+                          attr='spec',
+                          ctx=Load()),
+                        attr='cost',
+                        ctx=Load())),
+                    FunctionDef(
+                      name='run',
+                      args=arguments(
+                        args=[
+                          arg(arg='self'),
+                          arg(
+                            arg='query',
+                            annotation=Name(id='str', ctx=Load())),
+                          arg(
+                            arg='context',
+                            annotation=Subscript(
+                              value=Name(id='Dict', ctx=Load()),
+                              slice=Tuple(
+                                elts=[
+                                  Name(id='str', ctx=Load()),
+                                  Name(id='str', ctx=Load())],
+                                ctx=Load()),
+                              ctx=Load()))]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='response', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='selector', ctx=Load()),
+                                attr='client',
+                                ctx=Load()),
+                              attr='invoke',
+                              ctx=Load()),
+                            args=[
+                              Name(id='tool_id', ctx=Load()),
+                              Dict(
+                                keys=[
+                                  Constant(value='query'),
+                                  None],
+                                values=[
+                                  Name(id='query', ctx=Load()),
+                                  Name(id='context', ctx=Load())])])),
+                        Assign(
+                          targets=[
+                            Name(id='content', ctx=Store())],
+                          value=Subscript(
+                            value=Name(id='response', ctx=Load()),
+                            slice=Constant(value='content'),
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='latency', ctx=Store())],
+                          value=Subscript(
+                            value=Name(id='response', ctx=Load()),
+                            slice=Constant(value='latency_ms'),
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='sources', ctx=Store())],
+                          value=List(
+                            elts=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='mcp://'),
+                                  FormattedValue(
+                                    value=Name(id='tool_id', ctx=Load()),
+                                    conversion=-1)])],
+                            ctx=Load())),
+                        Return(
+                          value=Call(
+                            func=Name(id='ToolResult', ctx=Load()),
+                            args=[
+                              Name(id='content', ctx=Load()),
+                              Name(id='sources', ctx=Load()),
+                              Name(id='latency', ctx=Load())],
+                            keywords=[
+                              keyword(
+                                arg='confidence',
+                                value=Constant(value=0.6))]))],
+                      returns=Name(id='ToolResult', ctx=Load()))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='registry', ctx=Load()),
+                      attr='register',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='MCPToolAdapter', ctx=Load()))]))])]),
+        Return(
+          value=Name(id='selections', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Sequence', ctx=Load()),
+        slice=Name(id='SelectedTool', ctx=Load()),
+        ctx=Load()))])

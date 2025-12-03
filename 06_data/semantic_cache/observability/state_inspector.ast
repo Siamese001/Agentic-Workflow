@@ -1,0 +1,1098 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nV2 Refactor with Backward Compatibility\n================================================================================\nThe StateSerializer class (formerly in this file) is no longer used for\nhop-to-hop state management, which is now handled in-memory by the Governor.\n\nThe ManifestManager is the primary persistence mechanism for the final workflow state.\n\nV18 Note: Validation methods have been removed and consolidated into validator_RES_v2.py\n================================================================================\n')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='asdict')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='models_RES',
+      names=[
+        alias(name='ValidationResult'),
+        alias(name='ValidationSeverity'),
+        alias(name='HopCheckpoint'),
+        alias(name='HopStatus')],
+      level=0),
+    ClassDef(
+      name='ManifestManager',
+      body=[
+        Expr(
+          value=Constant(value='\n    Manages the run_manifest.json file for a workflow run.\n    \n    This class handles:\n    - Creating initial manifests for new runs\n    - Loading manifests for resumed runs\n    - Updating manifests with checkpoint data\n    - Cryptographic validation of state integrity\n    \n    In V2, this is the primary persistence mechanism for the final workflow state.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='run_path',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Initialize the ManifestManager.\n        \n        Args:\n            run_path: Absolute path to the run directory\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='run_path',
+                  ctx=Store())],
+              value=Name(id='run_path', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='manifest_path',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='run_path', ctx=Load()),
+                  Constant(value='run_manifest.json')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_integrity_checksums',
+                  ctx=Store())],
+              value=Dict())]),
+        FunctionDef(
+          name='create_manifest',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='run_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='engine_version',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='job_input',
+                annotation=Name(id='dict', ctx=Load())),
+              arg(
+                arg='master_resume_hash',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Creates and saves a new manifest for a new run.\n        \n        Args:\n            run_id: Unique run identifier\n            engine_version: Version of the workflow engine\n            job_input: Job input dictionary\n            master_resume_hash: SHA256 hash of master resume\n            \n        Returns:\n            The created manifest dictionary\n        ')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='run_id'),
+                  Constant(value='engine_version'),
+                  Constant(value='start_time_utc'),
+                  Constant(value='job_input'),
+                  Constant(value='master_resume_hash'),
+                  Constant(value='hop_checkpoints'),
+                  Constant(value='integrity_checksum')],
+                values=[
+                  Name(id='run_id', ctx=Load()),
+                  Name(id='engine_version', ctx=Load()),
+                  BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='utcnow',
+                            ctx=Load())),
+                        attr='isoformat',
+                        ctx=Load())),
+                    op=Add(),
+                    right=Constant(value='Z')),
+                  Name(id='job_input', ctx=Load()),
+                  Name(id='master_resume_hash', ctx=Load()),
+                  List(ctx=Load()),
+                  Constant(value=None)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_save_manifest',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest', ctx=Load())])),
+            Return(
+              value=Name(id='manifest', ctx=Load()))],
+          returns=Name(id='dict', ctx=Load())),
+        FunctionDef(
+          name='load_manifest',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value="\n        Loads the manifest from disk with integrity validation.\n        \n        Returns:\n            The manifest dictionary\n            \n        Raises:\n            FileNotFoundError: If manifest doesn't exist\n            ValueError: If manifest integrity check fails\n        ")),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='os', ctx=Load()),
+                      attr='path',
+                      ctx=Load()),
+                    attr='exists',
+                    ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='manifest_path',
+                      ctx=Load())])),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='FileNotFoundError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Manifest not found at '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='manifest_path',
+                              ctx=Load()),
+                            conversion=-1)])]))]),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='manifest_path',
+                        ctx=Load()),
+                      Constant(value='r')],
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='manifest', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='load',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())]))]),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='manifest', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='integrity_checksum')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='computed_checksum', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_compute_checksum',
+                      ctx=Load()),
+                    args=[
+                      Name(id='manifest', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='computed_checksum', ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='manifest', ctx=Load()),
+                        slice=Constant(value='integrity_checksum'),
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Manifest integrity check failed. Data may be corrupted.')])]))])]),
+            Return(
+              value=Name(id='manifest', ctx=Load()))],
+          returns=Name(id='dict', ctx=Load())),
+        FunctionDef(
+          name='add_checkpoint',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='checkpoint',
+                annotation=Name(id='HopCheckpoint', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Appends a checkpoint to the manifest.\n        \n        Note: In V18, validation has been removed from this method.\n        Validation should be performed by validator_RES_v2.py before calling this method.\n        \n        Args:\n            checkpoint: The HopCheckpoint to add\n        ')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='load_manifest',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='checkpoint_dict', ctx=Store())],
+              value=Call(
+                func=Name(id='asdict', ctx=Load()),
+                args=[
+                  Name(id='checkpoint', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='checkpoint_dict', ctx=Load()),
+                  slice=Constant(value='status'),
+                  ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='checkpoint', ctx=Load()),
+                  attr='status',
+                  ctx=Load()),
+                attr='name',
+                ctx=Load())),
+            For(
+              target=Name(id='vr', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='checkpoint_dict', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='validation_results'),
+                  List(ctx=Load())]),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Constant(value='severity'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='vr', ctx=Load())]),
+                      Call(
+                        func=Name(id='hasattr', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='vr', ctx=Load()),
+                            slice=Constant(value='severity'),
+                            ctx=Load()),
+                          Constant(value='name')])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='vr', ctx=Load()),
+                          slice=Constant(value='severity'),
+                          ctx=Store())],
+                      value=Attribute(
+                        value=Subscript(
+                          value=Name(id='vr', ctx=Load()),
+                          slice=Constant(value='severity'),
+                          ctx=Load()),
+                        attr='name',
+                        ctx=Load()))])]),
+            If(
+              test=Compare(
+                left=Constant(value='timestamp'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='checkpoint_dict', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='checkpoint_dict', ctx=Load()),
+                      slice=Constant(value='timestamp'),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='utcnow',
+                            ctx=Load())),
+                        attr='isoformat',
+                        ctx=Load())),
+                    op=Add(),
+                    right=Constant(value='Z')))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Name(id='manifest', ctx=Load()),
+                    slice=Constant(value='hop_checkpoints'),
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='checkpoint_dict', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_save_manifest',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='update_checkpoint',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='hop_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='updates',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Updates an existing checkpoint in the manifest.\n        \n        Note: In V18, validation has been removed from this method.\n        Validation should be performed by validator_RES_v2.py before calling this method.\n        \n        Args:\n            hop_id: The hop_id to update (e.g., "HOP-3")\n            updates: Dictionary of fields to update\n            \n        Raises:\n            ValueError: If hop_id not found\n        ')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='load_manifest',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='checkpoint_found', ctx=Store())],
+              value=Constant(value=False)),
+            For(
+              target=Name(id='checkpoint', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='manifest', ctx=Load()),
+                slice=Constant(value='hop_checkpoints'),
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='checkpoint', ctx=Load()),
+                      slice=Constant(value='hop_id'),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='hop_id', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='checkpoint', ctx=Load()),
+                          attr='update',
+                          ctx=Load()),
+                        args=[
+                          Name(id='updates', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='checkpoint', ctx=Load()),
+                          slice=Constant(value='last_updated'),
+                          ctx=Store())],
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='utcnow',
+                                ctx=Load())),
+                            attr='isoformat',
+                            ctx=Load())),
+                        op=Add(),
+                        right=Constant(value='Z'))),
+                    Assign(
+                      targets=[
+                        Name(id='checkpoint_found', ctx=Store())],
+                      value=Constant(value=True)),
+                    Break()])]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='checkpoint_found', ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value="Checkpoint with hop_id '"),
+                          FormattedValue(
+                            value=Name(id='hop_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="' not found")])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_save_manifest',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='get_checkpoints',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Gets all checkpoints from the manifest as HopCheckpoint objects.\n        \n        Returns:\n            List of HopCheckpoint objects\n        ')),
+            Assign(
+              targets=[
+                Name(id='manifest', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='load_manifest',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='checkpoints', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='cp_dict', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='manifest', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='hop_checkpoints'),
+                  List(ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='validation_results', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='vr_dict', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='cp_dict', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='validation_results'),
+                      List(ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='severity_name', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='vr_dict', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='severity'),
+                          Constant(value='INFO')])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='vr_dict', ctx=Load()),
+                          slice=Constant(value='severity'),
+                          ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        slice=Name(id='severity_name', ctx=Load()),
+                        ctx=Load())),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validation_results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='ValidationResult', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                value=Name(id='vr_dict', ctx=Load()))])]))]),
+                Assign(
+                  targets=[
+                    Name(id='status_name', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='cp_dict', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='status'),
+                      Constant(value='PASS')])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='cp_dict', ctx=Load()),
+                      slice=Constant(value='status'),
+                      ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='HopStatus', ctx=Load()),
+                    slice=Name(id='status_name', ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='cp_dict', ctx=Load()),
+                      slice=Constant(value='validation_results'),
+                      ctx=Store())],
+                  value=Name(id='validation_results', ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='checkpoints', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='HopCheckpoint', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            value=Name(id='cp_dict', ctx=Load()))])]))]),
+            Return(
+              value=Name(id='checkpoints', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='HopCheckpoint', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_last_successful_checkpoint',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Gets the last successful checkpoint for resuming.\n        \n        Returns:\n            The last HopCheckpoint with PASS status, or None\n        ')),
+            Assign(
+              targets=[
+                Name(id='checkpoints', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='get_checkpoints',
+                  ctx=Load()))),
+            For(
+              target=Name(id='checkpoint', ctx=Store()),
+              iter=Call(
+                func=Name(id='reversed', ctx=Load()),
+                args=[
+                  Name(id='checkpoints', ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='checkpoint', ctx=Load()),
+                      attr='status',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='HopStatus', ctx=Load()),
+                        attr='PASS',
+                        ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Name(id='checkpoint', ctx=Load()))])]),
+            Return(
+              value=Constant(value=None))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='HopCheckpoint', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_save_manifest',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='manifest_data',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Saves the manifest to disk with integrity checksum.\n        \n        Args:\n            manifest_data: The manifest dictionary to save\n        ')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='manifest_data', ctx=Load()),
+                  slice=Constant(value='integrity_checksum'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_compute_checksum',
+                  ctx=Load()),
+                args=[
+                  Name(id='manifest_data', ctx=Load())])),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='exists',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='manifest_path',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='backup_path', ctx=Store())],
+                  value=BinOp(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='manifest_path',
+                      ctx=Load()),
+                    op=Add(),
+                    right=Constant(value='.backup'))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='os', ctx=Load()),
+                      attr='rename',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='manifest_path',
+                        ctx=Load()),
+                      Name(id='backup_path', ctx=Load())]))]),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='manifest_path',
+                            ctx=Load()),
+                          Constant(value='w')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Name(id='manifest_data', ctx=Load()),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='ensure_ascii',
+                            value=Constant(value=False))]))]),
+                Assign(
+                  targets=[
+                    Name(id='backup_path', ctx=Store())],
+                  value=BinOp(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='manifest_path',
+                      ctx=Load()),
+                    op=Add(),
+                    right=Constant(value='.backup'))),
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='os', ctx=Load()),
+                        attr='path',
+                        ctx=Load()),
+                      attr='exists',
+                      ctx=Load()),
+                    args=[
+                      Name(id='backup_path', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='os', ctx=Load()),
+                          attr='remove',
+                          ctx=Load()),
+                        args=[
+                          Name(id='backup_path', ctx=Load())]))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='backup_path', ctx=Store())],
+                      value=BinOp(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='manifest_path',
+                          ctx=Load()),
+                        op=Add(),
+                        right=Constant(value='.backup'))),
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='os', ctx=Load()),
+                            attr='path',
+                            ctx=Load()),
+                          attr='exists',
+                          ctx=Load()),
+                        args=[
+                          Name(id='backup_path', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='os', ctx=Load()),
+                              attr='rename',
+                              ctx=Load()),
+                            args=[
+                              Name(id='backup_path', ctx=Load()),
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='manifest_path',
+                                ctx=Load())]))]),
+                    Raise(
+                      exc=Name(id='e', ctx=Load()))])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_compute_checksum',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='manifest_data',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Compute SHA256 checksum of manifest data.\n        \n        Args:\n            manifest_data: The manifest dictionary\n            \n        Returns:\n            Hex string of SHA256 checksum\n        ')),
+            Assign(
+              targets=[
+                Name(id='data_copy', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='manifest_data', ctx=Load()),
+                  attr='copy',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='data_copy', ctx=Load()),
+                  attr='pop',
+                  ctx=Load()),
+                args=[
+                  Constant(value='integrity_checksum'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Name(id='json_str', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='data_copy', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='sort_keys',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='ensure_ascii',
+                    value=Constant(value=True))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hashlib', ctx=Load()),
+                      attr='sha256',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='json_str', ctx=Load()),
+                          attr='encode',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='utf-8')])]),
+                  attr='hexdigest',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load()))]),
+    FunctionDef(
+      name='create_state_snapshot',
+      args=arguments(
+        args=[
+          arg(
+            arg='data',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Create a snapshot of the current state with metadata.\n    \n    Args:\n        data: The state data to snapshot\n        \n    Returns:\n        Dictionary containing state data and metadata\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='timestamp'),
+              Constant(value='data'),
+              Constant(value='checksum')],
+            values=[
+              BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='utcnow',
+                        ctx=Load())),
+                    attr='isoformat',
+                    ctx=Load())),
+                op=Add(),
+                right=Constant(value='Z')),
+              Name(id='data', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='hashlib', ctx=Load()),
+                      attr='sha256',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='json', ctx=Load()),
+                              attr='dumps',
+                              ctx=Load()),
+                            args=[
+                              Name(id='data', ctx=Load())],
+                            keywords=[
+                              keyword(
+                                arg='sort_keys',
+                                value=Constant(value=True))]),
+                          attr='encode',
+                          ctx=Load()))]),
+                  attr='hexdigest',
+                  ctx=Load()))]))],
+      returns=Name(id='dict', ctx=Load())),
+    FunctionDef(
+      name='validate_state_snapshot',
+      args=arguments(
+        args=[
+          arg(
+            arg='snapshot',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value="\n    Validate a state snapshot's integrity.\n    \n    Args:\n        snapshot: The snapshot to validate\n        \n    Returns:\n        True if valid, False otherwise\n    ")),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='snapshot', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='data')])),
+              UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='snapshot', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='checksum')]))]),
+          body=[
+            Return(
+              value=Constant(value=False))]),
+        Assign(
+          targets=[
+            Name(id='computed_checksum', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='hashlib', ctx=Load()),
+                  attr='sha256',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dumps',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='snapshot', ctx=Load()),
+                            slice=Constant(value='data'),
+                            ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='sort_keys',
+                            value=Constant(value=True))]),
+                      attr='encode',
+                      ctx=Load()))]),
+              attr='hexdigest',
+              ctx=Load()))),
+        Return(
+          value=Compare(
+            left=Name(id='computed_checksum', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Subscript(
+                value=Name(id='snapshot', ctx=Load()),
+                slice=Constant(value='checksum'),
+                ctx=Load())]))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='merge_state_updates',
+      args=arguments(
+        args=[
+          arg(
+            arg='base_state',
+            annotation=Name(id='dict', ctx=Load())),
+          arg(
+            arg='updates',
+            annotation=Name(id='dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Safely merge state updates into base state.\n    \n    Args:\n        base_state: The base state dictionary\n        updates: Updates to apply\n        \n    Returns:\n        Merged state dictionary\n    ')),
+        Assign(
+          targets=[
+            Name(id='merged', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='base_state', ctx=Load()),
+              attr='copy',
+              ctx=Load()))),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='key', ctx=Store()),
+              Name(id='value', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='updates', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='merged', ctx=Load())]),
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='merged', ctx=Load()),
+                        slice=Name(id='key', ctx=Load()),
+                        ctx=Load()),
+                      Name(id='dict', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='merged', ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='merge_state_updates', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='merged', ctx=Load()),
+                        slice=Name(id='key', ctx=Load()),
+                        ctx=Load()),
+                      Name(id='value', ctx=Load())]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='merged', ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='value', ctx=Load()))])]),
+        Return(
+          value=Name(id='merged', ctx=Load()))],
+      returns=Name(id='dict', ctx=Load()))])

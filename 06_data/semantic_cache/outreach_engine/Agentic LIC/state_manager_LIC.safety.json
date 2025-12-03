@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 577,
+  "generated_at": 1764728331.4992669,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\state_manager_LIC.py"
+}

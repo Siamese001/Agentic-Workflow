@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom meta.retrieval.hybrid_ranker import fuse_and_rank\nfrom core.models.models import CouncilVote, Evidence, RetrievalConfig\n\n\ndef _make_ev(text: str, score: float, source: str) -> Evidence:\n    return Evidence(text=text, score=score, source=source, metadata={})\n\n\ndef test_fuse_and_rank_rrf_with_uniform_weights() -> None:\n    cfg = RetrievalConfig(max_hits=10)\n\n    lex = [\n        _make_ev(text=\"doc1\", score=0.0, source=\"bm25\"),\n        _make_ev(text=\"doc2\", score=0.0, source=\"bm25\"),\n    ]\n    dense = [\n        Evidence(text=\"doc2\", score=0.0, source=\"dense\", metadata={}),\n        Evidence(text=\"doc3\", score=0.0, source=\"dense\", metadata={}),\n    ]\n\n    rag = fuse_and_rank(lex_results=lex, dense_results=dense, cfg=cfg)\n    texts = [e.text for e in rag.evidence]\n\n    # All docs appear once after fusion; ordering is defined by RRF.\n    assert set(texts) == {\"doc1\", \"doc2\", \"doc3\"}\n\n\ndef test_fuse_and_rank_truncates_to_max_hits() -> None:\n    cfg = Ret",
+  "full_hash": "68d7a61c6f8c07009ea40a8edc6323e4a2ae1317ddfa7195cb54cbc828e5d476",
+  "generated_at": 1764728227.2538548,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_hybrid_ranker.py"
+}

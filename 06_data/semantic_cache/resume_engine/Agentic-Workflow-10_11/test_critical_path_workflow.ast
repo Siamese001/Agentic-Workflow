@@ -1,0 +1,3681 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nCritical Path E2E Workflow Tests\n\nTests the essential L1→L2→L3 workflow: planning → execution → orchestration.\nUses working mocks from unit test foundation to validate layer contracts.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock')],
+      level=0),
+    Import(
+      names=[
+        alias(name='time')]),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='end_to_end',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='integration',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='l1',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='l2',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='l3',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='TaskStatus',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Status of tasks in workflow.')),
+        Assign(
+          targets=[
+            Name(id='PENDING', ctx=Store())],
+          value=Constant(value='pending')),
+        Assign(
+          targets=[
+            Name(id='RUNNING', ctx=Store())],
+          value=Constant(value='running')),
+        Assign(
+          targets=[
+            Name(id='COMPLETED', ctx=Store())],
+          value=Constant(value='completed')),
+        Assign(
+          targets=[
+            Name(id='FAILED', ctx=Store())],
+          value=Constant(value='failed')),
+        Assign(
+          targets=[
+            Name(id='CANCELLED', ctx=Store())],
+          value=Constant(value='cancelled'))]),
+    ClassDef(
+      name='WorkflowPhase',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Phases of critical path workflow.')),
+        Assign(
+          targets=[
+            Name(id='PLANNING', ctx=Store())],
+          value=Constant(value='planning')),
+        Assign(
+          targets=[
+            Name(id='EXECUTION', ctx=Store())],
+          value=Constant(value='execution')),
+        Assign(
+          targets=[
+            Name(id='ORCHESTRATION', ctx=Store())],
+          value=Constant(value='orchestration')),
+        Assign(
+          targets=[
+            Name(id='COMPLETED', ctx=Store())],
+          value=Constant(value='completed'))]),
+    ClassDef(
+      name='MockWorkflowPlan',
+      body=[
+        Expr(
+          value=Constant(value='Mock workflow plan for E2E testing.')),
+        AnnAssign(
+          target=Name(id='plan_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='mission', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phases', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tasks', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dependencies', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='estimated_duration', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='MockWorkflowResult',
+      body=[
+        Expr(
+          value=Constant(value='Mock workflow execution result.')),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase', ctx=Store()),
+          annotation=Name(id='WorkflowPhase', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='status', ctx=Store()),
+          annotation=Name(id='TaskStatus', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='result', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='error', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_time', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='TestCriticalPathWorkflow',
+      body=[
+        Expr(
+          value=Constant(value='Test critical path L1→L2→L3 workflow execution.')),
+        FunctionDef(
+          name='test_planning_to_execution_data_flow',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test data flow from L1 planning to L2 execution.')),
+            ClassDef(
+              name='MockPlanningEngine',
+              body=[
+                FunctionDef(
+                  name='__init__',
+                  args=arguments(
+                    args=[
+                      arg(arg='self')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='plan_counter',
+                          ctx=Store())],
+                      value=Constant(value=0))]),
+                FunctionDef(
+                  name='create_plan',
+                  args=arguments(
+                    args=[
+                      arg(arg='self'),
+                      arg(
+                        arg='mission',
+                        annotation=Name(id='str', ctx=Load())),
+                      arg(
+                        arg='context',
+                        annotation=Subscript(
+                          value=Name(id='Dict', ctx=Load()),
+                          slice=Tuple(
+                            elts=[
+                              Name(id='str', ctx=Load()),
+                              Name(id='Any', ctx=Load())],
+                            ctx=Load()),
+                          ctx=Load()))]),
+                  body=[
+                    Expr(
+                      value=Constant(value='Create execution plan from mission.')),
+                    AugAssign(
+                      target=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='plan_counter',
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    Assign(
+                      targets=[
+                        Name(id='plan_id', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='plan_'),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='plan_counter',
+                              ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='03d')]))])),
+                    Assign(
+                      targets=[
+                        Name(id='mission_lower', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='mission', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Constant(value='resume'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='mission_lower', ctx=Load())]),
+                          Compare(
+                            left=Constant(value='job'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='mission_lower', ctx=Load())])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='tasks', ctx=Store())],
+                          value=List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='task_id'),
+                                  Constant(value='type'),
+                                  Constant(value='priority')],
+                                values=[
+                                  Constant(value='extract_resume'),
+                                  Constant(value='extraction'),
+                                  Constant(value='critical')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='task_id'),
+                                  Constant(value='type'),
+                                  Constant(value='priority')],
+                                values=[
+                                  Constant(value='parse_job'),
+                                  Constant(value='extraction'),
+                                  Constant(value='critical')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='task_id'),
+                                  Constant(value='type'),
+                                  Constant(value='priority')],
+                                values=[
+                                  Constant(value='match_skills'),
+                                  Constant(value='analysis'),
+                                  Constant(value='high')]),
+                              Dict(
+                                keys=[
+                                  Constant(value='task_id'),
+                                  Constant(value='type'),
+                                  Constant(value='priority')],
+                                values=[
+                                  Constant(value='generate_report'),
+                                  Constant(value='synthesis'),
+                                  Constant(value='medium')])],
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='dependencies', ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='extract_resume'),
+                              Constant(value='parse_job'),
+                              Constant(value='match_skills'),
+                              Constant(value='generate_report')],
+                            values=[
+                              List(ctx=Load()),
+                              List(ctx=Load()),
+                              List(
+                                elts=[
+                                  Constant(value='extract_resume'),
+                                  Constant(value='parse_job')],
+                                ctx=Load()),
+                              List(
+                                elts=[
+                                  Constant(value='match_skills')],
+                                ctx=Load())]))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='tasks', ctx=Store())],
+                          value=List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='task_id'),
+                                  Constant(value='type'),
+                                  Constant(value='priority')],
+                                values=[
+                                  Constant(value='simple_task'),
+                                  Constant(value='analysis'),
+                                  Constant(value='medium')])],
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='dependencies', ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='simple_task')],
+                            values=[
+                              List(ctx=Load())]))]),
+                    Return(
+                      value=Call(
+                        func=Name(id='MockWorkflowPlan', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='plan_id',
+                            value=Name(id='plan_id', ctx=Load())),
+                          keyword(
+                            arg='mission',
+                            value=Name(id='mission', ctx=Load())),
+                          keyword(
+                            arg='phases',
+                            value=List(
+                              elts=[
+                                Constant(value='planning'),
+                                Constant(value='execution'),
+                                Constant(value='completion')],
+                              ctx=Load())),
+                          keyword(
+                            arg='tasks',
+                            value=Name(id='tasks', ctx=Load())),
+                          keyword(
+                            arg='dependencies',
+                            value=Name(id='dependencies', ctx=Load())),
+                          keyword(
+                            arg='estimated_duration',
+                            value=BinOp(
+                              left=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='tasks', ctx=Load())]),
+                              op=Mult(),
+                              right=Constant(value=2.0)))]))],
+                  returns=Name(id='MockWorkflowPlan', ctx=Load()))]),
+            ClassDef(
+              name='MockExecutionEngine',
+              body=[
+                FunctionDef(
+                  name='__init__',
+                  args=arguments(
+                    args=[
+                      arg(arg='self')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='execution_history',
+                          ctx=Store())],
+                      value=List(ctx=Load()))]),
+                FunctionDef(
+                  name='execute_plan',
+                  args=arguments(
+                    args=[
+                      arg(arg='self'),
+                      arg(
+                        arg='plan',
+                        annotation=Name(id='MockWorkflowPlan', ctx=Load())),
+                      arg(
+                        arg='execution_context',
+                        annotation=Subscript(
+                          value=Name(id='Dict', ctx=Load()),
+                          slice=Tuple(
+                            elts=[
+                              Name(id='str', ctx=Load()),
+                              Name(id='Any', ctx=Load())],
+                            ctx=Load()),
+                          ctx=Load()))]),
+                  body=[
+                    Expr(
+                      value=Constant(value='Execute workflow plan.')),
+                    Assign(
+                      targets=[
+                        Name(id='results', ctx=Store())],
+                      value=List(ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='start_time', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='time', ctx=Load()),
+                          attr='time',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='executed_tasks', ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='remaining_tasks', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='plan', ctx=Load()),
+                            attr='tasks',
+                            ctx=Load()),
+                          attr='copy',
+                          ctx=Load()))),
+                    While(
+                      test=Name(id='remaining_tasks', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='ready_tasks', ctx=Store())],
+                          value=ListComp(
+                            elt=Name(id='task', ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='task', ctx=Store()),
+                                iter=Name(id='remaining_tasks', ctx=Load()),
+                                ifs=[
+                                  Call(
+                                    func=Name(id='all', ctx=Load()),
+                                    args=[
+                                      GeneratorExp(
+                                        elt=Compare(
+                                          left=Name(id='dep', ctx=Load()),
+                                          ops=[
+                                            In()],
+                                          comparators=[
+                                            Name(id='executed_tasks', ctx=Load())]),
+                                        generators=[
+                                          comprehension(
+                                            target=Name(id='dep', ctx=Store()),
+                                            iter=Call(
+                                              func=Attribute(
+                                                value=Attribute(
+                                                  value=Name(id='plan', ctx=Load()),
+                                                  attr='dependencies',
+                                                  ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Subscript(
+                                                  value=Name(id='task', ctx=Load()),
+                                                  slice=Constant(value='task_id'),
+                                                  ctx=Load()),
+                                                List(ctx=Load())]),
+                                            is_async=0)])])],
+                                is_async=0)])),
+                        If(
+                          test=UnaryOp(
+                            op=Not(),
+                            operand=Name(id='ready_tasks', ctx=Load())),
+                          body=[
+                            For(
+                              target=Name(id='task', ctx=Store()),
+                              iter=Name(id='remaining_tasks', ctx=Load()),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='results', ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      Call(
+                                        func=Name(id='MockWorkflowResult', ctx=Load()),
+                                        keywords=[
+                                          keyword(
+                                            arg='workflow_id',
+                                            value=Call(
+                                              func=Attribute(
+                                                value=Name(id='execution_context', ctx=Load()),
+                                                attr='get',
+                                                ctx=Load()),
+                                              args=[
+                                                Constant(value='workflow_id'),
+                                                Constant(value='unknown')])),
+                                          keyword(
+                                            arg='phase',
+                                            value=Attribute(
+                                              value=Name(id='WorkflowPhase', ctx=Load()),
+                                              attr='EXECUTION',
+                                              ctx=Load())),
+                                          keyword(
+                                            arg='status',
+                                            value=Attribute(
+                                              value=Name(id='TaskStatus', ctx=Load()),
+                                              attr='FAILED',
+                                              ctx=Load())),
+                                          keyword(
+                                            arg='result',
+                                            value=Constant(value=None)),
+                                          keyword(
+                                            arg='error',
+                                            value=JoinedStr(
+                                              values=[
+                                                Constant(value='Dependency resolution failed for '),
+                                                FormattedValue(
+                                                  value=Subscript(
+                                                    value=Name(id='task', ctx=Load()),
+                                                    slice=Constant(value='task_id'),
+                                                    ctx=Load()),
+                                                  conversion=-1)])),
+                                          keyword(
+                                            arg='execution_time',
+                                            value=Constant(value=0.0)),
+                                          keyword(
+                                            arg='metadata',
+                                            value=Dict(
+                                              keys=[
+                                                Constant(value='task_id')],
+                                              values=[
+                                                Subscript(
+                                                  value=Name(id='task', ctx=Load()),
+                                                  slice=Constant(value='task_id'),
+                                                  ctx=Load())]))])]))]),
+                            Break()]),
+                        For(
+                          target=Name(id='task', ctx=Store()),
+                          iter=Name(id='ready_tasks', ctx=Load()),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='task_start', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='time', ctx=Load()),
+                                  attr='time',
+                                  ctx=Load()))),
+                            If(
+                              test=Compare(
+                                left=Subscript(
+                                  value=Name(id='task', ctx=Load()),
+                                  slice=Constant(value='type'),
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='extraction')]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='result_data', ctx=Store())],
+                                  value=Dict(
+                                    keys=[
+                                      Constant(value='extracted_data')],
+                                    values=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='mock_data_from_'),
+                                          FormattedValue(
+                                            value=Subscript(
+                                              value=Name(id='task', ctx=Load()),
+                                              slice=Constant(value='task_id'),
+                                              ctx=Load()),
+                                            conversion=-1)])]))],
+                              orelse=[
+                                If(
+                                  test=Compare(
+                                    left=Subscript(
+                                      value=Name(id='task', ctx=Load()),
+                                      slice=Constant(value='type'),
+                                      ctx=Load()),
+                                    ops=[
+                                      Eq()],
+                                    comparators=[
+                                      Constant(value='analysis')]),
+                                  body=[
+                                    Assign(
+                                      targets=[
+                                        Name(id='result_data', ctx=Store())],
+                                      value=Dict(
+                                        keys=[
+                                          Constant(value='analysis_result')],
+                                        values=[
+                                          JoinedStr(
+                                            values=[
+                                              Constant(value='mock_analysis_for_'),
+                                              FormattedValue(
+                                                value=Subscript(
+                                                  value=Name(id='task', ctx=Load()),
+                                                  slice=Constant(value='task_id'),
+                                                  ctx=Load()),
+                                                conversion=-1)])]))],
+                                  orelse=[
+                                    If(
+                                      test=Compare(
+                                        left=Subscript(
+                                          value=Name(id='task', ctx=Load()),
+                                          slice=Constant(value='type'),
+                                          ctx=Load()),
+                                        ops=[
+                                          Eq()],
+                                        comparators=[
+                                          Constant(value='synthesis')]),
+                                      body=[
+                                        Assign(
+                                          targets=[
+                                            Name(id='result_data', ctx=Store())],
+                                          value=Dict(
+                                            keys=[
+                                              Constant(value='synthesized_output')],
+                                            values=[
+                                              JoinedStr(
+                                                values=[
+                                                  Constant(value='mock_output_from_'),
+                                                  FormattedValue(
+                                                    value=Subscript(
+                                                      value=Name(id='task', ctx=Load()),
+                                                      slice=Constant(value='task_id'),
+                                                      ctx=Load()),
+                                                    conversion=-1)])]))],
+                                      orelse=[
+                                        Assign(
+                                          targets=[
+                                            Name(id='result_data', ctx=Store())],
+                                          value=Dict(
+                                            keys=[
+                                              Constant(value='result')],
+                                            values=[
+                                              JoinedStr(
+                                                values=[
+                                                  Constant(value='mock_result_for_'),
+                                                  FormattedValue(
+                                                    value=Subscript(
+                                                      value=Name(id='task', ctx=Load()),
+                                                      slice=Constant(value='task_id'),
+                                                      ctx=Load()),
+                                                    conversion=-1)])]))])])]),
+                            Assign(
+                              targets=[
+                                Name(id='task_time', ctx=Store())],
+                              value=BinOp(
+                                left=Call(
+                                  func=Attribute(
+                                    value=Name(id='time', ctx=Load()),
+                                    attr='time',
+                                    ctx=Load())),
+                                op=Sub(),
+                                right=Name(id='task_start', ctx=Load()))),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='results', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                                    keywords=[
+                                      keyword(
+                                        arg='workflow_id',
+                                        value=Call(
+                                          func=Attribute(
+                                            value=Name(id='execution_context', ctx=Load()),
+                                            attr='get',
+                                            ctx=Load()),
+                                          args=[
+                                            Constant(value='workflow_id'),
+                                            Constant(value='unknown')])),
+                                      keyword(
+                                        arg='phase',
+                                        value=Attribute(
+                                          value=Name(id='WorkflowPhase', ctx=Load()),
+                                          attr='EXECUTION',
+                                          ctx=Load())),
+                                      keyword(
+                                        arg='status',
+                                        value=Attribute(
+                                          value=Name(id='TaskStatus', ctx=Load()),
+                                          attr='COMPLETED',
+                                          ctx=Load())),
+                                      keyword(
+                                        arg='result',
+                                        value=Name(id='result_data', ctx=Load())),
+                                      keyword(
+                                        arg='error',
+                                        value=Constant(value=None)),
+                                      keyword(
+                                        arg='execution_time',
+                                        value=Name(id='task_time', ctx=Load())),
+                                      keyword(
+                                        arg='metadata',
+                                        value=Dict(
+                                          keys=[
+                                            Constant(value='task_id'),
+                                            Constant(value='priority')],
+                                          values=[
+                                            Subscript(
+                                              value=Name(id='task', ctx=Load()),
+                                              slice=Constant(value='task_id'),
+                                              ctx=Load()),
+                                            Subscript(
+                                              value=Name(id='task', ctx=Load()),
+                                              slice=Constant(value='priority'),
+                                              ctx=Load())]))])])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='executed_tasks', ctx=Load()),
+                                  attr='add',
+                                  ctx=Load()),
+                                args=[
+                                  Subscript(
+                                    value=Name(id='task', ctx=Load()),
+                                    slice=Constant(value='task_id'),
+                                    ctx=Load())])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='remaining_tasks', ctx=Load()),
+                                  attr='remove',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='task', ctx=Load())]))])]),
+                    Assign(
+                      targets=[
+                        Name(id='total_time', ctx=Store())],
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='time', ctx=Load()),
+                            attr='time',
+                            ctx=Load())),
+                        op=Sub(),
+                        right=Name(id='start_time', ctx=Load()))),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='execution_history',
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Dict(
+                            keys=[
+                              Constant(value='plan_id'),
+                              Constant(value='total_time'),
+                              Constant(value='task_count')],
+                            values=[
+                              Attribute(
+                                value=Name(id='plan', ctx=Load()),
+                                attr='plan_id',
+                                ctx=Load()),
+                              Name(id='total_time', ctx=Load()),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='plan', ctx=Load()),
+                                    attr='tasks',
+                                    ctx=Load())])])])),
+                    Return(
+                      value=Name(id='results', ctx=Load()))],
+                  returns=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='MockWorkflowResult', ctx=Load()),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='planning_engine', ctx=Store())],
+              value=Call(
+                func=Name(id='MockPlanningEngine', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='execution_engine', ctx=Store())],
+              value=Call(
+                func=Name(id='MockExecutionEngine', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='mission', ctx=Store())],
+              value=Constant(value='Extract resume skills and match to job requirements')),
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workflow_id'),
+                  Constant(value='priority')],
+                values=[
+                  Constant(value='workflow_001'),
+                  Constant(value='high')])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planning_engine', ctx=Load()),
+                  attr='create_plan',
+                  ctx=Load()),
+                args=[
+                  Name(id='mission', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='plan_id',
+                    ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='plan_')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='mission',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='mission', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='tasks',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=4)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='extract_resume'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Subscript(
+                      value=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='tasks',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    slice=Constant(value='task_id'),
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='execution_context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workflow_id'),
+                  Constant(value='execution_mode')],
+                values=[
+                  Constant(value='workflow_001'),
+                  Constant(value='sequential')])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='execution_engine', ctx=Load()),
+                  attr='execute_plan',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='execution_context', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='tasks',
+                        ctx=Load())])])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='status',
+                        ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='COMPLETED',
+                          ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='result', ctx=Store()),
+                        iter=Name(id='results', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='result',
+                        ctx=Load()),
+                      ops=[
+                        IsNot()],
+                      comparators=[
+                        Constant(value=None)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='result', ctx=Store()),
+                        iter=Name(id='results', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='error',
+                        ctx=Load()),
+                      ops=[
+                        Is()],
+                      comparators=[
+                        Constant(value=None)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='result', ctx=Store()),
+                        iter=Name(id='results', ctx=Load()),
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='task_ids', ctx=Store())],
+              value=ListComp(
+                elt=Subscript(
+                  value=Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='task_id'),
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='result', ctx=Store()),
+                    iter=Name(id='results', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='expected_ids', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='extract_resume'),
+                  Constant(value='parse_job'),
+                  Constant(value='match_skills'),
+                  Constant(value='generate_report')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='set', ctx=Load()),
+                  args=[
+                    Name(id='task_ids', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Name(id='expected_ids', ctx=Load())])])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='execution_engine', ctx=Load()),
+                      attr='execution_history',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='execution_engine', ctx=Load()),
+                      attr='execution_history',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  slice=Constant(value='plan_id'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='plan_id',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_execution_to_orchestration_coordination',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test coordination between L2 execution and L3 orchestration.')),
+            ClassDef(
+              name='MockOrchestrator',
+              body=[
+                FunctionDef(
+                  name='__init__',
+                  args=arguments(
+                    args=[
+                      arg(arg='self')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='coordination_log',
+                          ctx=Store())],
+                      value=List(ctx=Load()))]),
+                FunctionDef(
+                  name='coordinate_execution',
+                  args=arguments(
+                    args=[
+                      arg(arg='self'),
+                      arg(
+                        arg='execution_results',
+                        annotation=Subscript(
+                          value=Name(id='List', ctx=Load()),
+                          slice=Name(id='MockWorkflowResult', ctx=Load()),
+                          ctx=Load())),
+                      arg(
+                        arg='orchestration_strategy',
+                        annotation=Name(id='str', ctx=Load()))]),
+                  body=[
+                    Expr(
+                      value=Constant(value='Coordinate execution results based on strategy.')),
+                    Assign(
+                      targets=[
+                        Name(id='coordination_start', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='time', ctx=Load()),
+                          attr='time',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='coordination_result', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='strategy'),
+                          Constant(value='coordinated_results'),
+                          Constant(value='orchestration_decisions'),
+                          Constant(value='final_status'),
+                          Constant(value='coordination_time')],
+                        values=[
+                          Name(id='orchestration_strategy', ctx=Load()),
+                          List(ctx=Load()),
+                          List(ctx=Load()),
+                          Constant(value='completed'),
+                          Constant(value=0.0)])),
+                    Assign(
+                      targets=[
+                        Name(id='successful_results', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='r', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='r', ctx=Store()),
+                            iter=Name(id='execution_results', ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='r', ctx=Load()),
+                                  attr='status',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='TaskStatus', ctx=Load()),
+                                    attr='COMPLETED',
+                                    ctx=Load())])],
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='failed_results', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='r', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='r', ctx=Store()),
+                            iter=Name(id='execution_results', ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='r', ctx=Load()),
+                                  attr='status',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='TaskStatus', ctx=Load()),
+                                    attr='FAILED',
+                                    ctx=Load())])],
+                            is_async=0)])),
+                    If(
+                      test=Compare(
+                        left=Name(id='orchestration_strategy', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='sequential')]),
+                      body=[
+                        For(
+                          target=Name(id='result', ctx=Store()),
+                          iter=Name(id='successful_results', ctx=Load()),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='coordination_result', ctx=Load()),
+                                    slice=Constant(value='coordinated_results'),
+                                    ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='task_id'),
+                                      Constant(value='output'),
+                                      Constant(value='execution_order')],
+                                    values=[
+                                      Subscript(
+                                        value=Attribute(
+                                          value=Name(id='result', ctx=Load()),
+                                          attr='metadata',
+                                          ctx=Load()),
+                                        slice=Constant(value='task_id'),
+                                        ctx=Load()),
+                                      Attribute(
+                                        value=Name(id='result', ctx=Load()),
+                                        attr='result',
+                                        ctx=Load()),
+                                      BinOp(
+                                        left=Call(
+                                          func=Name(id='len', ctx=Load()),
+                                          args=[
+                                            Subscript(
+                                              value=Name(id='coordination_result', ctx=Load()),
+                                              slice=Constant(value='coordinated_results'),
+                                              ctx=Load())]),
+                                        op=Add(),
+                                        right=Constant(value=1))])]))]),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='coordination_result', ctx=Load()),
+                              slice=Constant(value='orchestration_decisions'),
+                              ctx=Store())],
+                          value=List(
+                            elts=[
+                              Constant(value='Executed all tasks sequentially'),
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Processed '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='successful_results', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' successful tasks')])],
+                            ctx=Load()))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='orchestration_strategy', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='priority_based')]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='priority_order', ctx=Store())],
+                              value=Dict(
+                                keys=[
+                                  Constant(value='critical'),
+                                  Constant(value='high'),
+                                  Constant(value='medium'),
+                                  Constant(value='low')],
+                                values=[
+                                  Constant(value=1),
+                                  Constant(value=2),
+                                  Constant(value=3),
+                                  Constant(value=4)])),
+                            Assign(
+                              targets=[
+                                Name(id='sorted_results', ctx=Store())],
+                              value=Call(
+                                func=Name(id='sorted', ctx=Load()),
+                                args=[
+                                  Name(id='successful_results', ctx=Load())],
+                                keywords=[
+                                  keyword(
+                                    arg='key',
+                                    value=Lambda(
+                                      args=arguments(
+                                        args=[
+                                          arg(arg='r')]),
+                                      body=Call(
+                                        func=Attribute(
+                                          value=Name(id='priority_order', ctx=Load()),
+                                          attr='get',
+                                          ctx=Load()),
+                                        args=[
+                                          Call(
+                                            func=Attribute(
+                                              value=Attribute(
+                                                value=Name(id='r', ctx=Load()),
+                                                attr='metadata',
+                                                ctx=Load()),
+                                              attr='get',
+                                              ctx=Load()),
+                                            args=[
+                                              Constant(value='priority'),
+                                              Constant(value='medium')]),
+                                          Constant(value=99)])))])),
+                            For(
+                              target=Name(id='result', ctx=Store()),
+                              iter=Name(id='sorted_results', ctx=Load()),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Subscript(
+                                        value=Name(id='coordination_result', ctx=Load()),
+                                        slice=Constant(value='coordinated_results'),
+                                        ctx=Load()),
+                                      attr='append',
+                                      ctx=Load()),
+                                    args=[
+                                      Dict(
+                                        keys=[
+                                          Constant(value='task_id'),
+                                          Constant(value='priority'),
+                                          Constant(value='output'),
+                                          Constant(value='orchestration_rank')],
+                                        values=[
+                                          Subscript(
+                                            value=Attribute(
+                                              value=Name(id='result', ctx=Load()),
+                                              attr='metadata',
+                                              ctx=Load()),
+                                            slice=Constant(value='task_id'),
+                                            ctx=Load()),
+                                          Call(
+                                            func=Attribute(
+                                              value=Attribute(
+                                                value=Name(id='result', ctx=Load()),
+                                                attr='metadata',
+                                                ctx=Load()),
+                                              attr='get',
+                                              ctx=Load()),
+                                            args=[
+                                              Constant(value='priority'),
+                                              Constant(value='medium')]),
+                                          Attribute(
+                                            value=Name(id='result', ctx=Load()),
+                                            attr='result',
+                                            ctx=Load()),
+                                          BinOp(
+                                            left=Call(
+                                              func=Name(id='len', ctx=Load()),
+                                              args=[
+                                                Subscript(
+                                                  value=Name(id='coordination_result', ctx=Load()),
+                                                  slice=Constant(value='coordinated_results'),
+                                                  ctx=Load())]),
+                                            op=Add(),
+                                            right=Constant(value=1))])]))]),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='coordination_result', ctx=Load()),
+                                  slice=Constant(value='orchestration_decisions'),
+                                  ctx=Store())],
+                              value=List(
+                                elts=[
+                                  Constant(value='Ordered tasks by priority'),
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Critical tasks executed first: '),
+                                      FormattedValue(
+                                        value=Call(
+                                          func=Name(id='sum', ctx=Load()),
+                                          args=[
+                                            GeneratorExp(
+                                              elt=Constant(value=1),
+                                              generators=[
+                                                comprehension(
+                                                  target=Name(id='r', ctx=Store()),
+                                                  iter=Name(id='sorted_results', ctx=Load()),
+                                                  ifs=[
+                                                    Compare(
+                                                      left=Call(
+                                                        func=Attribute(
+                                                          value=Attribute(
+                                                            value=Name(id='r', ctx=Load()),
+                                                            attr='metadata',
+                                                            ctx=Load()),
+                                                          attr='get',
+                                                          ctx=Load()),
+                                                        args=[
+                                                          Constant(value='priority')]),
+                                                      ops=[
+                                                        Eq()],
+                                                      comparators=[
+                                                        Constant(value='critical')])],
+                                                  is_async=0)])]),
+                                        conversion=-1)])],
+                                ctx=Load()))],
+                          orelse=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='coordination_result', ctx=Load()),
+                                  slice=Constant(value='coordinated_results'),
+                                  ctx=Store())],
+                              value=ListComp(
+                                elt=Dict(
+                                  keys=[
+                                    Constant(value='task_id'),
+                                    Constant(value='output')],
+                                  values=[
+                                    Subscript(
+                                      value=Attribute(
+                                        value=Name(id='r', ctx=Load()),
+                                        attr='metadata',
+                                        ctx=Load()),
+                                      slice=Constant(value='task_id'),
+                                      ctx=Load()),
+                                    Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='result',
+                                      ctx=Load())]),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='r', ctx=Store()),
+                                    iter=Name(id='successful_results', ctx=Load()),
+                                    is_async=0)])),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='coordination_result', ctx=Load()),
+                                  slice=Constant(value='orchestration_decisions'),
+                                  ctx=Store())],
+                              value=List(
+                                elts=[
+                                  Constant(value='Used default coordination strategy')],
+                                ctx=Load()))])]),
+                    If(
+                      test=Name(id='failed_results', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='coordination_result', ctx=Load()),
+                              slice=Constant(value='final_status'),
+                              ctx=Store())],
+                          value=Constant(value='partial_success')),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Subscript(
+                                value=Name(id='coordination_result', ctx=Load()),
+                                slice=Constant(value='orchestration_decisions'),
+                                ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Handled '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='failed_results', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' failed tasks')])]))]),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='coordination_result', ctx=Load()),
+                          slice=Constant(value='coordination_time'),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='max', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='time', ctx=Load()),
+                                attr='time',
+                                ctx=Load())),
+                            op=Sub(),
+                            right=Name(id='coordination_start', ctx=Load())),
+                          Constant(value=0.001)])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='coordination_log',
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Dict(
+                            keys=[
+                              Constant(value='strategy'),
+                              Constant(value='successful_tasks'),
+                              Constant(value='failed_tasks'),
+                              Constant(value='coordination_time')],
+                            values=[
+                              Name(id='orchestration_strategy', ctx=Load()),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='successful_results', ctx=Load())]),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='failed_results', ctx=Load())]),
+                              Subscript(
+                                value=Name(id='coordination_result', ctx=Load()),
+                                slice=Constant(value='coordination_time'),
+                                ctx=Load())])])),
+                    Return(
+                      value=Name(id='coordination_result', ctx=Load()))],
+                  returns=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='orchestrator', ctx=Store())],
+              value=Call(
+                func=Name(id='MockOrchestrator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='execution_results', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_001')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='COMPLETED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Dict(
+                          keys=[
+                            Constant(value='extracted_data')],
+                          values=[
+                            Constant(value='resume_skills')])),
+                      keyword(
+                        arg='error',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=1.5)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='extract_resume'),
+                            Constant(value='critical')]))]),
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_001')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='COMPLETED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Dict(
+                          keys=[
+                            Constant(value='analysis_result')],
+                          values=[
+                            Constant(value='skill_match')])),
+                      keyword(
+                        arg='error',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=2.0)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='match_skills'),
+                            Constant(value='high')]))]),
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_001')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='FAILED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='error',
+                        value=Constant(value='Resource timeout')),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=5.0)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='generate_report'),
+                            Constant(value='medium')]))])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='strategies', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='sequential'),
+                  Constant(value='priority_based'),
+                  Constant(value='adaptive')],
+                ctx=Load())),
+            For(
+              target=Name(id='strategy', ctx=Store()),
+              iter=Name(id='strategies', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='coordination_result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='orchestrator', ctx=Load()),
+                      attr='coordinate_execution',
+                      ctx=Load()),
+                    args=[
+                      Name(id='execution_results', ctx=Load()),
+                      Name(id='strategy', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='coordination_result', ctx=Load()),
+                      slice=Constant(value='strategy'),
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='strategy', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Subscript(
+                          value=Name(id='coordination_result', ctx=Load()),
+                          slice=Constant(value='coordinated_results'),
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=2)])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='coordination_result', ctx=Load()),
+                      slice=Constant(value='coordination_time'),
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0)])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Subscript(
+                          value=Name(id='coordination_result', ctx=Load()),
+                          slice=Constant(value='orchestration_decisions'),
+                          ctx=Load())]),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0)])),
+                If(
+                  test=Compare(
+                    left=Name(id='strategy', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='priority_based')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='coordinated', ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='coordination_result', ctx=Load()),
+                        slice=Constant(value='coordinated_results'),
+                        ctx=Load())),
+                    Assert(
+                      test=Compare(
+                        left=Subscript(
+                          value=Subscript(
+                            value=Name(id='coordinated', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          slice=Constant(value='priority'),
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='critical')])),
+                    Assert(
+                      test=Compare(
+                        left=Subscript(
+                          value=Subscript(
+                            value=Name(id='coordinated', ctx=Load()),
+                            slice=Constant(value=1),
+                            ctx=Load()),
+                          slice=Constant(value='priority'),
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='high')]))])]),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='orchestrator', ctx=Load()),
+                      attr='coordination_log',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Subscript(
+                        value=Name(id='log', ctx=Load()),
+                        slice=Constant(value='successful_tasks'),
+                        ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value=2)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='log', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='orchestrator', ctx=Load()),
+                          attr='coordination_log',
+                          ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Subscript(
+                        value=Name(id='log', ctx=Load()),
+                        slice=Constant(value='coordination_time'),
+                        ctx=Load()),
+                      ops=[
+                        Gt()],
+                      comparators=[
+                        Constant(value=0)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='log', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='orchestrator', ctx=Load()),
+                          attr='coordination_log',
+                          ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_end_to_end_workflow_integrity',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test complete workflow integrity from planning to orchestration.')),
+            ClassDef(
+              name='MockWorkflowPipeline',
+              body=[
+                FunctionDef(
+                  name='__init__',
+                  args=arguments(
+                    args=[
+                      arg(arg='self')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='planning_engine',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='Mock', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='execution_engine',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='Mock', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='orchestrator',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='Mock', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='pipeline_history',
+                          ctx=Store())],
+                      value=List(ctx=Load()))]),
+                FunctionDef(
+                  name='execute_workflow',
+                  args=arguments(
+                    args=[
+                      arg(arg='self'),
+                      arg(
+                        arg='mission',
+                        annotation=Name(id='str', ctx=Load())),
+                      arg(
+                        arg='context',
+                        annotation=Subscript(
+                          value=Name(id='Dict', ctx=Load()),
+                          slice=Tuple(
+                            elts=[
+                              Name(id='str', ctx=Load()),
+                              Name(id='Any', ctx=Load())],
+                            ctx=Load()),
+                          ctx=Load())),
+                      arg(
+                        arg='strategy',
+                        annotation=Name(id='str', ctx=Load()))],
+                    defaults=[
+                      Constant(value='sequential')]),
+                  body=[
+                    Expr(
+                      value=Constant(value='Execute complete workflow pipeline.')),
+                    Assign(
+                      targets=[
+                        Name(id='pipeline_start', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='time', ctx=Load()),
+                          attr='time',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='workflow_result', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='mission'),
+                          Constant(value='workflow_id'),
+                          Constant(value='strategy'),
+                          Constant(value='phases'),
+                          Constant(value='final_output'),
+                          Constant(value='success'),
+                          Constant(value='total_time'),
+                          Constant(value='errors')],
+                        values=[
+                          Name(id='mission', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='context', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='workflow_id'),
+                              Constant(value='unknown')]),
+                          Name(id='strategy', ctx=Load()),
+                          Dict(),
+                          Constant(value=None),
+                          Constant(value=False),
+                          Constant(value=0.0),
+                          List(ctx=Load())])),
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='plan', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='planning_engine',
+                                ctx=Load()),
+                              attr='create_plan',
+                              ctx=Load()),
+                            args=[
+                              Name(id='mission', ctx=Load()),
+                              Name(id='context', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Subscript(
+                                value=Name(id='workflow_result', ctx=Load()),
+                                slice=Constant(value='phases'),
+                                ctx=Load()),
+                              slice=Constant(value='planning'),
+                              ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='status'),
+                              Constant(value='plan_id'),
+                              Constant(value='task_count')],
+                            values=[
+                              Constant(value='completed'),
+                              Attribute(
+                                value=Name(id='plan', ctx=Load()),
+                                attr='plan_id',
+                                ctx=Load()),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='plan', ctx=Load()),
+                                    attr='tasks',
+                                    ctx=Load())])])),
+                        Assign(
+                          targets=[
+                            Name(id='execution_context', ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='workflow_id'),
+                              Constant(value='strategy')],
+                            values=[
+                              Subscript(
+                                value=Name(id='context', ctx=Load()),
+                                slice=Constant(value='workflow_id'),
+                                ctx=Load()),
+                              Name(id='strategy', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='execution_results', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='execution_engine',
+                                ctx=Load()),
+                              attr='execute_plan',
+                              ctx=Load()),
+                            args=[
+                              Name(id='plan', ctx=Load()),
+                              Name(id='execution_context', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='successful_executions', ctx=Store())],
+                          value=ListComp(
+                            elt=Name(id='r', ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='r', ctx=Store()),
+                                iter=Name(id='execution_results', ctx=Load()),
+                                ifs=[
+                                  Compare(
+                                    left=Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='status',
+                                      ctx=Load()),
+                                    ops=[
+                                      Eq()],
+                                    comparators=[
+                                      Attribute(
+                                        value=Name(id='TaskStatus', ctx=Load()),
+                                        attr='COMPLETED',
+                                        ctx=Load())])],
+                                is_async=0)])),
+                        Assign(
+                          targets=[
+                            Name(id='failed_executions', ctx=Store())],
+                          value=ListComp(
+                            elt=Name(id='r', ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='r', ctx=Store()),
+                                iter=Name(id='execution_results', ctx=Load()),
+                                ifs=[
+                                  Compare(
+                                    left=Attribute(
+                                      value=Name(id='r', ctx=Load()),
+                                      attr='status',
+                                      ctx=Load()),
+                                    ops=[
+                                      Eq()],
+                                    comparators=[
+                                      Attribute(
+                                        value=Name(id='TaskStatus', ctx=Load()),
+                                        attr='FAILED',
+                                        ctx=Load())])],
+                                is_async=0)])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Subscript(
+                                value=Name(id='workflow_result', ctx=Load()),
+                                slice=Constant(value='phases'),
+                                ctx=Load()),
+                              slice=Constant(value='execution'),
+                              ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='status'),
+                              Constant(value='successful_tasks'),
+                              Constant(value='failed_tasks')],
+                            values=[
+                              IfExp(
+                                test=UnaryOp(
+                                  op=Not(),
+                                  operand=Name(id='failed_executions', ctx=Load())),
+                                body=Constant(value='completed'),
+                                orelse=Constant(value='partial_success')),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='successful_executions', ctx=Load())]),
+                              Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Name(id='failed_executions', ctx=Load())])])),
+                        Assign(
+                          targets=[
+                            Name(id='coordination_result', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='orchestrator',
+                                ctx=Load()),
+                              attr='coordinate_execution',
+                              ctx=Load()),
+                            args=[
+                              Name(id='execution_results', ctx=Load()),
+                              Name(id='strategy', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Subscript(
+                                value=Name(id='workflow_result', ctx=Load()),
+                                slice=Constant(value='phases'),
+                                ctx=Load()),
+                              slice=Constant(value='orchestration'),
+                              ctx=Store())],
+                          value=Dict(
+                            keys=[
+                              Constant(value='status'),
+                              Constant(value='coordination_time'),
+                              Constant(value='decisions')],
+                            values=[
+                              Subscript(
+                                value=Name(id='coordination_result', ctx=Load()),
+                                slice=Constant(value='final_status'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='coordination_result', ctx=Load()),
+                                slice=Constant(value='coordination_time'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='coordination_result', ctx=Load()),
+                                slice=Constant(value='orchestration_decisions'),
+                                ctx=Load())])),
+                        If(
+                          test=Compare(
+                            left=Subscript(
+                              value=Name(id='coordination_result', ctx=Load()),
+                              slice=Constant(value='final_status'),
+                              ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              List(
+                                elts=[
+                                  Constant(value='completed'),
+                                  Constant(value='partial_success')],
+                                ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='workflow_result', ctx=Load()),
+                                  slice=Constant(value='final_output'),
+                                  ctx=Store())],
+                              value=Dict(
+                                keys=[
+                                  Constant(value='coordinated_results'),
+                                  Constant(value='summary')],
+                                values=[
+                                  Subscript(
+                                    value=Name(id='coordination_result', ctx=Load()),
+                                    slice=Constant(value='coordinated_results'),
+                                    ctx=Load()),
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Processed '),
+                                      FormattedValue(
+                                        value=Call(
+                                          func=Name(id='len', ctx=Load()),
+                                          args=[
+                                            Name(id='successful_executions', ctx=Load())]),
+                                        conversion=-1),
+                                      Constant(value=' tasks successfully')])])),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='workflow_result', ctx=Load()),
+                                  slice=Constant(value='success'),
+                                  ctx=Store())],
+                              value=Constant(value=True))])],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='Exception', ctx=Load()),
+                          name='e',
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='workflow_result', ctx=Load()),
+                                    slice=Constant(value='errors'),
+                                    ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Name(id='str', ctx=Load()),
+                                    args=[
+                                      Name(id='e', ctx=Load())])])),
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='workflow_result', ctx=Load()),
+                                  slice=Constant(value='success'),
+                                  ctx=Store())],
+                              value=Constant(value=False))])]),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='workflow_result', ctx=Load()),
+                          slice=Constant(value='total_time'),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='max', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='time', ctx=Load()),
+                                attr='time',
+                                ctx=Load())),
+                            op=Sub(),
+                            right=Name(id='pipeline_start', ctx=Load())),
+                          Constant(value=0.001)])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='pipeline_history',
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Dict(
+                            keys=[
+                              Constant(value='workflow_id'),
+                              Constant(value='success'),
+                              Constant(value='total_time'),
+                              Constant(value='strategy')],
+                            values=[
+                              Subscript(
+                                value=Name(id='workflow_result', ctx=Load()),
+                                slice=Constant(value='workflow_id'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='workflow_result', ctx=Load()),
+                                slice=Constant(value='success'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='workflow_result', ctx=Load()),
+                                slice=Constant(value='total_time'),
+                                ctx=Load()),
+                              Name(id='strategy', ctx=Load())])])),
+                    Return(
+                      value=Name(id='workflow_result', ctx=Load()))],
+                  returns=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='mock_plan', ctx=Store())],
+              value=Call(
+                func=Name(id='MockWorkflowPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='plan_id',
+                    value=Constant(value='plan_001')),
+                  keyword(
+                    arg='mission',
+                    value=Constant(value='Test mission')),
+                  keyword(
+                    arg='phases',
+                    value=List(
+                      elts=[
+                        Constant(value='planning'),
+                        Constant(value='execution'),
+                        Constant(value='orchestration')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tasks',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='type'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='task1'),
+                            Constant(value='extraction'),
+                            Constant(value='critical')]),
+                        Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='type'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='task2'),
+                            Constant(value='analysis'),
+                            Constant(value='high')])],
+                      ctx=Load())),
+                  keyword(
+                    arg='dependencies',
+                    value=Dict(
+                      keys=[
+                        Constant(value='task1'),
+                        Constant(value='task2')],
+                      values=[
+                        List(ctx=Load()),
+                        List(
+                          elts=[
+                            Constant(value='task1')],
+                          ctx=Load())])),
+                  keyword(
+                    arg='estimated_duration',
+                    value=Constant(value=4.0))])),
+            Assign(
+              targets=[
+                Name(id='mock_execution_results', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_001')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='COMPLETED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Dict(
+                          keys=[
+                            Constant(value='data')],
+                          values=[
+                            Constant(value='extracted')])),
+                      keyword(
+                        arg='error',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=1.0)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='task1'),
+                            Constant(value='critical')]))]),
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_001')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='COMPLETED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Dict(
+                          keys=[
+                            Constant(value='analysis')],
+                          values=[
+                            Constant(value='completed')])),
+                      keyword(
+                        arg='error',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=1.5)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='task2'),
+                            Constant(value='high')]))])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='mock_coordination', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='strategy'),
+                  Constant(value='coordinated_results'),
+                  Constant(value='orchestration_decisions'),
+                  Constant(value='final_status'),
+                  Constant(value='coordination_time')],
+                values=[
+                  Constant(value='sequential'),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='task_id'),
+                          Constant(value='output')],
+                        values=[
+                          Constant(value='task1'),
+                          Dict(
+                            keys=[
+                              Constant(value='data')],
+                            values=[
+                              Constant(value='extracted')])]),
+                      Dict(
+                        keys=[
+                          Constant(value='task_id'),
+                          Constant(value='output')],
+                        values=[
+                          Constant(value='task2'),
+                          Dict(
+                            keys=[
+                              Constant(value='analysis')],
+                            values=[
+                              Constant(value='completed')])])],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Executed tasks sequentially')],
+                    ctx=Load()),
+                  Constant(value='completed'),
+                  Constant(value=0.1)])),
+            Assign(
+              targets=[
+                Name(id='pipeline', ctx=Store())],
+              value=Call(
+                func=Name(id='MockWorkflowPipeline', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='planning_engine',
+                      ctx=Load()),
+                    attr='create_plan',
+                    ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Name(id='mock_plan', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='execution_engine',
+                      ctx=Load()),
+                    attr='execute_plan',
+                    ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Name(id='mock_execution_results', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='orchestrator',
+                      ctx=Load()),
+                    attr='coordinate_execution',
+                    ctx=Load()),
+                  attr='return_value',
+                  ctx=Store())],
+              value=Name(id='mock_coordination', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='mission', ctx=Store())],
+              value=Constant(value='Extract and analyze resume data')),
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workflow_id'),
+                  Constant(value='priority')],
+                values=[
+                  Constant(value='workflow_001'),
+                  Constant(value='high')])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pipeline', ctx=Load()),
+                  attr='execute_workflow',
+                  ctx=Load()),
+                args=[
+                  Name(id='mission', ctx=Load()),
+                  Name(id='context', ctx=Load()),
+                  Constant(value='sequential')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='mission'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='mission', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='workflow_id'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='workflow_001')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='success'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='total_time'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='errors'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='planning'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phases'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='execution'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phases'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='orchestration'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='result', ctx=Load()),
+                    slice=Constant(value='phases'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='phases'),
+                      ctx=Load()),
+                    slice=Constant(value='planning'),
+                    ctx=Load()),
+                  slice=Constant(value='status'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='completed')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='phases'),
+                      ctx=Load()),
+                    slice=Constant(value='execution'),
+                    ctx=Load()),
+                  slice=Constant(value='status'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='completed')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='phases'),
+                      ctx=Load()),
+                    slice=Constant(value='orchestration'),
+                    ctx=Load()),
+                  slice=Constant(value='status'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='completed')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='final_output'),
+                  ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='result', ctx=Load()),
+                        slice=Constant(value='final_output'),
+                        ctx=Load()),
+                      slice=Constant(value='coordinated_results'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='pipeline_history',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='pipeline_history',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  slice=Constant(value='workflow_id'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='workflow_001')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='pipeline_history',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  slice=Constant(value='success'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='planning_engine',
+                      ctx=Load()),
+                    attr='create_plan',
+                    ctx=Load()),
+                  attr='assert_called_once_with',
+                  ctx=Load()),
+                args=[
+                  Name(id='mission', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='execution_engine',
+                      ctx=Load()),
+                    attr='execute_plan',
+                    ctx=Load()),
+                  attr='assert_called_once',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='pipeline', ctx=Load()),
+                      attr='orchestrator',
+                      ctx=Load()),
+                    attr='coordinate_execution',
+                    ctx=Load()),
+                  attr='assert_called_once',
+                  ctx=Load())))])]),
+    ClassDef(
+      name='TestWorkflowErrorHandling',
+      body=[
+        Expr(
+          value=Constant(value='Test error handling in critical path workflow.')),
+        FunctionDef(
+          name='test_planning_failure_propagation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that planning failures propagate correctly through workflow.')),
+            ClassDef(
+              name='FailingPlanningEngine',
+              body=[
+                FunctionDef(
+                  name='create_plan',
+                  args=arguments(
+                    args=[
+                      arg(arg='self'),
+                      arg(
+                        arg='mission',
+                        annotation=Name(id='str', ctx=Load())),
+                      arg(
+                        arg='context',
+                        annotation=Subscript(
+                          value=Name(id='Dict', ctx=Load()),
+                          slice=Tuple(
+                            elts=[
+                              Name(id='str', ctx=Load()),
+                              Name(id='Any', ctx=Load())],
+                            ctx=Load()),
+                          ctx=Load()))]),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Constant(value='invalid'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='mission', ctx=Load()),
+                              attr='lower',
+                              ctx=Load()))]),
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='ValueError', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Invalid mission: '),
+                                  FormattedValue(
+                                    value=Name(id='mission', ctx=Load()),
+                                    conversion=-1)])]))]),
+                    Return(
+                      value=Call(
+                        func=Name(id='MockWorkflowPlan', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='plan_id',
+                            value=Constant(value='valid_plan')),
+                          keyword(
+                            arg='mission',
+                            value=Name(id='mission', ctx=Load())),
+                          keyword(
+                            arg='phases',
+                            value=List(
+                              elts=[
+                                Constant(value='planning')],
+                              ctx=Load())),
+                          keyword(
+                            arg='tasks',
+                            value=List(ctx=Load())),
+                          keyword(arg='dependencies', value=Dict()),
+                          keyword(
+                            arg='estimated_duration',
+                            value=Constant(value=0.0))]))],
+                  returns=Name(id='MockWorkflowPlan', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='planning_engine', ctx=Store())],
+              value=Call(
+                func=Name(id='FailingPlanningEngine', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='valid_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planning_engine', ctx=Load()),
+                  attr='create_plan',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Valid mission'),
+                  Dict()])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='valid_result', ctx=Load()),
+                  attr='plan_id',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='valid_plan')])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='raises',
+                      ctx=Load()),
+                    args=[
+                      Name(id='ValueError', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='match',
+                        value=Constant(value='Invalid mission'))]))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='planning_engine', ctx=Load()),
+                      attr='create_plan',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Invalid mission with invalid content'),
+                      Dict()]))])]),
+        FunctionDef(
+          name='test_execution_failure_handling',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test handling of execution failures in workflow.')),
+            ClassDef(
+              name='FailingExecutionEngine',
+              body=[
+                FunctionDef(
+                  name='execute_plan',
+                  args=arguments(
+                    args=[
+                      arg(arg='self'),
+                      arg(
+                        arg='plan',
+                        annotation=Name(id='MockWorkflowPlan', ctx=Load())),
+                      arg(
+                        arg='context',
+                        annotation=Subscript(
+                          value=Name(id='Dict', ctx=Load()),
+                          slice=Tuple(
+                            elts=[
+                              Name(id='str', ctx=Load()),
+                              Name(id='Any', ctx=Load())],
+                            ctx=Load()),
+                          ctx=Load()))]),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Constant(value='fail'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='context', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='execution_mode'),
+                              Constant(value='')])]),
+                      body=[
+                        Return(
+                          value=List(
+                            elts=[
+                              Call(
+                                func=Name(id='MockWorkflowResult', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='workflow_id',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='context', ctx=Load()),
+                                        attr='get',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value='workflow_id'),
+                                        Constant(value='unknown')])),
+                                  keyword(
+                                    arg='phase',
+                                    value=Attribute(
+                                      value=Name(id='WorkflowPhase', ctx=Load()),
+                                      attr='EXECUTION',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='status',
+                                    value=Attribute(
+                                      value=Name(id='TaskStatus', ctx=Load()),
+                                      attr='FAILED',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='result',
+                                    value=Constant(value=None)),
+                                  keyword(
+                                    arg='error',
+                                    value=Constant(value='Simulated execution failure')),
+                                  keyword(
+                                    arg='execution_time',
+                                    value=Constant(value=0.0)),
+                                  keyword(
+                                    arg='metadata',
+                                    value=Dict(
+                                      keys=[
+                                        Constant(value='task_id')],
+                                      values=[
+                                        Constant(value='failed_task')]))])],
+                            ctx=Load()))],
+                      orelse=[
+                        Return(
+                          value=List(
+                            elts=[
+                              Call(
+                                func=Name(id='MockWorkflowResult', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='workflow_id',
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='context', ctx=Load()),
+                                        attr='get',
+                                        ctx=Load()),
+                                      args=[
+                                        Constant(value='workflow_id'),
+                                        Constant(value='unknown')])),
+                                  keyword(
+                                    arg='phase',
+                                    value=Attribute(
+                                      value=Name(id='WorkflowPhase', ctx=Load()),
+                                      attr='EXECUTION',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='status',
+                                    value=Attribute(
+                                      value=Name(id='TaskStatus', ctx=Load()),
+                                      attr='COMPLETED',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='result',
+                                    value=Dict(
+                                      keys=[
+                                        Constant(value='success')],
+                                      values=[
+                                        Constant(value=True)])),
+                                  keyword(
+                                    arg='error',
+                                    value=Constant(value=None)),
+                                  keyword(
+                                    arg='execution_time',
+                                    value=Constant(value=1.0)),
+                                  keyword(
+                                    arg='metadata',
+                                    value=Dict(
+                                      keys=[
+                                        Constant(value='task_id')],
+                                      values=[
+                                        Constant(value='successful_task')]))])],
+                            ctx=Load()))])],
+                  returns=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='MockWorkflowResult', ctx=Load()),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='execution_engine', ctx=Store())],
+              value=Call(
+                func=Name(id='FailingExecutionEngine', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='MockWorkflowPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='plan_id',
+                    value=Constant(value='test_plan')),
+                  keyword(
+                    arg='mission',
+                    value=Constant(value='Test mission')),
+                  keyword(
+                    arg='phases',
+                    value=List(
+                      elts=[
+                        Constant(value='execution')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tasks',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='type')],
+                          values=[
+                            Constant(value='test_task'),
+                            Constant(value='test')])],
+                      ctx=Load())),
+                  keyword(arg='dependencies', value=Dict()),
+                  keyword(
+                    arg='estimated_duration',
+                    value=Constant(value=1.0))])),
+            Assign(
+              targets=[
+                Name(id='success_context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workflow_id'),
+                  Constant(value='execution_mode')],
+                values=[
+                  Constant(value='workflow_001'),
+                  Constant(value='normal')])),
+            Assign(
+              targets=[
+                Name(id='success_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='execution_engine', ctx=Load()),
+                  attr='execute_plan',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='success_context', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='success_results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Name(id='success_results', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='status',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='TaskStatus', ctx=Load()),
+                    attr='COMPLETED',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Name(id='success_results', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Name(id='fail_context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workflow_id'),
+                  Constant(value='execution_mode')],
+                values=[
+                  Constant(value='workflow_002'),
+                  Constant(value='fail')])),
+            Assign(
+              targets=[
+                Name(id='fail_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='execution_engine', ctx=Load()),
+                  attr='execute_plan',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='fail_context', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='fail_results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Name(id='fail_results', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='status',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='TaskStatus', ctx=Load()),
+                    attr='FAILED',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Subscript(
+                    value=Name(id='fail_results', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Simulated execution failure')]))]),
+        FunctionDef(
+          name='test_orchestration_error_recovery',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test orchestration error recovery mechanisms.')),
+            ClassDef(
+              name='ErrorRecoveryOrchestrator',
+              body=[
+                FunctionDef(
+                  name='coordinate_execution',
+                  args=arguments(
+                    args=[
+                      arg(arg='self'),
+                      arg(
+                        arg='execution_results',
+                        annotation=Subscript(
+                          value=Name(id='List', ctx=Load()),
+                          slice=Name(id='MockWorkflowResult', ctx=Load()),
+                          ctx=Load())),
+                      arg(
+                        arg='strategy',
+                        annotation=Name(id='str', ctx=Load()))]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='successful_results', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='r', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='r', ctx=Store()),
+                            iter=Name(id='execution_results', ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='r', ctx=Load()),
+                                  attr='status',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='TaskStatus', ctx=Load()),
+                                    attr='COMPLETED',
+                                    ctx=Load())])],
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='failed_results', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='r', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='r', ctx=Store()),
+                            iter=Name(id='execution_results', ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='r', ctx=Load()),
+                                  attr='status',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='TaskStatus', ctx=Load()),
+                                    attr='FAILED',
+                                    ctx=Load())])],
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='coordination_result', ctx=Store())],
+                      value=Dict(
+                        keys=[
+                          Constant(value='strategy'),
+                          Constant(value='successful_count'),
+                          Constant(value='failed_count'),
+                          Constant(value='recovery_actions'),
+                          Constant(value='final_status')],
+                        values=[
+                          Name(id='strategy', ctx=Load()),
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='successful_results', ctx=Load())]),
+                          Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='failed_results', ctx=Load())]),
+                          List(ctx=Load()),
+                          Constant(value='completed')])),
+                    If(
+                      test=Name(id='failed_results', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='coordination_result', ctx=Load()),
+                              slice=Constant(value='final_status'),
+                              ctx=Store())],
+                          value=Constant(value='partial_success')),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='coordination_result', ctx=Load()),
+                              slice=Constant(value='recovery_actions'),
+                              ctx=Store())],
+                          value=List(
+                            elts=[
+                              Constant(value='Logged execution failures'),
+                              Constant(value='Continued with successful results'),
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Attempted recovery for '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='failed_results', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' failed tasks')])],
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='critical_failures', ctx=Store())],
+                          value=ListComp(
+                            elt=Name(id='r', ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='r', ctx=Store()),
+                                iter=Name(id='failed_results', ctx=Load()),
+                                ifs=[
+                                  Compare(
+                                    left=Constant(value='critical'),
+                                    ops=[
+                                      In()],
+                                    comparators=[
+                                      Call(
+                                        func=Attribute(
+                                          value=Attribute(
+                                            value=Name(id='r', ctx=Load()),
+                                            attr='metadata',
+                                            ctx=Load()),
+                                          attr='get',
+                                          ctx=Load()),
+                                        args=[
+                                          Constant(value='priority'),
+                                          Constant(value='')])])],
+                                is_async=0)])),
+                        If(
+                          test=Name(id='critical_failures', ctx=Load()),
+                          body=[
+                            Assign(
+                              targets=[
+                                Subscript(
+                                  value=Name(id='coordination_result', ctx=Load()),
+                                  slice=Constant(value='final_status'),
+                                  ctx=Store())],
+                              value=Constant(value='failed')),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='coordination_result', ctx=Load()),
+                                    slice=Constant(value='recovery_actions'),
+                                    ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='Critical task failure - workflow failed')]))])],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='coordination_result', ctx=Load()),
+                              slice=Constant(value='recovery_actions'),
+                              ctx=Store())],
+                          value=List(
+                            elts=[
+                              Constant(value='All tasks completed successfully')],
+                            ctx=Load()))]),
+                    Return(
+                      value=Name(id='coordination_result', ctx=Load()))],
+                  returns=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='orchestrator', ctx=Store())],
+              value=Call(
+                func=Name(id='ErrorRecoveryOrchestrator', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='mixed_results', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_001')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='COMPLETED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Dict(
+                          keys=[
+                            Constant(value='data')],
+                          values=[
+                            Constant(value='success')])),
+                      keyword(
+                        arg='error',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=1.0)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='task1'),
+                            Constant(value='high')]))]),
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_001')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='FAILED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='error',
+                        value=Constant(value='Non-critical failure')),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=0.5)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='task2'),
+                            Constant(value='medium')]))])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='recovery_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='orchestrator', ctx=Load()),
+                  attr='coordinate_execution',
+                  ctx=Load()),
+                args=[
+                  Name(id='mixed_results', ctx=Load()),
+                  Constant(value='recovery')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='recovery_result', ctx=Load()),
+                  slice=Constant(value='successful_count'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='recovery_result', ctx=Load()),
+                  slice=Constant(value='failed_count'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='recovery_result', ctx=Load()),
+                  slice=Constant(value='final_status'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='partial_success')])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='recovery_result', ctx=Load()),
+                      slice=Constant(value='recovery_actions'),
+                      ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=2)])),
+            Assign(
+              targets=[
+                Name(id='critical_failure_results', ctx=Store())],
+              value=List(
+                elts=[
+                  Call(
+                    func=Name(id='MockWorkflowResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='workflow_id',
+                        value=Constant(value='workflow_002')),
+                      keyword(
+                        arg='phase',
+                        value=Attribute(
+                          value=Name(id='WorkflowPhase', ctx=Load()),
+                          attr='EXECUTION',
+                          ctx=Load())),
+                      keyword(
+                        arg='status',
+                        value=Attribute(
+                          value=Name(id='TaskStatus', ctx=Load()),
+                          attr='FAILED',
+                          ctx=Load())),
+                      keyword(
+                        arg='result',
+                        value=Constant(value=None)),
+                      keyword(
+                        arg='error',
+                        value=Constant(value='Critical failure')),
+                      keyword(
+                        arg='execution_time',
+                        value=Constant(value=0.1)),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='task_id'),
+                            Constant(value='priority')],
+                          values=[
+                            Constant(value='critical_task'),
+                            Constant(value='critical')]))])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='critical_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='orchestrator', ctx=Load()),
+                  attr='coordinate_execution',
+                  ctx=Load()),
+                args=[
+                  Name(id='critical_failure_results', ctx=Load()),
+                  Constant(value='recovery')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='critical_result', ctx=Load()),
+                  slice=Constant(value='successful_count'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='critical_result', ctx=Load()),
+                  slice=Constant(value='failed_count'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='critical_result', ctx=Load()),
+                  slice=Constant(value='final_status'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='failed')])),
+            Assert(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Constant(value='Critical task failure'),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='action', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='action', ctx=Store()),
+                        iter=Subscript(
+                          value=Name(id='critical_result', ctx=Load()),
+                          slice=Constant(value='recovery_actions'),
+                          ctx=Load()),
+                        is_async=0)])]))])])])

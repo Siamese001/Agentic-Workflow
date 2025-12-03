@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\rag\\retrieval_planner.py",
+    "rel_path": "retrieval_planner.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "0e0205964483d822347f1863e69e0722ff09e548b7c2216e393514d8e497ee6d",
+    "file_size": 1904,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.624136
+}

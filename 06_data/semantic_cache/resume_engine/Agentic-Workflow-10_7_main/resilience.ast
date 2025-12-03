@@ -1,0 +1,891 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Resilience utilities and MCP wrappers for v10.7.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='functools',
+      names=[
+        alias(name='wraps')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='TYPE_CHECKING'),
+        alias(name='Any'),
+        alias(name='Awaitable'),
+        alias(name='Callable'),
+        alias(name='Dict'),
+        alias(name='Optional'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='mcp',
+      names=[
+        alias(name='sync_context')],
+      level=0),
+    ImportFrom(
+      module='exceptions',
+      names=[
+        alias(name='CircuitBreakerOpenError'),
+        alias(name='JSONParsingError'),
+        alias(name='ModelAPIError'),
+        alias(name='PydanticSchemaError'),
+        alias(name='WorkflowError'),
+        alias(name='WorkflowTimeoutError')],
+      level=1),
+    If(
+      test=Name(id='TYPE_CHECKING', ctx=Load()),
+      body=[
+        ImportFrom(
+          module='context',
+          names=[
+            alias(name='WorkflowContext')],
+          level=1)]),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Constant(value='core_v10_7')])),
+    ClassDef(
+      name='CircuitBreaker',
+      body=[
+        Expr(
+          value=Constant(value='Circuit breaker utility used by batch workflows.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='failure_threshold',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=3)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='failure_threshold',
+                  ctx=Store())],
+              value=Name(id='failure_threshold', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='failure_count',
+                  ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='is_open',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='__name__', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='.CircuitBreaker')])]))]),
+        FunctionDef(
+          name='record_success',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='failure_count',
+                  ctx=Store())],
+              value=Constant(value=0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='is_open',
+                  ctx=Store())],
+              value=Constant(value=False))]),
+        FunctionDef(
+          name='record_failure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            AugAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='failure_count',
+                ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='failure_count',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='failure_threshold',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='is_open',
+                      ctx=Store())],
+                  value=Constant(value=True)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Circuit breaker OPEN after %s failures'),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='failure_count',
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='check',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='is_open',
+                ctx=Load()),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='CircuitBreakerOpenError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Circuit breaker open after '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='failure_count',
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' failures')])]))])])]),
+    FunctionDef(
+      name='exponential_backoff_retry',
+      args=arguments(
+        args=[
+          arg(
+            arg='max_retries',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='initial_delay',
+            annotation=Name(id='float', ctx=Load()))],
+        defaults=[
+          Constant(value=3),
+          Constant(value=1.0)]),
+      body=[
+        Expr(
+          value=Constant(value='Decorator factory that applies exponential backoff to async node functions.')),
+        FunctionDef(
+          name='decorator',
+          args=arguments(
+            args=[
+              arg(
+                arg='func',
+                annotation=Subscript(
+                  value=Name(id='Callable', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Constant(value=Ellipsis),
+                      Subscript(
+                        value=Name(id='Awaitable', ctx=Load()),
+                        slice=Name(id='Any', ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            AsyncFunctionDef(
+              name='wrapper',
+              args=arguments(
+                vararg=arg(arg='args'),
+                kwarg=arg(arg='kwargs')),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='delay', ctx=Store())],
+                  value=Name(id='initial_delay', ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='total_attempts', ctx=Store())],
+                  value=Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      Constant(value=1),
+                      BinOp(
+                        left=Name(id='max_retries', ctx=Load()),
+                        op=Add(),
+                        right=Constant(value=1))])),
+                For(
+                  target=Name(id='attempt', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='range', ctx=Load()),
+                    args=[
+                      Name(id='total_attempts', ctx=Load())]),
+                  body=[
+                    Try(
+                      body=[
+                        Return(
+                          value=Await(
+                            value=Call(
+                              func=Name(id='func', ctx=Load()),
+                              args=[
+                                Starred(
+                                  value=Name(id='args', ctx=Load()),
+                                  ctx=Load())],
+                              keywords=[
+                                keyword(
+                                  value=Name(id='kwargs', ctx=Load()))])))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Tuple(
+                            elts=[
+                              Name(id='ModelAPIError', ctx=Load()),
+                              Name(id='JSONParsingError', ctx=Load()),
+                              Name(id='PydanticSchemaError', ctx=Load()),
+                              Attribute(
+                                value=Name(id='asyncio', ctx=Load()),
+                                attr='TimeoutError',
+                                ctx=Load())],
+                            ctx=Load()),
+                          name='exc',
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='warning',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='Node %s failed (Attempt %s/%s): %s'),
+                                  Attribute(
+                                    value=Name(id='func', ctx=Load()),
+                                    attr='__name__',
+                                    ctx=Load()),
+                                  BinOp(
+                                    left=Name(id='attempt', ctx=Load()),
+                                    op=Add(),
+                                    right=Constant(value=1)),
+                                  Name(id='total_attempts', ctx=Load()),
+                                  Name(id='exc', ctx=Load())])),
+                            If(
+                              test=Compare(
+                                left=BinOp(
+                                  left=Name(id='attempt', ctx=Load()),
+                                  op=Add(),
+                                  right=Constant(value=1)),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Name(id='total_attempts', ctx=Load())]),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='logger', ctx=Load()),
+                                      attr='error',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='Node %s failed permanently after %s attempts.'),
+                                      Attribute(
+                                        value=Name(id='func', ctx=Load()),
+                                        attr='__name__',
+                                        ctx=Load()),
+                                      Name(id='total_attempts', ctx=Load())])),
+                                Raise()]),
+                            Assign(
+                              targets=[
+                                Name(id='sleep_time', ctx=Store())],
+                              value=BinOp(
+                                left=Name(id='delay', ctx=Load()),
+                                op=Mult(),
+                                right=BinOp(
+                                  left=Constant(value=2),
+                                  op=Pow(),
+                                  right=Name(id='attempt', ctx=Load())))),
+                            If(
+                              test=Compare(
+                                left=Name(id='sleep_time', ctx=Load()),
+                                ops=[
+                                  Gt()],
+                                comparators=[
+                                  Constant(value=0)]),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='logger', ctx=Load()),
+                                      attr='info',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='Retrying %s in %.2fs...'),
+                                      Attribute(
+                                        value=Name(id='func', ctx=Load()),
+                                        attr='__name__',
+                                        ctx=Load()),
+                                      Name(id='sleep_time', ctx=Load())])),
+                                Expr(
+                                  value=Await(
+                                    value=Call(
+                                      func=Attribute(
+                                        value=Name(id='asyncio', ctx=Load()),
+                                        attr='sleep',
+                                        ctx=Load()),
+                                      args=[
+                                        Name(id='sleep_time', ctx=Load())])))])])])]),
+                Raise(
+                  exc=Call(
+                    func=Name(id='WorkflowError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Node '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='func', ctx=Load()),
+                              attr='__name__',
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' failed after max retries')])]))],
+              decorator_list=[
+                Call(
+                  func=Name(id='wraps', ctx=Load()),
+                  args=[
+                    Name(id='func', ctx=Load())])],
+              returns=Name(id='Any', ctx=Load())),
+            Return(
+              value=Name(id='wrapper', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Callable', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Constant(value=Ellipsis),
+                Subscript(
+                  value=Name(id='Awaitable', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        Return(
+          value=Name(id='decorator', ctx=Load()))]),
+    FunctionDef(
+      name='async_timeout',
+      args=arguments(
+        args=[
+          arg(
+            arg='seconds',
+            annotation=Name(id='int', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Decorator factory that enforces a timeout on async nodes.')),
+        FunctionDef(
+          name='decorator',
+          args=arguments(
+            args=[
+              arg(
+                arg='func',
+                annotation=Subscript(
+                  value=Name(id='Callable', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Constant(value=Ellipsis),
+                      Subscript(
+                        value=Name(id='Awaitable', ctx=Load()),
+                        slice=Name(id='Any', ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            AsyncFunctionDef(
+              name='wrapper',
+              args=arguments(
+                vararg=arg(arg='args'),
+                kwarg=arg(arg='kwargs')),
+              body=[
+                Try(
+                  body=[
+                    Return(
+                      value=Await(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='asyncio', ctx=Load()),
+                            attr='wait_for',
+                            ctx=Load()),
+                          args=[
+                            Call(
+                              func=Name(id='func', ctx=Load()),
+                              args=[
+                                Starred(
+                                  value=Name(id='args', ctx=Load()),
+                                  ctx=Load())],
+                              keywords=[
+                                keyword(
+                                  value=Name(id='kwargs', ctx=Load()))])],
+                          keywords=[
+                            keyword(
+                              arg='timeout',
+                              value=Call(
+                                func=Name(id='float', ctx=Load()),
+                                args=[
+                                  Name(id='seconds', ctx=Load())]))])))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Attribute(
+                        value=Name(id='asyncio', ctx=Load()),
+                        attr='TimeoutError',
+                        ctx=Load()),
+                      name='exc',
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='WorkflowTimeoutError', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Node '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='func', ctx=Load()),
+                                      attr='__name__',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' timed out after '),
+                                  FormattedValue(
+                                    value=Name(id='seconds', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='s')])]),
+                          cause=Name(id='exc', ctx=Load()))])])],
+              decorator_list=[
+                Call(
+                  func=Name(id='wraps', ctx=Load()),
+                  args=[
+                    Name(id='func', ctx=Load())])],
+              returns=Name(id='Any', ctx=Load())),
+            Return(
+              value=Name(id='wrapper', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Callable', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Constant(value=Ellipsis),
+                Subscript(
+                  value=Name(id='Awaitable', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        Return(
+          value=Name(id='decorator', ctx=Load()))]),
+    FunctionDef(
+      name='get_timeout_decorator',
+      args=arguments(
+        args=[
+          arg(
+            arg='timeout_seconds',
+            annotation=Name(id='float', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Compatibility wrapper retained for orchestration helpers.')),
+        Return(
+          value=Call(
+            func=Name(id='async_timeout', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  Name(id='timeout_seconds', ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Callable', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            List(
+              elts=[
+                Subscript(
+                  value=Name(id='Callable', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Constant(value=Ellipsis),
+                      Subscript(
+                        value=Name(id='Awaitable', ctx=Load()),
+                        slice=Name(id='Any', ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            Subscript(
+              value=Name(id='Callable', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Constant(value=Ellipsis),
+                  Subscript(
+                    value=Name(id='Awaitable', ctx=Load()),
+                    slice=Name(id='Any', ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_extract_workflow_context',
+      args=arguments(
+        args=[
+          arg(
+            arg='args',
+            annotation=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='Any', ctx=Load()),
+                  Constant(value=Ellipsis)],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='kwargs',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Inspect call arguments to find a WorkflowContext instance.')),
+        ImportFrom(
+          module='context',
+          names=[
+            alias(name='WorkflowContext')],
+          level=1),
+        For(
+          target=Name(id='arg', ctx=Store()),
+          iter=Name(id='args', ctx=Load()),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='arg', ctx=Load()),
+                  Name(id='WorkflowContext', ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='arg', ctx=Load()))])]),
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='kwargs', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='workflow_context')])),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='context', ctx=Load()),
+              Name(id='WorkflowContext', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='context', ctx=Load()))]),
+        Return(
+          value=Constant(value=None))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Constant(value='WorkflowContext'),
+        ctx=Load())),
+    FunctionDef(
+      name='update_context',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Constant(value='WorkflowContext'),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Synchronise the workflow context with the MCP runtime.')),
+        If(
+          test=Compare(
+            left=Name(id='context', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return()]),
+        Try(
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='sync_context', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='scope',
+                    value=Constant(value='workflow'))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='exc',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='debug',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Context sync skipped: %s'),
+                      Name(id='exc', ctx=Load())]))])])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='wrap_mcp',
+      args=arguments(
+        args=[
+          arg(
+            arg='func',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Callable', ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='force',
+            annotation=Name(id='bool', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=False)],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Decorator that ensures MCP clients are initialised for node handlers.')),
+        If(
+          test=Compare(
+            left=Name(id='func', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Lambda(
+                args=arguments(
+                  args=[
+                    arg(arg='inner')]),
+                body=Call(
+                  func=Name(id='wrap_mcp', ctx=Load()),
+                  args=[
+                    Name(id='inner', ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='force',
+                      value=Name(id='force', ctx=Load()))])))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='iscoroutinefunction',
+              ctx=Load()),
+            args=[
+              Name(id='func', ctx=Load())]),
+          body=[
+            AsyncFunctionDef(
+              name='async_wrapper',
+              args=arguments(
+                vararg=arg(arg='args'),
+                kwarg=arg(arg='kwargs')),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='context', ctx=Store())],
+                  value=Call(
+                    func=Name(id='_extract_workflow_context', ctx=Load()),
+                    args=[
+                      Name(id='args', ctx=Load()),
+                      Name(id='kwargs', ctx=Load())])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='context', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='context', ctx=Load()),
+                          attr='is_mcp_enabled',
+                          ctx=Load())),
+                      BoolOp(
+                        op=Or(),
+                        values=[
+                          Name(id='force', ctx=Load()),
+                          Attribute(
+                            value=Name(id='context', ctx=Load()),
+                            attr='wrap_mcp_nodes',
+                            ctx=Load())])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='context', ctx=Load()),
+                          attr='ensure_mcp_clients',
+                          ctx=Load())))]),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Await(
+                    value=Call(
+                      func=Name(id='func', ctx=Load()),
+                      args=[
+                        Starred(
+                          value=Name(id='args', ctx=Load()),
+                          ctx=Load())],
+                      keywords=[
+                        keyword(
+                          value=Name(id='kwargs', ctx=Load()))]))),
+                Expr(
+                  value=Call(
+                    func=Name(id='update_context', ctx=Load()),
+                    args=[
+                      Name(id='context', ctx=Load())])),
+                Return(
+                  value=Name(id='result', ctx=Load()))],
+              decorator_list=[
+                Call(
+                  func=Name(id='wraps', ctx=Load()),
+                  args=[
+                    Name(id='func', ctx=Load())])]),
+            Return(
+              value=Name(id='async_wrapper', ctx=Load()))]),
+        FunctionDef(
+          name='sync_wrapper',
+          args=arguments(
+            vararg=arg(arg='args'),
+            kwarg=arg(arg='kwargs')),
+          body=[
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Call(
+                func=Name(id='_extract_workflow_context', ctx=Load()),
+                args=[
+                  Name(id='args', ctx=Load()),
+                  Name(id='kwargs', ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='context', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='is_mcp_enabled',
+                      ctx=Load())),
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='force', ctx=Load()),
+                      Attribute(
+                        value=Name(id='context', ctx=Load()),
+                        attr='wrap_mcp_nodes',
+                        ctx=Load())])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='ensure_mcp_clients',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Name(id='func', ctx=Load()),
+                args=[
+                  Starred(
+                    value=Name(id='args', ctx=Load()),
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    value=Name(id='kwargs', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Name(id='update_context', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())])),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          decorator_list=[
+            Call(
+              func=Name(id='wraps', ctx=Load()),
+              args=[
+                Name(id='func', ctx=Load())])]),
+        Return(
+          value=Name(id='sync_wrapper', ctx=Load()))],
+      returns=Name(id='Callable', ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='CircuitBreaker'),
+          Constant(value='exponential_backoff_retry'),
+          Constant(value='async_timeout'),
+          Constant(value='get_timeout_decorator'),
+          Constant(value='wrap_mcp'),
+          Constant(value='update_context')],
+        ctx=Load()))])

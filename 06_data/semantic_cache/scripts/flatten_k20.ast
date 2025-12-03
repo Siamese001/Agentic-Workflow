@@ -1,0 +1,1046 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nIdentify and flatten verb_groups with only one file to reduce single-child count\n')),
+    Import(
+      names=[
+        alias(name='yaml')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='collections',
+      names=[
+        alias(name='defaultdict')],
+      level=0),
+    FunctionDef(
+      name='find_flattenable_verb_groups',
+      args=arguments(
+        args=[
+          arg(arg='tree'),
+          arg(arg='domains'),
+          arg(arg='layers'),
+          arg(arg='phases'),
+          arg(arg='intents'),
+          arg(arg='axes'),
+          arg(arg='verb_groups')]),
+      body=[
+        Expr(
+          value=Constant(value='Find verb_groups that contain only one file (excluding __init__.py)')),
+        Assign(
+          targets=[
+            Name(id='flattenable_candidates', ctx=Store())],
+          value=List(ctx=Load())),
+        FunctionDef(
+          name='traverse_tree',
+          args=arguments(
+            args=[
+              arg(arg='node'),
+              arg(arg='path')]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='node', ctx=Load()),
+                    Name(id='dict', ctx=Load())])),
+              body=[
+                Return()]),
+            If(
+              test=Compare(
+                left=Constant(value='__init__.py'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='node', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='node_copy', ctx=Store())],
+                  value=DictComp(
+                    key=Name(id='k', ctx=Load()),
+                    value=Name(id='v', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='k', ctx=Store()),
+                            Name(id='v', ctx=Store())],
+                          ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='node', ctx=Load()),
+                            attr='items',
+                            ctx=Load())),
+                        ifs=[
+                          Compare(
+                            left=Name(id='k', ctx=Load()),
+                            ops=[
+                              NotEq()],
+                            comparators=[
+                              Constant(value='__init__.py')])],
+                        is_async=0)])),
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='node_copy', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=1)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='node', ctx=Store())],
+                      value=Name(id='node_copy', ctx=Load()))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='node_copy', ctx=Load())]),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value=0)]),
+                      body=[
+                        Return()])])]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='path', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=6)]),
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='domain', ctx=Store()),
+                        Name(id='layer', ctx=Store()),
+                        Name(id='phase', ctx=Store()),
+                        Name(id='intent', ctx=Store()),
+                        Name(id='axis', ctx=Store()),
+                        Name(id='verb_group', ctx=Store())],
+                      ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='path', ctx=Load()),
+                    slice=Slice(
+                      upper=Constant(value=6)),
+                    ctx=Load())),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='domain', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='domains', ctx=Load())]),
+                      Compare(
+                        left=Name(id='layer', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='layers', ctx=Load())]),
+                      Compare(
+                        left=Name(id='phase', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='phases', ctx=Load())]),
+                      Compare(
+                        left=Name(id='intent', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='intents', ctx=Load())]),
+                      Compare(
+                        left=Name(id='axis', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='axes', ctx=Load())]),
+                      Compare(
+                        left=Name(id='verb_group', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='verb_groups', ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='files', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='k', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Tuple(
+                              elts=[
+                                Name(id='k', ctx=Store()),
+                                Name(id='v', ctx=Store())],
+                              ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Name(id='node', ctx=Load()),
+                                attr='items',
+                                ctx=Load())),
+                            ifs=[
+                              BoolOp(
+                                op=And(),
+                                values=[
+                                  UnaryOp(
+                                    op=Not(),
+                                    operand=Call(
+                                      func=Name(id='isinstance', ctx=Load()),
+                                      args=[
+                                        Name(id='v', ctx=Load()),
+                                        Name(id='dict', ctx=Load())])),
+                                  Compare(
+                                    left=Name(id='k', ctx=Load()),
+                                    ops=[
+                                      NotEq()],
+                                    comparators=[
+                                      Constant(value='__init__.py')])])],
+                            is_async=0)])),
+                    Assign(
+                      targets=[
+                        Name(id='subdirs', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='k', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Tuple(
+                              elts=[
+                                Name(id='k', ctx=Store()),
+                                Name(id='v', ctx=Store())],
+                              ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Name(id='node', ctx=Load()),
+                                attr='items',
+                                ctx=Load())),
+                            ifs=[
+                              BoolOp(
+                                op=And(),
+                                values=[
+                                  Call(
+                                    func=Name(id='isinstance', ctx=Load()),
+                                    args=[
+                                      Name(id='v', ctx=Load()),
+                                      Name(id='dict', ctx=Load())]),
+                                  Compare(
+                                    left=Name(id='k', ctx=Load()),
+                                    ops=[
+                                      NotEq()],
+                                    comparators=[
+                                      Constant(value='__init__.py')])])],
+                            is_async=0)])),
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='files', ctx=Load())]),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value=1)]),
+                          Compare(
+                            left=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='subdirs', ctx=Load())]),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value=0)])]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='flattenable_candidates', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Dict(
+                                keys=[
+                                  Constant(value='path'),
+                                  Constant(value='verb_group'),
+                                  Constant(value='single_file'),
+                                  Constant(value='parent_axis'),
+                                  Constant(value='full_path')],
+                                values=[
+                                  Name(id='path', ctx=Load()),
+                                  Name(id='verb_group', ctx=Load()),
+                                  Subscript(
+                                    value=Name(id='files', ctx=Load()),
+                                    slice=Constant(value=0),
+                                    ctx=Load()),
+                                  Name(id='axis', ctx=Load()),
+                                  Call(
+                                    func=Attribute(
+                                      value=Constant(value='/'),
+                                      attr='join',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='path', ctx=Load())])])]))])])]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='child_name', ctx=Store()),
+                  Name(id='child_content', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='node', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='child_content', ctx=Load()),
+                          Name(id='dict', ctx=Load())]),
+                      Compare(
+                        left=Name(id='child_name', ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Constant(value='__init__.py')])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='traverse_tree', ctx=Load()),
+                        args=[
+                          Name(id='child_content', ctx=Load()),
+                          BinOp(
+                            left=Name(id='path', ctx=Load()),
+                            op=Add(),
+                            right=List(
+                              elts=[
+                                Name(id='child_name', ctx=Load())],
+                              ctx=Load()))]))])])]),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='domain_name', ctx=Store()),
+              Name(id='domain_content', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='tree', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='domain_name', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='domains', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='traverse_tree', ctx=Load()),
+                    args=[
+                      Name(id='domain_content', ctx=Load()),
+                      List(
+                        elts=[
+                          Name(id='domain_name', ctx=Load())],
+                        ctx=Load())]))])]),
+        Return(
+          value=Name(id='flattenable_candidates', ctx=Load()))]),
+    FunctionDef(
+      name='apply_flattening',
+      args=arguments(
+        args=[
+          arg(arg='tree'),
+          arg(arg='flattenable_candidates')]),
+      body=[
+        Expr(
+          value=Constant(value='Apply flattening by moving single files from verb_group to parent axis level')),
+        Assign(
+          targets=[
+            Name(id='flattened_tree', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='yaml', ctx=Load()),
+              attr='safe_load',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='yaml', ctx=Load()),
+                  attr='safe_dump',
+                  ctx=Load()),
+                args=[
+                  Name(id='tree', ctx=Load())])])),
+        For(
+          target=Name(id='candidate', ctx=Store()),
+          iter=Name(id='flattenable_candidates', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='path', ctx=Store())],
+              value=Subscript(
+                value=Name(id='candidate', ctx=Load()),
+                slice=Constant(value='path'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='verb_group', ctx=Store())],
+              value=Subscript(
+                value=Name(id='candidate', ctx=Load()),
+                slice=Constant(value='verb_group'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='single_file', ctx=Store())],
+              value=Subscript(
+                value=Name(id='candidate', ctx=Load()),
+                slice=Constant(value='single_file'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='current', ctx=Store())],
+              value=Name(id='flattened_tree', ctx=Load())),
+            For(
+              target=Name(id='segment', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='path', ctx=Load()),
+                slice=Slice(
+                  upper=UnaryOp(
+                    op=USub(),
+                    operand=Constant(value=1))),
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='current', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='current', ctx=Load()),
+                    slice=Name(id='segment', ctx=Load()),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='verb_group_content', ctx=Store())],
+              value=Subscript(
+                value=Name(id='current', ctx=Load()),
+                slice=Name(id='verb_group', ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='file_content', ctx=Store())],
+              value=Subscript(
+                value=Name(id='verb_group_content', ctx=Load()),
+                slice=Name(id='single_file', ctx=Load()),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='new_filename', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='verb_group', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_'),
+                  FormattedValue(
+                    value=Name(id='single_file', ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='current', ctx=Load()),
+                  slice=Name(id='new_filename', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='file_content', ctx=Load())),
+            Delete(
+              targets=[
+                Subscript(
+                  value=Name(id='current', ctx=Load()),
+                  slice=Name(id='verb_group', ctx=Load()),
+                  ctx=Del())]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Flattened: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Constant(value='/'),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Name(id='path', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' -> '),
+                      FormattedValue(
+                        value=Name(id='new_filename', ctx=Load()),
+                        conversion=-1)])]))]),
+        Return(
+          value=Name(id='flattened_tree', ctx=Load()))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='yaml_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Constant(value='unified_structure_subatomic.yaml')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='yaml_path', ctx=Load()),
+                attr='exists',
+                ctx=Load()))),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Error: '),
+                      FormattedValue(
+                        value=Name(id='yaml_path', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' not found')])])),
+            Return()]),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Name(id='yaml_path', ctx=Load()),
+                  Constant(value='r')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='read',
+                  ctx=Load())))]),
+        Assign(
+          targets=[
+            Name(id='lines', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='content', ctx=Load()),
+              attr='split',
+              ctx=Load()),
+            args=[
+              Constant(value='\n')])),
+        Assign(
+          targets=[
+            Name(id='meta_start', ctx=Store())],
+          value=Constant(value=None)),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='i', ctx=Store()),
+              Name(id='line', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='lines', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='line', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='# unified_structure_subatomic_meta.yaml')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='meta_start', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='i', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Break()])]),
+        If(
+          test=Compare(
+            left=Name(id='meta_start', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='Error: Could not find meta section')])),
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='tree_content', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='lines', ctx=Load()),
+                slice=Slice(
+                  upper=BinOp(
+                    left=Name(id='meta_start', ctx=Load()),
+                    op=Sub(),
+                    right=Constant(value=1))),
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='tree_data', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='yaml', ctx=Load()),
+              attr='safe_load',
+              ctx=Load()),
+            args=[
+              Name(id='tree_content', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='meta_content', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='lines', ctx=Load()),
+                slice=Slice(
+                  lower=Name(id='meta_start', ctx=Load())),
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='meta_data', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='yaml', ctx=Load()),
+              attr='safe_load',
+              ctx=Load()),
+            args=[
+              Name(id='meta_content', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='domains', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='meta_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='domains'),
+                      Dict()]),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='layers', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='meta_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='layers'),
+                      Dict()]),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='phases', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='meta_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='phases'),
+                      Dict()]),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='intents', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='meta_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='intents'),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='axes', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='meta_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='axes'),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='verb_groups', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='meta_data', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='verb_groups'),
+              List(ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Finding flattenable verb_groups...')])])),
+        Assign(
+          targets=[
+            Name(id='tree', ctx=Store())],
+          value=DictComp(
+            key=Name(id='k', ctx=Load()),
+            value=Name(id='v', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Tuple(
+                  elts=[
+                    Name(id='k', ctx=Store()),
+                    Name(id='v', ctx=Store())],
+                  ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='tree_data', ctx=Load()),
+                    attr='items',
+                    ctx=Load())),
+                ifs=[
+                  Compare(
+                    left=Name(id='k', ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Constant(value='meta')])],
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='flattenable_candidates', ctx=Store())],
+          value=Call(
+            func=Name(id='find_flattenable_verb_groups', ctx=Load()),
+            args=[
+              Name(id='tree', ctx=Load()),
+              Name(id='domains', ctx=Load()),
+              Name(id='layers', ctx=Load()),
+              Name(id='phases', ctx=Load()),
+              Name(id='intents', ctx=Load()),
+              Name(id='axes', ctx=Load()),
+              Name(id='verb_groups', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n=== FLATTENABLE VERB_GROUPS ===')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Found '),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='flattenable_candidates', ctx=Load())]),
+                    conversion=-1),
+                  Constant(value=' verb_groups with exactly one file')])])),
+        For(
+          target=Name(id='candidate', ctx=Store()),
+          iter=Subscript(
+            value=Name(id='flattenable_candidates', ctx=Load()),
+            slice=Slice(
+              upper=Constant(value=10)),
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='candidate', ctx=Load()),
+                          slice=Constant(value='full_path'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' -> '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='candidate', ctx=Load()),
+                          slice=Constant(value='single_file'),
+                          ctx=Load()),
+                        conversion=-1)])]))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='flattenable_candidates', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=10)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='  ... and '),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='flattenable_candidates', ctx=Load())]),
+                          op=Sub(),
+                          right=Constant(value=10)),
+                        conversion=-1),
+                      Constant(value=' more')])]))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='flattenable_candidates', ctx=Load())]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\nApplying flattening...')])])),
+            Assign(
+              targets=[
+                Name(id='flattened_tree', ctx=Store())],
+              value=Call(
+                func=Name(id='apply_flattening', ctx=Load()),
+                args=[
+                  Name(id='tree', ctx=Load()),
+                  Name(id='flattenable_candidates', ctx=Load())])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Constant(value='unified_structure_subatomic.yaml'),
+                      Constant(value='w')]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='yaml', ctx=Load()),
+                      attr='safe_dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='flattened_tree', ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='default_flow_style',
+                        value=Constant(value=False)),
+                      keyword(
+                        arg='sort_keys',
+                        value=Constant(value=False))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='\n')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='# unified_structure_subatomic_meta.yaml\n')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='yaml', ctx=Load()),
+                      attr='safe_dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='meta_data', ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='default_flow_style',
+                        value=Constant(value=False)),
+                      keyword(
+                        arg='sort_keys',
+                        value=Constant(value=False))]))]),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Flattened structure saved. Reduced single-child count by '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='flattenable_candidates', ctx=Load())]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\nRunning verification analysis...')])])),
+            ImportFrom(
+              module='analyze_single_child',
+              names=[
+                alias(name='analyze_single_child_chains')],
+              level=0),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='single_child_chains', ctx=Store()),
+                    Name(id='trivial_candidates', ctx=Store()),
+                    Name(id='semantic_single_children', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='analyze_single_child_chains', ctx=Load()),
+                args=[
+                  Name(id='flattened_tree', ctx=Load()),
+                  Name(id='domains', ctx=Load()),
+                  Name(id='layers', ctx=Load()),
+                  Name(id='phases', ctx=Load()),
+                  Name(id='intents', ctx=Load()),
+                  Name(id='axes', ctx=Load()),
+                  Name(id='verb_groups', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='New single-child count: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='single_child_chains', ctx=Load())]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Reduction achieved: '),
+                      FormattedValue(
+                        value=BinOp(
+                          left=Constant(value=498),
+                          op=Sub(),
+                          right=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='single_child_chains', ctx=Load())])),
+                        conversion=-1),
+                      Constant(value=' nodes')])]))],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='No flattenable verb_groups found')]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='main', ctx=Load())))])])

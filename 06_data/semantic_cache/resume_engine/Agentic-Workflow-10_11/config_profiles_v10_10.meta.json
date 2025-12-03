@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\config_profiles_v10_10.py",
+    "rel_path": "config_profiles_v10_10.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "d86c77f64586cb8da5954960b1cb13c2d27b739bd54a364a652b4b54a663effe",
+    "file_size": 14598,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728223.778784
+}

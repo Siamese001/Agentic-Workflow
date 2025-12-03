@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\planner-microagent-layer\\retry-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\console_trace_exporter.py",
+    "rel_path": "console_trace_exporter.py",
+    "root_name": "observability",
+    "file_hash": "b656362556adc445b0a4c0c8faf26d087e1eda0f90ba3fbf9d87cdefd3a3782d",
+    "file_size": 1451,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.3196123
+}

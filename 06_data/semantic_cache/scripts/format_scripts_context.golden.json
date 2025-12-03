@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - format_scripts_context\nImplements L1 Cognitive Planning Layer for format scripts context operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FormatScriptsContextPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FormatScriptsContextPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FormatScriptsContextPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succe",
+  "full_hash": "270680528ebff6364dde5315773ad7440e6bd84f9d0a7d31480790adbfd3c9a3",
+  "generated_at": 1764728352.2279224,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\plan-phase\\get-scripts-info\\utility\\prepare-information\\format_scripts_context.py"
+}

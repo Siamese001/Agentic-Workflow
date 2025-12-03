@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\strategy_simulation.py",
+    "rel_path": "strategy_simulation.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "38e88051eff29ca6834b0f76d6765e4aef6dd97b370a9e7f04de0ce2074322e8",
+    "file_size": 707,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728230.3180516
+}

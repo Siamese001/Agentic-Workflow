@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\generator_prompts.yaml",
+    "rel_path": "generator_prompts.yaml",
+    "root_name": "config",
+    "file_hash": "ffaca6eacc7e5e87156dd5a30112e641b1922c79b918ec6c5aef28764b66e022",
+    "file_size": 21581,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728348.5854785
+}

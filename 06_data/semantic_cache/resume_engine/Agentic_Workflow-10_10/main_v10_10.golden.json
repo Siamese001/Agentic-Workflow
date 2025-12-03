@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nmain_v10_10.py\n\nSingle-job entrypoint for the v10_10 agentic workflow stack.\n\nResponsibilities:\n- Construct an ExecutionContext using Phase-0 types and Phase-3 knobs.\n- Wire RoutingPolicy, SandboxConfig, ExecutionProfile, MetaProfileSnapshot, and workflow metadata.\n- Execute the L1\u2192L2\u2192L3\u2192L4\u2192L5 pipeline in the correct order.\n- Expose Phase-3 knobs (HYDE, RRF, council size, correction loop limit, telemetry routing mode).\n- Return a strongly-typed WorkflowOutput (or equivalent) result.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport uuid\nfrom dataclasses import dataclass, asdict\nfrom enum import Enum\nfrom typing import Any, Dict, Iterable, Mapping, MutableMapping, Optional, Sequence, Tuple, Callable, TypeVar, cast\n\n# ---------------------------------------------------------------------------\n# Optional / dynamic imports of Phase-0 and Phase-3 modules\n# ---------------------------------------------------------------------------\n\n# We keep imports resilient to minor API ",
+  "full_hash": "2eff2e7bf1dab8bdcf82d9c6a56a34b23cdd42c0f82e3fefc71a41e89682f626",
+  "generated_at": 1764728228.317045,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\main_v10_10.py"
+}

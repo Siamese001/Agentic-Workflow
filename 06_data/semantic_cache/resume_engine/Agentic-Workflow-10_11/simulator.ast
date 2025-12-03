@@ -1,0 +1,232 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='tools.simulation',
+      names=[
+        alias(name='Engine')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='SimScenario'),
+        alias(name='SimOutcome')],
+      level=1),
+    FunctionDef(
+      name='run_scenario',
+      args=arguments(
+        args=[
+          arg(
+            arg='scenario',
+            annotation=Name(id='SimScenario', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Run a high-level simulation scenario using the existing Engine.\n\n    For now this is a thin wrapper around ``simulation.Engine.run_sync``.\n    It executes the named scenario ``run_count`` times (if available) and\n    aggregates the "golden_eval_score" metric from each run\'s outcome.\n    Unknown scenario ids are treated as empty, yielding zeroed scores.\n    ')),
+        AnnAssign(
+          target=Name(id='scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='safety_incidents', ctx=Store())],
+          value=Constant(value=0)),
+        Assign(
+          targets=[
+            Name(id='conflict_count', ctx=Store())],
+          value=Constant(value=0)),
+        For(
+          target=Name(id='_', ctx=Store()),
+          iter=Call(
+            func=Name(id='range', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='run_count',
+                    ctx=Load()),
+                  Constant(value=1)])]),
+          body=[
+            Try(
+              body=[
+                AnnAssign(
+                  target=Name(id='result', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='Engine', ctx=Load()),
+                      attr='run_sync',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='scenario', ctx=Load()),
+                        attr='id',
+                        ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='overrides',
+                        value=Attribute(
+                          value=Name(id='scenario', ctx=Load()),
+                          attr='initial_context',
+                          ctx=Load()))]),
+                  simple=1)],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Continue()])]),
+            Assign(
+              targets=[
+                Name(id='outcome', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='outcome')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='score', ctx=Store())],
+              value=Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='outcome', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='golden_eval_score')]),
+                      Constant(value=0.0)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scores', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='score', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='bool', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='outcome', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='safety_passed'),
+                        Constant(value=True)])])),
+              body=[
+                AugAssign(
+                  target=Name(id='safety_incidents', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='int', ctx=Load()),
+                  args=[
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='outcome', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='correction_iterations'),
+                            Constant(value=0)]),
+                        Constant(value=0)])]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                AugAssign(
+                  target=Name(id='conflict_count', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))])]),
+        If(
+          test=Name(id='scores', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='avg_score', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='sum', ctx=Load()),
+                  args=[
+                    Name(id='scores', ctx=Load())]),
+                op=Div(),
+                right=Call(
+                  func=Name(id='float', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='scores', ctx=Load())])])))],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='avg_score', ctx=Store())],
+              value=Constant(value=0.0))]),
+        Return(
+          value=Call(
+            func=Name(id='SimOutcome', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='scenario_id',
+                value=Attribute(
+                  value=Name(id='scenario', ctx=Load()),
+                  attr='id',
+                  ctx=Load())),
+              keyword(
+                arg='average_scores',
+                value=Dict(
+                  keys=[
+                    Constant(value='golden_eval_score')],
+                  values=[
+                    Name(id='avg_score', ctx=Load())])),
+              keyword(
+                arg='safety_incidents',
+                value=Name(id='safety_incidents', ctx=Load())),
+              keyword(
+                arg='agent_conflict_count',
+                value=Name(id='conflict_count', ctx=Load()))]))],
+      returns=Name(id='SimOutcome', ctx=Load()))])

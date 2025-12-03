@@ -1,0 +1,116 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pathlib')]),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='MainGraphState')],
+      level=0),
+    FunctionDef(
+      name='test_safety_fields_merge',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='base', ctx=Store())],
+          value=Call(
+            func=Name(id='MainGraphState', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='safety_report'),
+              Constant(value='policy_decision'),
+              Constant(value='constitutional_review')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='is_safe'),
+                  Constant(value='findings')],
+                values=[
+                  Constant(value=True),
+                  List(ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='allowed'),
+                  Constant(value='reason')],
+                values=[
+                  Constant(value=True),
+                  Constant(value=None)]),
+              Dict(
+                keys=[
+                  Constant(value='passed'),
+                  Constant(value='violations')],
+                values=[
+                  Constant(value=True),
+                  List(ctx=Load())])])),
+        ImportFrom(
+          module='state_adapter_stack',
+          names=[
+            alias(name='StateAdapterStack')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='adapter', ctx=Store())],
+          value=Call(
+            func=Name(id='StateAdapterStack', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None)),
+              keyword(
+                arg='debug_mode',
+                value=Constant(value=False))])),
+        Assign(
+          targets=[
+            Name(id='new_state', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='adapter', ctx=Load()),
+              attr='apply_patch',
+              ctx=Load()),
+            args=[
+              Name(id='base', ctx=Load()),
+              Name(id='patch', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='new_state', ctx=Load()),
+              attr='safety_report',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Subscript(
+                value=Name(id='patch', ctx=Load()),
+                slice=Constant(value='safety_report'),
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='new_state', ctx=Load()),
+              attr='policy_decision',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Subscript(
+                value=Name(id='patch', ctx=Load()),
+                slice=Constant(value='policy_decision'),
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='new_state', ctx=Load()),
+              attr='constitutional_review',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Subscript(
+                value=Name(id='patch', ctx=Load()),
+                slice=Constant(value='constitutional_review'),
+                ctx=Load())]))])])

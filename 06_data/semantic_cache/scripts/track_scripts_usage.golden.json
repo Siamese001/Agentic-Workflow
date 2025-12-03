@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - track_scripts_usage\nImplements L5 Safety/Policy Layer for track scripts usage operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass TrackScriptsUsageSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass TrackScriptsUsageSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass TrackScriptsUsageSafetyResult:\n    \"\"\"L5 Safety result with full typ",
+  "full_hash": "4cc3924abb68bc4bb03195bf1e498f87cc015b5417b44632edbee448c5dd350d",
+  "generated_at": 1764728352.0306807,
+  "source_file": "C:\\Git\\Agentic-Workflow\\08_scripts\\orc-layer\\safety-phase\\manage-scripts-costs\\general\\update-memory\\track_scripts_usage.py"
+}

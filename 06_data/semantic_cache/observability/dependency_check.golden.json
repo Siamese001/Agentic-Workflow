@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nChecks import validity to ensure resume generation system works properly.\n\nVerifies all modules can be imported without errors to maintain\ncode quality and ensure smooth resume generation functionality.\n\"\"\"\n\nimport pkgutil\n\nprint(\"=== IMPORT CHECK START ===\")\nfor m in pkgutil.walk_packages([\"\"]):\n    name = (m.name or \"\").lstrip(\"\")\n    if not name:\n        # Skip empty or invalid module names.\n        continue\n    try:\n        __import__(name)\n    except Exception as e:\n        print(\"FAILED:\", name, \"->\", type(e).__name__, str(e))\nprint(\"=== IMPORT CHECK END ===\")\n\n\n",
+  "full_hash": "302f2fd8f00a6a0b6970b1f6ab2c22be437ef32e59191c1f48c14e35fb4ab849",
+  "generated_at": 1764728350.3913987,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\executor-microagent-layer\\act-phase-group\\tool-adapter-ops\\general-operations-ops\\dependency_check.py"
+}

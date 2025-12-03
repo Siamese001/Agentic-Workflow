@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"MCP client registry utilities for v10.7.\"\"\"\nfrom __future__ import annotations\n\nimport importlib\nimport logging\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional\n\nfrom .exceptions import MCPClientInitializationError\n\nlogger = logging.getLogger(\"core_v10_7\")\n\n\n@dataclass\nclass MCPClientSpec:\n    \"\"\"Typed representation of a configured MCP client.\"\"\"\n\n    name: str\n    provider: str = \"stub\"\n    module: Optional[str] = None\n    class_name: Optional[str] = None\n    parameters: Dict[str, Any] = field(default_factory=dict)\n    optional: bool = False\n\n\nclass MCPClientStub:\n    \"\"\"Fallback stub MCP client used when no implementation exists.\"\"\"\n\n    def __init__(self, name: str, parameters: Optional[Dict[str, Any]] = None):\n        self.name = name\n        self.parameters = parameters or {}\n\n    def __repr__(self) -> str:  # pragma: no cover - debug helper\n        details = \", \".join(f\"{k}={v}\" for k, v in self.parameters.items())\n        return f\"<MCPCli",
+  "full_hash": "a686c52e65f77c6b35e98f55eade851477f54f506f2e565570ef8f01bfb22156",
+  "generated_at": 1764728328.4384024,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\mcp.py"
+}

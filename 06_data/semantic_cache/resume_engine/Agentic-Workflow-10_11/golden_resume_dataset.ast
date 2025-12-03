@@ -1,0 +1,47 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='version'),
+          Constant(value='description'),
+          Constant(value='samples')],
+        values=[
+          Constant(value='1.0'),
+          Constant(value='Golden dataset for resume improvement testing'),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='input_resume'),
+                  Constant(value='job_description'),
+                  Constant(value='expected_sections')],
+                values=[
+                  Constant(value='sample_001'),
+                  Constant(value='Software Engineer with 5 years experience'),
+                  Constant(value='Senior Software Engineer position'),
+                  List(
+                    elts=[
+                      Constant(value='summary'),
+                      Constant(value='experience'),
+                      Constant(value='skills')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='input_resume'),
+                  Constant(value='job_description'),
+                  Constant(value='expected_sections')],
+                values=[
+                  Constant(value='sample_002'),
+                  Constant(value='Data Scientist with ML background'),
+                  Constant(value='ML Engineer role'),
+                  List(
+                    elts=[
+                      Constant(value='summary'),
+                      Constant(value='experience'),
+                      Constant(value='skills'),
+                      Constant(value='projects')],
+                    ctx=Load())])],
+            ctx=Load())]))])

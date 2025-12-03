@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\orc-layer\\act-phase\\use-data-tools\\routing\\retry-task\\retry_data_failures.py",
+    "rel_path": "retry_data_failures.py",
+    "root_name": "data_source",
+    "file_hash": "a6e59ba85b6c51a35a2e0dad8e8d6486a6df09086936cdc99726b2cbd0cd11b2",
+    "file_size": 6798,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.731533
+}

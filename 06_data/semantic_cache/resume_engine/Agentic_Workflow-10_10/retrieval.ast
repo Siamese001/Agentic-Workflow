@@ -1,0 +1,450 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRetrieval & Query Planning (v10_10 · Phase 3 — FINAL)\n=====================================================\n\nImplements:\n    • BM25 retrieval\n    • Dense retrieval\n    • Hybrid mode (BM25 + Dense)\n    • HYDE query support (real hook; L2 supplies HYDE query)\n    • Retriever-level failure isolation\n    • Weighted RRF fusion (Phase-3 requirement)\n    • QA-council evidence weighting (Phase-3 requirement)\n    • Full telemetry spans / failure events\n\nLayer: META (no LLM calls; L2 generates HYDE query)\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='Evidence'),
+        alias(name='RetrievalConfig'),
+        alias(name='CouncilVote'),
+        alias(name='RetrievalAttemptEvent'),
+        alias(name='RetrievalSuccessEvent'),
+        alias(name='RetrievalFailureEvent')],
+      level=0),
+    ImportFrom(
+      module='observability',
+      names=[
+        alias(name='start_span'),
+        alias(name='end_span'),
+        alias(name='emit_telemetry_event'),
+        alias(name='emit_retrieval_attempt'),
+        alias(name='emit_retrieval_success'),
+        alias(name='emit_retrieval_failure')],
+      level=0),
+    Import(
+      names=[
+        alias(name='ranking', asname='_ranking')]),
+    FunctionDef(
+      name='_run_bm25',
+      args=arguments(
+        args=[
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='cfg',
+            annotation=Name(id='RetrievalConfig', ctx=Load())),
+          arg(
+            arg='max_hits',
+            annotation=Name(id='int', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Real BM25 retriever — already implemented in your codebase.\n    Deterministic, uses integrated scoring functions.\n    ')),
+        ImportFrom(
+          module='retrievers.bm25',
+          names=[
+            alias(name='bm25_search')],
+          level=0),
+        Return(
+          value=Call(
+            func=Name(id='bm25_search', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Name(id='query', ctx=Load())),
+              keyword(
+                arg='k1',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='bm25_k1',
+                  ctx=Load())),
+              keyword(
+                arg='b',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='bm25_b',
+                  ctx=Load())),
+              keyword(
+                arg='max_hits',
+                value=Name(id='max_hits', ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Evidence', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_run_dense',
+      args=arguments(
+        args=[
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='cfg',
+            annotation=Name(id='RetrievalConfig', ctx=Load())),
+          arg(
+            arg='max_hits',
+            annotation=Name(id='int', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Real dense retriever — uses your actual vector index.\n    Deterministic due to seeded search paths.\n    ')),
+        ImportFrom(
+          module='retrievers.dense',
+          names=[
+            alias(name='dense_search')],
+          level=0),
+        Return(
+          value=Call(
+            func=Name(id='dense_search', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Name(id='query', ctx=Load())),
+              keyword(
+                arg='max_hits',
+                value=Name(id='max_hits', ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Evidence', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_apply_council_weights',
+      args=arguments(
+        args=[
+          arg(
+            arg='fused',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='Evidence', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='council',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='CouncilVote', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Apply post-fusion weighting according to QA-council decision.\n\n    Selected-ID receives a ~12% boost.\n    Others receive slight demotion.\n    ')),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Name(id='council', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='council', ctx=Load()),
+                  attr='selected_id',
+                  ctx=Load()))]),
+          body=[
+            Return(
+              value=Name(id='fused', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='sel', ctx=Store())],
+          value=Attribute(
+            value=Name(id='council', ctx=Load()),
+            attr='selected_id',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='BOOST', ctx=Store())],
+          value=Constant(value=1.12)),
+        Assign(
+          targets=[
+            Name(id='DEMOTE', ctx=Store())],
+          value=Constant(value=0.94)),
+        Assign(
+          targets=[
+            Name(id='adjusted', ctx=Store())],
+          value=List(ctx=Load())),
+        For(
+          target=Name(id='ev', ctx=Store()),
+          iter=Name(id='fused', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='e', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ev', ctx=Load()),
+                  attr='copy',
+                  ctx=Load()))),
+            If(
+              test=Compare(
+                left=Name(id='sel', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ev', ctx=Load()),
+                    attr='text',
+                    ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Attribute(
+                    value=Name(id='e', ctx=Load()),
+                    attr='score',
+                    ctx=Store()),
+                  op=Mult(),
+                  value=Name(id='BOOST', ctx=Load()))],
+              orelse=[
+                AugAssign(
+                  target=Attribute(
+                    value=Name(id='e', ctx=Load()),
+                    attr='score',
+                    ctx=Store()),
+                  op=Mult(),
+                  value=Name(id='DEMOTE', ctx=Load()))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='adjusted', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='e', ctx=Load())]))]),
+        Return(
+          value=Name(id='adjusted', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Evidence', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='run_rag_retrieval',
+      args=arguments(
+        kwonlyargs=[
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(arg='ctx'),
+          arg(
+            arg='retrieval_cfg',
+            annotation=Name(id='RetrievalConfig', ctx=Load())),
+          arg(
+            arg='hyde_query',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='council_vote',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='CouncilVote', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          Constant(value=None),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Primary production retrieval entrypoint.\n\n    Steps:\n        1. Select effective query (HYDE if provided)\n        2. Emit attempt telemetry\n        3. Run BM25 (isolated)\n        4. Run Dense (isolated)\n        5. Fuse via weighted RRF\n        6. Apply QA-council evidence weighting\n        7. Emit success/failure events per retriever\n\n    Deterministic unless HYDE is enabled (HYDE generated in L2).\n    ')),
+        Assign(
+          targets=[
+            Name(id='workflow_id', ctx=Store())],
+          value=Attribute(
+            value=Name(id='ctx', ctx=Load()),
+            attr='workflow_id',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='max_hits', ctx=Store())],
+          value=Attribute(
+            value=Name(id='retrieval_cfg', ctx=Load()),
+            attr='max_hits',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='effective_query', ctx=Store())],
+          value=IfExp(
+            test=Name(id='hyde_query', ctx=Load()),
+            body=Name(id='hyde_query', ctx=Load()),
+            orelse=Name(id='query', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='emit_retrieval_attempt', ctx=Load()),
+            args=[
+              Name(id='effective_query', ctx=Load()),
+              Name(id='workflow_id', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='span', ctx=Store())],
+          value=Call(
+            func=Name(id='start_span', ctx=Load()),
+            args=[
+              Constant(value='retrieval.run')],
+            keywords=[
+              keyword(
+                arg='workflow_id',
+                value=Name(id='workflow_id', ctx=Load())),
+              keyword(
+                arg='attrs',
+                value=Dict(
+                  keys=[
+                    Constant(value='query.is_hyde'),
+                    Constant(value='retrieval.strategy'),
+                    Constant(value='max_hits')],
+                  values=[
+                    Compare(
+                      left=Name(id='hyde_query', ctx=Load()),
+                      ops=[
+                        IsNot()],
+                      comparators=[
+                        Constant(value=None)]),
+                    Attribute(
+                      value=Name(id='retrieval_cfg', ctx=Load()),
+                      attr='strategy',
+                      ctx=Load()),
+                    Name(id='max_hits', ctx=Load())]))])),
+        Assign(
+          targets=[
+            Name(id='groups', ctx=Store())],
+          value=List(ctx=Load())),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='bm25_hits', ctx=Store())],
+              value=Call(
+                func=Name(id='_run_bm25', ctx=Load()),
+                args=[
+                  Name(id='effective_query', ctx=Load()),
+                  Name(id='retrieval_cfg', ctx=Load()),
+                  Name(id='max_hits', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='groups', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='bm25_hits', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='emit_retrieval_success', ctx=Load()),
+                args=[
+                  Constant(value='bm25'),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='bm25_hits', ctx=Load())]),
+                  Name(id='workflow_id', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='emit_retrieval_failure', ctx=Load()),
+                    args=[
+                      Constant(value='bm25'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='e', ctx=Load())]),
+                      Name(id='workflow_id', ctx=Load())]))])]),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='dense_hits', ctx=Store())],
+              value=Call(
+                func=Name(id='_run_dense', ctx=Load()),
+                args=[
+                  Name(id='effective_query', ctx=Load()),
+                  Name(id='retrieval_cfg', ctx=Load()),
+                  Name(id='max_hits', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='groups', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='dense_hits', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='emit_retrieval_success', ctx=Load()),
+                args=[
+                  Constant(value='dense'),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='dense_hits', ctx=Load())]),
+                  Name(id='workflow_id', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='emit_retrieval_failure', ctx=Load()),
+                    args=[
+                      Constant(value='dense'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='e', ctx=Load())]),
+                      Name(id='workflow_id', ctx=Load())]))])]),
+        Assign(
+          targets=[
+            Name(id='fused', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='_ranking', ctx=Load()),
+              attr='fuse_ranked_groups_rrf',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='groups',
+                value=Name(id='groups', ctx=Load())),
+              keyword(
+                arg='rrf_weights',
+                value=Attribute(
+                  value=Name(id='retrieval_cfg', ctx=Load()),
+                  attr='rrf_weights',
+                  ctx=Load())),
+              keyword(
+                arg='workflow_id',
+                value=Name(id='workflow_id', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='fused', ctx=Store())],
+          value=Call(
+            func=Name(id='_apply_council_weights', ctx=Load()),
+            args=[
+              Name(id='fused', ctx=Load()),
+              Name(id='council_vote', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='end_span', ctx=Load()),
+            args=[
+              Name(id='span', ctx=Load())])),
+        Return(
+          value=Name(id='fused', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Evidence', ctx=Load()),
+        ctx=Load()))])

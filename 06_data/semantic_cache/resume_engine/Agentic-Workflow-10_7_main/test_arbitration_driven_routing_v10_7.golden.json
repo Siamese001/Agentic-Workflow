@@ -1,0 +1,6 @@
+{
+  "golden_content": "import copy\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom agent_orchestration_v10_7 import (\n    _get_robustness_stack,\n    check_bullets_passed,\n    check_qa_passed,\n    node_success,\n)\n\n\ndef _make_context(max_local_retries: int = 1):\n    agent_stacks = SimpleNamespace(max_local_retries=max_local_retries)\n    performance = SimpleNamespace(node_retry_backoff_seconds=0.0, node_retry_max_backoff_seconds=0.0)\n    config = SimpleNamespace(agent_stacks=agent_stacks, performance_config=performance)\n    return SimpleNamespace(config=config)\n\n\ndef _make_arbitration_state(stage: str, route: str | None) -> dict:\n    arbitration = {stage: {\"suggested_route\": route, \"decision\": \"ACCEPT\" if route in {\"\", \"ACCEPT\"} else \"REQUEST_REVISE\"}}\n    return {\"arbitration\": arbitration}\n\n\ndef _wrap_state(node_name: str, state: dict) -> dict:\n    # node_success clones the payload, so we deepcopy for predictable assertions\n    return node_success(node_name, copy.deepcopy(state))\n\n\ndef test_check_bulle",
+  "full_hash": "74e44e602c7b0dbe9b078e9da46c62f03e71300e964e1727be175c7522566715",
+  "generated_at": 1764728230.7061126,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\routing\\test_arbitration_driven_routing_v10_7.py"
+}

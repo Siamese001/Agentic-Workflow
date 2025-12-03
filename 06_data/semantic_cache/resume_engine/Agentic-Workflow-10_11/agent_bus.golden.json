@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List\n\nfrom core.models.models import AgentMessage\n\n\"\"\"\nProvides in-memory messaging channel for r\u00e9sum\u00e9 analysis agents to coordinate and share context.\n\nImproves r\u00e9sum\u00e9 processing by maintaining coherent communication between planning, drafting, and review stages without losing important context.\n\"\"\"\n\n\n@dataclass\nclass AgentBus:\n    \"\"\"Acts as an in-memory mailbox so agents can pass results and insights, keeping later resume steps aware of earlier decisions and preserving a coherent story for the candidate.\"\"\"\n\n    _queues: Dict[str, List[AgentMessage]] = field(default_factory=dict)\n\n    def send_message(self, message: AgentMessage) -> None:\n        \"\"\"Deliver a message to the agent responsible for the next step.\n\n        Each message typically carries context or results from an earlier\n        stage of the workflow. Routing it through this bus means downstream\n        agents can pick ",
+  "full_hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+  "generated_at": 1764728225.7480059,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\agent_bus.py"
+}

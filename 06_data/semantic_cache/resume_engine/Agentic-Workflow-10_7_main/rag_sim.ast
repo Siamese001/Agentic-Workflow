@@ -1,0 +1,201 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Synthetic RAG simulator.')),
+    Import(
+      names=[
+        alias(name='random')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='simulations.models.rag_simulation',
+      names=[
+        alias(name='RAGSimMetrics'),
+        alias(name='RAGSimRequest'),
+        alias(name='RAGSimResult')],
+      level=0),
+    ImportFrom(
+      module='simulations.utils',
+      names=[
+        alias(name='model_to_payload')],
+      level=0),
+    ClassDef(
+      name='RAGSimulator',
+      body=[
+        Expr(
+          value=Constant(value='Runs retrieval quality simulations.')),
+        AsyncFunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='request',
+                annotation=Name(id='RAGSimRequest', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='doc_count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='request', ctx=Load()),
+                    attr='documents',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='diversity_bonus', ctx=Store())],
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='doc_count', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value=10.0)),
+                  Constant(value=0.3)])),
+            Assign(
+              targets=[
+                Name(id='recall', ctx=Store())],
+              value=Call(
+                func=Name(id='round', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='min', ctx=Load()),
+                    args=[
+                      Constant(value=1.0),
+                      BinOp(
+                        left=BinOp(
+                          left=Constant(value=0.4),
+                          op=Add(),
+                          right=Name(id='diversity_bonus', ctx=Load())),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Name(id='random', ctx=Load()),
+                            attr='uniform',
+                            ctx=Load()),
+                          args=[
+                            Constant(value=0.0),
+                            Constant(value=0.4)]))]),
+                  Constant(value=3)])),
+            Assign(
+              targets=[
+                Name(id='precision', ctx=Store())],
+              value=Call(
+                func=Name(id='round', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='min', ctx=Load()),
+                    args=[
+                      Constant(value=1.0),
+                      BinOp(
+                        left=Constant(value=0.5),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Name(id='random', ctx=Load()),
+                            attr='uniform',
+                            ctx=Load()),
+                          args=[
+                            UnaryOp(
+                              op=USub(),
+                              operand=Constant(value=0.2)),
+                            Constant(value=0.3)]))]),
+                  Constant(value=3)])),
+            Assign(
+              targets=[
+                Name(id='redundancy', ctx=Store())],
+              value=Call(
+                func=Name(id='round', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      Constant(value=0.0),
+                      BinOp(
+                        left=Constant(value=0.2),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Name(id='random', ctx=Load()),
+                            attr='uniform',
+                            ctx=Load()),
+                          args=[
+                            UnaryOp(
+                              op=USub(),
+                              operand=Constant(value=0.1)),
+                            Constant(value=0.5)]))]),
+                  Constant(value=3)])),
+            Assign(
+              targets=[
+                Name(id='metrics', ctx=Store())],
+              value=Call(
+                func=Name(id='RAGSimMetrics', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='recall',
+                    value=Call(
+                      func=Name(id='max', ctx=Load()),
+                      args=[
+                        Constant(value=0.0),
+                        Name(id='recall', ctx=Load())])),
+                  keyword(
+                    arg='precision',
+                    value=Call(
+                      func=Name(id='max', ctx=Load()),
+                      args=[
+                        Constant(value=0.0),
+                        Name(id='precision', ctx=Load())])),
+                  keyword(
+                    arg='redundancy',
+                    value=Call(
+                      func=Name(id='min', ctx=Load()),
+                      args=[
+                        Constant(value=1.0),
+                        Name(id='redundancy', ctx=Load())]))])),
+            AnnAssign(
+              target=Name(id='top_docs', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='request', ctx=Load()),
+                  attr='documents',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=3)),
+                ctx=Load()),
+              simple=1),
+            Return(
+              value=Call(
+                func=Name(id='RAGSimResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='simulation_id',
+                    value=Attribute(
+                      value=Name(id='request', ctx=Load()),
+                      attr='simulation_id',
+                      ctx=Load())),
+                  keyword(
+                    arg='success',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='metrics',
+                    value=Call(
+                      func=Name(id='model_to_payload', ctx=Load()),
+                      args=[
+                        Name(id='metrics', ctx=Load())])),
+                  keyword(
+                    arg='details',
+                    value=Dict(
+                      keys=[
+                        Constant(value='top_documents')],
+                      values=[
+                        Name(id='top_docs', ctx=Load())]))]))],
+          returns=Name(id='RAGSimResult', ctx=Load()))])])

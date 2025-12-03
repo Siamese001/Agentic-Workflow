@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": true,
+  "line_count": 30,
+  "generated_at": 1764728329.8420966,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\mocks\\test_mock_detection_v10_7.py"
+}

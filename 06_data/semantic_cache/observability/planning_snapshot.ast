@@ -1,0 +1,226 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nQuality assurance planning for resume improvement validation and accuracy.\n\nCreates structured plans to ensure comprehensive resume enhancement\nquality and job alignment.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ExecutionContext'),
+        alias(name='DraftingResult'),
+        alias(name='RAGResult')],
+      level=0),
+    ImportFrom(
+      module='l1.builders.prompt_builder',
+      names=[
+        alias(name='PromptInstance'),
+        alias(name='build_qa_prompt')],
+      level=0),
+    ClassDef(
+      name='SemanticQAPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines semantic quality assurance structure.\n\n    Ensures thorough evaluation of resume improvement content\n    for accuracy and job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='prompt', ctx=Store()),
+          annotation=Name(id='PromptInstance', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='CouncilPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Structures council review planning approach.\n\n    Coordinates comprehensive evaluation of resume enhancement\n    recommendations for improved quality.\n    ')),
+        AnnAssign(
+          target=Name(id='prompt', ctx=Store()),
+          annotation=Name(id='PromptInstance', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    FunctionDef(
+      name='plan_semantic_qa',
+      args=arguments(
+        args=[
+          arg(
+            arg='qa_plan',
+            annotation=Name(id='Any', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='draft',
+            annotation=Name(id='DraftingResult', ctx=Load())),
+          arg(
+            arg='rag',
+            annotation=Name(id='RAGResult', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates semantic quality assurance plan for resume validation.\n\n    Ensures thorough evaluation of resume content for accuracy\n    and improved job alignment.\n    ')),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Name(id='build_qa_prompt', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='plan',
+                value=Name(id='qa_plan', ctx=Load())),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='drafting',
+                value=Name(id='draft', ctx=Load())),
+              keyword(
+                arg='rag',
+                value=Name(id='rag', ctx=Load())),
+              keyword(
+                arg='prompt_id',
+                value=Constant(value='system.qa.agent')),
+              keyword(
+                arg='layer',
+                value=Constant(value='L2')),
+              keyword(
+                arg='agent',
+                value=Constant(value='qa')),
+              keyword(
+                arg='model_tier',
+                value=Constant(value='balanced'))])),
+        Return(
+          value=Call(
+            func=Name(id='SemanticQAPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt',
+                value=Name(id='prompt', ctx=Load()))]))],
+      returns=Name(id='SemanticQAPlan', ctx=Load())),
+    FunctionDef(
+      name='plan_qa',
+      args=arguments(
+        args=[
+          arg(
+            arg='question',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='model_tier',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='balanced')],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Plan a QA response for the given question and context.\n    \n    Args:\n        question: The question to answer\n        context: Optional context for the question\n        model_tier: Model tier to use\n        \n    Returns:\n        QA plan with semantic search and response generation\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='plan_semantic_qa', ctx=Load()),
+            args=[
+              Name(id='question', ctx=Load()),
+              Name(id='context', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='model_tier',
+                value=Name(id='model_tier', ctx=Load()))]))],
+      returns=Name(id='SemanticQAPlan', ctx=Load())),
+    FunctionDef(
+      name='plan_council_review',
+      args=arguments(
+        args=[
+          arg(
+            arg='council_plan',
+            annotation=Name(id='Any', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='draft',
+            annotation=Name(id='DraftingResult', ctx=Load())),
+          arg(
+            arg='rag',
+            annotation=Name(id='RAGResult', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Plans council review for comprehensive rÃƒÂ©sumÃƒÂ© assessment.\n\n    Coordinates multi-perspective evaluation to ensure optimal rÃƒÂ©sumÃƒÂ© enhancement recommendations.\n    ')),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Name(id='build_qa_prompt', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='plan',
+                value=Name(id='council_plan', ctx=Load())),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='drafting',
+                value=Name(id='draft', ctx=Load())),
+              keyword(
+                arg='rag',
+                value=Name(id='rag', ctx=Load())),
+              keyword(
+                arg='prompt_id',
+                value=Constant(value='system.qa.council')),
+              keyword(
+                arg='layer',
+                value=Constant(value='L2')),
+              keyword(
+                arg='agent',
+                value=Constant(value='qa_council')),
+              keyword(
+                arg='model_tier',
+                value=Constant(value='balanced'))])),
+        Return(
+          value=Call(
+            func=Name(id='CouncilPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt',
+                value=Name(id='prompt', ctx=Load()))]))],
+      returns=Name(id='CouncilPlan', ctx=Load()))])

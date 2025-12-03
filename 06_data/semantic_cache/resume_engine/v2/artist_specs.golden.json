@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"$schema_version\": \"artist_specs_v2.1_V2_Clean\",\n  \"$description\": \"Configuration-driven Artist specifications for V2 Governor. This file defines *what* to generate. The *how* (prompts, logic) is handled by the ContextRelayLayer (prompts_RES_v2.py) and the Governor (workflow_RES_v2.py).\",\n  \n  \"K0_NAME\": {\n    \"generation_method\": \"_copy_from_master\",\n    \"master_data_key\": \"owner.name\",\n    \"description\": \"Candidate's full name from master resume\",\n    \"complexity\": \"LOW\"\n  },\n  \n  \"K0_CONTACT\": {\n    \"generation_method\": \"_copy_k0_contact\",\n    \"description\": \"Contact information block (phone, email, LinkedIn)\",\n    \"complexity\": \"LOW\"\n  },\n  \n  \"K0_HEADLINE\": {\n    \"generation_method\": \"_generate_section_macro_tot\",\n    \"description\": \"Three-part headline (Role | Skill | Value) optimized via Macro Tree-of-Thought\",\n    \"complexity\": \"HIGH\"\n  },\n  \n  \"K0_EXECUTIVE_SUMMARY_HEADER\": {\n    \"generation_method\": \"_generate_dummy_header\",\n    \"description\": \"Static header: 'EXECUTIVE S",
+  "full_hash": "74c970417db37e49505d40881514449b7f8753e8a160b1c593485b6534b56d76",
+  "generated_at": 1764728326.9132342,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\artist_specs.json"
+}

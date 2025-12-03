@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__state__test_safety_state_persistence.py",
+    "rel_path": "test_flat__state__test_safety_state_persistence.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "c2e2c59c6f3f68672709d16d9c5a7f1d26e75a2b9337d981ecd692534bd46ff3",
+    "file_size": 2563,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.3237267
+}

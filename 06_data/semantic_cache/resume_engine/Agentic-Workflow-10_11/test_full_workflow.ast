@@ -1,0 +1,773 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='End-to-End Workflow Tests\n\nTests complete workflows from job input to final output,\nintegrating all layers and components.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock'),
+        alias(name='patch')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ExecutionContext'),
+        alias(name='JobInput'),
+        alias(name='ResumeInput'),
+        alias(name='WorkflowConfig')],
+      level=0),
+    ClassDef(
+      name='TestEndToEndWorkflow',
+      body=[
+        Expr(
+          value=Constant(value='Test complete end-to-end workflow execution.')),
+        FunctionDef(
+          name='test_full_workflow_with_all_components',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test complete workflow with strategy, RAG, drafting, QA, and safety.')),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='ExecutionContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Call(
+                      func=Name(id='JobInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='title',
+                          value=Constant(value='Senior Software Engineer')),
+                        keyword(
+                          arg='role_type',
+                          value=Constant(value='engineering')),
+                        keyword(
+                          arg='seniority',
+                          value=Constant(value='senior')),
+                        keyword(
+                          arg='posting_text',
+                          value=Constant(value='Looking for a senior software engineer with Python experience'))])),
+                  keyword(
+                    arg='resume',
+                    value=Call(
+                      func=Name(id='ResumeInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='name',
+                          value=Constant(value='Jane Doe')),
+                        keyword(
+                          arg='email',
+                          value=Constant(value='jane@example.com')),
+                        keyword(arg='sections', value=Dict())])),
+                  keyword(
+                    arg='user_id',
+                    value=Constant(value='test_user'))])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='l2.execute_workflow_plans')]),
+                  optional_vars=Name(id='mock_execute', ctx=Store()))],
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='patch', ctx=Load()),
+                        args=[
+                          Constant(value='runtime.runtime_utils.invoke_model')]),
+                      optional_vars=Name(id='mock_llm', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='mock_llm', ctx=Load()),
+                          attr='side_effect',
+                          ctx=Store())],
+                      value=List(
+                        elts=[
+                          Constant(value='Generated strategy for senior software engineer'),
+                          Constant(value='Drafted resume content'),
+                          Constant(value='QA evaluation passed'),
+                          Constant(value='Safety check passed')],
+                        ctx=Load())),
+                    ImportFrom(
+                      module='l2',
+                      names=[
+                        alias(name='L2ResultBundle')],
+                      level=0),
+                    Assign(
+                      targets=[
+                        Name(id='mock_strategy', ctx=Store())],
+                      value=Call(
+                        func=Name(id='Mock', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='mock_strategy', ctx=Load()),
+                          attr='branches',
+                          ctx=Store())],
+                      value=List(
+                        elts=[
+                          Call(
+                            func=Name(id='Mock', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='description',
+                                value=Constant(value='Senior engineer strategy'))])],
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='mock_execute', ctx=Load()),
+                          attr='return_value',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='L2ResultBundle', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='strategy',
+                            value=Name(id='mock_strategy', ctx=Load())),
+                          keyword(
+                            arg='rag',
+                            value=Call(
+                              func=Name(id='Mock', ctx=Load()))),
+                          keyword(
+                            arg='drafting',
+                            value=Call(
+                              func=Name(id='Mock', ctx=Load()))),
+                          keyword(
+                            arg='qa',
+                            value=Call(
+                              func=Name(id='Mock', ctx=Load()))),
+                          keyword(
+                            arg='safety',
+                            value=Call(
+                              func=Name(id='Mock', ctx=Load())))])),
+                    ImportFrom(
+                      module='orchestration.run_dag',
+                      names=[
+                        alias(name='run_dag')],
+                      level=0),
+                    Assign(
+                      targets=[
+                        Name(id='plans', ctx=Store())],
+                      value=List(
+                        elts=[
+                          Call(
+                            func=Name(id='Mock', ctx=Load()))],
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='result', ctx=Store())],
+                      value=Call(
+                        func=Name(id='run_dag', ctx=Load()),
+                        args=[
+                          Name(id='plans', ctx=Load()),
+                          Name(id='ctx', ctx=Load())])),
+                    Assert(
+                      test=Compare(
+                        left=Name(id='result', ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Constant(value=None)])),
+                    Assert(
+                      test=Compare(
+                        left=Subscript(
+                          value=Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='final_state_patch',
+                            ctx=Load()),
+                          slice=Constant(value='strategy_text'),
+                          ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Constant(value=None)]))])])]),
+        FunctionDef(
+          name='test_workflow_with_different_job_types',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test workflow with different job types and roles.')),
+            Assign(
+              targets=[
+                Name(id='job_types', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='Data Scientist'),
+                      Constant(value='data_science'),
+                      Constant(value='senior')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='Product Manager'),
+                      Constant(value='product'),
+                      Constant(value='mid')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='UX Designer'),
+                      Constant(value='design'),
+                      Constant(value='junior')],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='title', ctx=Store()),
+                  Name(id='role_type', ctx=Store()),
+                  Name(id='seniority', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='job_types', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='ctx', ctx=Store())],
+                  value=Call(
+                    func=Name(id='ExecutionContext', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='job',
+                        value=Call(
+                          func=Name(id='JobInput', ctx=Load()),
+                          keywords=[
+                            keyword(
+                              arg='title',
+                              value=Name(id='title', ctx=Load())),
+                            keyword(
+                              arg='role_type',
+                              value=Name(id='role_type', ctx=Load())),
+                            keyword(
+                              arg='seniority',
+                              value=Name(id='seniority', ctx=Load())),
+                            keyword(
+                              arg='posting_text',
+                              value=JoinedStr(
+                                values=[
+                                  Constant(value='Looking for a '),
+                                  FormattedValue(
+                                    value=Name(id='title', ctx=Load()),
+                                    conversion=-1)]))])),
+                      keyword(
+                        arg='resume',
+                        value=Call(
+                          func=Name(id='ResumeInput', ctx=Load()),
+                          keywords=[
+                            keyword(
+                              arg='name',
+                              value=Constant(value='Test User')),
+                            keyword(
+                              arg='email',
+                              value=Constant(value='test@example.com')),
+                            keyword(arg='sections', value=Dict())])),
+                      keyword(
+                        arg='user_id',
+                        value=Constant(value='test_user'))])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='ctx', ctx=Load()),
+                        attr='job',
+                        ctx=Load()),
+                      attr='title',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='title', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='ctx', ctx=Load()),
+                        attr='job',
+                        ctx=Load()),
+                      attr='role_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='role_type', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='ctx', ctx=Load()),
+                        attr='job',
+                        ctx=Load()),
+                      attr='seniority',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='seniority', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_workflow_error_handling',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test workflow error handling and recovery.')),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='ExecutionContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Call(
+                      func=Name(id='JobInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='title',
+                          value=Constant(value='Test')),
+                        keyword(
+                          arg='role_type',
+                          value=Constant(value='test')),
+                        keyword(
+                          arg='seniority',
+                          value=Constant(value='mid')),
+                        keyword(
+                          arg='posting_text',
+                          value=Constant(value='test'))])),
+                  keyword(
+                    arg='resume',
+                    value=Call(
+                      func=Name(id='ResumeInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='name',
+                          value=Constant(value='Test')),
+                        keyword(
+                          arg='email',
+                          value=Constant(value='test@example.com')),
+                        keyword(arg='sections', value=Dict())])),
+                  keyword(
+                    arg='user_id',
+                    value=Constant(value='test_user'))])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='l2.execute_workflow_plans')]),
+                  optional_vars=Name(id='mock_execute', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_execute', ctx=Load()),
+                      attr='side_effect',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='Exception', ctx=Load()),
+                    args=[
+                      Constant(value='L2 execution failed')])),
+                ImportFrom(
+                  module='orchestration.run_dag',
+                  names=[
+                    alias(name='run_dag')],
+                  level=0),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Attribute(
+                          value=Name(id='pytest', ctx=Load()),
+                          attr='raises',
+                          ctx=Load()),
+                        args=[
+                          Name(id='Exception', ctx=Load())]))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='plans', ctx=Store())],
+                      value=List(
+                        elts=[
+                          Call(
+                            func=Name(id='Mock', ctx=Load()))],
+                        ctx=Load())),
+                    Expr(
+                      value=Call(
+                        func=Name(id='run_dag', ctx=Load()),
+                        args=[
+                          Name(id='plans', ctx=Load()),
+                          Name(id='ctx', ctx=Load())]))])])])]),
+    ClassDef(
+      name='TestWorkflowConfiguration',
+      body=[
+        Expr(
+          value=Constant(value='Test workflow configuration and customization.')),
+        FunctionDef(
+          name='test_workflow_config_customization',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test workflow configuration options.')),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='WorkflowConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enable_rag',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='enable_qa',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='enable_safety',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='max_drafts',
+                    value=Constant(value=3))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='enable_rag',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='enable_qa',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='enable_safety',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='max_drafts',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)]))]),
+        FunctionDef(
+          name='test_workflow_with_custom_config',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test workflow execution with custom configuration.')),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Call(
+                func=Name(id='WorkflowConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enable_rag',
+                    value=Constant(value=False)),
+                  keyword(
+                    arg='enable_qa',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='enable_safety',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='max_drafts',
+                    value=Constant(value=1))])),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='ExecutionContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Call(
+                      func=Name(id='JobInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='title',
+                          value=Constant(value='Test')),
+                        keyword(
+                          arg='role_type',
+                          value=Constant(value='test')),
+                        keyword(
+                          arg='seniority',
+                          value=Constant(value='mid')),
+                        keyword(
+                          arg='posting_text',
+                          value=Constant(value='test'))])),
+                  keyword(
+                    arg='resume',
+                    value=Call(
+                      func=Name(id='ResumeInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='name',
+                          value=Constant(value='Test')),
+                        keyword(
+                          arg='email',
+                          value=Constant(value='test@example.com')),
+                        keyword(arg='sections', value=Dict())])),
+                  keyword(
+                    arg='user_id',
+                    value=Constant(value='test_user')),
+                  keyword(
+                    arg='config',
+                    value=Name(id='config', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='ctx', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='enable_rag',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='ctx', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='max_drafts',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))])]),
+    ClassDef(
+      name='TestWorkflowPerformance',
+      body=[
+        Expr(
+          value=Constant(value='Test workflow performance and optimization.')),
+        FunctionDef(
+          name='test_workflow_execution_time',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test workflow execution time is reasonable.')),
+            Import(
+              names=[
+                alias(name='time')]),
+            Assign(
+              targets=[
+                Name(id='ctx', ctx=Store())],
+              value=Call(
+                func=Name(id='ExecutionContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='job',
+                    value=Call(
+                      func=Name(id='JobInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='title',
+                          value=Constant(value='Test')),
+                        keyword(
+                          arg='role_type',
+                          value=Constant(value='test')),
+                        keyword(
+                          arg='seniority',
+                          value=Constant(value='mid')),
+                        keyword(
+                          arg='posting_text',
+                          value=Constant(value='test'))])),
+                  keyword(
+                    arg='resume',
+                    value=Call(
+                      func=Name(id='ResumeInput', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='name',
+                          value=Constant(value='Test')),
+                        keyword(
+                          arg='email',
+                          value=Constant(value='test@example.com')),
+                        keyword(arg='sections', value=Dict())])),
+                  keyword(
+                    arg='user_id',
+                    value=Constant(value='test_user'))])),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='patch', ctx=Load()),
+                    args=[
+                      Constant(value='l2.execute_workflow_plans')]),
+                  optional_vars=Name(id='mock_execute', ctx=Store()))],
+              body=[
+                ImportFrom(
+                  module='l2',
+                  names=[
+                    alias(name='L2ResultBundle')],
+                  level=0),
+                Assign(
+                  targets=[
+                    Name(id='mock_strategy', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Mock', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_strategy', ctx=Load()),
+                      attr='branches',
+                      ctx=Store())],
+                  value=List(
+                    elts=[
+                      Call(
+                        func=Name(id='Mock', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='description',
+                            value=Constant(value='Test strategy'))])],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='mock_execute', ctx=Load()),
+                      attr='return_value',
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='L2ResultBundle', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='strategy',
+                        value=Name(id='mock_strategy', ctx=Load())),
+                      keyword(
+                        arg='rag',
+                        value=Call(
+                          func=Name(id='Mock', ctx=Load()))),
+                      keyword(
+                        arg='drafting',
+                        value=Call(
+                          func=Name(id='Mock', ctx=Load()))),
+                      keyword(
+                        arg='qa',
+                        value=Call(
+                          func=Name(id='Mock', ctx=Load()))),
+                      keyword(
+                        arg='safety',
+                        value=Call(
+                          func=Name(id='Mock', ctx=Load())))])),
+                Assign(
+                  targets=[
+                    Name(id='start_time', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='time', ctx=Load()),
+                      attr='time',
+                      ctx=Load()))),
+                ImportFrom(
+                  module='orchestration.run_dag',
+                  names=[
+                    alias(name='run_dag')],
+                  level=0),
+                Assign(
+                  targets=[
+                    Name(id='plans', ctx=Store())],
+                  value=List(
+                    elts=[
+                      Call(
+                        func=Name(id='Mock', ctx=Load()))],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='run_dag', ctx=Load()),
+                    args=[
+                      Name(id='plans', ctx=Load()),
+                      Name(id='ctx', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='execution_time', ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='time', ctx=Load()),
+                        attr='time',
+                        ctx=Load())),
+                    op=Sub(),
+                    right=Name(id='start_time', ctx=Load()))),
+                Assert(
+                  test=Compare(
+                    left=Name(id='execution_time', ctx=Load()),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Constant(value=5.0)])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='result', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='main',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='__file__', ctx=Load())],
+                ctx=Load())]))])])

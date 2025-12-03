@@ -1,0 +1,57 @@
+Module(
+  body=[
+    ImportFrom(
+      module='infra.sandbox.fs_template',
+      names=[
+        alias(name='build_ephemeral_rootfs')],
+      level=0),
+    FunctionDef(
+      name='test_build_ephemeral_rootfs_shape',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='fs', ctx=Store())],
+          value=Call(
+            func=Name(id='build_ephemeral_rootfs', ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='fs', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='tmpfs')]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='/'),
+            ops=[
+              In()],
+            comparators=[
+              Call(
+                func=Attribute(
+                  value=Name(id='fs', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='restricted_paths'),
+                  List(ctx=Load())])])),
+        Assert(
+          test=Compare(
+            left=Constant(value='/tmp'),
+            ops=[
+              In()],
+            comparators=[
+              Call(
+                func=Attribute(
+                  value=Name(id='fs', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='writable_paths'),
+                  List(ctx=Load())])]))])])

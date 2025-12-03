@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\planner-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\safety.yaml",
+    "rel_path": "safety.yaml",
+    "root_name": "prompt_governance",
+    "file_hash": "8fd35aba6357e79fe0e9c6ad5cb37f8ed916c4ec1ec7622fa155d806d8432602",
+    "file_size": 9034,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728348.0792992
+}

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 285,
+  "generated_at": 1764728232.0184782,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\04_hop_staging_v1_1.py"
+}

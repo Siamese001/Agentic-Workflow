@@ -1,0 +1,284 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='l2.agents',
+      names=[
+        alias(name='StrategyLLMAgent'),
+        alias(name='DraftingGuild'),
+        alias(name='SemanticQAAgent'),
+        alias(name='ConstitutionalSafetyAgent'),
+        alias(name='HYDEQueryAgent'),
+        alias(name='QACouncilAgent')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='AgentCard'),
+        alias(name='AgentRole')],
+      level=0),
+    ImportFrom(
+      module='core.routing',
+      names=[
+        alias(name='RoutingPolicy')],
+      level=0),
+    ImportFrom(
+      module='tools.runtime_utils',
+      names=[
+        alias(name='SandboxConfig')],
+      level=0),
+    FunctionDef(
+      name='_make_agent',
+      args=arguments(
+        args=[
+          arg(arg='agent_cls'),
+          arg(
+            arg='card',
+            annotation=BinOp(
+              left=Name(id='AgentCard', ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='routing', ctx=Store())],
+          value=Call(
+            func=Name(id='RoutingPolicy', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='sandbox', ctx=Store())],
+          value=Call(
+            func=Name(id='SandboxConfig', ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='card', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='agent_cls', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='routing_policy',
+                    value=Name(id='routing', ctx=Load())),
+                  keyword(
+                    arg='sandbox',
+                    value=Name(id='sandbox', ctx=Load())),
+                  keyword(
+                    arg='agent_card',
+                    value=Name(id='card', ctx=Load())),
+                  keyword(
+                    arg='meta_profile',
+                    value=Constant(value=None))]))]),
+        Return(
+          value=Call(
+            func=Name(id='agent_cls', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='routing_policy',
+                value=Name(id='routing', ctx=Load())),
+              keyword(
+                arg='sandbox',
+                value=Name(id='sandbox', ctx=Load())),
+              keyword(
+                arg='meta_profile',
+                value=Constant(value=None))]))]),
+    FunctionDef(
+      name='test_all_major_agents_have_agent_card_with_expected_roles',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='agents', ctx=Store())],
+          value=List(
+            elts=[
+              Tuple(
+                elts=[
+                  Name(id='StrategyLLMAgent', ctx=Load()),
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='PLANNER',
+                    ctx=Load())],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='DraftingGuild', ctx=Load()),
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='EXECUTION',
+                    ctx=Load())],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='SemanticQAAgent', ctx=Load()),
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='QA',
+                    ctx=Load())],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='ConstitutionalSafetyAgent', ctx=Load()),
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='SAFETY',
+                    ctx=Load())],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='HYDEQueryAgent', ctx=Load()),
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='META',
+                    ctx=Load())],
+                ctx=Load()),
+              Tuple(
+                elts=[
+                  Name(id='QACouncilAgent', ctx=Load()),
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='QA',
+                    ctx=Load())],
+                ctx=Load())],
+            ctx=Load())),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='cls', ctx=Store()),
+              Name(id='expected_role', ctx=Store())],
+            ctx=Store()),
+          iter=Name(id='agents', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='agent', ctx=Store())],
+              value=Call(
+                func=Name(id='_make_agent', ctx=Load()),
+                args=[
+                  Name(id='cls', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='agent', ctx=Load()),
+                    attr='agent_card',
+                    ctx=Load()),
+                  Name(id='AgentCard', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='agent', ctx=Load()),
+                    attr='agent_card',
+                    ctx=Load()),
+                  attr='role',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='expected_role', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='agent', ctx=Load()),
+                    attr='agent_card',
+                    ctx=Load()),
+                  attr='agent_id',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='cls', ctx=Load()),
+                    attr='__name__',
+                    ctx=Load())]))])]),
+    FunctionDef(
+      name='test_allowed_tools_enforced_by_llm_base_agent_helper',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='card', ctx=Store())],
+          value=Call(
+            func=Name(id='AgentCard', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='agent_id',
+                value=Constant(value='test_agent')),
+              keyword(
+                arg='role',
+                value=Attribute(
+                  value=Name(id='AgentRole', ctx=Load()),
+                  attr='EXECUTION',
+                  ctx=Load())),
+              keyword(
+                arg='capabilities',
+                value=List(
+                  elts=[
+                    Constant(value='test')],
+                  ctx=Load())),
+              keyword(
+                arg='allowed_tools',
+                value=List(
+                  elts=[
+                    Constant(value='tool_a'),
+                    Constant(value='tool_b')],
+                  ctx=Load())),
+              keyword(arg='policy_scope', value=Dict())])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_agent', ctx=Load()),
+            args=[
+              Name(id='StrategyLLMAgent', ctx=Load()),
+              Name(id='card', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='_check_tool_allowed',
+              ctx=Load()),
+            args=[
+              Constant(value='tool_a')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='_check_tool_allowed',
+              ctx=Load()),
+            args=[
+              Constant(value='tool_b')])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='PermissionError', ctx=Load())]))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='agent', ctx=Load()),
+                  attr='_check_tool_allowed',
+                  ctx=Load()),
+                args=[
+                  Constant(value='tool_c')]))])])])

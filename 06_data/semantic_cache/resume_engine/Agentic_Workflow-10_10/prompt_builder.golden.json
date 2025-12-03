@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/prompt_builder.py\n\"\"\"\nPrompt Builder Layer (v10_10 \u00b7 Phase 3)\n=======================================\n\nThis module builds PromptInstance objects for all major agents:\n\n    \u2022 Strategy reasoning\n    \u2022 Retrieval evidence / RAG reasoning\n    \u2022 HYDE query expansion\n    \u2022 Drafting\n    \u2022 QA\n    \u2022 Safety\n\nIt:\n\n    \u2022 Enforces prompt ACL metadata (layer / agent / model tier).\n    \u2022 Routes all prompt construction through the central prompt registry\n      defined in ``prompt_system_v10_10.py`` \u2013 no inline templates.\n    \u2022 Emits ``PromptInstance`` objects that L2 can hand off to\n      cognitive agents / LLM clients.\n\nDesign constraints:\n\n    \u2022 Pure L2: no LLM calls.\n    \u2022 Depends only on models + prompt_system for registry/ACL.\n    \u2022 No direct provider SDK or routing logic.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple\n\nfrom models import (\n    ContextBudget,\n    DraftingPlan,\n    Draf",
+  "full_hash": "08ce44a737afdefc66f5e278cd051f0f7181ac0d4fe1e18c0e6599b8788f107b",
+  "generated_at": 1764728228.3697557,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\prompt_builder.py"
+}

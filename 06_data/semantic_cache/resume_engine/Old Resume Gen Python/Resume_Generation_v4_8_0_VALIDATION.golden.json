@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v4.8.0 - WITH VALIDATION METHODS\n=========================================================\nMAJOR UPGRADE: Added BaselineResumeMetrics class with validation methods\n- validate_wordcount(): Check individual sections\n- validate_total(): Check total word count\n- calculate_deltas(): Compare actual vs baseline\n- generate_report(): Comprehensive validation report\n- QA Gates: Enforce word count limits\n\nVersion: 4.8.0\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nimport random\nfrom datetime import datetime\nfrom dataclasses import dataclass\nimport hashlib\n\n__version__ = \"4.8.0\"\n\n# ============================================================================\n# TEMPERATURE MODE ENUM\n# ============================================================================\n\nclass TemperatureMode(Enum):\n    \"\"\"Temperature modes for constraint relaxation and signal adjustment.\"\"\"\n    CONSERVATIVE = \"conserv",
+  "full_hash": "e83f23737cc73c7f034759a0126b7e684c6fc061eaa99de25553c3610ceed1fe",
+  "generated_at": 1764728297.2823174,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_8_0_VALIDATION.py"
+}

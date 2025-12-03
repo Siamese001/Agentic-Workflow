@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: prompts_LIC.py\n# Description: Prompt templates for the LIC workflow.\n# v12.0 NOTE: CTA templates still used by workflow_LIC.py fallback, but main\n#             generation now uses strategic alignment prompt from workflow_LIC.py\n\n__version__ = \"12.0\"\n\nfrom models_LIC import Route, Archetype\n\n# ============================================================================\n# CONTEXT-AWARE CTA TEMPLATES (v11.9)\n# ============================================================================\n\nCTA_TEMPLATES = {\n    Route.CONNECTION_REQ: {\n        \"default\": None  # CONNECTION_REQ has no CTA per SPEC 3\n    },\n    Route.INMAIL: {\n        Archetype.C_LEVEL: \"Would you be open to a brief conversation about how [TOPIC] might align with your strategic priorities?\",\n        Archetype.EXECUTIVE: \"I'd welcome the chance to discuss how [TOPIC] could support your team's objectives.\",\n        Archetype.SENIOR_TA: {\n            \"direct\": \"Would you have 15 minutes to discuss [TECHNICAL_TOPIC]?\",\n    ",
+  "full_hash": "c063b76e7cec57cac2bf49767dd5a6cb0644b6ddc10761ab1cb998596999a2a0",
+  "generated_at": 1764728341.0081563,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\deprecated in v13\\prompts_LIC.py"
+}

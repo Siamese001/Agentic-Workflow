@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\reasoning\\reflexion.py",
+    "rel_path": "reflexion.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "59d437c49d72ad8d38288b8fa0aca2ab223eb387f7b6c5ace83b86350f071ce1",
+    "file_size": 217,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.6595852
+}

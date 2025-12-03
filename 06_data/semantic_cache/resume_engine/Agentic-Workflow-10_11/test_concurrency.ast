@@ -1,0 +1,161 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Stress Tests for Concurrency.')),
+    Import(
+      names=[
+        alias(name='threading')]),
+    ClassDef(
+      name='TestConcurrency',
+      body=[
+        Expr(
+          value=Constant(value='Stress tests for concurrency handling.')),
+        FunctionDef(
+          name='test_thread_safety',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test thread safety of shared resources.')),
+            Assign(
+              targets=[
+                Name(id='counter', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='value')],
+                values=[
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Name(id='lock', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='threading', ctx=Load()),
+                  attr='Lock',
+                  ctx=Load()))),
+            FunctionDef(
+              name='increment',
+              args=arguments(),
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Name(id='lock', ctx=Load()))],
+                  body=[
+                    AugAssign(
+                      target=Subscript(
+                        value=Name(id='counter', ctx=Load()),
+                        slice=Constant(value='value'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1))])]),
+            Assign(
+              targets=[
+                Name(id='threads', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='threading', ctx=Load()),
+                    attr='Thread',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='target',
+                      value=Name(id='increment', ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='_', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='range', ctx=Load()),
+                      args=[
+                        Constant(value=10)]),
+                    is_async=0)])),
+            For(
+              target=Name(id='t', ctx=Store()),
+              iter=Name(id='threads', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='t', ctx=Load()),
+                      attr='start',
+                      ctx=Load())))]),
+            For(
+              target=Name(id='t', ctx=Store()),
+              iter=Name(id='threads', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='t', ctx=Load()),
+                      attr='join',
+                      ctx=Load())))]),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='counter', ctx=Load()),
+                  slice=Constant(value='value'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=10)]))]),
+        FunctionDef(
+          name='test_jd_parallelism',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test job description parallel processing.')),
+            Assign(
+              targets=[
+                Name(id='jd_batch', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='jd1'),
+                  Constant(value='jd2'),
+                  Constant(value='jd3'),
+                  Constant(value='jd4'),
+                  Constant(value='jd5')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='processed', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='jd', ctx=Load()),
+                    attr='upper',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='jd', ctx=Store()),
+                    iter=Name(id='jd_batch', ctx=Load()),
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='processed', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='p', ctx=Load()),
+                        attr='isupper',
+                        ctx=Load())),
+                    generators=[
+                      comprehension(
+                        target=Name(id='p', ctx=Store()),
+                        iter=Name(id='processed', ctx=Load()),
+                        is_async=0)])]))])])])

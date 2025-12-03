@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__simulations__test_safety_sim.py",
+    "rel_path": "test_flat__simulations__test_safety_sim.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "78a01e8aa983720a1e8f6be21a2697aca9ffe1f1d5b951af12518286c2b3d3ea",
+    "file_size": 2731,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.228048
+}

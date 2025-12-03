@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL1 Prompt Builder for resume generation prompt construction.\n\nCreates structured prompts for consistent resume improvement\nand optimal job alignment.\n\"\"\"\n\nfrom typing import Any\n\nclass PromptBuilder:\n    \"\"\"\n    Builds prompts for resume generation without execution logic.\n\n    Ensures consistent prompt structure for improved resume\n    quality and job alignment.\n    \"\"\"\n    \n    @staticmethod\n    def build_strategy_prompt(strategy_plan: Any, job: Any, resume: Any, config: Any) -> str:\n        \"\"\"Builds strategy prompt for resume improvement planning.\n\n        Creates structured approach for optimal resume job alignment.\n        \"\"\"\n        return f\"Strategy planning for job: {job}, resume: {resume}\"\n    \n    @staticmethod\n    def build_draft_prompt(draft_plan: Any, job: Any, resume: Any, config: Any) -> str:\n        \"\"\"Builds draft prompt for resume content creation.\n\n        Structures approach for professional resume enhancement.\n        \"\"\"\n        return f\"Draft planning for s",
+  "full_hash": "827612251718a8af90201cc7a6637111e787a752271560993553ede595be76d9",
+  "generated_at": 1764728224.6579602,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\prompt_builder.py"
+}

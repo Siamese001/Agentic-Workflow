@@ -1,0 +1,6 @@
+{
+  "golden_content": "import json\nfrom pathlib import Path\n\n\n# Paths are relative to the shared baseline directory.\nHERE = Path(__file__).resolve().parent\nBASELINE_DIR = HERE.parents[1] / \"shared\" / \"baselines\"\nPREVIOUS_BASELINE = BASELINE_DIR / \"baseline_outputs_previous.json\"\nV10_7_BASELINE = BASELINE_DIR / \"baseline_outputs_v10_7.json\"\n\n\ndef _load_baseline(path: Path) -> dict:\n    assert path.exists(), f\"Baseline file not found: {path}\"\n    with path.open(\"r\", encoding=\"utf-8\") as f:\n        return json.load(f)\n\n\ndef test_baseline_files_exist():\n    \"\"\"\n    Sanity check so a missing baseline file fails with a clear message,\n    not a cryptic JSON/IO error.\n    \"\"\"\n    assert PREVIOUS_BASELINE.exists(), f\"Missing: {PREVIOUS_BASELINE}\"\n    assert V10_7_BASELINE.exists(), f\"Missing: {V10_7_BASELINE}\"\n\n\ndef test_top_level_sections_preserved():\n    \"\"\"\n    API envelope invariant:\n    All top-level sections that existed previously must still exist in v10.7.\n\n    Example from your baselines:\n      previous: {\"s",
+  "full_hash": "50f046422e897e740f4380a3d23404420e619ade77695179bf53924e10e7d4de",
+  "generated_at": 1764728230.7901483,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_baseline_schema_diff_v10_7.py"
+}

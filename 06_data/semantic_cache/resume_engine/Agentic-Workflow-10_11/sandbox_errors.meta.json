@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\sandbox_errors.py",
+    "rel_path": "sandbox_errors.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "3c6c85b8004a23b69a971c9a0893beb66889d00f98f47ac9a6c9389f536f803c",
+    "file_size": 482,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728224.3234444
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.60 - OUTPUT 2 BUG FIX: 12 COMPETENCIES\n\nv5.60 CHANGES - CRITICAL OUTPUT 2 BUG FIX:\n\u2705 FIXED: Output 2 now correctly retrieves 12 master competencies (was: 4 certifications)\n   - Root Cause: FileRenderer._render_skills was hard-coded to staging_buffer.get('K.11')\n   - K.11 populated by generate_k11_skills() which returns only certifications list\n   - JDAlignmentScorer was correctly scoring but operating on wrong data (4 certs vs 12 comps)\n   \n\u2705 SOLUTION: Bypass K.11 staging buffer entirely\n   - Load 6 strategic + 6 technical competencies directly from MASTER_RESUME_JSON\n   - Pass all 12 competencies to JDAlignmentScorer.score_competency()\n   - Now correctly scores \"Strategic Partnership & Alliance Development\", \"Team Leadership\", etc.\n   \n\u2705 TEST RESULTS:\n   - Test Case 1 (E2E): \u2705 PASSED - 12 competencies, correctly ranked by DataRobot JD relevance\n   - Test Case 2 (Integration): \u2705 PASSED - Decoupled from K.11, loads from MASTER_RESUME_JSON  \n   - Test Case",
+  "full_hash": "29e54db6a0ff16b190f1e5d31dceb59975fe724a1bedac7d4ca4ad493cbdc3ac",
+  "generated_at": 1764728308.145262,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_61.py"
+}

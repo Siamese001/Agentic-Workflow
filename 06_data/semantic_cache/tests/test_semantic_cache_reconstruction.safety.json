@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 580,
+  "generated_at": 1764728355.177327,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\test_semantic_cache_reconstruction.py"
+}

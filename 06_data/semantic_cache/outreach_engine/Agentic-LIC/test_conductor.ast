@@ -1,0 +1,398 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Unit tests for the async Conductor helper.')),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='src.lic_agentic.orchestration.conductor',
+      names=[
+        alias(name='Conductor')],
+      level=0),
+    AsyncFunctionDef(
+      name='_task',
+      args=arguments(
+        args=[
+          arg(arg='value')]),
+      body=[
+        Expr(
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='asyncio', ctx=Load()),
+                attr='sleep',
+                ctx=Load()),
+              args=[
+                Constant(value=0)]))),
+        Return(
+          value=Name(id='value', ctx=Load()))]),
+    FunctionDef(
+      name='test_conductor_generates_stable_artifact_ids',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='seed',
+                value=Constant(value=3))])),
+        Assign(
+          targets=[
+            Name(id='first', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='make_artifact_id',
+              ctx=Load()),
+            args=[
+              Constant(value='value')],
+            keywords=[
+              keyword(
+                arg='company_id',
+                value=Constant(value='ACME'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='reset',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='second', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='make_artifact_id',
+              ctx=Load()),
+            args=[
+              Constant(value='value')],
+            keywords=[
+              keyword(
+                arg='company_id',
+                value=Constant(value='ACME'))])),
+        Assert(
+          test=Compare(
+            left=Name(id='first', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='second', ctx=Load())]))]),
+    FunctionDef(
+      name='test_conductor_latency_delay_positive',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()))),
+        AsyncFunctionDef(
+          name='_job',
+          args=arguments(),
+          body=[
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value=0),
+                  Constant(value='done')],
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='conductor', ctx=Load()),
+                  attr='_execute_async',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Lambda(
+                        args=arguments(),
+                        body=Call(
+                          func=Name(id='_job', ctx=Load())))],
+                    ctx=Load())])])),
+        Assert(
+          test=Compare(
+            left=Name(id='results', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value=0),
+                      Constant(value='done')],
+                    ctx=Load())],
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='conductor', ctx=Load()),
+                attr='_latency_delay',
+                ctx=Load()),
+              args=[
+                Constant(value=500)]),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]))]),
+    FunctionDef(
+      name='test_wrap_tool_call_runs_callable',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()))),
+        FunctionDef(
+          name='call',
+          args=arguments(),
+          body=[
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value='value'),
+                  Constant(value=50)],
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='wrapped', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='wrap_tool_call',
+              ctx=Load()),
+            args=[
+              Constant(value=0),
+              Name(id='call', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='conductor', ctx=Load()),
+                  attr='_execute_async',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Name(id='wrapped', ctx=Load())],
+                    ctx=Load())])])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Name(id='results', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load()),
+              slice=Constant(value=1),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='value')]))]),
+    FunctionDef(
+      name='test_conductor_run_invokes_factories',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()))),
+        AsyncFunctionDef(
+          name='job',
+          args=arguments(),
+          body=[
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value=0),
+                  Constant(value='payload')],
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='outcome', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Lambda(
+                    args=arguments(),
+                    body=Call(
+                      func=Name(id='job', ctx=Load())))],
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Name(id='outcome', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value=0),
+                      Constant(value='payload')],
+                    ctx=Load())],
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='concurrency',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=3)]))]),
+    FunctionDef(
+      name='test_wrap_tool_call_supports_after_callback',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='seen', ctx=Store())],
+          value=List(ctx=Load())),
+        FunctionDef(
+          name='call',
+          args=arguments(),
+          body=[
+            Return(
+              value=Tuple(
+                elts=[
+                  Constant(value='value'),
+                  Constant(value=10)],
+                ctx=Load()))]),
+        FunctionDef(
+          name='after',
+          args=arguments(
+            args=[
+              arg(arg='value')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='seen', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load())]))]),
+        Assign(
+          targets=[
+            Name(id='wrapped', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='wrap_tool_call',
+              ctx=Load()),
+            args=[
+              Constant(value=0),
+              Name(id='call', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='after',
+                value=Name(id='after', ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='conductor', ctx=Load()),
+                  attr='_execute_async',
+                  ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Name(id='wrapped', ctx=Load())],
+                    ctx=Load())])])),
+        Assert(
+          test=Compare(
+            left=Name(id='seen', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(
+                elts=[
+                  Constant(value='value')],
+                ctx=Load())]))]),
+    FunctionDef(
+      name='test_conductor_requires_positive_concurrency',
+      args=arguments(),
+      body=[
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='ValueError', ctx=Load())]))],
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='Conductor', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='concurrency',
+                    value=Constant(value=0))]))])]),
+    FunctionDef(
+      name='test_run_with_no_jobs_returns_empty_list',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='conductor', ctx=Load()),
+                attr='run',
+                ctx=Load()),
+              args=[
+                List(ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              List(ctx=Load())]))])])

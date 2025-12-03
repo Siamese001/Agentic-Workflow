@@ -1,0 +1,54 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Observability Cost Budget Tests.')),
+    ClassDef(
+      name='TestObservabilityCostBudget',
+      body=[
+        Expr(
+          value=Constant(value='Tests for cost budget tracking.')),
+        FunctionDef(
+          name='test_budget_tracking',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test budget tracking logic.')),
+            Assign(
+              targets=[
+                Name(id='budget', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='max_usd'),
+                  Constant(value='spent_usd')],
+                values=[
+                  Constant(value=1.0),
+                  Constant(value=0.25)])),
+            Assign(
+              targets=[
+                Name(id='remaining', ctx=Store())],
+              value=BinOp(
+                left=Subscript(
+                  value=Name(id='budget', ctx=Load()),
+                  slice=Constant(value='max_usd'),
+                  ctx=Load()),
+                op=Sub(),
+                right=Subscript(
+                  value=Name(id='budget', ctx=Load()),
+                  slice=Constant(value='spent_usd'),
+                  ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Name(id='remaining', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.75)])),
+            Assert(
+              test=Compare(
+                left=Name(id='remaining', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))])])])

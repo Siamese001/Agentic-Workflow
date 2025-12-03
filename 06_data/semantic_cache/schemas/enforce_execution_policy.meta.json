@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\exec-layer\\safety-phase\\check-schema-rules\\policy\\check-safety\\enforce_execution_policy.py",
+    "rel_path": "enforce_execution_policy.py",
+    "root_name": "schemas",
+    "file_hash": "a42eba78b8f918f7f93d77ae93704bb6417967536a3fe3a84eaecd0442b808c0",
+    "file_size": 1356,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.5535607
+}

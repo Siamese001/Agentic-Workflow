@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\injection_detection.py",
+    "rel_path": "injection_detection.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e",
+    "file_size": 17954,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728225.4287763
+}

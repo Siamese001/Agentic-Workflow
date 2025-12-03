@@ -1,0 +1,454 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Retrieval planning utilities.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Sequence')],
+      level=0),
+    ClassDef(
+      name='RetrievalJob',
+      body=[
+        AnnAssign(
+          target=Name(id='tool', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='scope', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='outreach'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='section', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='value_wedge'),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RetrievalPlan',
+      body=[
+        AnnAssign(
+          target=Name(id='wants', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Sequence', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='jobs', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RetrievalJob', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='add',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='str', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Name(id='RetrievalJob', ctx=Load())))]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='job', ctx=Load()),
+                  Name(id='RetrievalJob', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='jobs',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load())]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='jobs',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='RetrievalJob', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            value=Name(id='job', ctx=Load()))])]))])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='dedupe',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            AnnAssign(
+              target=Name(id='unique', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Subscript(
+                      value=Name(id='tuple', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='str', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load()),
+                    Name(id='RetrievalJob', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=1),
+            For(
+              target=Name(id='job', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='jobs',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='key', ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='job', ctx=Load()),
+                        attr='tool',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='job', ctx=Load()),
+                        attr='query',
+                        ctx=Load())],
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='unique', ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='job', ctx=Load()))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='jobs',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='unique', ctx=Load()),
+                      attr='values',
+                      ctx=Load()))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='budget',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='max_calls',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=6)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='jobs',
+                  ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='jobs',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      Constant(value=0),
+                      Name(id='max_calls', ctx=Load())])),
+                ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='execute',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='registry'),
+              arg(arg='store')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ttl_s', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='context',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ttl_s'),
+                      BinOp(
+                        left=BinOp(
+                          left=BinOp(
+                            left=Constant(value=60),
+                            op=Mult(),
+                            right=Constant(value=60)),
+                          op=Mult(),
+                          right=Constant(value=24)),
+                        op=Mult(),
+                        right=Constant(value=90))])])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='job', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='jobs',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='cache_key', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='registry', ctx=Load()),
+                      attr='make_key',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='tool'),
+                          Constant(value='query'),
+                          Constant(value='scope')],
+                        values=[
+                          Attribute(
+                            value=Name(id='job', ctx=Load()),
+                            attr='tool',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='job', ctx=Load()),
+                            attr='query',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='job', ctx=Load()),
+                            attr='scope',
+                            ctx=Load())]),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='context',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='cached', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='store', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='cache_key', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='ttl_s',
+                        value=Name(id='ttl_s', ctx=Load()))])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='cached', ctx=Load()),
+                      Subscript(
+                        value=Name(id='cached', ctx=Load()),
+                        slice=Constant(value=2),
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Tuple(
+                            elts=[
+                              Constant(value='cache'),
+                              Name(id='job', ctx=Load()),
+                              Subscript(
+                                value=Name(id='cached', ctx=Load()),
+                                slice=Constant(value=0),
+                                ctx=Load())],
+                            ctx=Load())])),
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='tool', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='registry', ctx=Load()),
+                      attr='resolve',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='job', ctx=Load()),
+                        attr='tool',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='tool_context', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='company_id'),
+                      Constant(value='contact_id')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='context',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='company_id')]),
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='context',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='contact_id')])])),
+                Assign(
+                  targets=[
+                    Name(id='outcome', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='tool', ctx=Load()),
+                      attr='run',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='job', ctx=Load()),
+                        attr='query',
+                        ctx=Load()),
+                      Name(id='tool_context', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='store', ctx=Load()),
+                      attr='put',
+                      ctx=Load()),
+                    args=[
+                      Name(id='cache_key', ctx=Load()),
+                      Name(id='outcome', ctx=Load()),
+                      Dict(
+                        keys=[
+                          Constant(value='tool'),
+                          Constant(value='scope')],
+                        values=[
+                          Attribute(
+                            value=Name(id='job', ctx=Load()),
+                            attr='tool',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='job', ctx=Load()),
+                            attr='scope',
+                            ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Tuple(
+                        elts=[
+                          Constant(value='live'),
+                          Name(id='job', ctx=Load()),
+                          Name(id='outcome', ctx=Load())],
+                        ctx=Load())]))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='RetrievalJob', ctx=Load()),
+                  Name(id='object', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

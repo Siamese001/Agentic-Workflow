@@ -1,0 +1,174 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='TelemetryEvent')],
+      level=0),
+    AnnAssign(
+      target=Name(id='_telemetry_buffer', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='TelemetryEvent', ctx=Load()),
+        ctx=Load()),
+      value=List(ctx=Load()),
+      simple=1),
+    AnnAssign(
+      target=Name(id='_span_stack', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()),
+      value=List(ctx=Load()),
+      simple=1),
+    FunctionDef(
+      name='append_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='evt',
+            annotation=Name(id='TelemetryEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Append a telemetry event to the in-memory buffer.')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_telemetry_buffer', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='get_events',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return a shallow copy of the telemetry buffer.')),
+        Return(
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Name(id='_telemetry_buffer', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='TelemetryEvent', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='clear_events',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Clear all telemetry events and open spans (primarily for tests).')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_telemetry_buffer', ctx=Load()),
+              attr='clear',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_span_stack', ctx=Load()),
+              attr='clear',
+              ctx=Load())))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='push_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='record',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Push a span record onto the span stack.')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_span_stack', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Name(id='record', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='pop_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='record',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Remove a span record from the span stack if present.')),
+        If(
+          test=Compare(
+            left=Name(id='record', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='_span_stack', ctx=Load())]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='_span_stack', ctx=Load()),
+                  attr='remove',
+                  ctx=Load()),
+                args=[
+                  Name(id='record', ctx=Load())]))])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='span_stack',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return the internal span stack (for inspection-only).')),
+        Return(
+          value=Name(id='_span_stack', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()))])

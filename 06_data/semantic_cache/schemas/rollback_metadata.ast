@@ -1,0 +1,18 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='rollback_id'),
+          Constant(value='timestamp'),
+          Constant(value='description'),
+          Constant(value='operations_count'),
+          Constant(value='backup_location'),
+          Constant(value='can_rollback')],
+        values=[
+          Constant(value='rollback_20251202_210700_352620'),
+          Constant(value='2025-12-02T21:07:09.196065'),
+          Constant(value='k28_test'),
+          Constant(value=2793),
+          Constant(value='c:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620'),
+          Name(id='true', ctx=Load())]))])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\integration\\test_tool_registry.py",
+    "rel_path": "test_tool_registry.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "705a0740e5a952579cf86448923de0f0a15cd00adb714001b72faba8849edcc6",
+    "file_size": 1271,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.0117755
+}

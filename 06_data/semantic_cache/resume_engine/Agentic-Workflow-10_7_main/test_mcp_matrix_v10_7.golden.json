@@ -1,0 +1,6 @@
+{
+  "golden_content": "import asyncio\nimport asyncio\nimport sys\nimport types\nfrom typing import Any, Dict\n\nimport pytest\n\nfrom core_v10_7 import (\n    BaseTool,\n    MCPClientInitializationError,\n    MCPClientSpec,\n    MCPClientStub,\n    WorkflowContext,\n    instantiate_mcp_client,\n    parse_mcp_client_specs,\n    wrap_mcp,\n)\nfrom agent_orchestration_v10_7 import load_dynamic_tools\nfrom agent_tools_v10_7 import resolve_mcp_client\n\ndef make_broken_module(class_name: str = \"BrokenClient\") -> str:\n    module_name = f\"mod_{class_name.lower()}\"\n    module = types.ModuleType(module_name)\n    class BrokenClient:\n        def __init__(self, **_: Any) -> None:\n            raise RuntimeError(\"boom\")\n    setattr(module, class_name, BrokenClient)\n    sys.modules[module_name] = module\n    return module_name\n\n# ---- Spec parsing (8 tests)\n@pytest.mark.parametrize(\n    \"bad\",\n    [[\"not-mapping\"], [{\"name\": \"x\", \"parameters\": [\"nope\"]}]],\n)\ndef test_parse_mcp_client_specs_rejects(bad):\n    with pytest.raises(ValueError):\n    ",
+  "full_hash": "0f9e9517e94103513a7153d03613039728a6d79f5f1d4a623c7a14c78b6f05bf",
+  "generated_at": 1764728230.636654,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\mcp\\test_mcp_matrix_v10_7.py"
+}

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 12,
+  "generated_at": 1764728354.804221,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\retriever-microagent-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\test_l2_rg_execution_integration.py"
+}

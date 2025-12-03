@@ -1,0 +1,183 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for safety policy application and validation.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='SafetyLevel',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Safety policy enforcement levels.')),
+        Assign(
+          targets=[
+            Name(id='PERMISSIVE', ctx=Store())],
+          value=Constant(value='permissive')),
+        Assign(
+          targets=[
+            Name(id='STANDARD', ctx=Store())],
+          value=Constant(value='standard')),
+        Assign(
+          targets=[
+            Name(id='RESTRICTIVE', ctx=Store())],
+          value=Constant(value='restrictive')),
+        Assign(
+          targets=[
+            Name(id='BLOCKED', ctx=Store())],
+          value=Constant(value='blocked'))]),
+    ClassDef(
+      name='PolicyType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of safety policies.')),
+        Assign(
+          targets=[
+            Name(id='CONTENT_FILTER', ctx=Store())],
+          value=Constant(value='content_filter')),
+        Assign(
+          targets=[
+            Name(id='ACCESS_CONTROL', ctx=Store())],
+          value=Constant(value='access_control')),
+        Assign(
+          targets=[
+            Name(id='RATE_LIMITING', ctx=Store())],
+          value=Constant(value='rate_limiting')),
+        Assign(
+          targets=[
+            Name(id='DATA_PROTECTION', ctx=Store())],
+          value=Constant(value='data_protection'))]),
+    ClassDef(
+      name='SafetyPolicy',
+      body=[
+        Expr(
+          value=Constant(value='Schema for safety policy definition.')),
+        AnnAssign(
+          target=Name(id='policy_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='policy_type', ctx=Store()),
+          annotation=Name(id='PolicyType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_level', ctx=Store()),
+          annotation=Name(id='SafetyLevel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rules', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='exceptions', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PolicyApplication',
+      body=[
+        Expr(
+          value=Constant(value='Schema for policy application context.')),
+        AnnAssign(
+          target=Name(id='policy', ctx=Store()),
+          annotation=Name(id='SafetyPolicy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='enforcement_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SafetyPolicyResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for safety policy application result.')),
+        AnnAssign(
+          target=Name(id='application_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='policy_applied', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_level_assigned', ctx=Store()),
+          annotation=Name(id='SafetyLevel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='violations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recommendations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

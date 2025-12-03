@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\llm_profile.py",
+    "rel_path": "llm_profile.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "c660b80e90c1b60c106f2881c574ebbebf39be938502a46713eb949d981df0f1",
+    "file_size": 724,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728223.7933128
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v6.0\\Change Log\\CHANGELOG_v6_0.md",
+    "rel_path": "CHANGELOG_v6_0.md",
+    "root_name": "resume_engine/v6.0",
+    "file_hash": "b067a8d6c5c80091017784dca02b8a3bb3ac1c9a6656cd09f44491feef8554bd",
+    "file_size": 14267,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728327.4837613
+}

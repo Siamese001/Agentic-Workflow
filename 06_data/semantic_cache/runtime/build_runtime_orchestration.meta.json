@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\plan-phase\\get-runtime-info\\utility\\prepare-information\\build_runtime_orchestration.py",
+    "rel_path": "build_runtime_orchestration.py",
+    "root_name": "runtime",
+    "file_hash": "e51349bd988460c06646f4455edd6fa282eff64d65160c01e31c836ba770115f",
+    "file_size": 6983,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.1251855
+}

@@ -1,0 +1,1480 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRouting & Prompt Invocation Layer (v10_9) — META LAYER ONLY (REFINED)\n\nThis module is a strictly META-layer component. It:\n\n    • Builds routing criteria (complexity, cost, latency, risk)\n    • Integrates meta_profile biases (routing/planning/safety)\n    • Builds PromptEnvelope-compatible prompts\n    • Calls L5.ModelRouter for model selection\n    • Simulates model invocation (no provider calls)\n    • Returns structured routing + prompt + simulated output\n\nAgentic Guardrails (14/14):\n    ❌ NO L1 planning\n    ❌ NO L2 execution\n    ❌ NO L3 orchestration\n    ❌ NO L4 state mutation\n    ❌ NO L5 decisions directly\n    ❌ NO provider SDKs\n    ✔  PURE META (safe)\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='PlanObject')],
+      level=0),
+    ImportFrom(
+      module='prompt',
+      names=[
+        alias(name='System', asname='PromptSystem')],
+      level=0),
+    ImportFrom(
+      module='l5',
+      names=[
+        alias(name='ModelRouter'),
+        alias(name='RoutingCriteria')],
+      level=0),
+    ImportFrom(
+      module='meta_profile',
+      names=[
+        alias(name='get_routing_bias'),
+        alias(name='get_planning_bias'),
+        alias(name='get_safety_bias')],
+      level=0),
+    FunctionDef(
+      name='get_prompt_context_view',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    META-layer is allowed to read state (NOT mutate it).\n    This helper extracts only the fields needed for prompt construction.\n\n    This avoids importing from L4 and avoids layer violations.\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='messages'),
+              Constant(value='summary'),
+              Constant(value='rag_history')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='messages'),
+                  List(ctx=Load())]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary'),
+                  Constant(value='')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='rag_history'),
+                  List(ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='invoke_model',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='config',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic stub — simulates model invocation.\n    Never calls real LLM providers.\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='output'),
+              Constant(value='usage'),
+              Constant(value='metadata')],
+            values=[
+              JoinedStr(
+                values=[
+                  Constant(value='[SIMULATED model='),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='model')]),
+                    conversion=-1),
+                  Constant(value=' endpoint='),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='endpoint')]),
+                    conversion=-1),
+                  Constant(value=']\n'),
+                  FormattedValue(
+                    value=Name(id='prompt', ctx=Load()),
+                    conversion=-1)]),
+              Dict(
+                keys=[
+                  Constant(value='prompt_tokens'),
+                  Constant(value='completion_tokens')],
+                values=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='prompt', ctx=Load())]),
+                          attr='split',
+                          ctx=Load()))]),
+                  Constant(value=0)]),
+              Dict(
+                keys=[
+                  Constant(value='endpoint'),
+                  Constant(value='route')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='config', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='endpoint')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='config', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='route')])])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='RoutingConfig',
+      body=[
+        AnnAssign(
+          target=Name(id='default_latency_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=2000),
+          simple=1),
+        AnnAssign(
+          target=Name(id='default_cost_usd', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.05),
+          simple=1),
+        AnnAssign(
+          target=Name(id='base_risk_level', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='normal'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_available', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='_derive_complexity',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='c', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='complexity'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='c', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Tuple(
+                elts=[
+                  Constant(value='low'),
+                  Constant(value='simple')],
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Constant(value='low'))]),
+        If(
+          test=Compare(
+            left=Name(id='c', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Tuple(
+                elts=[
+                  Constant(value='moderate'),
+                  Constant(value='medium')],
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Constant(value='medium'))]),
+        If(
+          test=Compare(
+            left=Name(id='c', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Tuple(
+                elts=[
+                  Constant(value='complex'),
+                  Constant(value='high')],
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Constant(value='high'))]),
+        Return(
+          value=Constant(value='low'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_derive_risk_level',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='routing_cfg',
+            annotation=Name(id='RoutingConfig', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='safety', ctx=Store())],
+          value=Call(
+            func=Name(id='get_safety_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='safety_meta', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='safety_metadata')]),
+              Dict()])),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='safety', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='heightened_caution')]),
+          body=[
+            Return(
+              value=Constant(value='high_safety'))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='safety', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='human_review_important')]),
+          body=[
+            Return(
+              value=Constant(value='strict'))]),
+        Return(
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='safety_meta', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='sensitivity'),
+                  Attribute(
+                    value=Name(id='routing_cfg', ctx=Load()),
+                    attr='base_risk_level',
+                    ctx=Load())])]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_apply_meta_biases',
+      args=arguments(
+        args=[
+          arg(
+            arg='criteria',
+            annotation=Name(id='RoutingCriteria', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='routing', ctx=Store())],
+          value=Call(
+            func=Name(id='get_routing_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='planning', ctx=Store())],
+          value=Call(
+            func=Name(id='get_planning_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='safety', ctx=Store())],
+          value=Call(
+            func=Name(id='get_safety_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='c', ctx=Store())],
+          value=Call(
+            func=Name(id='RoutingCriteria', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='task_type',
+                value=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='task_type',
+                  ctx=Load())),
+              keyword(
+                arg='complexity',
+                value=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='complexity',
+                  ctx=Load())),
+              keyword(
+                arg='latency_target_ms',
+                value=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='latency_target_ms',
+                  ctx=Load())),
+              keyword(
+                arg='cost_ceiling_usd',
+                value=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='cost_ceiling_usd',
+                  ctx=Load())),
+              keyword(
+                arg='risk_level',
+                value=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='risk_level',
+                  ctx=Load())),
+              keyword(
+                arg='model_available',
+                value=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='model_available',
+                  ctx=Load()))])),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='routing', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='prefer_fast')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='c', ctx=Load()),
+                  attr='latency_target_ms',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='latency_target_ms',
+                    ctx=Load()),
+                  Constant(value=800)]))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='routing', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='prefer_robust_retrieval')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='c', ctx=Load()),
+                  attr='latency_target_ms',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='c', ctx=Load()),
+                    attr='latency_target_ms',
+                    ctx=Load()),
+                  Constant(value=1500)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='c', ctx=Load()),
+                  attr='risk_level',
+                  ctx=Store())],
+              value=Constant(value='strict'))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='routing', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='prefer_long_context')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='c', ctx=Load()),
+                  attr='complexity',
+                  ctx=Store())],
+              value=Constant(value='high'))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='planning', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='conservative')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='c', ctx=Load()),
+                  attr='complexity',
+                  ctx=Store())],
+              value=Constant(value='high')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='c', ctx=Load()),
+                  attr='risk_level',
+                  ctx=Store())],
+              value=Constant(value='strict'))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='safety', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='heightened_caution')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='c', ctx=Load()),
+                  attr='risk_level',
+                  ctx=Store())],
+              value=Constant(value='high_safety'))]),
+        Return(
+          value=Name(id='c', ctx=Load()))],
+      returns=Name(id='RoutingCriteria', ctx=Load())),
+    FunctionDef(
+      name='_build_routing_criteria',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='routing_cfg',
+            annotation=Name(id='RoutingConfig', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='criteria', ctx=Store())],
+          value=Call(
+            func=Name(id='RoutingCriteria', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='task_type',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='mode'),
+                        Constant(value='unknown')])])),
+              keyword(
+                arg='complexity',
+                value=Call(
+                  func=Name(id='_derive_complexity', ctx=Load()),
+                  args=[
+                    Name(id='plan', ctx=Load())])),
+              keyword(
+                arg='latency_target_ms',
+                value=Attribute(
+                  value=Name(id='routing_cfg', ctx=Load()),
+                  attr='default_latency_ms',
+                  ctx=Load())),
+              keyword(
+                arg='cost_ceiling_usd',
+                value=Attribute(
+                  value=Name(id='routing_cfg', ctx=Load()),
+                  attr='default_cost_usd',
+                  ctx=Load())),
+              keyword(
+                arg='risk_level',
+                value=Call(
+                  func=Name(id='_derive_risk_level', ctx=Load()),
+                  args=[
+                    Name(id='plan', ctx=Load()),
+                    Name(id='routing_cfg', ctx=Load())])),
+              keyword(
+                arg='model_available',
+                value=Attribute(
+                  value=Name(id='routing_cfg', ctx=Load()),
+                  attr='model_available',
+                  ctx=Load()))])),
+        Return(
+          value=Call(
+            func=Name(id='_apply_meta_biases', ctx=Load()),
+            args=[
+              Name(id='criteria', ctx=Load())]))],
+      returns=Name(id='RoutingCriteria', ctx=Load())),
+    FunctionDef(
+      name='_format_context',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        AnnAssign(
+          target=Name(id='lines', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='plan', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='objective')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Objective: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='plan', ctx=Load()),
+                          slice=Constant(value='objective'),
+                          ctx=Load()),
+                        conversion=-1)])]))]),
+        Assign(
+          targets=[
+            Name(id='msgs', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='context', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='messages')]),
+              List(ctx=Load())])),
+        If(
+          test=Name(id='msgs', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Recent messages:')])),
+            For(
+              target=Name(id='m', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='msgs', ctx=Load()),
+                slice=Slice(
+                  lower=UnaryOp(
+                    op=USub(),
+                    operand=Constant(value=3))),
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='m', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='lines', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='m', ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='role')]),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='m', ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='content')]),
+                                conversion=-1)])]))])])]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='context', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='summary')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Summary: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='context', ctx=Load()),
+                          slice=Constant(value='summary'),
+                          ctx=Load()),
+                        conversion=-1)])]))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='context', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='rag_history')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='RAG items: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='context', ctx=Load()),
+                              slice=Constant(value='rag_history'),
+                              ctx=Load())]),
+                        conversion=-1)])]))]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='lines', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_format_reasoning',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='inj', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='injection_reasoning'),
+                  Dict()]),
+              Dict()])),
+        AnnAssign(
+          target=Name(id='out', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='inj', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='reason_then_answer')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Reason step-by-step, then answer.')]))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='inj', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='failure_anticipation_enabled')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='fms', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='top_failure_modes')]),
+                  List(ctx=Load())])),
+            For(
+              target=Name(id='m', ctx=Store()),
+              iter=Name(id='fms', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='out', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='- '),
+                          FormattedValue(
+                            value=Name(id='m', ctx=Load()),
+                            conversion=-1)])]))])]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='inj', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='self_consistency_enabled')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Perform self-consistency checks.')]))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='inj', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='error_simulation_enabled')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Anticipate common errors and guard against them.')]))]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='out', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_format_instructions',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='lines', ctx=Store())],
+          value=List(
+            elts=[
+              JoinedStr(
+                values=[
+                  Constant(value="You are executing a '"),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='mode')]),
+                    conversion=-1),
+                  Constant(value="' task.")]),
+              Constant(value='Follow the plan precisely.')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='expected', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='handoff'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='expected_deliverables')]),
+              List(ctx=Load())])),
+        If(
+          test=Name(id='expected', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Expected deliverables:')])),
+            For(
+              target=Name(id='e', ctx=Store()),
+              iter=Name(id='expected', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='- '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])]))])]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='lines', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_format_output_schema',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='schema', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='plan', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='output_schema')])),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='schema', ctx=Load()),
+              Name(id='str', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='schema', ctx=Load()))]),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='schema', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='schema', ctx=Load())]))]),
+        Return(
+          value=Constant(value='Respond using concise, structured output (JSON when appropriate).'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_build_prompt_bundle',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='context_view', ctx=Store())],
+          value=Call(
+            func=Name(id='get_prompt_context_view', ctx=Load()),
+            args=[
+              Name(id='state', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='PromptSystem', ctx=Load()),
+              attr='make_prompt',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='framing',
+                value=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='injection_framing'),
+                        Dict()]),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='global_goal'),
+                    Constant(value='')])),
+              keyword(
+                arg='context',
+                value=Call(
+                  func=Name(id='_format_context', ctx=Load()),
+                  args=[
+                    Name(id='context_view', ctx=Load()),
+                    Name(id='plan', ctx=Load())])),
+              keyword(
+                arg='reasoning',
+                value=Call(
+                  func=Name(id='_format_reasoning', ctx=Load()),
+                  args=[
+                    Name(id='plan', ctx=Load())])),
+              keyword(
+                arg='instructions',
+                value=Call(
+                  func=Name(id='_format_instructions', ctx=Load()),
+                  args=[
+                    Name(id='plan', ctx=Load())])),
+              keyword(
+                arg='safety_ctx',
+                value=BoolOp(
+                  op=Or(),
+                  values=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='safety_metadata'),
+                        Dict()]),
+                    Dict()])),
+              keyword(
+                arg='tool_ctx',
+                value=BoolOp(
+                  op=Or(),
+                  values=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='tool_context'),
+                        Dict()]),
+                    Dict()])),
+              keyword(
+                arg='output_schema',
+                value=Call(
+                  func=Name(id='_format_output_schema', ctx=Load()),
+                  args=[
+                    Name(id='plan', ctx=Load())])),
+              keyword(
+                arg='runtime_context',
+                value=Dict(
+                  keys=[
+                    Constant(value='objective'),
+                    Constant(value='mode'),
+                    Constant(value='workflow_id')],
+                  values=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='objective'),
+                        Constant(value='')]),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='mode'),
+                        Constant(value='')]),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='state', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='workflow_id'),
+                        Constant(value='')])]))])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='prompt'),
+              Constant(value='context'),
+              Constant(value='runtime_context')],
+            values=[
+              Name(id='prompt', ctx=Load()),
+              Name(id='context_view', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='objective'),
+                  Constant(value='mode'),
+                  Constant(value='workflow_id')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='objective'),
+                      Constant(value='')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='mode'),
+                      Constant(value='')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='workflow_id'),
+                      Constant(value='')])])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='run_model_for_plan',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=BinOp(
+              left=Name(id='PlanObject', ctx=Load()),
+              op=BitOr(),
+              right=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()))),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='routing_cfg',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='RoutingConfig', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    End-to-end META routing pipeline:\n\n        1. Normalize plan\n        2. Build prompt envelope\n        3. Construct RoutingCriteria (meta-aware)\n        4. Ask L5.ModelRouter for model selection\n        5. Simulate model invocation\n        6. Return structured routing output\n\n    DOES NOT mutate state.\n    DOES NOT perform safety/policy.\n    ')),
+        Assign(
+          targets=[
+            Name(id='plan_dict', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='plan', ctx=Load()),
+                Name(id='PlanObject', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='to_dict',
+                ctx=Load())),
+            orelse=Call(
+              func=Name(id='dict', ctx=Load()),
+              args=[
+                Name(id='plan', ctx=Load())]))),
+        Assign(
+          targets=[
+            Name(id='prompt_bundle', ctx=Store())],
+          value=Call(
+            func=Name(id='_build_prompt_bundle', ctx=Load()),
+            args=[
+              Name(id='plan_dict', ctx=Load()),
+              Name(id='state', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='routing_cfg', ctx=Load()),
+              Call(
+                func=Name(id='RoutingConfig', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='criteria', ctx=Store())],
+          value=Call(
+            func=Name(id='_build_routing_criteria', ctx=Load()),
+            args=[
+              Name(id='plan_dict', ctx=Load()),
+              Name(id='state', ctx=Load()),
+              Name(id='cfg', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='router', ctx=Store())],
+          value=Call(
+            func=Name(id='ModelRouter', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='decision', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='router', ctx=Load()),
+              attr='select',
+              ctx=Load()),
+            args=[
+              Name(id='criteria', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='routing_info', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='selected_model'),
+              Constant(value='endpoint'),
+              Constant(value='rationale'),
+              Constant(value='task_type'),
+              Constant(value='complexity'),
+              Constant(value='risk_level')],
+            values=[
+              Attribute(
+                value=Name(id='decision', ctx=Load()),
+                attr='model',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='decision', ctx=Load()),
+                attr='endpoint',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='decision', ctx=Load()),
+                attr='rationale',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='criteria', ctx=Load()),
+                attr='task_type',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='criteria', ctx=Load()),
+                attr='complexity',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='criteria', ctx=Load()),
+                attr='risk_level',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='model_output', ctx=Store())],
+          value=Call(
+            func=Name(id='invoke_model', ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='prompt_bundle', ctx=Load()),
+                slice=Constant(value='prompt'),
+                ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='model'),
+                  Constant(value='endpoint'),
+                  Constant(value='route')],
+                values=[
+                  Attribute(
+                    value=Name(id='decision', ctx=Load()),
+                    attr='model',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='decision', ctx=Load()),
+                    attr='endpoint',
+                    ctx=Load()),
+                  Name(id='routing_info', ctx=Load())])])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='prompt'),
+              Constant(value='runtime_context'),
+              Constant(value='model_output'),
+              Constant(value='routing')],
+            values=[
+              Subscript(
+                value=Name(id='prompt_bundle', ctx=Load()),
+                slice=Constant(value='prompt'),
+                ctx=Load()),
+              Subscript(
+                value=Name(id='prompt_bundle', ctx=Load()),
+                slice=Constant(value='runtime_context'),
+                ctx=Load()),
+              Name(id='model_output', ctx=Load()),
+              Name(id='routing_info', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

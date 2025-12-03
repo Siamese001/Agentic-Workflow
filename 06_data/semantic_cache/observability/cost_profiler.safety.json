@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 179,
+  "generated_at": 1764728350.4359117,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\diagnostics\\Internal_debugging_health_surfaces\\router-microagent-layer\\aggregate-phase-group\\state-management-ops\\general-operations-ops\\cost_profiler.py"
+}

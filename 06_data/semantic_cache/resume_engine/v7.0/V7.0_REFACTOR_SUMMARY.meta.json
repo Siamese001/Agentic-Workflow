@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v7.0\\Testing\\V7.0_REFACTOR_SUMMARY.md",
+    "rel_path": "V7.0_REFACTOR_SUMMARY.md",
+    "root_name": "resume_engine/v7.0",
+    "file_hash": "ba3057cfec9382ff63c5b526ac54bcec917e817404ddf7a12855b7a51ad124fd",
+    "file_size": 10288,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728327.799485
+}

@@ -1,0 +1,343 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRules engine for résumé processing safety policy enforcement.\n\nProvides deterministic rule evaluation for comprehensive résumé improvement workflows.\n')),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='decisions',
+      names=[
+        alias(name='RuleMatch'),
+        alias(name='RulesEngineResult'),
+        alias(name='aggregate_severity')],
+      level=1),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='PolicyRule'),
+        alias(name='SafetyContext')],
+      level=1),
+    Assign(
+      targets=[
+        Name(id='_PII_REGEXES', ctx=Store())],
+      value=List(
+        elts=[
+          Call(
+            func=Attribute(
+              value=Name(id='re', ctx=Load()),
+              attr='compile',
+              ctx=Load()),
+            args=[
+              Constant(value='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}'),
+              Attribute(
+                value=Name(id='re', ctx=Load()),
+                attr='IGNORECASE',
+                ctx=Load())]),
+          Call(
+            func=Attribute(
+              value=Name(id='re', ctx=Load()),
+              attr='compile',
+              ctx=Load()),
+            args=[
+              Constant(value='(?:(?:\\+?\\d{1,3})?[\\s-]?)?(?:\\d{3}[\\s-]?\\d{3}[\\s-]?\\d{4})')])],
+        ctx=Load())),
+    FunctionDef(
+      name='_detect_pii',
+      args=arguments(
+        args=[
+          arg(
+            arg='text',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Detects personally identifiable information in résumé processing text.\n\n    Ensures privacy protection for comprehensive résumé enhancement workflows.\n    ')),
+        For(
+          target=Name(id='rx', ctx=Store()),
+          iter=Name(id='_PII_REGEXES', ctx=Load()),
+          body=[
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='rx', ctx=Load()),
+                  attr='search',
+                  ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load())]),
+              body=[
+                Return(
+                  value=Constant(value=True))])]),
+        Return(
+          value=Constant(value=False))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='evaluate_rules',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Name(id='SafetyContext', ctx=Load())),
+          arg(
+            arg='rules',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='PolicyRule', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Evaluates safety rules against résumé processing context.\n\n    Provides systematic policy enforcement for comprehensive résumé improvement operations.\n    ')),
+        AnnAssign(
+          target=Name(id='matches', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RuleMatch', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='text', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Attribute(
+                value=Name(id='context', ctx=Load()),
+                attr='input_text',
+                ctx=Load()),
+              Constant(value='')])),
+        Assign(
+          targets=[
+            Name(id='has_pii_builtin', ctx=Store())],
+          value=Call(
+            func=Name(id='_detect_pii', ctx=Load()),
+            args=[
+              Name(id='text', ctx=Load())])),
+        For(
+          target=Name(id='rule', ctx=Store()),
+          iter=Name(id='rules', ctx=Load()),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='rule', ctx=Load()),
+                  attr='enabled',
+                  ctx=Load())),
+              body=[
+                Continue()]),
+            Assign(
+              targets=[
+                Name(id='hit', ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Name(id='details', ctx=Store())],
+              value=Dict()),
+            If(
+              test=Attribute(
+                value=Name(id='rule', ctx=Load()),
+                attr='pattern',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='rx', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='compile',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='rule', ctx=Load()),
+                        attr='pattern',
+                        ctx=Load()),
+                      BinOp(
+                        left=Attribute(
+                          value=Name(id='re', ctx=Load()),
+                          attr='IGNORECASE',
+                          ctx=Load()),
+                        op=BitOr(),
+                        right=Attribute(
+                          value=Name(id='re', ctx=Load()),
+                          attr='MULTILINE',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='m', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rx', ctx=Load()),
+                      attr='search',
+                      ctx=Load()),
+                    args=[
+                      Name(id='text', ctx=Load())])),
+                If(
+                  test=Name(id='m', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='hit', ctx=Store())],
+                      value=Constant(value=True)),
+                    Assign(
+                      targets=[
+                        Name(id='snippet', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='m', ctx=Load()),
+                          attr='group',
+                          ctx=Load()),
+                        args=[
+                          Constant(value=0)])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='details', ctx=Load()),
+                          slice=Constant(value='matched_snippet'),
+                          ctx=Store())],
+                      value=Subscript(
+                        value=Name(id='snippet', ctx=Load()),
+                        slice=Slice(
+                          upper=Constant(value=128)),
+                        ctx=Load()))])]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Attribute(
+                    value=Name(id='rule', ctx=Load()),
+                    attr='tool_name',
+                    ctx=Load()),
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='rule', ctx=Load()),
+                      attr='tool_name',
+                      ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      BoolOp(
+                        op=Or(),
+                        values=[
+                          Attribute(
+                            value=Name(id='context', ctx=Load()),
+                            attr='tools',
+                            ctx=Load()),
+                          List(ctx=Load())])])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='hit', ctx=Store())],
+                  value=Constant(value=True)),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='details', ctx=Load()),
+                      slice=Constant(value='tool'),
+                      ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='rule', ctx=Load()),
+                    attr='tool_name',
+                    ctx=Load()))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='hit', ctx=Load())),
+              body=[
+                Continue()]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='matches', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='RuleMatch', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='rule_id',
+                        value=Attribute(
+                          value=Name(id='rule', ctx=Load()),
+                          attr='id',
+                          ctx=Load())),
+                      keyword(
+                        arg='category',
+                        value=Attribute(
+                          value=Name(id='rule', ctx=Load()),
+                          attr='category',
+                          ctx=Load())),
+                      keyword(
+                        arg='severity',
+                        value=Attribute(
+                          value=Name(id='rule', ctx=Load()),
+                          attr='severity',
+                          ctx=Load())),
+                      keyword(
+                        arg='is_pii',
+                        value=Attribute(
+                          value=Name(id='rule', ctx=Load()),
+                          attr='is_pii_rule',
+                          ctx=Load())),
+                      keyword(
+                        arg='details',
+                        value=Name(id='details', ctx=Load()))])]))]),
+        Assign(
+          targets=[
+            Name(id='all_severities', ctx=Store())],
+          value=ListComp(
+            elt=Attribute(
+              value=Name(id='m', ctx=Load()),
+              attr='severity',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='m', ctx=Store()),
+                iter=Name(id='matches', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='max_sev', ctx=Store())],
+          value=Call(
+            func=Name(id='aggregate_severity', ctx=Load()),
+            args=[
+              Name(id='all_severities', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='has_pii', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='has_pii_builtin', ctx=Load()),
+              Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Attribute(
+                      value=Name(id='m', ctx=Load()),
+                      attr='is_pii',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='m', ctx=Store()),
+                        iter=Name(id='matches', ctx=Load()),
+                        is_async=0)])])])),
+        Return(
+          value=Call(
+            func=Name(id='RulesEngineResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='matches',
+                value=Name(id='matches', ctx=Load())),
+              keyword(
+                arg='max_severity',
+                value=Name(id='max_sev', ctx=Load())),
+              keyword(
+                arg='has_pii',
+                value=Name(id='has_pii', ctx=Load()))]))],
+      returns=Name(id='RulesEngineResult', ctx=Load()))])

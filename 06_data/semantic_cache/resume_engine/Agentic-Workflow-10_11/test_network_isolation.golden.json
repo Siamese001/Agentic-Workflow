@@ -1,0 +1,6 @@
+{
+  "golden_content": "from infra.sandbox.networking import default_network_policy, is_destination_allowed\n\n\ndef test_default_network_policy_denies_all():\n    policy = default_network_policy()\n    assert is_destination_allowed(policy, \"example.com\") is False\n\n\ndef test_allowlist_allows_specific_host():\n    policy = default_network_policy()\n    policy[\"allow_network\"] = True\n    policy[\"allowlist\"] = [\"example.com\"]\n\n    assert is_destination_allowed(policy, \"example.com\") is True\n    assert is_destination_allowed(policy, \"other.com\") is False\n\n\n\n\n\n\n",
+  "full_hash": "d6b4a731872c59d0f57420853c38b4207baafffa2219773b22524d0c50bcb5df",
+  "generated_at": 1764728227.486497,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_network_isolation.py"
+}

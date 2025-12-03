@@ -1,0 +1,3150 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nPhase 0.5 Semantic Cache Rebuild - Main Execution Script\n\nOrchestrates the complete semantic cache rebuild process for both Resume Engine (RG)\nand Outreach Engine (LIC) archives with strict engine separation and zero-loss guarantee.\n\nUsage:\n    python scripts/run_phase_0_5_semantic_cache.py [--dry-run] [--validate-only] [--engine RG|LIC]\n')),
+    Import(
+      names=[
+        alias(name='argparse')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='time')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Any')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='project_root', ctx=Store())],
+      value=Attribute(
+        value=Attribute(
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Name(id='__file__', ctx=Load())]),
+          attr='parent',
+          ctx=Load()),
+        attr='parent',
+        ctx=Load())),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='schemas'))])])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              BinOp(
+                left=Name(id='project_root', ctx=Load()),
+                op=Div(),
+                right=Constant(value='runtime'))])])),
+    ImportFrom(
+      module='semantic_lineage',
+      names=[
+        alias(name='EngineType'),
+        alias(name='GlobalCacheReport')],
+      level=0),
+    ImportFrom(
+      module='semantic_scanner',
+      names=[
+        alias(name='SemanticScanner'),
+        alias(name='ScanConfiguration')],
+      level=0),
+    ClassDef(
+      name='Phase05Orchestrator',
+      body=[
+        Expr(
+          value=Constant(value='Main orchestrator for Phase 0.5 semantic cache rebuild')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=Name(id='ScanConfiguration', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Name(id='config', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='scanner',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SemanticScanner', ctx=Load()),
+                args=[
+                  Name(id='config', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_setup_logging',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='_setup_logging',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Setup comprehensive logging')),
+            Assign(
+              targets=[
+                Name(id='log_dir', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='output_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='logs'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='log_dir', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='parents',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='exist_ok',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='timestamp', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())),
+                  attr='strftime',
+                  ctx=Load()),
+                args=[
+                  Constant(value='%Y%m%d_%H%M%S')])),
+            Assign(
+              targets=[
+                Name(id='log_file', ctx=Store())],
+              value=BinOp(
+                left=Name(id='log_dir', ctx=Load()),
+                op=Div(),
+                right=JoinedStr(
+                  values=[
+                    Constant(value='phase_0_5_rebuild_'),
+                    FormattedValue(
+                      value=Name(id='timestamp', ctx=Load()),
+                      conversion=-1),
+                    Constant(value='.log')]))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='basicConfig',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='level',
+                    value=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='INFO',
+                      ctx=Load())),
+                  keyword(
+                    arg='format',
+                    value=Constant(value='%(asctime)s - %(name)s - %(levelname)s - %(message)s')),
+                  keyword(
+                    arg='handlers',
+                    value=List(
+                      elts=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='logging', ctx=Load()),
+                            attr='FileHandler',
+                            ctx=Load()),
+                          args=[
+                            Name(id='log_file', ctx=Load())]),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='logging', ctx=Load()),
+                            attr='StreamHandler',
+                            ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='sys', ctx=Load()),
+                              attr='stdout',
+                              ctx=Load())])],
+                      ctx=Load()))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Phase05Orchestrator')]))],
+          returns=Attribute(
+            value=Name(id='logging', ctx=Load()),
+            attr='Logger',
+            ctx=Load())),
+        FunctionDef(
+          name='run_dry_run',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Perform dry-run validation of all archive paths and file counts')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Starting dry-run validation')])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='validation_errors'),
+                  Constant(value='archive_summary'),
+                  Constant(value='total_files_discovered'),
+                  Constant(value='validation_passed')],
+                values=[
+                  List(ctx=Load()),
+                  Dict(),
+                  Constant(value=0),
+                  Constant(value=True)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Validating Resume Engine (RG) archives')])),
+            Assign(
+              targets=[
+                Name(id='rg_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_archives',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='resume_archives',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='EngineType', ctx=Load()),
+                    attr='RESUME_ENGINE',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='archive_summary'),
+                    ctx=Load()),
+                  slice=Constant(value='resume_engine'),
+                  ctx=Store())],
+              value=Name(id='rg_results', ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Validating Outreach Engine (LIC) archives')])),
+            Assign(
+              targets=[
+                Name(id='lic_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_archives',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='outreach_archives',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='EngineType', ctx=Load()),
+                    attr='OUTREACH_ENGINE',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='archive_summary'),
+                    ctx=Load()),
+                  slice=Constant(value='outreach_engine'),
+                  ctx=Store())],
+              value=Name(id='lic_results', ctx=Load())),
+            For(
+              target=Name(id='engine_results', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='archive_summary'),
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                AugAssign(
+                  target=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='total_files_discovered'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Subscript(
+                    value=Name(id='engine_results', ctx=Load()),
+                    slice=Constant(value='total_files'),
+                    ctx=Load())),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='validation_errors'),
+                        ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='engine_results', ctx=Load()),
+                        slice=Constant(value='errors'),
+                        ctx=Load())]))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='results', ctx=Load()),
+                  slice=Constant(value='validation_passed'),
+                  ctx=Store())],
+              value=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='results', ctx=Load()),
+                      slice=Constant(value='validation_errors'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Dry-run completed: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='total_files_discovered'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' files discovered')])])),
+            If(
+              test=Subscript(
+                value=Name(id='results', ctx=Load()),
+                slice=Constant(value='validation_errors'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Found '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Subscript(
+                                  value=Name(id='results', ctx=Load()),
+                                  slice=Constant(value='validation_errors'),
+                                  ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=' validation errors')])]))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_validate_archives',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='archive_paths',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='engine',
+                annotation=Name(id='EngineType', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate a list of archives for a specific engine')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='engine'),
+                  Constant(value='total_archives'),
+                  Constant(value='valid_archives'),
+                  Constant(value='total_files'),
+                  Constant(value='archive_details'),
+                  Constant(value='errors')],
+                values=[
+                  Attribute(
+                    value=Name(id='engine', ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='archive_paths', ctx=Load())]),
+                  Constant(value=0),
+                  Constant(value=0),
+                  Dict(),
+                  List(ctx=Load())])),
+            For(
+              target=Name(id='archive_path', ctx=Store()),
+              iter=Name(id='archive_paths', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='archive_name', ctx=Store())],
+                  value=Attribute(
+                    value=Call(
+                      func=Name(id='Path', ctx=Load()),
+                      args=[
+                        Name(id='archive_path', ctx=Load())]),
+                    attr='name',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='archive_result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_validate_single_archive',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='Path', ctx=Load()),
+                        args=[
+                          Name(id='archive_path', ctx=Load())]),
+                      Name(id='engine', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='archive_details'),
+                        ctx=Load()),
+                      slice=Name(id='archive_name', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='archive_result', ctx=Load())),
+                AugAssign(
+                  target=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='total_files'),
+                    ctx=Store()),
+                  op=Add(),
+                  value=Subscript(
+                    value=Name(id='archive_result', ctx=Load()),
+                    slice=Constant(value='file_count'),
+                    ctx=Load())),
+                If(
+                  test=Subscript(
+                    value=Name(id='archive_result', ctx=Load()),
+                    slice=Constant(value='valid'),
+                    ctx=Load()),
+                  body=[
+                    AugAssign(
+                      target=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='valid_archives'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='results', ctx=Load()),
+                            slice=Constant(value='errors'),
+                            ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='archive_result', ctx=Load()),
+                            slice=Constant(value='errors'),
+                            ctx=Load())]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='engine', ctx=Load()),
+                          attr='value',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' validation: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='valid_archives'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='/'),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='total_archives'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' valid, '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='total_files'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' files')])])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_validate_single_archive',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='archive_path',
+                annotation=Name(id='Path', ctx=Load())),
+              arg(
+                arg='engine',
+                annotation=Name(id='EngineType', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate a single archive directory')),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='path'),
+                  Constant(value='valid'),
+                  Constant(value='file_count'),
+                  Constant(value='errors'),
+                  Constant(value='sample_files')],
+                values=[
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Name(id='archive_path', ctx=Load())]),
+                  Constant(value=True),
+                  Constant(value=0),
+                  List(ctx=Load()),
+                  List(ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='archive_path', ctx=Load()),
+                    attr='exists',
+                    ctx=Load()))),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='valid'),
+                      ctx=Store())],
+                  value=Constant(value=False)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='result', ctx=Load()),
+                        slice=Constant(value='errors'),
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Archive directory does not exist: '),
+                          FormattedValue(
+                            value=Name(id='archive_path', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Name(id='result', ctx=Load()))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='archive_path', ctx=Load()),
+                    attr='is_dir',
+                    ctx=Load()))),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='valid'),
+                      ctx=Store())],
+                  value=Constant(value=False)),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='result', ctx=Load()),
+                        slice=Constant(value='errors'),
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Path is not a directory: '),
+                          FormattedValue(
+                            value=Name(id='archive_path', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Name(id='result', ctx=Load()))]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='file_count', ctx=Store())],
+                  value=Constant(value=0)),
+                Assign(
+                  targets=[
+                    Name(id='sample_files', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='file_path', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='archive_path', ctx=Load()),
+                      attr='rglob',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='*')]),
+                  body=[
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='file_path', ctx=Load()),
+                          attr='is_file',
+                          ctx=Load())),
+                      body=[
+                        AugAssign(
+                          target=Name(id='file_count', ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1)),
+                        If(
+                          test=Compare(
+                            left=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='sample_files', ctx=Load())]),
+                            ops=[
+                              Lt()],
+                            comparators=[
+                              Constant(value=5)]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='relative_path', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='file_path', ctx=Load()),
+                                  attr='relative_to',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='archive_path', ctx=Load())])),
+                            Assign(
+                              targets=[
+                                Name(id='depth', ctx=Store())],
+                              value=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='relative_path', ctx=Load()),
+                                    attr='parts',
+                                    ctx=Load())])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='sample_files', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='file'),
+                                      Constant(value='size'),
+                                      Constant(value='depth')],
+                                    values=[
+                                      Call(
+                                        func=Name(id='str', ctx=Load()),
+                                        args=[
+                                          Name(id='relative_path', ctx=Load())]),
+                                      Attribute(
+                                        value=Call(
+                                          func=Attribute(
+                                            value=Name(id='file_path', ctx=Load()),
+                                            attr='stat',
+                                            ctx=Load())),
+                                        attr='st_size',
+                                        ctx=Load()),
+                                      Name(id='depth', ctx=Load())])]))]),
+                        Assign(
+                          targets=[
+                            Name(id='relative_path', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='file_path', ctx=Load()),
+                              attr='relative_to',
+                              ctx=Load()),
+                            args=[
+                              Name(id='archive_path', ctx=Load())])),
+                        Assign(
+                          targets=[
+                            Name(id='depth', ctx=Store())],
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='relative_path', ctx=Load()),
+                                attr='parts',
+                                ctx=Load())])),
+                        If(
+                          test=Compare(
+                            left=Name(id='depth', ctx=Load()),
+                            ops=[
+                              Gt()],
+                            comparators=[
+                              Attribute(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='config',
+                                  ctx=Load()),
+                                attr='max_depth',
+                                ctx=Load())]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Subscript(
+                                    value=Name(id='result', ctx=Load()),
+                                    slice=Constant(value='errors'),
+                                    ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='File exceeds max depth '),
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Attribute(
+                                            value=Name(id='self', ctx=Load()),
+                                            attr='config',
+                                            ctx=Load()),
+                                          attr='max_depth',
+                                          ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': '),
+                                      FormattedValue(
+                                        value=Name(id='relative_path', ctx=Load()),
+                                        conversion=-1)])]))])])]),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='file_count'),
+                      ctx=Store())],
+                  value=Name(id='file_count', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='sample_files'),
+                      ctx=Store())],
+                  value=Name(id='sample_files', ctx=Load())),
+                If(
+                  test=Compare(
+                    left=Name(id='file_count', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='valid'),
+                          ctx=Store())],
+                      value=Constant(value=False)),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='errors'),
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='No files found in archive: '),
+                              FormattedValue(
+                                value=Name(id='archive_path', ctx=Load()),
+                                conversion=-1)])]))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='valid'),
+                          ctx=Store())],
+                      value=Constant(value=False)),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='errors'),
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Error scanning archive '),
+                              FormattedValue(
+                                value=Name(id='archive_path', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])]),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='run_full_rebuild',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='engine_filter',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='EngineType', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Execute the full semantic cache rebuild process')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Starting full semantic cache rebuild')])),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='engine_filter', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='EngineType', ctx=Load()),
+                        attr='RESUME_ENGINE',
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='Engine filter applied: Resume Engine (RG) only')])),
+                    Assign(
+                      targets=[
+                        Name(id='original_outreach', ctx=Store())],
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='outreach_archives',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='config',
+                            ctx=Load()),
+                          attr='outreach_archives',
+                          ctx=Store())],
+                      value=List(ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='global_report', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='scanner',
+                            ctx=Load()),
+                          attr='scan_all_archives',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='config',
+                            ctx=Load()),
+                          attr='outreach_archives',
+                          ctx=Store())],
+                      value=Name(id='original_outreach', ctx=Load()))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='engine_filter', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='EngineType', ctx=Load()),
+                            attr='OUTREACH_ENGINE',
+                            ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='logger',
+                                ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='Engine filter applied: Outreach Engine (LIC) only')])),
+                        Assign(
+                          targets=[
+                            Name(id='original_resume', ctx=Store())],
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='resume_archives',
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='config',
+                                ctx=Load()),
+                              attr='resume_archives',
+                              ctx=Store())],
+                          value=List(ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='global_report', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='scanner',
+                                ctx=Load()),
+                              attr='scan_all_archives',
+                              ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='config',
+                                ctx=Load()),
+                              attr='resume_archives',
+                              ctx=Store())],
+                          value=Name(id='original_resume', ctx=Load()))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='logger',
+                                ctx=Load()),
+                              attr='info',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='Processing both Resume Engine (RG) and Outreach Engine (LIC)')])),
+                        Assign(
+                          targets=[
+                            Name(id='global_report', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='scanner',
+                                ctx=Load()),
+                              attr='scan_all_archives',
+                              ctx=Load())))])]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_save_detailed_reports',
+                      ctx=Load()),
+                    args=[
+                      Name(id='global_report', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_validate_completeness',
+                      ctx=Load()),
+                    args=[
+                      Name(id='global_report', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='end_time', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='time', ctx=Load()),
+                      attr='time',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='duration', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='end_time', ctx=Load()),
+                    op=Sub(),
+                    right=Name(id='start_time', ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Semantic cache rebuild completed in '),
+                          FormattedValue(
+                            value=Name(id='duration', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value=' seconds')])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Overall completeness: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Attribute(
+                                value=Name(id='global_report', ctx=Load()),
+                                attr='completeness_report',
+                                ctx=Load()),
+                              slice=Constant(value='overall_completeness'),
+                              ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2%')]))])])),
+                Return(
+                  value=Name(id='global_report', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='logger',
+                            ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Semantic cache rebuild failed: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])])),
+                    Raise()])])],
+          returns=Name(id='GlobalCacheReport', ctx=Load())),
+        FunctionDef(
+          name='_save_detailed_reports',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='global_report',
+                annotation=Name(id='GlobalCacheReport', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Save detailed reports for analysis')),
+            Assign(
+              targets=[
+                Name(id='reports_dir', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='output_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='reports'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='reports_dir', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='parents',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='exist_ok',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='timestamp', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())),
+                  attr='strftime',
+                  ctx=Load()),
+                args=[
+                  Constant(value='%Y%m%d_%H%M%S')])),
+            Assign(
+              targets=[
+                Name(id='global_report_path', ctx=Store())],
+              value=BinOp(
+                left=Name(id='reports_dir', ctx=Load()),
+                op=Div(),
+                right=JoinedStr(
+                  values=[
+                    Constant(value='global_report_'),
+                    FormattedValue(
+                      value=Name(id='timestamp', ctx=Load()),
+                      conversion=-1),
+                    Constant(value='.json')]))),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='global_report_path', ctx=Load()),
+                      Constant(value='w')],
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='global_report', ctx=Load()),
+                          attr='to_dict',
+                          ctx=Load())),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2)),
+                      keyword(
+                        arg='default',
+                        value=Name(id='str', ctx=Load()))]))]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='engine_name', ctx=Store()),
+                  Name(id='manifests', ctx=Store())],
+                ctx=Store()),
+              iter=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='resume_engine'),
+                      Attribute(
+                        value=Name(id='global_report', ctx=Load()),
+                        attr='resume_engine_manifests',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='outreach_engine'),
+                      Attribute(
+                        value=Name(id='global_report', ctx=Load()),
+                        attr='outreach_engine_manifests',
+                        ctx=Load())],
+                    ctx=Load())],
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='engine_report', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='engine'),
+                      Constant(value='archives'),
+                      Constant(value='total_archives'),
+                      Constant(value='total_files'),
+                      Constant(value='average_completeness')],
+                    values=[
+                      Name(id='engine_name', ctx=Load()),
+                      DictComp(
+                        key=Name(id='version', ctx=Load()),
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='manifest', ctx=Load()),
+                            attr='to_dict',
+                            ctx=Load())),
+                        generators=[
+                          comprehension(
+                            target=Tuple(
+                              elts=[
+                                Name(id='version', ctx=Store()),
+                                Name(id='manifest', ctx=Store())],
+                              ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Name(id='manifests', ctx=Load()),
+                                attr='items',
+                                ctx=Load())),
+                            is_async=0)]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='manifests', ctx=Load())]),
+                      Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Attribute(
+                              value=Name(id='m', ctx=Load()),
+                              attr='processed_files',
+                              ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='m', ctx=Store()),
+                                iter=Call(
+                                  func=Attribute(
+                                    value=Name(id='manifests', ctx=Load()),
+                                    attr='values',
+                                    ctx=Load())),
+                                is_async=0)])]),
+                      IfExp(
+                        test=Name(id='manifests', ctx=Load()),
+                        body=BinOp(
+                          left=Call(
+                            func=Name(id='sum', ctx=Load()),
+                            args=[
+                              GeneratorExp(
+                                elt=Attribute(
+                                  value=Name(id='m', ctx=Load()),
+                                  attr='completeness_score',
+                                  ctx=Load()),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='m', ctx=Store()),
+                                    iter=Call(
+                                      func=Attribute(
+                                        value=Name(id='manifests', ctx=Load()),
+                                        attr='values',
+                                        ctx=Load())),
+                                    is_async=0)])]),
+                          op=Div(),
+                          right=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='manifests', ctx=Load())])),
+                        orelse=Constant(value=0.0))])),
+                Assign(
+                  targets=[
+                    Name(id='engine_report_path', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='reports_dir', ctx=Load()),
+                    op=Div(),
+                    right=JoinedStr(
+                      values=[
+                        FormattedValue(
+                          value=Name(id='engine_name', ctx=Load()),
+                          conversion=-1),
+                        Constant(value='_report_'),
+                        FormattedValue(
+                          value=Name(id='timestamp', ctx=Load()),
+                          conversion=-1),
+                        Constant(value='.json')]))),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='engine_report_path', ctx=Load()),
+                          Constant(value='w')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Name(id='engine_report', ctx=Load()),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='default',
+                            value=Name(id='str', ctx=Load()))]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Detailed reports saved to: '),
+                      FormattedValue(
+                        value=Name(id='reports_dir', ctx=Load()),
+                        conversion=-1)])]))]),
+        FunctionDef(
+          name='_validate_completeness',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='global_report',
+                annotation=Name(id='GlobalCacheReport', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Validate completeness and report any issues')),
+            Assign(
+              targets=[
+                Name(id='completeness', ctx=Store())],
+              value=Attribute(
+                value=Name(id='global_report', ctx=Load()),
+                attr='completeness_report',
+                ctx=Load())),
+            If(
+              test=Subscript(
+                value=Name(id='completeness', ctx=Load()),
+                slice=Constant(value='missing_archives'),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Missing archives: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='completeness', ctx=Load()),
+                              slice=Constant(value='missing_archives'),
+                              ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='completeness', ctx=Load()),
+                  slice=Constant(value='overall_completeness'),
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.95)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Low completeness score: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='completeness', ctx=Load()),
+                              slice=Constant(value='overall_completeness'),
+                              ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2%')]))])]))]),
+            Assign(
+              targets=[
+                Name(id='total_failed', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Name(id='manifests', ctx=Store()),
+              iter=List(
+                elts=[
+                  Attribute(
+                    value=Name(id='global_report', ctx=Load()),
+                    attr='resume_engine_manifests',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='global_report', ctx=Load()),
+                    attr='outreach_engine_manifests',
+                    ctx=Load())],
+                ctx=Load()),
+              body=[
+                For(
+                  target=Name(id='manifest', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='manifests', ctx=Load()),
+                      attr='values',
+                      ctx=Load())),
+                  body=[
+                    AugAssign(
+                      target=Name(id='total_failed', ctx=Store()),
+                      op=Add(),
+                      value=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='manifest', ctx=Load()),
+                            attr='failed_files',
+                            ctx=Load())]))])]),
+            If(
+              test=Compare(
+                left=Name(id='total_failed', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Total failed files: '),
+                          FormattedValue(
+                            value=Name(id='total_failed', ctx=Load()),
+                            conversion=-1)])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_output_structure',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='_validate_output_structure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Validate that all required output directories and files exist')),
+            Assign(
+              targets=[
+                Name(id='required_dirs', ctx=Store())],
+              value=List(
+                elts=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='output_root',
+                    ctx=Load()),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='resume_engine')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='outreach_engine')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='ast')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='embeddings')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='meta')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='diffs')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='safety')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='golden')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='integrity'))],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='missing_dirs', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='directory', ctx=Store()),
+              iter=Name(id='required_dirs', ctx=Load()),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='directory', ctx=Load()),
+                        attr='exists',
+                        ctx=Load()))),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='missing_dirs', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='directory', ctx=Load())])]))])]),
+            If(
+              test=Name(id='missing_dirs', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Missing output directories: '),
+                          FormattedValue(
+                            value=Name(id='missing_dirs', ctx=Load()),
+                            conversion=-1)])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Output directory structure validation passed')]))])]),
+        FunctionDef(
+          name='run_validation_only',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Run validation on existing semantic cache')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Running validation on existing semantic cache')])),
+            Assign(
+              targets=[
+                Name(id='validation_results', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='cache_exists'),
+                  Constant(value='structure_valid'),
+                  Constant(value='engine_separation_valid'),
+                  Constant(value='artifact_integrity'),
+                  Constant(value='validation_passed')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='output_root',
+                        ctx=Load()),
+                      attr='exists',
+                      ctx=Load())),
+                  Constant(value=False),
+                  Constant(value=False),
+                  Dict(),
+                  Constant(value=False)])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Subscript(
+                  value=Name(id='validation_results', ctx=Load()),
+                  slice=Constant(value='cache_exists'),
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Semantic cache directory does not exist')])),
+                Return(
+                  value=Name(id='validation_results', ctx=Load()))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='validation_results', ctx=Load()),
+                  slice=Constant(value='structure_valid'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_output_structure',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='validation_results', ctx=Load()),
+                  slice=Constant(value='engine_separation_valid'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_engine_separation',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='validation_results', ctx=Load()),
+                  slice=Constant(value='artifact_integrity'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_validate_artifact_integrity',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='validation_results', ctx=Load()),
+                  slice=Constant(value='validation_passed'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Subscript(
+                        value=Name(id='validation_results', ctx=Load()),
+                        slice=Constant(value='structure_valid'),
+                        ctx=Load()),
+                      Subscript(
+                        value=Name(id='validation_results', ctx=Load()),
+                        slice=Constant(value='engine_separation_valid'),
+                        ctx=Load()),
+                      Subscript(
+                        value=Subscript(
+                          value=Name(id='validation_results', ctx=Load()),
+                          slice=Constant(value='artifact_integrity'),
+                          ctx=Load()),
+                        slice=Constant(value='overall_valid'),
+                        ctx=Load())],
+                    ctx=Load())])),
+            Return(
+              value=Name(id='validation_results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_validate_engine_separation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Validate that RG and LIC engines are properly separated')),
+            Assign(
+              targets=[
+                Name(id='rg_dir', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='output_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='resume_engine'))),
+            Assign(
+              targets=[
+                Name(id='lic_dir', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  attr='output_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='outreach_engine'))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=BoolOp(
+                  op=And(),
+                  values=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='rg_dir', ctx=Load()),
+                        attr='exists',
+                        ctx=Load())),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='lic_dir', ctx=Load()),
+                        attr='exists',
+                        ctx=Load()))])),
+              body=[
+                Return(
+                  value=Constant(value=False))]),
+            Assign(
+              targets=[
+                Name(id='rg_versions', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Attribute(
+                      value=Name(id='d', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='d', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='rg_dir', ctx=Load()),
+                            attr='iterdir',
+                            ctx=Load())),
+                        ifs=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='d', ctx=Load()),
+                              attr='is_dir',
+                              ctx=Load()))],
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='lic_versions', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Attribute(
+                      value=Name(id='d', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='d', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='lic_dir', ctx=Load()),
+                            attr='iterdir',
+                            ctx=Load())),
+                        ifs=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='d', ctx=Load()),
+                              attr='is_dir',
+                              ctx=Load()))],
+                        is_async=0)])])),
+            Assign(
+              targets=[
+                Name(id='overlap', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='rg_versions', ctx=Load()),
+                  attr='intersection',
+                  ctx=Load()),
+                args=[
+                  Name(id='lic_versions', ctx=Load())])),
+            If(
+              test=Name(id='overlap', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Engine separation violation: overlapping versions '),
+                          FormattedValue(
+                            value=Name(id='overlap', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=False))]),
+            Return(
+              value=Constant(value=True))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='_validate_artifact_integrity',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Validate integrity of cached artifacts')),
+            Assign(
+              targets=[
+                Name(id='integrity_results', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='total_artifacts'),
+                  Constant(value='valid_artifacts'),
+                  Constant(value='corrupted_artifacts'),
+                  Constant(value='overall_valid')],
+                values=[
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=0),
+                  Constant(value=True)])),
+            For(
+              target=Name(id='engine_dir', ctx=Store()),
+              iter=List(
+                elts=[
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='resume_engine')),
+                  BinOp(
+                    left=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='output_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='outreach_engine'))],
+                ctx=Load()),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Attribute(
+                        value=Name(id='engine_dir', ctx=Load()),
+                        attr='exists',
+                        ctx=Load()))),
+                  body=[
+                    Continue()]),
+                For(
+                  target=Name(id='version_dir', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='engine_dir', ctx=Load()),
+                      attr='iterdir',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Call(
+                          func=Attribute(
+                            value=Name(id='version_dir', ctx=Load()),
+                            attr='is_dir',
+                            ctx=Load()))),
+                      body=[
+                        Continue()]),
+                    For(
+                      target=Name(id='artifact_file', ctx=Store()),
+                      iter=Call(
+                        func=Attribute(
+                          value=Name(id='version_dir', ctx=Load()),
+                          attr='glob',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='*.json')]),
+                      body=[
+                        AugAssign(
+                          target=Subscript(
+                            value=Name(id='integrity_results', ctx=Load()),
+                            slice=Constant(value='total_artifacts'),
+                            ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1)),
+                        Try(
+                          body=[
+                            With(
+                              items=[
+                                withitem(
+                                  context_expr=Call(
+                                    func=Name(id='open', ctx=Load()),
+                                    args=[
+                                      Name(id='artifact_file', ctx=Load()),
+                                      Constant(value='r')],
+                                    keywords=[
+                                      keyword(
+                                        arg='encoding',
+                                        value=Constant(value='utf-8'))]),
+                                  optional_vars=Name(id='f', ctx=Store()))],
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='json', ctx=Load()),
+                                      attr='load',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='f', ctx=Load())]))]),
+                            AugAssign(
+                              target=Subscript(
+                                value=Name(id='integrity_results', ctx=Load()),
+                                slice=Constant(value='valid_artifacts'),
+                                ctx=Store()),
+                              op=Add(),
+                              value=Constant(value=1))],
+                          handlers=[
+                            ExceptHandler(
+                              type=Tuple(
+                                elts=[
+                                  Attribute(
+                                    value=Name(id='json', ctx=Load()),
+                                    attr='JSONDecodeError',
+                                    ctx=Load()),
+                                  Name(id='UnicodeDecodeError', ctx=Load())],
+                                ctx=Load()),
+                              name='e',
+                              body=[
+                                AugAssign(
+                                  target=Subscript(
+                                    value=Name(id='integrity_results', ctx=Load()),
+                                    slice=Constant(value='corrupted_artifacts'),
+                                    ctx=Store()),
+                                  op=Add(),
+                                  value=Constant(value=1)),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Attribute(
+                                        value=Name(id='self', ctx=Load()),
+                                        attr='logger',
+                                        ctx=Load()),
+                                      attr='warning',
+                                      ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Corrupted artifact: '),
+                                          FormattedValue(
+                                            value=Name(id='artifact_file', ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=' - '),
+                                          FormattedValue(
+                                            value=Name(id='e', ctx=Load()),
+                                            conversion=-1)])]))])])])])]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='integrity_results', ctx=Load()),
+                  slice=Constant(value='overall_valid'),
+                  ctx=Store())],
+              value=Compare(
+                left=Subscript(
+                  value=Name(id='integrity_results', ctx=Load()),
+                  slice=Constant(value='corrupted_artifacts'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Artifact integrity: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='integrity_results', ctx=Load()),
+                          slice=Constant(value='valid_artifacts'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='/'),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='integrity_results', ctx=Load()),
+                          slice=Constant(value='total_artifacts'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' valid')])])),
+            Return(
+              value=Name(id='integrity_results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='create_default_config',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Create default scan configuration')),
+        Return(
+          value=Call(
+            func=Name(id='ScanConfiguration', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_depth',
+                value=Constant(value=7)),
+              keyword(
+                arg='max_workers',
+                value=Constant(value=8)),
+              keyword(
+                arg='chunk_size',
+                value=Constant(value=100)),
+              keyword(
+                arg='enable_embeddings',
+                value=Constant(value=True)),
+              keyword(
+                arg='embedding_model',
+                value=Constant(value='text-embedding-ada-002')),
+              keyword(
+                arg='embedding_dimensions',
+                value=Constant(value=1536)),
+              keyword(
+                arg='output_root',
+                value=Call(
+                  func=Name(id='Path', ctx=Load()),
+                  args=[
+                    Constant(value='data/semantic_cache')]))]))],
+      returns=Name(id='ScanConfiguration', ctx=Load())),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Main entry point')),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='Phase 0.5 Semantic Cache Rebuild')),
+              keyword(
+                arg='formatter_class',
+                value=Attribute(
+                  value=Name(id='argparse', ctx=Load()),
+                  attr='RawDescriptionHelpFormatter',
+                  ctx=Load())),
+              keyword(
+                arg='epilog',
+                value=Constant(value='\nExamples:\n    python scripts/run_phase_0_5_semantic_cache.py --dry-run\n    python scripts/run_phase_0_5_semantic_cache.py --validate-only\n    python scripts/run_phase_0_5_semantic_cache.py --engine RG\n    python scripts/run_phase_0_5_semantic_cache.py  # Full rebuild\n        '))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--dry-run')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Perform dry-run validation without processing files'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--validate-only')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Validate existing semantic cache without rebuilding'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--engine')],
+            keywords=[
+              keyword(
+                arg='choices',
+                value=List(
+                  elts=[
+                    Constant(value='RG'),
+                    Constant(value='LIC')],
+                  ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Process only specified engine (RG=Resume Engine, LIC=Outreach Engine)'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--max-workers')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='int', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value=8)),
+              keyword(
+                arg='help',
+                value=Constant(value='Maximum number of parallel workers (default: 8)'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--max-depth')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='int', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value=7)),
+              keyword(
+                arg='help',
+                value=Constant(value='Maximum recursion depth for file discovery (default: 7)'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--output-dir')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value='data/semantic_cache')),
+              keyword(
+                arg='help',
+                value=Constant(value='Output directory for semantic cache (default: data/semantic_cache)'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='create_default_config', ctx=Load()))),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='max_workers',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='args', ctx=Load()),
+            attr='max_workers',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='max_depth',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='args', ctx=Load()),
+            attr='max_depth',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='config', ctx=Load()),
+              attr='output_root',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='output_dir',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='orchestrator', ctx=Store())],
+          value=Call(
+            func=Name(id='Phase05Orchestrator', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())])),
+        Try(
+          body=[
+            If(
+              test=Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='dry_run',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='results', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='orchestrator', ctx=Load()),
+                      attr='run_dry_run',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='\n'),
+                        op=Add(),
+                        right=BinOp(
+                          left=Constant(value='='),
+                          op=Mult(),
+                          right=Constant(value=80)))])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='DRY-RUN VALIDATION RESULTS')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Constant(value='='),
+                        op=Mult(),
+                        right=Constant(value=80))])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Validation passed: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='results', ctx=Load()),
+                              slice=Constant(value='validation_passed'),
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Total files discovered: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='results', ctx=Load()),
+                              slice=Constant(value='total_files_discovered'),
+                              ctx=Load()),
+                            conversion=-1)])])),
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='engine_name', ctx=Store()),
+                      Name(id='engine_results', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='archive_summary'),
+                        ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='\n'),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='engine_name', ctx=Load()),
+                                    attr='upper',
+                                    ctx=Load())),
+                                conversion=-1),
+                              Constant(value=':')])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  Valid archives: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='engine_results', ctx=Load()),
+                                  slice=Constant(value='valid_archives'),
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value='/'),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='engine_results', ctx=Load()),
+                                  slice=Constant(value='total_archives'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  Total files: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='engine_results', ctx=Load()),
+                                  slice=Constant(value='total_files'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    If(
+                      test=Subscript(
+                        value=Name(id='engine_results', ctx=Load()),
+                        slice=Constant(value='errors'),
+                        ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='  Errors: '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Subscript(
+                                          value=Name(id='engine_results', ctx=Load()),
+                                          slice=Constant(value='errors'),
+                                          ctx=Load())]),
+                                    conversion=-1)])])),
+                        For(
+                          target=Name(id='error', ctx=Store()),
+                          iter=Subscript(
+                            value=Subscript(
+                              value=Name(id='engine_results', ctx=Load()),
+                              slice=Constant(value='errors'),
+                              ctx=Load()),
+                            slice=Slice(
+                              upper=Constant(value=5)),
+                            ctx=Load()),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Name(id='print', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='    - '),
+                                      FormattedValue(
+                                        value=Name(id='error', ctx=Load()),
+                                        conversion=-1)])]))])])]),
+                If(
+                  test=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='validation_errors'),
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='\nTotal validation errors: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Subscript(
+                                      value=Name(id='results', ctx=Load()),
+                                      slice=Constant(value='validation_errors'),
+                                      ctx=Load())]),
+                                conversion=-1)])]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      IfExp(
+                        test=Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='validation_passed'),
+                          ctx=Load()),
+                        body=Constant(value=0),
+                        orelse=Constant(value=1))]))],
+              orelse=[
+                If(
+                  test=Attribute(
+                    value=Name(id='args', ctx=Load()),
+                    attr='validate_only',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='results', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='orchestrator', ctx=Load()),
+                          attr='run_validation_only',
+                          ctx=Load()))),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Constant(value='\n'),
+                            op=Add(),
+                            right=BinOp(
+                              left=Constant(value='='),
+                              op=Mult(),
+                              right=Constant(value=80)))])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          Constant(value='CACHE VALIDATION RESULTS')])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Constant(value='='),
+                            op=Mult(),
+                            right=Constant(value=80))])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Cache exists: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='results', ctx=Load()),
+                                  slice=Constant(value='cache_exists'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Structure valid: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='results', ctx=Load()),
+                                  slice=Constant(value='structure_valid'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Engine separation valid: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='results', ctx=Load()),
+                                  slice=Constant(value='engine_separation_valid'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Overall validation passed: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='results', ctx=Load()),
+                                  slice=Constant(value='validation_passed'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    If(
+                      test=Compare(
+                        left=Subscript(
+                          value=Subscript(
+                            value=Name(id='results', ctx=Load()),
+                            slice=Constant(value='artifact_integrity'),
+                            ctx=Load()),
+                          slice=Constant(value='total_artifacts'),
+                          ctx=Load()),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Constant(value=0)]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Artifacts: '),
+                                  FormattedValue(
+                                    value=Subscript(
+                                      value=Subscript(
+                                        value=Name(id='results', ctx=Load()),
+                                        slice=Constant(value='artifact_integrity'),
+                                        ctx=Load()),
+                                      slice=Constant(value='valid_artifacts'),
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='/'),
+                                  FormattedValue(
+                                    value=Subscript(
+                                      value=Subscript(
+                                        value=Name(id='results', ctx=Load()),
+                                        slice=Constant(value='artifact_integrity'),
+                                        ctx=Load()),
+                                      slice=Constant(value='total_artifacts'),
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' valid')])]))]),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='sys', ctx=Load()),
+                          attr='exit',
+                          ctx=Load()),
+                        args=[
+                          IfExp(
+                            test=Subscript(
+                              value=Name(id='results', ctx=Load()),
+                              slice=Constant(value='validation_passed'),
+                              ctx=Load()),
+                            body=Constant(value=0),
+                            orelse=Constant(value=1))]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='engine_filter', ctx=Store())],
+                      value=Constant(value=None)),
+                    If(
+                      test=Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='engine',
+                        ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='engine_filter', ctx=Store())],
+                          value=IfExp(
+                            test=Compare(
+                              left=Attribute(
+                                value=Name(id='args', ctx=Load()),
+                                attr='engine',
+                                ctx=Load()),
+                              ops=[
+                                Eq()],
+                              comparators=[
+                                Constant(value='RG')]),
+                            body=Attribute(
+                              value=Name(id='EngineType', ctx=Load()),
+                              attr='RESUME_ENGINE',
+                              ctx=Load()),
+                            orelse=Attribute(
+                              value=Name(id='EngineType', ctx=Load()),
+                              attr='OUTREACH_ENGINE',
+                              ctx=Load())))]),
+                    Assign(
+                      targets=[
+                        Name(id='global_report', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='orchestrator', ctx=Load()),
+                          attr='run_full_rebuild',
+                          ctx=Load()),
+                        args=[
+                          Name(id='engine_filter', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Constant(value='\n'),
+                            op=Add(),
+                            right=BinOp(
+                              left=Constant(value='='),
+                              op=Mult(),
+                              right=Constant(value=80)))])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          Constant(value='SEMANTIC CACHE REBUILD COMPLETED')])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Constant(value='='),
+                            op=Mult(),
+                            right=Constant(value=80))])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Overall completeness: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Attribute(
+                                    value=Name(id='global_report', ctx=Load()),
+                                    attr='completeness_report',
+                                    ctx=Load()),
+                                  slice=Constant(value='overall_completeness'),
+                                  ctx=Load()),
+                                conversion=-1,
+                                format_spec=JoinedStr(
+                                  values=[
+                                    Constant(value='.2%')]))])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Total archives processed: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Attribute(
+                                    value=Name(id='global_report', ctx=Load()),
+                                    attr='global_integrity',
+                                    ctx=Load()),
+                                  slice=Constant(value='total_archives'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Total files processed: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Attribute(
+                                    value=Name(id='global_report', ctx=Load()),
+                                    attr='global_integrity',
+                                    ctx=Load()),
+                                  slice=Constant(value='total_files_processed'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    If(
+                      test=Subscript(
+                        value=Attribute(
+                          value=Name(id='global_report', ctx=Load()),
+                          attr='completeness_report',
+                          ctx=Load()),
+                        slice=Constant(value='missing_archives'),
+                        ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Missing archives: '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Subscript(
+                                          value=Attribute(
+                                            value=Name(id='global_report', ctx=Load()),
+                                            attr='completeness_report',
+                                            ctx=Load()),
+                                          slice=Constant(value='missing_archives'),
+                                          ctx=Load())]),
+                                    conversion=-1)])]))]),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='\nResults written to: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='config', ctx=Load()),
+                                  attr='output_root',
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    If(
+                      test=Compare(
+                        left=Subscript(
+                          value=Attribute(
+                            value=Name(id='global_report', ctx=Load()),
+                            attr='completeness_report',
+                            ctx=Load()),
+                          slice=Constant(value='overall_completeness'),
+                          ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Constant(value=0.9)]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              Constant(value='WARNING: Low completeness score detected')])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='sys', ctx=Load()),
+                              attr='exit',
+                              ctx=Load()),
+                            args=[
+                              Constant(value=1)]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='sys', ctx=Load()),
+                              attr='exit',
+                              ctx=Load()),
+                            args=[
+                              Constant(value=0)]))])])])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='KeyboardInterrupt', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='\nOperation cancelled by user')])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=130)]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='sys', ctx=Load()),
+                      attr='exit',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='main', ctx=Load())))])])

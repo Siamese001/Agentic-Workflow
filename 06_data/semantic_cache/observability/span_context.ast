@@ -1,0 +1,497 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL4 â€” Context Budget Manager\n\nTracks and enforces lightweight budgeting constraints for context elements such\nas messages, retrieved artifacts, and running summaries.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='utils_types',
+      names=[
+        alias(name='BudgetConfig'),
+        alias(name='Message')],
+      level=0),
+    ClassDef(
+      name='ContextBudget',
+      body=[
+        Expr(
+          value=Constant(value='Applies heuristic limits to contextual elements.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='config',
+                annotation=BinOp(
+                  left=Name(id='BudgetConfig', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='config', ctx=Load()),
+                  Call(
+                    func=Name(id='BudgetConfig', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='pruning_rules',
+                  ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='messages'),
+                  Constant(value='rag_history'),
+                  Constant(value='world'),
+                  Constant(value='summary')],
+                values=[
+                  Constant(value='preserve order and trim to max_messages'),
+                  Constant(value='preserve order and trim to max_rag_items'),
+                  Constant(value='preserve order and trim to max_world_items'),
+                  Constant(value='trim to max_summary_chars')]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='prune_messages',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='messages',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Message', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Trim messages to the configured maximum count while preserving order.')),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='messages', ctx=Load())]),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='max_messages',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='messages', ctx=Load()))]),
+            Return(
+              value=Subscript(
+                value=Name(id='messages', ctx=Load()),
+                slice=Slice(
+                  lower=UnaryOp(
+                    op=USub(),
+                    operand=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='max_messages',
+                      ctx=Load()))),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Message', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='prune_rag_items',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='items',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='dict', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Trim retrieval items to the configured limit.')),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='items', ctx=Load())]),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='max_rag_items',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='items', ctx=Load()))]),
+            Return(
+              value=Subscript(
+                value=Name(id='items', ctx=Load()),
+                slice=Slice(
+                  lower=UnaryOp(
+                    op=USub(),
+                    operand=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='max_rag_items',
+                      ctx=Load()))),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='dict', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='prune_messages_by_tokens',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='messages',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Message', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Trim messages by approximate token budget while preserving order.')),
+            Assign(
+              targets=[
+                Name(id='token_counts', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='message', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='content'),
+                                Constant(value='')])]),
+                        attr='split',
+                        ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='message', ctx=Store()),
+                    iter=Name(id='messages', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='total_tokens', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  Name(id='token_counts', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='total_tokens', ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='max_prompt_tokens',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='messages', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='start_index', ctx=Store())],
+              value=Constant(value=0)),
+            While(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='start_index', ctx=Load()),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='messages', ctx=Load())])]),
+                  Compare(
+                    left=Name(id='total_tokens', ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='max_prompt_tokens',
+                        ctx=Load())])]),
+              body=[
+                AugAssign(
+                  target=Name(id='total_tokens', ctx=Store()),
+                  op=Sub(),
+                  value=Subscript(
+                    value=Name(id='token_counts', ctx=Load()),
+                    slice=Name(id='start_index', ctx=Load()),
+                    ctx=Load())),
+                AugAssign(
+                  target=Name(id='start_index', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            Return(
+              value=Subscript(
+                value=Name(id='messages', ctx=Load()),
+                slice=Slice(
+                  lower=Name(id='start_index', ctx=Load())),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Message', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='prune_rag_items_by_tokens',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='items',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='dict', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Trim retrieval items by approximate token budget while preserving order.')),
+            Assign(
+              targets=[
+                Name(id='token_counts', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='item', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='evidence'),
+                                Constant(value='')])]),
+                        attr='split',
+                        ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='item', ctx=Store()),
+                    iter=Name(id='items', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='total_tokens', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  Name(id='token_counts', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='total_tokens', ctx=Load()),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='max_retrieval_tokens',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='items', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='start_index', ctx=Store())],
+              value=Constant(value=0)),
+            While(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='start_index', ctx=Load()),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='items', ctx=Load())])]),
+                  Compare(
+                    left=Name(id='total_tokens', ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='max_retrieval_tokens',
+                        ctx=Load())])]),
+              body=[
+                AugAssign(
+                  target=Name(id='total_tokens', ctx=Store()),
+                  op=Sub(),
+                  value=Subscript(
+                    value=Name(id='token_counts', ctx=Load()),
+                    slice=Name(id='start_index', ctx=Load()),
+                    ctx=Load())),
+                AugAssign(
+                  target=Name(id='start_index', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            Return(
+              value=Subscript(
+                value=Name(id='items', ctx=Load()),
+                slice=Slice(
+                  lower=Name(id='start_index', ctx=Load())),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='dict', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='prune_world',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='items',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='dict', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Trim world-model facts to the configured limit.')),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='items', ctx=Load())]),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='max_world_items',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='items', ctx=Load()))]),
+            Return(
+              value=Subscript(
+                value=Name(id='items', ctx=Load()),
+                slice=Slice(
+                  lower=UnaryOp(
+                    op=USub(),
+                    operand=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='max_world_items',
+                      ctx=Load()))),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='dict', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='prune_summary',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='summary',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Constrain the summary to a maximum character budget.')),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='summary', ctx=Load())]),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='max_summary_chars',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='summary', ctx=Load()))]),
+            Return(
+              value=Subscript(
+                value=Name(id='summary', ctx=Load()),
+                slice=Slice(
+                  lower=UnaryOp(
+                    op=USub(),
+                    operand=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='config',
+                        ctx=Load()),
+                      attr='max_summary_chars',
+                      ctx=Load()))),
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load()))])])

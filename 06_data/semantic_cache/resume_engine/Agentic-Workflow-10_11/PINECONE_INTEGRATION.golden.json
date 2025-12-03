@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Pinecone Vector Database Integration\n\n## Overview\n\nThe Agentic-Workflow-10_10 system now includes full Pinecone vector database integration for semantic search and retrieval operations. The integration follows the strict L1/L2/L3 layering architecture.\n\n## Architecture\n\n### Layer Separation\n\n- **L1 (Planning)**: `l1/vector_search_planning.py`\n  - Pure planning functions that generate typed plans\n  - No actual vector operations or SDK calls\n  - Functions: `plan_vector_search()`, `plan_vector_upsert()`\n\n- **L2 (Execution)**: `l2/vector_search_executor.py`\n  - Executes vector operations using PineconeClient\n  - Handles text embedding via OpenAI\n  - Methods: `get_embedding()`, `upsert_text()`, `search()`\n\n- **Providers**: `providers/pinecone_client/`\n  - Thin wrapper around Pinecone SDK\n  - Abstracts vector operations: upsert, query, delete\n  - Integrates OpenAI embeddings\n\n## Setup\n\n### 1. Install Dependencies\n\n```bash\npip install pinecone openai\n```\n\n### 2. Environment Variables\n\nSet t",
+  "full_hash": "7713499337f2a020b201cd5133b8e7243f8a9cef219b9a2c725cbce59a6eb065",
+  "generated_at": 1764728226.1855354,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\integration\\PINECONE_INTEGRATION.md"
+}

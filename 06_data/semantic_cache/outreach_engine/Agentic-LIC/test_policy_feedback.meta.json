@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\e2e\\test_policy_feedback.py",
+    "rel_path": "test_policy_feedback.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "d53fd13332af59623be74c00307e2dee6e35fad26d71c02a8a57382d906868ad",
+    "file_size": 901,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.950424
+}

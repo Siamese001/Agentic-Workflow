@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\agent_orchestration_v10_7.py",
+    "rel_path": "agent_orchestration_v10_7.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "6a30a3a61cac18dc2dba2cd625ae46962ff6ef1881afa6adc00e6c4090c2a79f",
+    "file_size": 39365,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.1101086
+}

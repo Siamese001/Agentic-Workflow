@@ -1,0 +1,180 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Integration tests for the async conductor.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.orchestration',
+      names=[
+        alias(name='Conductor')],
+      level=0),
+    FunctionDef(
+      name='test_conductor_preserves_order_under_concurrency',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='concurrency',
+                value=Constant(value=2)),
+              keyword(
+                arg='seed',
+                value=Constant(value=11))])),
+        Assign(
+          targets=[
+            Name(id='factories', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Attribute(
+                value=Name(id='conductor', ctx=Load()),
+                attr='wrap_tool_call',
+                ctx=Load()),
+              args=[
+                Name(id='i', ctx=Load()),
+                Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='value'),
+                      arg(arg='index')],
+                    defaults=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='i', ctx=Load())]),
+                  body=Tuple(
+                    elts=[
+                      BinOp(
+                        left=Name(id='value', ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=2)),
+                      BinOp(
+                        left=Constant(value=25),
+                        op=Add(),
+                        right=BinOp(
+                          left=Name(id='index', ctx=Load()),
+                          op=Mult(),
+                          right=Constant(value=5)))],
+                    ctx=Load()))]),
+            generators=[
+              comprehension(
+                target=Tuple(
+                  elts=[
+                    Name(id='i', ctx=Store()),
+                    Name(id='value', ctx=Store())],
+                  ctx=Store()),
+                iter=Call(
+                  func=Name(id='enumerate', ctx=Load()),
+                  args=[
+                    Tuple(
+                      elts=[
+                        Constant(value=2),
+                        Constant(value=3),
+                        Constant(value=5)],
+                      ctx=Load())]),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Name(id='factories', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Name(id='results', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value=0),
+                      Constant(value=4)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value=1),
+                      Constant(value=6)],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value=2),
+                      Constant(value=10)],
+                    ctx=Load())],
+                ctx=Load())]))]),
+    FunctionDef(
+      name='test_conductor_artifact_ids_are_deterministic',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='conductor', ctx=Store())],
+          value=Call(
+            func=Name(id='Conductor', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='seed',
+                value=Constant(value=5))])),
+        Assign(
+          targets=[
+            Name(id='first', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='make_artifact_id',
+              ctx=Load()),
+            args=[
+              Constant(value='outreach'),
+              Constant(value='ACME')])),
+        Assign(
+          targets=[
+            Name(id='second', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='make_artifact_id',
+              ctx=Load()),
+            args=[
+              Constant(value='outreach'),
+              Constant(value='ACME')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='reset',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='replay', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='conductor', ctx=Load()),
+              attr='make_artifact_id',
+              ctx=Load()),
+            args=[
+              Constant(value='outreach'),
+              Constant(value='ACME')])),
+        Assert(
+          test=Compare(
+            left=Name(id='first', ctx=Load()),
+            ops=[
+              NotEq()],
+            comparators=[
+              Name(id='second', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Name(id='first', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='replay', ctx=Load())]))])])

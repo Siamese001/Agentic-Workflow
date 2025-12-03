@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Drafting guild stack with specialist agents.\"\"\"\n\nimport json\nfrom typing import Any, Dict, List\n\nfrom core_v10_7 import (\n    BaseAgent,\n    StrategyPlan,\n    track_metrics,\n)\nfrom agent_tools_v10_7 import (\n    EvidenceBriefAssemblerTool,\n    EvidenceClarificationTool,\n)\n\nfrom .models import (\n    CritiqueFindingRecord,\n    CritiquePanelPacket,\n    EvidenceBriefRecord,\n    EvidenceClarificationRecord,\n    EvidenceLiaisonPacket,\n    SpecialistDraftPacket,\n)\n\n\nclass StructureLeadAgent(BaseAgent):\n    \"\"\"Produces the structural outline for the draft.\"\"\"\n\n    @track_metrics(\"run_structure_lead\")\n    async def run_async(\n        self,\n        bullets: List[Dict[str, Any]],\n        strategy: StrategyPlan,\n        workflow_id: str,\n    ) -> SpecialistDraftPacket:\n        self.log_info(\"Drafting Guild >> Structure Lead assembling sections...\")\n\n        summary_pivots = (\n            strategy.key_achievements_to_highlight[:3]\n            if strategy.key_achievements_to_highlight\n           ",
+  "full_hash": "bda5fa750bf9930f937cd9499422b0d5c7eb193f877e51d5817822737d6c56b4",
+  "generated_at": 1764728330.8029883,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\stacks_v10_7\\drafting.py"
+}

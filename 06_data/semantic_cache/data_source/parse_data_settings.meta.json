@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\plan-phase\\get-data-info\\general\\understand-request\\parse_data_settings.py",
+    "rel_path": "parse_data_settings.py",
+    "root_name": "data_source",
+    "file_hash": "2d527cd51cd8d0abd656c8506a6aabeb4eaa72817fe2451e63acfb72df78b1f3",
+    "file_size": 6646,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.9761543
+}

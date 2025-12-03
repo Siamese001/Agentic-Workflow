@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\retrieve-phase\\get-schema-info\\general\\understand-request\\fetch_schema_history.py",
+    "rel_path": "fetch_schema_history.py",
+    "root_name": "schemas",
+    "file_hash": "879599937f62ebd73bb45e103ca5565cff59539faf86a3ce9e4052d55715c40b",
+    "file_size": 1473,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.2373986
+}

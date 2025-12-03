@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L3_orchestration\\unit\\test_l3_orchestration_unit.py",
+    "rel_path": "test_l3_orchestration_unit.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "5403bd6165e2bd07da076eb431f715b62c75175c247ed97c50e57760cfd30c23",
+    "file_size": 466,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.0460017
+}

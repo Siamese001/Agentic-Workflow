@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\agents\\k1_router_agent.py",
+    "rel_path": "k1_router_agent.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "28cd123d93784034c7746398234d6e769298911c1ce354ab1d8994ed708a8ae3",
+    "file_size": 669,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.4646697
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_full_workflow.py",
+    "rel_path": "test_full_workflow.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "33446f10fc2d43c80346c3991c73ad9d7a1e49c60b4fd4698ec4272c0e43a440",
+    "file_size": 7056,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.7311084
+}

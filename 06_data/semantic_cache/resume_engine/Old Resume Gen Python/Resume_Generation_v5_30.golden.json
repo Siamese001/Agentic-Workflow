@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.30 - APP SCHEMA V4 DESTRUCTIVE OVERWRITE\n================================================================================\nCRITICAL v5.30 UPDATE: Complete replacement of app tracker schema with v4 spec\n\n\u2713 DESTRUCTIVE OVERWRITE: Old 56-field schema replaced with new App Schema v4\n\u2713 NEW SCHEMA: 56 fields aligned to recruitment tracking workflow\n\u2713 UPDATED: _render_app_tracker method for new field structure\n\u2713 PRESERVED: All v5.29 signature fixes and core functionality\n\u2713 MAINTAINS: All v5.29 bug fixes and method signatures\n\nv5.30 CHANGES:\n\u2713 Replaced APP_TRACKER_SCHEMA_V4 with new 56-field structure\n\u2713 Updated field mappings in _render_app_tracker method\n\u2713 Aligned with recruitment pipeline workflow (Category, Sub-Category, etc.)\n\u2713 Added Hiring Recruiter/Manager interview tracking fields\n\u2713 Added multi-contact outreach tracking (5 contacts)\n\u2713 Added Base/Versioned Resume fields\n\u2713 Added Closure Reason field\n\nPRESERVED FROM v5.29:\n\u2713 All 14 method signature fixes\n\u2713 Un",
+  "full_hash": "801276b8a5b8178bb7e73a0b6c8804558d74f566408cd439a7b6178bce613343",
+  "generated_at": 1764728302.8453453,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_30.py"
+}

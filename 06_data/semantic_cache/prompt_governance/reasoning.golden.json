@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Reasoning Injection v1.0\n# Logical reasoning and decision-making framework prompts for systematic analysis\n# Integrated with v5 Instructional Injection Framework\n\nreasoning_injection:\n  version: \"1.0\"\n  last_updated: \"2024-01-01T00:00:00Z\"\n  \n  # V5 Instructional Injection Framework - Reasoning Layer\n  v5_reasoning_injections:\n    enabled: true\n    injection_count: 5\n    \n    # 11. Failure Anticipation Injection\n    failure_anticipation:\n      description: \"Predict likely mistakes before reasoning and mitigate proactively\"\n      prompt_template: |\n        Failure Anticipation Analysis:\n        - Potential Failure Modes: {failure_modes}\n        - Common Mistakes: {common_mistakes}\n        - Mitigation Strategies: {mitigation_strategies}\n        - Prevention Measures: {prevention_measures}\n        \n        Before proceeding, identify and address these potential failure points.\n        Apply preventive measures throughout the reasoning process.\n      usage_context:\n        - \"Complex pr",
+  "full_hash": "75525d3cf951f14415c9e5527d0da829654e2831e891def5fb34b40dc6be1dca",
+  "generated_at": 1764728348.1963892,
+  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\safety-guard-layer\\retry-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\reasoning.yaml"
+}

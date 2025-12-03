@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\router-microagent-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\execution_budget_manager.py",
+    "rel_path": "execution_budget_manager.py",
+    "root_name": "runtime",
+    "file_hash": "11f97ebdb116da31dea04fce2d2947c4bc08dddae5f57212c006b9cc4828f327",
+    "file_size": 6391,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.7834303
+}

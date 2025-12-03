@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - retrieve_config_similarity\nImplements L1 Cognitive Planning Layer for retrieve config similarity operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RetrieveConfigSimilarityMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RetrieveConfigSimilarityMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RetrieveConfigSimilarityMemoryResult:\n    \"\"\"L5 Result structure with ful",
+  "full_hash": "aae3647d8a3baf63837203d9347f3c165f3e02e2a30cb42c96162c31b8e1014e",
+  "generated_at": 1764728348.5266838,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\mem-layer\\retrieve-phase\\get-config-info\\embedding\\compare-meaning\\retrieve_config_similarity.py"
+}

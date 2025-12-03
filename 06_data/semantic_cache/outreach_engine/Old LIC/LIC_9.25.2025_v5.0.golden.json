@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"metadata\": {\n    \"version\": \"v5.0\",\n    \"patched_from\": \"v4.0\",\n    \"patched_at\": \"2025-09-25T16:09:35.624797\",\n    \"governance_alignment\": \"[REMOVED_LEGACY_REFERENCE]\",\n    \"smoke_test_pass\": true,\n    \"smoke_test_failures\": [],\n    \"patch_notes\": [\n      \"ensured six-section shell\",\n      \"role standards expanded\",\n      \"task success criteria hardened\",\n      \"context retrieval and toggles set\",\n      \"reasoning hybrid, QA, and mirror keys added\",\n      \"output mirroring and hygiene guard set\",\n      \"conditions blockers expanded\",\n      \"top-level enforcement and smoke tests added\",\n      \"v4.0: Decoding best-practice profiles + per-K mapping; decoding toggles in 3A; QA hardening; per-K decoding compliance; Output echo.\",\n      \"DOW: Table 3A columns restructured; prompt_section removed; impact -> why_important; consulting_analogy aligned to 4.K.x; enforcement updated.\"\n    ],\n    \"last_saved\": \"2025-09-25T15:44:21\",\n    \"rebaselined_on\": \"2025-09-25T12:37:15.026615\",\n    \"reb",
+  "full_hash": "b81bb33ab323b7f48271683a6c0a2b93452d536fba655a150c911cf1485634eb",
+  "generated_at": 1764728338.2653036,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9.25.2025_v5.0.json"
+}

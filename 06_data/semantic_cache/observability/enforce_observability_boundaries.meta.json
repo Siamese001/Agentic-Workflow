@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\plan-layer\\plan-phase\\check-observability-rules\\policy\\check-safety\\enforce_observability_boundaries.py",
+    "rel_path": "enforce_observability_boundaries.py",
+    "root_name": "observability",
+    "file_hash": "612a183b154a064c9aada054dd6001c3a4139f0f1873b89640f9152ff7b304b6",
+    "file_size": 6958,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.0637298
+}

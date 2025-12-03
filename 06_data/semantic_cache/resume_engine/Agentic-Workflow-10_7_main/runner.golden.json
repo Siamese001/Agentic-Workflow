@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Test-friendly entrypoints for running the v10.7 workflow.\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\nimport json\nfrom dataclasses import dataclass\nfrom hashlib import sha1\nfrom pathlib import Path\nfrom typing import Any, Dict, Iterable, Optional\n\nfrom core_v10_7 import ConfigV10_7, MainGraphState, WorkflowPhase\nfrom main_v10_7 import run_workflow_async, setup_logging\n\n_DEFAULT_CONFIG = Path(\"master_config_v10_7.json\")\n_DEFAULT_JOB_INPUT = Path(\"job_input.json\")\n_DEFAULT_MASTER_RESUME = Path(\"master_resume.json\")\n\n\n@dataclass(frozen=True)\nclass _SyntheticResult:\n    \"\"\"Container for deterministic synthetic workflow outputs.\"\"\"\n\n    status: str\n    workflow_id: str\n    summary: str\n    events: Iterable[str]\n    resume: Dict[str, Any]\n    merged_output: Dict[str, Any]\n    state: Dict[str, Any]\n\n    def as_dict(self) -> Dict[str, Any]:\n        return {\n            \"status\": self.status,\n            \"workflow_id\": self.workflow_id,\n            \"summary\": self.summary,\n       ",
+  "full_hash": "20ac37bc70f387937462dfdc4412982cd7d8babb286606195045d61d32bbc80b",
+  "generated_at": 1764728231.8320763,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\workflow\\runner.py"
+}

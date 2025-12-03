@@ -1,0 +1,813 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nFilesystem Monitor Engine for Agentic-Workflow\n\nImplements Phase 1 filesystem mutation monitoring for K12 validation\n\nProvides filesystem monitoring capabilities to ensure no unauthorized\nmutations occur during Phase 1 operations.\n')),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Set')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ClassDef(
+      name='FilesystemOperation',
+      body=[
+        AnnAssign(
+          target=Name(id='operation', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='path', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='authorized', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='FilesystemMonitor',
+      body=[
+        Expr(
+          value=Constant(value='\n    Filesystem monitoring engine\n    \n    Tracks filesystem operations to ensure Phase 1 compliance\n    with no unauthorized mutations.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workspace_root',
+                annotation=Name(id='Path', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='workspace_root', ctx=Load())])),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='operations_log',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='FilesystemOperation', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='protected_paths',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load())),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='monitoring_active',
+                ctx=Store()),
+              annotation=Name(id='bool', ctx=Load()),
+              value=Constant(value=False),
+              simple=0)]),
+        FunctionDef(
+          name='initialize_monitoring',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize filesystem monitoring')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='meta_path', ctx=Store())],
+                  value=BinOp(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='workspace_root',
+                      ctx=Load()),
+                    op=Div(),
+                    right=Constant(value='unified_structure_subatomic_meta.yaml'))),
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='meta_path', ctx=Load()),
+                      attr='exists',
+                      ctx=Load())),
+                  body=[
+                    Import(
+                      names=[
+                        alias(name='yaml')]),
+                    With(
+                      items=[
+                        withitem(
+                          context_expr=Call(
+                            func=Name(id='open', ctx=Load()),
+                            args=[
+                              Name(id='meta_path', ctx=Load()),
+                              Constant(value='r')],
+                            keywords=[
+                              keyword(
+                                arg='encoding',
+                                value=Constant(value='utf-8'))]),
+                          optional_vars=Name(id='f', ctx=Store()))],
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='meta', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='yaml', ctx=Load()),
+                              attr='safe_load',
+                              ctx=Load()),
+                            args=[
+                              Name(id='f', ctx=Load())]))]),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='protected_paths',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='meta', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='protected_paths'),
+                              List(ctx=Load())])]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='protected_paths',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load())))]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='monitoring_active',
+                      ctx=Store())],
+                  value=Constant(value=True)),
+                Return(
+                  value=Constant(value=True))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to initialize monitoring: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])])),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='monitoring_active',
+                          ctx=Store())],
+                      value=Constant(value=True)),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='protected_paths',
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load()))),
+                    Return(
+                      value=Constant(value=True))])])],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='start_phase_1_monitoring',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Start monitoring for Phase 1 operations')),
+            Try(
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='monitoring_active',
+                      ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='initialize_monitoring',
+                          ctx=Load())))]),
+                Assign(
+                  targets=[
+                    Name(id='operation', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FilesystemOperation', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='operation',
+                        value=Constant(value='monitoring_start')),
+                      keyword(
+                        arg='path',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='workspace_root',
+                              ctx=Load())])),
+                      keyword(
+                        arg='timestamp',
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load())),
+                            attr='isoformat',
+                            ctx=Load()))),
+                      keyword(
+                        arg='authorized',
+                        value=Constant(value=True))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='operations_log',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='operation', ctx=Load())])),
+                Return(
+                  value=Constant(value=True))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to start Phase 1 monitoring: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])])),
+                    Return(
+                      value=Constant(value=False))])])],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='stop_phase_1_monitoring',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Stop monitoring and validate no unauthorized mutations')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='operation', ctx=Store())],
+                  value=Call(
+                    func=Name(id='FilesystemOperation', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='operation',
+                        value=Constant(value='monitoring_stop')),
+                      keyword(
+                        arg='path',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='workspace_root',
+                              ctx=Load())])),
+                      keyword(
+                        arg='timestamp',
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='datetime', ctx=Load()),
+                                attr='now',
+                                ctx=Load())),
+                            attr='isoformat',
+                            ctx=Load()))),
+                      keyword(
+                        arg='authorized',
+                        value=Constant(value=True))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='operations_log',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='operation', ctx=Load())])),
+                Return(
+                  value=Constant(value=True))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to stop Phase 1 monitoring: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])])),
+                    Return(
+                      value=Constant(value=False))])])],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='validate_no_unauthorized_mutations',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Validate that no unauthorized mutations occurred')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='unauthorized_ops', ctx=Store())],
+                  value=ListComp(
+                    elt=Name(id='op', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='op', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='operations_log',
+                          ctx=Load()),
+                        ifs=[
+                          BoolOp(
+                            op=And(),
+                            values=[
+                              UnaryOp(
+                                op=Not(),
+                                operand=Attribute(
+                                  value=Name(id='op', ctx=Load()),
+                                  attr='authorized',
+                                  ctx=Load())),
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='op', ctx=Load()),
+                                  attr='operation',
+                                  ctx=Load()),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  List(
+                                    elts=[
+                                      Constant(value='create'),
+                                      Constant(value='delete'),
+                                      Constant(value='modify'),
+                                      Constant(value='move')],
+                                    ctx=Load())])])],
+                        is_async=0)])),
+                Return(
+                  value=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='unauthorized_ops', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Constant(value=False))])])],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='is_monitoring_operational',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Check if filesystem monitoring is operational')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='monitoring_active',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='initialize_monitoring',
+                      ctx=Load())))]),
+            Return(
+              value=BoolOp(
+                op=And(),
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='monitoring_active',
+                    ctx=Load()),
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='protected_paths',
+                          ctx=Load())]),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=0)])]))],
+          returns=Name(id='bool', ctx=Load()))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='CLI entry point for filesystem monitor')),
+        Import(
+          names=[
+            alias(name='argparse')]),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='Filesystem monitor for Phase 1 operations'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--workspace')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='Path', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='Path', ctx=Load()),
+                    attr='cwd',
+                    ctx=Load()))),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to Agentic-Workflow workspace'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--action')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value='check')),
+              keyword(
+                arg='choices',
+                value=List(
+                  elts=[
+                    Constant(value='initialize'),
+                    Constant(value='start'),
+                    Constant(value='stop'),
+                    Constant(value='validate'),
+                    Constant(value='check')],
+                  ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Action to perform'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='monitor', ctx=Store())],
+          value=Call(
+            func=Name(id='FilesystemMonitor', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='workspace',
+                ctx=Load())])),
+        Try(
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='action',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='initialize')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='success', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='monitor', ctx=Load()),
+                      attr='initialize_monitoring',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Monitoring initialization: '),
+                          FormattedValue(
+                            value=IfExp(
+                              test=Name(id='success', ctx=Load()),
+                              body=Constant(value='SUCCESS'),
+                              orelse=Constant(value='FAILED')),
+                            conversion=-1)])])),
+                Return(
+                  value=IfExp(
+                    test=Name(id='success', ctx=Load()),
+                    body=Constant(value=0),
+                    orelse=Constant(value=1)))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='action',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='start')]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='success', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='monitor', ctx=Load()),
+                          attr='start_phase_1_monitoring',
+                          ctx=Load()))),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Phase 1 monitoring started: '),
+                              FormattedValue(
+                                value=IfExp(
+                                  test=Name(id='success', ctx=Load()),
+                                  body=Constant(value='SUCCESS'),
+                                  orelse=Constant(value='FAILED')),
+                                conversion=-1)])])),
+                    Return(
+                      value=IfExp(
+                        test=Name(id='success', ctx=Load()),
+                        body=Constant(value=0),
+                        orelse=Constant(value=1)))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='args', ctx=Load()),
+                          attr='action',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='stop')]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='success', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='monitor', ctx=Load()),
+                              attr='stop_phase_1_monitoring',
+                              ctx=Load()))),
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Phase 1 monitoring stopped: '),
+                                  FormattedValue(
+                                    value=IfExp(
+                                      test=Name(id='success', ctx=Load()),
+                                      body=Constant(value='SUCCESS'),
+                                      orelse=Constant(value='FAILED')),
+                                    conversion=-1)])])),
+                        Return(
+                          value=IfExp(
+                            test=Name(id='success', ctx=Load()),
+                            body=Constant(value=0),
+                            orelse=Constant(value=1)))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='args', ctx=Load()),
+                              attr='action',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='validate')]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='is_valid', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='monitor', ctx=Load()),
+                                  attr='validate_no_unauthorized_mutations',
+                                  ctx=Load()))),
+                            Expr(
+                              value=Call(
+                                func=Name(id='print', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='No unauthorized mutations: '),
+                                      FormattedValue(
+                                        value=IfExp(
+                                          test=Name(id='is_valid', ctx=Load()),
+                                          body=Constant(value='PASS'),
+                                          orelse=Constant(value='FAIL')),
+                                        conversion=-1)])])),
+                            Return(
+                              value=IfExp(
+                                test=Name(id='is_valid', ctx=Load()),
+                                body=Constant(value=0),
+                                orelse=Constant(value=1)))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Attribute(
+                                  value=Name(id='args', ctx=Load()),
+                                  attr='action',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='check')]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='is_operational', ctx=Store())],
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='monitor', ctx=Load()),
+                                      attr='is_monitoring_operational',
+                                      ctx=Load()))),
+                                Expr(
+                                  value=Call(
+                                    func=Name(id='print', ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Filesystem monitoring operational: '),
+                                          FormattedValue(
+                                            value=IfExp(
+                                              test=Name(id='is_operational', ctx=Load()),
+                                              body=Constant(value='PASS'),
+                                              orelse=Constant(value='FAIL')),
+                                            conversion=-1)])])),
+                                Return(
+                                  value=IfExp(
+                                    test=Name(id='is_operational', ctx=Load()),
+                                    body=Constant(value=0),
+                                    orelse=Constant(value=1)))])])])])]),
+            Return(
+              value=Constant(value=0))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=1))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='exit', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='main', ctx=Load()))]))])])

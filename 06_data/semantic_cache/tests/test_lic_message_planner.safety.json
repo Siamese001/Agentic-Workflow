@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 143,
+  "generated_at": 1764728354.8792634,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\router-microagent-layer\\rank-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\test_lic_message_planner.py"
+}

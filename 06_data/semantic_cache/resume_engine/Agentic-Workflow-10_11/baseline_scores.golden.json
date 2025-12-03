@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"avg_score\": 0.8,\n  \"pass_count\": 2,\n  \"fail_count\": 0,\n  \"total\": 2\n}\n",
+  "full_hash": "1cd172a9c9f4512824655a51bfbe45ea5be269edc0b41550c8c625901bda7ac0",
+  "generated_at": 1764728223.9495041,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\baselines\\baseline_scores.json"
+}

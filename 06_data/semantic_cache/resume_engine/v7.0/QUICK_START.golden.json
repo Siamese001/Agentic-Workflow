@@ -1,0 +1,6 @@
+{
+  "golden_content": "# V7.0 Quick Start Guide\n\n## TL;DR\nYour v6.5 Resume Generation Engine has been refactored to v7.0 with:\n- **LangGraph** replacing custom Governor orchestration\n- **Redis** for persistent, resumable workflows  \n- **LangSmith** for complete observability\n\n## Installation\n\n```bash\n# 1. Install new dependencies\npip install -r requirements.txt\n\n# 2. Start Redis (required)\ndocker run -d -p 6379:6379 redis:latest\n# OR: redis-server\n\n# 3. Configure LangSmith (optional but recommended)\n# Edit master_config_v7_0.json:\n{\n  \"tracing_config\": {\n    \"langsmith_enabled\": true,\n    \"langsmith_api_key\": \"YOUR_KEY_HERE\"  # Get from smith.langchain.com\n  }\n}\n```\n\n## Running Workflows\n\n### Single Job\n```bash\npython main_v7_0.py -j job_input.json -m master_resume.json -o output/\n```\n\n### Batch Processing\n```bash\n# Place job files in batch_queue/\npython run_batch_v7_0.py\n```\n\n### Meta-Learning\n```bash\npython run_learning_v7_0.py\n```\n\n## Key Differences from v6.5\n\n### What Changed\n| v6.5 | v7.0 |\n|------|---",
+  "full_hash": "222f84ec890aaff5b5aa2dd191757a4ba28adc038fb8fdea3a1a8ffaa6588b7b",
+  "generated_at": 1764728327.7806756,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v7.0\\Testing\\QUICK_START.md"
+}

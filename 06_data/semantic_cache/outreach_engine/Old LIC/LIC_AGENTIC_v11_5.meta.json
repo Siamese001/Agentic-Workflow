@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_5.py",
+    "rel_path": "LIC_AGENTIC_v11_5.py",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "8cd533b4657bebdc714645b05d5dfcaaed5e5d74385a4c6ea193615851d803e4",
+    "file_size": 78581,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728339.0798352
+}

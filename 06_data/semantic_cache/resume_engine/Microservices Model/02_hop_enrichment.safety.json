@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 170,
+  "generated_at": 1764728231.9550538,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Microservices Model\\02_hop_enrichment.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import Dict, List\n\n\ndef build_ephemeral_rootfs() -> Dict[str, object]:\n    \"\"\"Return a deterministic description of an ephemeral rootfs.\n\n    This does not perform any real filesystem mutation; instead it\n    returns a structure that can be inspected in tests.\n    \"\"\"\n\n    return {\n        \"tmpfs\": True,\n        \"restricted_paths\": [\"/\", \"/etc\", \"/var\", \"/home\"],\n        \"writable_paths\": [\"/tmp\", \"/sandbox\"],\n    }\n\n\n\n",
+  "full_hash": "86b32fff3cbeff566f58deaedd9a63c1d4ccae4af62fa5e815887958c1cdc741",
+  "generated_at": 1764728224.2899547,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\fs_template.py"
+}

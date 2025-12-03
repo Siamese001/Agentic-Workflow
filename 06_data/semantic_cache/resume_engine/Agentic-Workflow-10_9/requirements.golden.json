@@ -1,0 +1,6 @@
+{
+  "golden_content": "anthropic\ngoogle-generativeai\nopenai\npydantic\nredis\nchromadb\nrank-bm25\npython-dotenv\nhttpx\naiohttp\ntiktoken\nnumpy\n",
+  "full_hash": "9f4a9fcb81bd1fd3306c63492d071292c6fc45894e5c8a106ad6a6eae9e4bd53",
+  "generated_at": 1764728228.762411,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\requirements.txt"
+}

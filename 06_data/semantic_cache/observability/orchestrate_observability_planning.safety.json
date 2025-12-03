@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728350.8750806,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\orc-layer\\plan-phase\\get-observability-info\\general\\understand-request\\orchestrate_observability_planning.py"
+}

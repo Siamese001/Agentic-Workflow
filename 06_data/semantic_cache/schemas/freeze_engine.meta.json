@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\freeze_engine.py",
+    "rel_path": "freeze_engine.py",
+    "root_name": "schemas",
+    "file_hash": "21b6158218dfa00f4d5448f5a6f1b05d5bbddf0192e3445cb8f7d49c2be8b3dc",
+    "file_size": 14693,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728345.5799477
+}

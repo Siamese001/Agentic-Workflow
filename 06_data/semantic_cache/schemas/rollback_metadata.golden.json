@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"rollback_id\": \"rollback_20251202_210700_352620\",\n  \"timestamp\": \"2025-12-02T21:07:09.196065\",\n  \"description\": \"k28_test\",\n  \"operations_count\": 2793,\n  \"backup_location\": \"c:\\\\Git\\\\Agentic-Workflow\\\\02_schemas\\\\rollback_points\\\\rollback_20251202_210700_352620\",\n  \"can_rollback\": true\n}",
+  "full_hash": "6ab23b10095d910ad4ea14023b3d2a0095e8717cd26dd0ea96dc0058d37f9a59",
+  "generated_at": 1764728346.5169616,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\rollback_metadata.json"
+}

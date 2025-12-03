@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - update_runtime_budget\nImplements L5 Safety/Policy Layer for update runtime budget operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass UpdateRuntimeBudgetSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass UpdateRuntimeBudgetSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass UpdateRuntimeBudgetSafetyResult:\n    \"\"\"L5 Safety result with full ",
+  "full_hash": "bee69d9715746d2c5cd8e60d8646e7f176a7abd6c2a08b7e8c158dc642197e03",
+  "generated_at": 1764728347.3210227,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\safety-phase\\manage-runtime-costs\\general\\update-memory\\update_runtime_budget.py"
+}

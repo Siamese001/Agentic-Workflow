@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 6,
+  "generated_at": 1764728353.7497125,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\budget-manager-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\sample_rg_resume_input.json"
+}

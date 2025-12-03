@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 490,
+  "generated_at": 1764728347.9401026,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\safety-guard-layer\\retry-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\runtime_utils.py"
+}

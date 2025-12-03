@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\safety\\bias_auditor.py",
+    "rel_path": "bias_auditor.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "a61297dba8a46867bd6df12f2446bcece964f640cd46280b5b204ea2370e01e7",
+    "file_size": 665,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728330.6914432
+}

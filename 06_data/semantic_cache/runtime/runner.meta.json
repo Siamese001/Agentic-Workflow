@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\executor-microagent-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\runner.py",
+    "rel_path": "runner.py",
+    "root_name": "runtime",
+    "file_hash": "29dc57a9502e8f75d56acb78859fef49298889f7e71a3e2faeeaa6f23197a500",
+    "file_size": 6049,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.8713124
+}

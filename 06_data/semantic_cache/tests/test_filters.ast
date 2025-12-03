@@ -1,0 +1,1412 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nContract-level tests for Safety Filters (L5)\nTests content filtering and input validation\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='agentic_core.l5_safety.filters.content_filter',
+          names=[
+            alias(name='ContentFilter')],
+          level=0),
+        ImportFrom(
+          module='agentic_core.l5_safety.filters.input_validator',
+          names=[
+            alias(name='InputValidator')],
+          level=0),
+        ImportFrom(
+          module='agentic_core.l5_safety.filters.output_sanitizer',
+          names=[
+            alias(name='OutputSanitizer')],
+          level=0)],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ContentFilter', ctx=Store()),
+                Name(id='InputValidator', ctx=Store()),
+                Name(id='OutputSanitizer', ctx=Store())],
+              value=Name(id='Mock', ctx=Load()))])]),
+    ClassDef(
+      name='TestSafetyFiltersContracts',
+      body=[
+        Expr(
+          value=Constant(value='Test safety filters contracts at L5 boundary')),
+        FunctionDef(
+          name='test_content_filter_initialization_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test content filter initializes with required configuration')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='filter_level'),
+                  Constant(value='blocked_categories')],
+                values=[
+                  Constant(value='strict'),
+                  List(
+                    elts=[
+                      Constant(value='harmful'),
+                      Constant(value='illegal')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Name(id='config', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='filter', ctx=Load()),
+                  Constant(value='filter_content')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='filter', ctx=Load()),
+                  Constant(value='is_blocked')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='filter', ctx=Load()),
+                  Constant(value='get_filter_rules')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='filter', ctx=Load()),
+                  Constant(value='update_rules')]))]),
+        FunctionDef(
+          name='test_content_filter_blocked_content_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test content filter blocks inappropriate content')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='filter_level')],
+                    values=[
+                      Constant(value='high')])])),
+            Assign(
+              targets=[
+                Name(id='blocked_content', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='I want to harm someone'),
+                  Constant(value="Here's how to make a bomb"),
+                  Constant(value='Steal credit card information'),
+                  Constant(value='Hack into government systems')],
+                ctx=Load())),
+            For(
+              target=Name(id='content', ctx=Store()),
+              iter=Name(id='blocked_content', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='filter', ctx=Load()),
+                      attr='filter_content',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='text')],
+                        values=[
+                          Name(id='content', ctx=Load())])])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='blocked'),
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=True)])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='reason'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='result', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Subscript(
+                        value=Name(id='result', ctx=Load()),
+                        slice=Constant(value='reason'),
+                        ctx=Load()),
+                      slice=Constant(value='category'),
+                      ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='harmful'),
+                          Constant(value='illegal'),
+                          Constant(value='security')],
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_content_filter_allowed_content_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test content filter allows appropriate content')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='filter_level')],
+                    values=[
+                      Constant(value='medium')])])),
+            Assign(
+              targets=[
+                Name(id='allowed_content', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='I am a software engineer with Python experience'),
+                  Constant(value='Looking for a senior developer position'),
+                  Constant(value='My skills include machine learning and data analysis'),
+                  Constant(value='I have 5 years of experience in web development')],
+                ctx=Load())),
+            For(
+              target=Name(id='content', ctx=Store()),
+              iter=Name(id='allowed_content', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='filter', ctx=Load()),
+                      attr='filter_content',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='text')],
+                        values=[
+                          Name(id='content', ctx=Load())])])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='blocked'),
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=False)])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='confidence_score'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='result', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='confidence_score'),
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0.7)]))])]),
+        FunctionDef(
+          name='test_content_filter_edge_cases_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test content filter handles edge cases')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='edge_cases', ctx=Store())],
+              value=List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='text')],
+                    values=[
+                      Constant(value='')]),
+                  Dict(
+                    keys=[
+                      Constant(value='text')],
+                    values=[
+                      Constant(value=' ')]),
+                  Dict(
+                    keys=[
+                      Constant(value='text')],
+                    values=[
+                      Constant(value=None)]),
+                  Dict(),
+                  Dict(
+                    keys=[
+                      Constant(value='text')],
+                    values=[
+                      BinOp(
+                        left=Constant(value='a'),
+                        op=Mult(),
+                        right=Constant(value=10000))])],
+                ctx=Load())),
+            For(
+              target=Name(id='case', ctx=Store()),
+              iter=Name(id='edge_cases', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='result', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='filter', ctx=Load()),
+                          attr='filter_content',
+                          ctx=Load()),
+                        args=[
+                          Name(id='case', ctx=Load())])),
+                    Assert(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='result', ctx=Load()),
+                          Name(id='dict', ctx=Load())])),
+                    Assert(
+                      test=Compare(
+                        left=Constant(value='blocked'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='result', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Tuple(
+                        elts=[
+                          Name(id='ValueError', ctx=Load()),
+                          Name(id='TypeError', ctx=Load())],
+                        ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_input_validator_initialization_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test input validator initializes with required configuration')),
+            If(
+              test=Compare(
+                left=Name(id='InputValidator', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='InputValidator not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='max_length'),
+                  Constant(value='allowed_types')],
+                values=[
+                  Constant(value=1000),
+                  List(
+                    elts=[
+                      Constant(value='text'),
+                      Constant(value='json')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='InputValidator', ctx=Load()),
+                args=[
+                  Name(id='config', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='validator', ctx=Load()),
+                  Constant(value='validate_input')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='validator', ctx=Load()),
+                  Constant(value='sanitize_input')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='validator', ctx=Load()),
+                  Constant(value='get_validation_rules')]))]),
+        FunctionDef(
+          name='test_input_validator_schema_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test input validator validates against schema')),
+            If(
+              test=Compare(
+                left=Name(id='InputValidator', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='InputValidator not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='schema', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='type'),
+                  Constant(value='properties'),
+                  Constant(value='required')],
+                values=[
+                  Constant(value='object'),
+                  Dict(
+                    keys=[
+                      Constant(value='name'),
+                      Constant(value='email'),
+                      Constant(value='experience')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='type'),
+                          Constant(value='minLength')],
+                        values=[
+                          Constant(value='string'),
+                          Constant(value=1)]),
+                      Dict(
+                        keys=[
+                          Constant(value='type'),
+                          Constant(value='format')],
+                        values=[
+                          Constant(value='string'),
+                          Constant(value='email')]),
+                      Dict(
+                        keys=[
+                          Constant(value='type'),
+                          Constant(value='minimum')],
+                        values=[
+                          Constant(value='integer'),
+                          Constant(value=0)])]),
+                  List(
+                    elts=[
+                      Constant(value='name'),
+                      Constant(value='email')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='InputValidator', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='schema')],
+                    values=[
+                      Name(id='schema', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='valid_input', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='email'),
+                  Constant(value='experience')],
+                values=[
+                  Constant(value='John Doe'),
+                  Constant(value='john@example.com'),
+                  Constant(value=5)])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_input',
+                  ctx=Load()),
+                args=[
+                  Name(id='valid_input', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='valid'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Constant(value='errors'),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='result', ctx=Load())]),
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='errors'),
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)])])),
+            Assign(
+              targets=[
+                Name(id='invalid_input', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='email'),
+                  Constant(value='experience')],
+                values=[
+                  Constant(value=''),
+                  Constant(value='invalid-email'),
+                  UnaryOp(
+                    op=USub(),
+                    operand=Constant(value=1))])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_input',
+                  ctx=Load()),
+                args=[
+                  Name(id='invalid_input', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='valid'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='errors'),
+                      ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_input_sanitizer_initialization_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test output sanitizer initializes with required configuration')),
+            If(
+              test=Compare(
+                left=Name(id='OutputSanitizer', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='OutputSanitizer not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='remove_pii'),
+                  Constant(value='sanitize_html')],
+                values=[
+                  Constant(value=True),
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='sanitizer', ctx=Store())],
+              value=Call(
+                func=Name(id='OutputSanitizer', ctx=Load()),
+                args=[
+                  Name(id='config', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='sanitizer', ctx=Load()),
+                  Constant(value='sanitize_output')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='sanitizer', ctx=Load()),
+                  Constant(value='detect_pii')])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='sanitizer', ctx=Load()),
+                  Constant(value='remove_sensitive_data')]))]),
+        FunctionDef(
+          name='test_output_sanitizer_pii_removal_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test output sanitizer removes PII')),
+            If(
+              test=Compare(
+                left=Name(id='OutputSanitizer', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='OutputSanitizer not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='sanitizer', ctx=Store())],
+              value=Call(
+                func=Name(id='OutputSanitizer', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='remove_pii')],
+                    values=[
+                      Constant(value=True)])])),
+            Assign(
+              targets=[
+                Name(id='content_with_pii', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='text'),
+                  Constant(value='metadata')],
+                values=[
+                  Constant(value='Contact John Doe at john.doe@example.com or call 555-0123 for more information.'),
+                  Dict(
+                    keys=[
+                      Constant(value='source')],
+                    values=[
+                      Constant(value='user_input')])])),
+            Assign(
+              targets=[
+                Name(id='sanitized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sanitizer', ctx=Load()),
+                  attr='sanitize_output',
+                  ctx=Load()),
+                args=[
+                  Name(id='content_with_pii', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='john.doe@example.com'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='sanitized', ctx=Load()),
+                    slice=Constant(value='text'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='555-0123'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='sanitized', ctx=Load()),
+                    slice=Constant(value='text'),
+                    ctx=Load())])),
+            Assert(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Constant(value='[REDACTED]'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='sanitized', ctx=Load()),
+                        slice=Constant(value='text'),
+                        ctx=Load())]),
+                  Compare(
+                    left=Constant(value='[EMAIL]'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='sanitized', ctx=Load()),
+                        slice=Constant(value='text'),
+                        ctx=Load())])]))]),
+        FunctionDef(
+          name='test_output_sanitizer_html_sanitization_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test output sanitizer sanitizes HTML')),
+            If(
+              test=Compare(
+                left=Name(id='OutputSanitizer', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='OutputSanitizer not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='sanitizer', ctx=Store())],
+              value=Call(
+                func=Name(id='OutputSanitizer', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='sanitize_html')],
+                    values=[
+                      Constant(value=True)])])),
+            Assign(
+              targets=[
+                Name(id='content_with_html', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='text'),
+                  Constant(value='metadata')],
+                values=[
+                  Constant(value="<script>alert('xss')</script><p>Safe content here</p>"),
+                  Dict(
+                    keys=[
+                      Constant(value='source')],
+                    values=[
+                      Constant(value='user_input')])])),
+            Assign(
+              targets=[
+                Name(id='sanitized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='sanitizer', ctx=Load()),
+                  attr='sanitize_output',
+                  ctx=Load()),
+                args=[
+                  Name(id='content_with_html', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='<script>'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='sanitized', ctx=Load()),
+                    slice=Constant(value='text'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='Safe content here'),
+                ops=[
+                  In()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='sanitized', ctx=Load()),
+                    slice=Constant(value='text'),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_filter_deterministic_behavior_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test filters behave deterministically')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='text')],
+                values=[
+                  Constant(value='I am a software engineer')])),
+            Assign(
+              targets=[
+                Name(id='result1', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filter', ctx=Load()),
+                  attr='filter_content',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='result2', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filter', ctx=Load()),
+                  attr='filter_content',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='result1', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='result2', ctx=Load())]))]),
+        FunctionDef(
+          name='test_filter_performance_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test filters meet performance requirements')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='text')],
+                values=[
+                  Constant(value='This is a test message for performance evaluation.')])),
+            Import(
+              names=[
+                alias(name='time')]),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='time', ctx=Load()),
+                  attr='time',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filter', ctx=Load()),
+                  attr='filter_content',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='elapsed_time', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='time', ctx=Load()),
+                    attr='time',
+                    ctx=Load())),
+                op=Sub(),
+                right=Name(id='start_time', ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Name(id='elapsed_time', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.05)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='blocked'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='result', ctx=Load())]))]),
+        FunctionDef(
+          name='test_filter_configuration_update_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test filters can be updated with new configuration')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='filter_level')],
+                    values=[
+                      Constant(value='low')])])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filter', ctx=Load()),
+                  attr='filter_content',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='text')],
+                    values=[
+                      Constant(value='Test content')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filter', ctx=Load()),
+                  attr='update_rules',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='filter_level')],
+                    values=[
+                      Constant(value='strict')])])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filter', ctx=Load()),
+                  attr='filter_content',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='text')],
+                    values=[
+                      Constant(value='Professional software engineer content')])])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='result', ctx=Load()),
+                  slice=Constant(value='blocked'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)]))]),
+        FunctionDef(
+          name='test_filter_error_handling_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test filters handle errors gracefully')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='invalid_inputs', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value=None),
+                  Dict(),
+                  Dict(
+                    keys=[
+                      Constant(value='invalid_field')],
+                    values=[
+                      Constant(value='data')])],
+                ctx=Load())),
+            For(
+              target=Name(id='invalid_input', ctx=Store()),
+              iter=Name(id='invalid_inputs', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='result', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='filter', ctx=Load()),
+                          attr='filter_content',
+                          ctx=Load()),
+                        args=[
+                          Name(id='invalid_input', ctx=Load())])),
+                    Assert(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='result', ctx=Load()),
+                          Name(id='dict', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Tuple(
+                        elts=[
+                          Name(id='ValueError', ctx=Load()),
+                          Name(id='TypeError', ctx=Load())],
+                        ctx=Load()),
+                      body=[
+                        Pass()])])])]),
+        FunctionDef(
+          name='test_filter_rule_validation_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test filter validates rule configurations')),
+            If(
+              test=Compare(
+                left=Name(id='ContentFilter', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Mock', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='ContentFilter not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='valid_rules', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='blocked_patterns'),
+                  Constant(value='threshold'),
+                  Constant(value='categories')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='harmful'),
+                      Constant(value='illegal')],
+                    ctx=Load()),
+                  Constant(value=0.8),
+                  List(
+                    elts=[
+                      Constant(value='violence'),
+                      Constant(value='hate_speech')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='filter', ctx=Load()),
+                    attr='validate_rules',
+                    ctx=Load()),
+                  args=[
+                    Name(id='valid_rules', ctx=Load())]),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='invalid_rules', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='threshold'),
+                  Constant(value='blocked_patterns')],
+                values=[
+                  Constant(value=1.5),
+                  Constant(value='')])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='filter', ctx=Load()),
+                    attr='validate_rules',
+                    ctx=Load()),
+                  args=[
+                    Name(id='invalid_rules', ctx=Load())]),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)]))]),
+        FunctionDef(
+          name='test_filter_integration_contract',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test filters work together in pipeline')),
+            If(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='cls', ctx=Load()),
+                      ops=[
+                        Is()],
+                      comparators=[
+                        Name(id='Mock', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='cls', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Name(id='ContentFilter', ctx=Load()),
+                            Name(id='InputValidator', ctx=Load()),
+                            Name(id='OutputSanitizer', ctx=Load())],
+                          ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='skip',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Filters not implemented')]))]),
+            Assign(
+              targets=[
+                Name(id='content_filter', ctx=Store())],
+              value=Call(
+                func=Name(id='ContentFilter', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='input_validator', ctx=Store())],
+              value=Call(
+                func=Name(id='InputValidator', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='output_sanitizer', ctx=Store())],
+              value=Call(
+                func=Name(id='OutputSanitizer', ctx=Load()),
+                args=[
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='input_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='text')],
+                values=[
+                  Constant(value='I am John Doe, contact me at john@example.com')])),
+            Assign(
+              targets=[
+                Name(id='validation_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='input_validator', ctx=Load()),
+                  attr='validate_input',
+                  ctx=Load()),
+                args=[
+                  Name(id='input_data', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='validation_result', ctx=Load()),
+                  slice=Constant(value='valid'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='filter_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='content_filter', ctx=Load()),
+                  attr='filter_content',
+                  ctx=Load()),
+                args=[
+                  Name(id='input_data', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='filter_result', ctx=Load()),
+                  slice=Constant(value='blocked'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)])),
+            Assign(
+              targets=[
+                Name(id='sanitized_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='output_sanitizer', ctx=Load()),
+                  attr='sanitize_output',
+                  ctx=Load()),
+                args=[
+                  Name(id='input_data', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='john@example.com'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='sanitized_result', ctx=Load()),
+                    slice=Constant(value='text'),
+                    ctx=Load())]))])])])

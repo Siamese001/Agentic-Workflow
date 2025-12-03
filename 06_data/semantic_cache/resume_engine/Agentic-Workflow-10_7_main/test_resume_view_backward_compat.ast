@@ -1,0 +1,136 @@
+Module(
+  body=[
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    FunctionDef(
+      name='test_legacy_resume_view_is_filtered',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='compat_mode'),
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='v10_7'),
+                  Constant(value='CompatUser'),
+                  Constant(value='Engineer')])])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='set', ctx=Load()),
+              args=[
+                Call(
+                  func=Attribute(
+                    value=Subscript(
+                      value=Name(id='out', ctx=Load()),
+                      slice=Constant(value='resume'),
+                      ctx=Load()),
+                    attr='keys',
+                    ctx=Load()))]),
+            ops=[
+              Eq()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='candidate'),
+                  Constant(value='job_title'),
+                  Constant(value='summary'),
+                  Constant(value='highlights'),
+                  Constant(value='skills'),
+                  Constant(value='sections')])])),
+        Assert(
+          test=Compare(
+            left=Constant(value='state'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='out', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='master_resume'),
+            ops=[
+              NotIn()],
+            comparators=[
+              Subscript(
+                value=Name(id='out', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load())]))]),
+    FunctionDef(
+      name='test_full_state_available_in_v10_8_mode',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Dict(
+                keys=[
+                  Constant(value='resume'),
+                  Constant(value='jd')],
+                values=[
+                  Constant(value='CompatUser'),
+                  Constant(value='Engineer')])],
+            keywords=[
+              keyword(
+                arg='compat_mode',
+                value=Constant(value='v10_8'))])),
+        Assert(
+          test=Compare(
+            left=Constant(value='master_resume'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Name(id='out', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load())])),
+        Assert(
+          test=Subscript(
+            value=Subscript(
+              value=Subscript(
+                value=Subscript(
+                  value=Name(id='out', ctx=Load()),
+                  slice=Constant(value='state'),
+                  ctx=Load()),
+                slice=Constant(value='memory'),
+                ctx=Load()),
+              slice=Constant(value='episodic'),
+              ctx=Load()),
+            slice=Constant(value='conversation'),
+            ctx=Load())),
+        Assert(
+          test=Subscript(
+            value=Subscript(
+              value=Subscript(
+                value=Name(id='out', ctx=Load()),
+                slice=Constant(value='state'),
+                ctx=Load()),
+              slice=Constant(value='ephemeral'),
+              ctx=Load()),
+            slice=Constant(value='events'),
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Name(id='out', ctx=Load()),
+                slice=Constant(value='resume'),
+                ctx=Load()),
+              slice=Constant(value='candidate'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='CompatUser')]))])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\n\nfrom routing_policy import RoutingCriteria, decide_route\n\n\ndef test_high_complexity_routes_to_gpt4o():\n    decision = decide_route(RoutingCriteria(task_type=\"analysis\", complexity=\"high\"))\n    assert decision.model == \"gpt-4o\"\n    assert decision.endpoint == \"default\"\n\n\ndef test_strict_risk_routes_to_gpt4o():\n    decision = decide_route(RoutingCriteria(task_type=\"analysis\", risk_level=\"strict\"))\n    assert decision.model == \"gpt-4o\"\n    assert decision.endpoint == \"default\"\n\n\ndef test_low_latency_routes_to_fast_endpoint():\n    decision = decide_route(RoutingCriteria(task_type=\"analysis\", latency_target_ms=500))\n    assert decision.model == \"gpt-4o-mini\"\n    assert decision.endpoint == \"fast\"\n\n\ndef test_default_case_rationale_deterministic():\n    decision = decide_route(RoutingCriteria(task_type=\"analysis\"))\n    assert decision.rationale == \"Default routing for normal tasks.\"\n",
+  "full_hash": "ebcc3f118551510de5c0b6f9b03a03640d6a2266307d0cb5050a21038c6ac30c",
+  "generated_at": 1764728354.030401,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\l5_safety\\rules\\observer-microagent-layer\\expand-phase-group\\backoff-policy-ops\\test_validators.py"
+}

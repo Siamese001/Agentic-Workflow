@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\budget-manager-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\rollback_policies.yaml",
+    "rel_path": "rollback_policies.yaml",
+    "root_name": "prompt_governance",
+    "file_hash": "d82ce61ba464112fdb3429f54830dc617feab7e17a1b71b30e6962339cc7128b",
+    "file_size": 2329,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.988041
+}

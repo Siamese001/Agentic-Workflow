@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728347.1001356,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\plan-phase\\get-runtime-info\\general\\understand-request\\manage_runtime_parameters.py"
+}

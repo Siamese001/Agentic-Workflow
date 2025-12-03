@@ -1,0 +1,185 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nHybrid Retriever\nSection 16: RAG Optimization - Hybrid retrieval implementation\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Optional'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='RetrievalType',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Retrieval type enumeration')),
+        Assign(
+          targets=[
+            Name(id='VECTOR', ctx=Store())],
+          value=Constant(value='vector')),
+        Assign(
+          targets=[
+            Name(id='KEYWORD', ctx=Store())],
+          value=Constant(value='keyword')),
+        Assign(
+          targets=[
+            Name(id='GRAPH', ctx=Store())],
+          value=Constant(value='graph')),
+        Assign(
+          targets=[
+            Name(id='HYBRID', ctx=Store())],
+          value=Constant(value='hybrid'))]),
+    ClassDef(
+      name='RetrievalResult',
+      body=[
+        Expr(
+          value=Constant(value='Result from retrieval operation')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_type', ctx=Store()),
+          annotation=Name(id='RetrievalType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='documents', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='HybridRetriever',
+      body=[
+        Expr(
+          value=Constant(value='Hybrid retrieval system combining multiple retrieval methods')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='retrieval_configs',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)]),
+        FunctionDef(
+          name='retrieve',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='retrieval_type',
+                annotation=Name(id='RetrievalType', ctx=Load()))],
+            defaults=[
+              Attribute(
+                value=Name(id='RetrievalType', ctx=Load()),
+                attr='HYBRID',
+                ctx=Load())]),
+          body=[
+            Expr(
+              value=Constant(value='Retrieve documents using hybrid approach')),
+            Return(
+              value=Call(
+                func=Name(id='RetrievalResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_id',
+                    value=Constant(value='temp_id')),
+                  keyword(
+                    arg='retrieval_type',
+                    value=Name(id='retrieval_type', ctx=Load())),
+                  keyword(
+                    arg='documents',
+                    value=List(
+                      elts=[
+                        Dict(
+                          keys=[
+                            Constant(value='content'),
+                            Constant(value='source')],
+                          values=[
+                            Constant(value='sample'),
+                            Constant(value='test')])],
+                      ctx=Load())),
+                  keyword(
+                    arg='scores',
+                    value=List(
+                      elts=[
+                        Constant(value=0.9)],
+                      ctx=Load()))]))],
+          returns=Name(id='RetrievalResult', ctx=Load()))]),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='HybridRetriever'),
+          Constant(value='RetrievalResult'),
+          Constant(value='RetrievalType')],
+        ctx=Load()))])

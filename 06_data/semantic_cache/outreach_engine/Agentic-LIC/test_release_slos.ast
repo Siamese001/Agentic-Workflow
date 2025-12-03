@@ -1,0 +1,149 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Release SLO checks for the full outreach pipeline.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.reasoning.toggles',
+      names=[
+        alias(name='ReasoningToggles')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.stacks.outreach_stack',
+      names=[
+        alias(name='OutreachStack'),
+        alias(name='StackInputs')],
+      level=0),
+    FunctionDef(
+      name='test_release_path_meets_slos_and_is_deterministic',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='OutreachStack', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='ReasoningToggles', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='inputs', ctx=Store())],
+          value=Call(
+            func=Name(id='StackInputs', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt',
+                value=Constant(value='Checking in')),
+              keyword(
+                arg='company_id',
+                value=Constant(value='ACME')),
+              keyword(
+                arg='contact_id',
+                value=Constant(value='C1'))])),
+        Assign(
+          targets=[
+            Name(id='drafts', ctx=Store())],
+          value=List(ctx=Load())),
+        For(
+          target=Name(id='_', ctx=Store()),
+          iter=Call(
+            func=Name(id='range', ctx=Load()),
+            args=[
+              Constant(value=3)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='outcome', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='stack', ctx=Load()),
+                  attr='run',
+                  ctx=Load()),
+                args=[
+                  Name(id='inputs', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='drafts', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='outcome', ctx=Load()),
+                    slice=Constant(value='draft'),
+                    ctx=Load())])),
+            Assert(
+              test=Attribute(
+                value=Subscript(
+                  value=Name(id='outcome', ctx=Load()),
+                  slice=Constant(value='verdict'),
+                  ctx=Load()),
+                attr='passed',
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='metrics', ctx=Store())],
+          value=Attribute(
+            value=Attribute(
+              value=Name(id='stack', ctx=Load()),
+              attr='validator',
+              ctx=Load()),
+            attr='metrics',
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='metrics', ctx=Load()),
+                attr='pass_rate',
+                ctx=Load())),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=0.85)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='metrics', ctx=Load()),
+                attr='latency_p95',
+                ctx=Load())),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=3000)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='metrics', ctx=Load()),
+                attr='token_drift',
+                ctx=Load())),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=0.1)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Call(
+                  func=Name(id='set', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='drafts', ctx=Load()),
+                      slice=Slice(
+                        lower=UnaryOp(
+                          op=USub(),
+                          operand=Constant(value=2))),
+                      ctx=Load())])]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1)]))])])

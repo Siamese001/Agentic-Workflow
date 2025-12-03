@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.43 - JD INTEGRATION & OUTPUT HARDENING\n\nv5.43 CHANGES - CRITICAL FIXES:\n\u2713 FIXED: JobDescriptionAnalyzer now uses real JD parsing (not mock)\n\u2713 FIXED: Integrated JDParser class into main workflow (HOP-0)\n\u2713 NEW: Output display enforcement (plain text, unfenced markdown, fenced JSON)\n\u2713 NEW: ASCII bar graph in Output 5 for section-level signal analysis\n\u2713 NEW: Section 1.5 in QA report showing Expected vs Actual signal by section\n\u2713 FIXED: App Tracker file path references (resume_md instead of resume_json)\n\u2713 FIXED: QA Report section numbering (corrected duplicate Section 8 to Section 9)\n\u2713 NEW: display_outputs_to_console() method for hardened output formatting\n\u2713 NEW: _calculate_section_signals() for per-section signal measurement\n\u2713 Result: 100% JD integration, no truncation, proper formatting\n\nv5.42 CHANGES - EMBEDDED MASTER RESUME UPDATE:\n\u2713 UPDATED: Embedded MASTER_RESUME_JSON with actual Master_Resume_V2.15.json data\n\u2713 FIXED: Contact information (correct email,",
+  "full_hash": "95efe80f04a5547d15c19d6c513cabb558f80038072cbe9e0773227baf80f8c2",
+  "generated_at": 1764728304.1871116,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_43.py"
+}

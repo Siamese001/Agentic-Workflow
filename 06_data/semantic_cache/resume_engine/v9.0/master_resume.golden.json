@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"schema_version\": \"master_resume_v2.15\",\n  \"owner\": {\n    \"name\": \"Amit Ayer\",\n    \"contact\": {\n      \"phone\": \"+1-917-239-3830\",\n      \"email\": \"amitayer1@gmail.com\",\n      \"linkedin\": \"https://www.linkedin.com/in/amitayer1\"\n    }\n  },\n  \"professional_experience\": [\n    {\n      \"company\": \"Unify Consulting\",\n      \"location\": \"Boca Raton, FL\",\n      \"title\": \"Chief AI Officer\",\n      \"dates\": {\n        \"start\": \"February 2023\",\n        \"end\": \"Present\"\n      },\n      \"bullet_pool\": [\n        \"Designed and deployed context-engineering frameworks with retrieval-augmented pipelines on unified analytics platforms and semantic caching, improving generative AI accuracy by 33% while accelerating customer solution adoption across multiple Fortune 500 portfolio companies.\",\n        \"Architected LLM deployment pipelines with embedding stores, vector databases on cloud infrastructure, and inference optimization techniques, cutting latency by 38% and improving model throughput to meet product",
+  "full_hash": "647cf9f0bd1ba7a987f40a6d468b9c2e6b1970ffb445966f02a1eb6ae24a15a1",
+  "generated_at": 1764728328.1565034,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\master_resume.json"
+}

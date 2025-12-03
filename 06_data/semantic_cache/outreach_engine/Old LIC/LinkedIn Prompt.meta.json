@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LinkedIn Prompt.md",
+    "rel_path": "LinkedIn Prompt.md",
+    "root_name": "outreach_engine/Old LIC",
+    "file_hash": "4ca213f0aff096c268e090c5502c3dfcfc00c0508712f4bd6f10cb853bc9a68a",
+    "file_size": 10787,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728339.71818
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag_execution_stack.py",
+    "rel_path": "rag_execution_stack.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "f7f354ed3c17a2fcfddc68308aaf6251580a716be4a92fab5d9f342018edc27f",
+    "file_size": 163,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728229.9307008
+}

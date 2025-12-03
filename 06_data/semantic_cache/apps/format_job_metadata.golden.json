@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - format_job_metadata\nImplements L1 Cognitive Planning Layer for format job metadata operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FormatJobMetadataPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FormatJobMetadataPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FormatJobMetadataPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n    da",
+  "full_hash": "0dc297102263a7109a1d77b3935c99a1753354a8c91e1652f312deda15a26a70",
+  "generated_at": 1764728353.3866978,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\plan-phase\\get-resume-info\\utility\\prepare-information\\format_job_metadata.py"
+}

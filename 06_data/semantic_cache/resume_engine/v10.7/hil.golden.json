@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Human-in-the-loop routing and reconciliation agents.\"\"\"\n\nimport asyncio\nimport json\nimport math\nimport os\nfrom datetime import datetime\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel, Field\n\nfrom core_v10_7 import (\n    BaseAgent,\n    HILAmbiguityReport,\n    HILFeedbackIntent,\n    HILFeedbackRoute,\n    HILReconciliationResult,\n    PersonaConsensus,\n    PersonaReviewDecision,\n    StrategyPlan,\n    WorkflowContext,\n    track_metrics,\n    _format_prompt_with_defaults,\n    PydanticSchemaError,\n)\n\n\nclass VirtualReviewerPersonaAgent(BaseAgent):\n    \"\"\"Persona-specialized reviewer that interprets human feedback.\"\"\"\n\n    PersonaPrompt = \"\"\"\n    You are acting as the {persona} reviewer.\n    Specialty focus: {focus}\n    Human feedback:\n    {human_feedback}\n\n    Clustered intents summary:\n    {intent_summary}\n\n    Provide a JSON object with keys:\n    - persona (string)\n    - approval (boolean)\n    - confidence (0-1 float)\n    - key_concerns (list of strings)\n    -",
+  "full_hash": "8ae35961155f88025c1059df784196c6d3622829aa02eed8adbeab329628c344",
+  "generated_at": 1764728329.6803293,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\stacks_v10_7\\hil.py"
+}

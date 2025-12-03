@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L4 Temporal Knowledge Graph Tests.\"\"\"\n\nclass TestTemporalKG:\n    \"\"\"Tests for L4 temporal knowledge graph.\"\"\"\n    \n    def test_triplet_creation(self):\n        \"\"\"Test triplet creation in KG.\"\"\"\n        triplet = (\"entity1\", \"relates_to\", \"entity2\")\n        assert len(triplet) == 3\n        assert triplet[1] == \"relates_to\"\n    \n    def test_temporal_validity(self):\n        \"\"\"Test temporal validity of KG entries.\"\"\"\n        import time\n        timestamp = time.time()\n        assert timestamp > 0\n",
+  "full_hash": "43d399a788bdfdcf418d6d869ff97b814a56cc4e9ff8953a02ca761c45b63670",
+  "generated_at": 1764728227.1356199,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\temporal_KG\\test_temporal_kg.py"
+}

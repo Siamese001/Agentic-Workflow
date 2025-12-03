@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\architecture\\test_core_module_exports.py",
+    "rel_path": "test_core_module_exports.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "bcf7b637b24ddf2634e12a38288a8fd680cf17382ad5a0a28b655a5f69d8be4b",
+    "file_size": 1440,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.4340267
+}

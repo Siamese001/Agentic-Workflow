@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\planner-microagent-layer\\retry-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\test_regression_temporal_memory.py",
+    "rel_path": "test_regression_temporal_memory.py",
+    "root_name": "tests",
+    "file_hash": "22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281",
+    "file_size": 705,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.7684915
+}

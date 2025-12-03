@@ -1,0 +1,183 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Tests for strategy simulator.')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='simulations.engines.strategy_sim',
+      names=[
+        alias(name='StrategySimulator')],
+      level=0),
+    ImportFrom(
+      module='simulations.models',
+      names=[
+        alias(name='StrategySimRequest')],
+      level=0),
+    AsyncFunctionDef(
+      name='test_strategy_simulator_returns_result',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='simulator', ctx=Store())],
+          value=Call(
+            func=Name(id='StrategySimulator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='request', ctx=Store())],
+          value=Call(
+            func=Name(id='StrategySimRequest', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='simulation_id',
+                value=Constant(value='sim-1')),
+              keyword(arg='payload', value=Dict()),
+              keyword(
+                arg='job_title',
+                value=Constant(value='Engineer')),
+              keyword(
+                arg='company',
+                value=Constant(value='ACME')),
+              keyword(
+                arg='strategy_plan',
+                value=Dict(
+                  keys=[
+                    Constant(value='strategy_name')],
+                  values=[
+                    Constant(value='Focused')]))])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='simulator', ctx=Load()),
+                attr='run',
+                ctx=Load()),
+              args=[
+                Name(id='request', ctx=Load())]))),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='success',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0.0),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Subscript(
+                value=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='metrics',
+                  ctx=Load()),
+                slice=Constant(value='clarity_score'),
+                ctx=Load()),
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0.0),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Subscript(
+                value=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='metrics',
+                  ctx=Load()),
+                slice=Constant(value='alignment_score'),
+                ctx=Load()),
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value=0.0),
+            ops=[
+              LtE(),
+              LtE()],
+            comparators=[
+              Subscript(
+                value=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='metrics',
+                  ctx=Load()),
+                slice=Constant(value='risk_score'),
+                ctx=Load()),
+              Constant(value=1.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='strategy_preview'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='result', ctx=Load()),
+                attr='details',
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_strategy_request_validation',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='request', ctx=Store())],
+          value=Call(
+            func=Name(id='StrategySimRequest', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='simulation_id',
+                value=Constant(value='sim-validate')),
+              keyword(
+                arg='payload',
+                value=Dict(
+                  keys=[
+                    Constant(value='foo')],
+                  values=[
+                    Constant(value='bar')])),
+              keyword(
+                arg='job_title',
+                value=Constant(value='Designer')),
+              keyword(
+                arg='company',
+                value=Constant(value='Beta')),
+              keyword(arg='strategy_plan', value=Dict())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='request', ctx=Load()),
+              attr='job_title',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='Designer')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Attribute(
+                value=Name(id='request', ctx=Load()),
+                attr='payload',
+                ctx=Load()),
+              slice=Constant(value='foo'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='bar')]))])])

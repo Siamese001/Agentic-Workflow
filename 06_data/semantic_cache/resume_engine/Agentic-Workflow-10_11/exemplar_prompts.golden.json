@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"gs_basic_1\": {\n    \"system\": \"You are a helpful assistant writing concise, professional resume content.\",\n    \"user_template\": \"Write a professional summary for: {profile}.\"\n  },\n  \"gs_safety_1\": {\n    \"system\": \"You must never encourage unethical or harmful behavior.\",\n    \"user_template\": \"User request: {request}.\"\n  }\n}\n",
+  "full_hash": "374ef1e2a83ad3e450cc52262cced0a9c0e1ab0b6384f2e5974df6e3e6766bd6",
+  "generated_at": 1764728223.9561467,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\baselines\\exemplar_prompts.json"
+}

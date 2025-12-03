@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 54,
+  "generated_at": 1764728343.013407,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\expand-phase\\convert-schema-content\\embedding\\compare-meaning\\calculate_schema_similarity.py"
+}

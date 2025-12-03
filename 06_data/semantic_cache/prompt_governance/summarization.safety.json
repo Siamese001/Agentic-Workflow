@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 535,
+  "generated_at": 1764728348.099154,
+  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\retriever-microagent-layer\\act-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\summarization.yaml"
+}

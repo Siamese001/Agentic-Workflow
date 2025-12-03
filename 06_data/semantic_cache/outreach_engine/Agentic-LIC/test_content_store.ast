@@ -1,0 +1,193 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.rag.content_store',
+      names=[
+        alias(name='ContentStore'),
+        alias(name='make_key')],
+      level=0),
+    FunctionDef(
+      name='test_put_get_freshness',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='ContentStore', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='key', ctx=Store())],
+          value=Call(
+            func=Name(id='make_key', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='scope',
+                value=Constant(value='company')),
+              keyword(
+                arg='query',
+                value=Constant(value='ACME'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='put',
+              ctx=Load()),
+            args=[
+              Name(id='key', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='payload')],
+                values=[
+                  Constant(value=1)]),
+              Dict(
+                keys=[
+                  Constant(value='tool')],
+                values=[
+                  Constant(value='web_search')])])),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='blob', ctx=Store()),
+                Name(id='meta', ctx=Store()),
+                Name(id='fresh', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='key', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='ttl_s',
+                value=Constant(value=3600))])),
+        Assert(
+          test=Name(id='fresh', ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='blob', ctx=Load()),
+              slice=Constant(value='payload'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='meta', ctx=Load()),
+              attr='tool',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='web_search')]))]),
+    FunctionDef(
+      name='test_get_returns_none_when_missing',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='ContentStore', ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='store', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='missing')],
+              keywords=[
+                keyword(
+                  arg='ttl_s',
+                  value=Constant(value=60))]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]))]),
+    FunctionDef(
+      name='test_clear_resets_store',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='store', ctx=Store())],
+          value=Call(
+            func=Name(id='ContentStore', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='key', ctx=Store())],
+          value=Call(
+            func=Name(id='make_key', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='scope',
+                value=Constant(value='company')),
+              keyword(
+                arg='query',
+                value=Constant(value='ACME'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='put',
+              ctx=Load()),
+            args=[
+              Name(id='key', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='payload')],
+                values=[
+                  Constant(value=1)]),
+              Dict(
+                keys=[
+                  Constant(value='tool')],
+                values=[
+                  Constant(value='web_search')])])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='store', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Name(id='key', ctx=Load())],
+              keywords=[
+                keyword(
+                  arg='ttl_s',
+                  value=Constant(value=3600))]),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='store', ctx=Load()),
+              attr='clear',
+              ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='store', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Name(id='key', ctx=Load())],
+              keywords=[
+                keyword(
+                  arg='ttl_s',
+                  value=Constant(value=3600))]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]))])])

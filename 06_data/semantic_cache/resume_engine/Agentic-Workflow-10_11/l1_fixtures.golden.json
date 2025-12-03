@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"L1 Planning Layer Fixtures.\"\"\"\nimport pytest\n\n@pytest.fixture\ndef mock_workflow_config():\n    \"\"\"Fixture providing mock workflow configuration.\"\"\"\n    return {\n        \"profile_id\": \"test_profile\",\n        \"enable_rag\": True,\n        \"enable_qa\": True,\n    }\n\n@pytest.fixture\ndef mock_job_input():\n    \"\"\"Fixture providing mock job input.\"\"\"\n    return {\n        \"title\": \"Software Engineer\",\n        \"requirements\": [\"Python\", \"AWS\"],\n    }\n",
+  "full_hash": "57d6f0bab9bea93d7f7633ce10310c604d42c86a95ad87fa4152d4355db907ab",
+  "generated_at": 1764728226.8129835,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L1_planning\\fixtures\\l1_fixtures.py"
+}

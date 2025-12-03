@@ -1,0 +1,43 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.agents.k3_message_architect',
+      names=[
+        alias(name='score_quality')],
+      level=0),
+    FunctionDef(
+      name='test_reflexion_improves_score',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='base', ctx=Store())],
+          value=Call(
+            func=Name(id='score_quality', ctx=Load()),
+            args=[
+              Constant(value='draft without reflexion')],
+            keywords=[
+              keyword(
+                arg='reflexion',
+                value=Constant(value=False))])),
+        Assign(
+          targets=[
+            Name(id='with_reflexion', ctx=Store())],
+          value=Call(
+            func=Name(id='score_quality', ctx=Load()),
+            args=[
+              Constant(value='draft with reflexion insights')],
+            keywords=[
+              keyword(
+                arg='reflexion',
+                value=Constant(value=True))])),
+        Assert(
+          test=Compare(
+            left=Name(id='with_reflexion', ctx=Load()),
+            ops=[
+              GtE()],
+            comparators=[
+              BinOp(
+                left=Name(id='base', ctx=Load()),
+                op=Add(),
+                right=Constant(value=1))]))])])

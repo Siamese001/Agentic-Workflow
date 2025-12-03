@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\expand-phase\\convert-schema-content\\embedding\\compare-meaning\\compute_schema_embeddings.py",
+    "rel_path": "compute_schema_embeddings.py",
+    "root_name": "schemas",
+    "file_hash": "3c52c1ee1dba0a186a076b392d959f5fce1c8d36b91166e36fd2e67283d1a580",
+    "file_size": 1325,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.0236025
+}

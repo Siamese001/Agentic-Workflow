@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import Iterable\n\nfrom meta.metacognition.models import Hypothesis\n\n\ndef compute_uncertainty(\n    hypotheses: Iterable[Hypothesis],\n    qa_signals: int,\n    safety_signals: int,\n) -> float:\n    \"\"\"Compute a coarse uncertainty score in [0, 1].\n\n    Factors:\n    - spread of confidence values (higher spread \u21d2 higher uncertainty)\n    - presence of QA / safety signals (more signals \u21d2 higher uncertainty)\n    \"\"\"\n\n    hs = list(hypotheses)\n    if not hs:\n        base = 0.8 if (qa_signals or safety_signals) else 0.5\n        return min(1.0, base)\n\n    confidences = [float(h.confidence) for h in hs]\n    avg = sum(confidences) / len(confidences)\n    var = sum((c - avg) ** 2 for c in confidences) / max(1, len(confidences) - 1)\n\n    spread = min(1.0, var ** 0.5)\n    qa_factor = min(1.0, qa_signals / 5.0)\n    safety_factor = min(1.0, safety_signals / 3.0)\n\n    score = 0.3 * spread + 0.4 * qa_factor + 0.3 * safety_factor\n    return max(0.0, min(1.0, scor",
+  "full_hash": "0a062b8fe2555d05b3dbff0ea1db8c7201c12d191b21672fd5beb4668dde28f6",
+  "generated_at": 1764728225.5977862,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\metacognition\\uncertainty.py"
+}

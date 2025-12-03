@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\retriever-microagent-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\test_e2e_multi_turn_state.py",
+    "rel_path": "test_e2e_multi_turn_state.py",
+    "root_name": "tests",
+    "file_hash": "8916476272f4bfc602fde1594738514a9cf975920022537621c143602cc003fd",
+    "file_size": 497,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.8177319
+}

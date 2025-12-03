@@ -1,0 +1,662 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Any'),
+        alias(name='Callable'),
+        alias(name='Union')],
+      level=0),
+    ImportFrom(
+      module='collections',
+      names=[
+        alias(name='defaultdict')],
+      level=0),
+    ImportFrom(
+      module='models_RES',
+      names=[
+        alias(name='ValidationResult'),
+        alias(name='ValidationSeverity')],
+      level=0),
+    ClassDef(
+      name='ValidationRule',
+      body=[
+        Expr(
+          value=Constant(value='\n    Represents a single executable validation rule.\n    (Extracted from resume_workflow_v16_20.py)\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rule_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='severity',
+                annotation=Name(id='ValidationSeverity', ctx=Load())),
+              arg(
+                arg='validator',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='error_message',
+                annotation=Subscript(
+                  value=Name(id='Union', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Subscript(
+                        value=Name(id='Callable', ctx=Load()),
+                        slice=Tuple(
+                          elts=[
+                            List(
+                              elts=[
+                                Name(id='Dict', ctx=Load())],
+                              ctx=Load()),
+                            Name(id='str', ctx=Load())],
+                          ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='category',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='general')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='rule_id',
+                  ctx=Store())],
+              value=Name(id='rule_id', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='severity',
+                  ctx=Store())],
+              value=Name(id='severity', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='validator',
+                  ctx=Store())],
+              value=Name(id='validator', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='error_message',
+                  ctx=Store())],
+              value=Name(id='error_message', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='category',
+                  ctx=Store())],
+              value=Name(id='category', ctx=Load()))]),
+        FunctionDef(
+          name='execute',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='data',
+                annotation=Name(id='Dict', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Executes the validation rule against the provided data.\n        Now accepts both Dict and ValidationContext for full v16_20 compatibility.\n        ')),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='passed', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='validator',
+                      ctx=Load()),
+                    args=[
+                      Name(id='data', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='error_msg', ctx=Store())],
+                  value=Constant(value='')),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='passed', ctx=Load())),
+                  body=[
+                    If(
+                      test=Call(
+                        func=Name(id='callable', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='error_message',
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='error_msg', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='error_message',
+                              ctx=Load()),
+                            args=[
+                              Name(id='data', ctx=Load())]))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='error_msg', ctx=Store())],
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='error_message',
+                            ctx=Load()))])]),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='data', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='details', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='data', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='error_details'),
+                          Dict()]))],
+                  orelse=[
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='details', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='data', ctx=Load()),
+                              attr='get_details_for_rule',
+                              ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='rule_id',
+                                ctx=Load())]))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='AttributeError', ctx=Load()),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='details', ctx=Store())],
+                              value=Dict())])])]),
+                Return(
+                  value=Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='rule_id',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='rule_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='passed',
+                        value=Name(id='passed', ctx=Load())),
+                      keyword(
+                        arg='severity',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='severity',
+                          ctx=Load())),
+                      keyword(
+                        arg='message',
+                        value=Name(id='error_msg', ctx=Load())),
+                      keyword(
+                        arg='details',
+                        value=Name(id='details', ctx=Load()))]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='rule_id',
+                              ctx=Load())),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=False)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='CRITICAL',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='Validation logic failed for '),
+                                FormattedValue(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='rule_id',
+                                    ctx=Load()),
+                                  conversion=-1),
+                                Constant(value=': '),
+                                FormattedValue(
+                                  value=Call(
+                                    func=Name(id='str', ctx=Load()),
+                                    args=[
+                                      Name(id='e', ctx=Load())]),
+                                  conversion=-1)])),
+                          keyword(
+                            arg='details',
+                            value=Dict(
+                              keys=[
+                                Constant(value='exception')],
+                              values=[
+                                Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='e', ctx=Load())])]))]))])])],
+          returns=Name(id='ValidationResult', ctx=Load()))]),
+    ClassDef(
+      name='ValidationEngine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Manages the registration and execution of validation rules.\n    (Extracted from resume_workflow_v16_20.py)\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='rules',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='ValidationRule', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='rules_by_category',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='List', ctx=Load()),
+                      slice=Name(id='ValidationRule', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='defaultdict', ctx=Load()),
+                args=[
+                  Name(id='list', ctx=Load())]),
+              simple=0)]),
+        FunctionDef(
+          name='register_rule',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rule',
+                annotation=Name(id='ValidationRule', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Registers a single validation rule.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rules',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='rule', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='rules_by_category',
+                      ctx=Load()),
+                    slice=Attribute(
+                      value=Name(id='rule', ctx=Load()),
+                      attr='category',
+                      ctx=Load()),
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='rule', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='register_rules',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='rules',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='ValidationRule', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Registers a list of validation rules.')),
+            For(
+              target=Name(id='rule', ctx=Store()),
+              iter=Name(id='rules', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='register_rule',
+                      ctx=Load()),
+                    args=[
+                      Name(id='rule', ctx=Load())]))])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='validate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='data',
+                annotation=Constant(value='ValidationContext')),
+              arg(
+                arg='categories',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validates the data against registered rules.\n        ')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='rules_to_run', ctx=Store())],
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='rules',
+                ctx=Load())),
+            If(
+              test=Name(id='categories', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='rules_to_run', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='category', ctx=Store()),
+                  iter=Name(id='categories', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='rules_to_run', ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='rules_by_category',
+                                ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Name(id='category', ctx=Load()),
+                              List(ctx=Load())])]))])]),
+            For(
+              target=Name(id='rule', ctx=Store()),
+              iter=Name(id='rules_to_run', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='rule', ctx=Load()),
+                      attr='execute',
+                      ctx=Load()),
+                    args=[
+                      Name(id='data', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='result', ctx=Load())]))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='has_high_or_critical_failures',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='results',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='ValidationResult', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Checks if any high or critical failures are present.')),
+            Return(
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=BoolOp(
+                      op=And(),
+                      values=[
+                        UnaryOp(
+                          op=Not(),
+                          operand=Attribute(
+                            value=Name(id='r', ctx=Load()),
+                            attr='passed',
+                            ctx=Load())),
+                        Compare(
+                          left=Attribute(
+                            value=Name(id='r', ctx=Load()),
+                            attr='severity',
+                            ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            List(
+                              elts=[
+                                Attribute(
+                                  value=Name(id='ValidationSeverity', ctx=Load()),
+                                  attr='CRITICAL',
+                                  ctx=Load()),
+                                Attribute(
+                                  value=Name(id='ValidationSeverity', ctx=Load()),
+                                  attr='HIGH',
+                                  ctx=Load())],
+                              ctx=Load())])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='r', ctx=Store()),
+                        iter=Name(id='results', ctx=Load()),
+                        is_async=0)])]))],
+          returns=Name(id='bool', ctx=Load()))]),
+    ClassDef(
+      name='ConstraintFailureClassifier',
+      body=[
+        Expr(
+          value=Constant(value='\n    Classifies validation failures to inform retry strategies.\n    (Extracted from resume_workflow_v16_20.py)\n    ')),
+        FunctionDef(
+          name='classify_failure',
+          args=arguments(
+            args=[
+              arg(
+                arg='validation_result',
+                annotation=Name(id='ValidationResult', ctx=Load())),
+              arg(
+                arg='original_temperature',
+                annotation=Name(id='float', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Returns failure category to determine optimal retry approach:\n        - "MECHANICAL": Word count, format, structure (lower temp helps)\n        - "CREATIVE": Placeholders, generic content (higher temp needed)\n        - "SEMANTIC": Forbidden verbs, intro phrases (prompt changes help)\n        - "CONFLICT": Impossible constraint combination (needs redesign)\n        ')),
+            Assign(
+              targets=[
+                Name(id='rule_id', ctx=Store())],
+              value=Attribute(
+                value=Name(id='validation_result', ctx=Load()),
+                attr='rule_id',
+                ctx=Load())),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='keyword', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='rule_id', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='keyword', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='WORD_COUNT'),
+                            Constant(value='SENTENCE_COUNT'),
+                            Constant(value='FORMAT'),
+                            Constant(value='STRUCTURE')],
+                          ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Return(
+                  value=Constant(value='MECHANICAL'))]),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='keyword', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='rule_id', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='keyword', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='PLACEHOLDER'),
+                            Constant(value='GENERIC'),
+                            Constant(value='MOCK'),
+                            Constant(value='EMPTY')],
+                          ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Return(
+                  value=Constant(value='CREATIVE'))]),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='keyword', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='rule_id', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='keyword', ctx=Store()),
+                        iter=List(
+                          elts=[
+                            Constant(value='FORBIDDEN_VERB'),
+                            Constant(value='INTRO_PHRASE'),
+                            Constant(value='NO_'),
+                            Constant(value='INVALID_')],
+                          ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Return(
+                  value=Constant(value='SEMANTIC'))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='original_temperature', ctx=Load()),
+                    ops=[
+                      LtE()],
+                    comparators=[
+                      Constant(value=0.4)]),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='validation_result', ctx=Load()),
+                      attr='passed',
+                      ctx=Load()))]),
+              body=[
+                Return(
+                  value=Constant(value='CONFLICT'))]),
+            Return(
+              value=Constant(value='UNKNOWN'))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='str', ctx=Load()))])])

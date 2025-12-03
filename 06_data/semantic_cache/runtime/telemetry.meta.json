@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\observer-microagent-layer\\retry-phase-group\\logging-metrics-ops\\general-operations-ops\\utility-functions-ops\\telemetry.py",
+    "rel_path": "telemetry.py",
+    "root_name": "runtime",
+    "file_hash": "076b184fb87392c4bf4e1ea94056561420404d80e36a2fc56b77fa23e476f6e6",
+    "file_size": 3739,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.0148294
+}

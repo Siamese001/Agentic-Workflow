@@ -1,0 +1,1716 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='LIC Profile Planner - L1 pure planning for profile analysis.\n\nImplements nuclear prompt requirements for deterministic profile planning:\n- Maps LinkedIn/CRM profile fields Ã¢â€\xa0â€™ LIC archetype + seniority + overrides + confidence\n- Pure L1 planning with no external calls or execution\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='LICProfileSignal',
+      body=[
+        Expr(
+          value=Constant(value='Individual signal extracted from profile analysis.')),
+        AnnAssign(
+          target=Name(id='signal_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='value', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='LICProfilePlan',
+      body=[
+        Expr(
+          value=Constant(value='Complete profile analysis plan for LIC targeting.')),
+        AnnAssign(
+          target=Name(id='inferred_archetype', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='seniority_level', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='overrides', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='signals', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='LICProfileSignal', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='LICProfilePlanner',
+      body=[
+        Expr(
+          value=Constant(value='L1 pure planner for profile analysis and archetype inference.\n    \n    Generates deterministic profile plans by analyzing LinkedIn/CRM fields\n    and mapping them to LIC archetypes and seniority levels.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='telemetry_bus',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Any', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize LIC profile planner.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='telemetry_bus',
+                  ctx=Store())],
+              value=Name(id='telemetry_bus', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='executive_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='ceo'),
+                  Constant(value='cto'),
+                  Constant(value='cfo'),
+                  Constant(value='ciso'),
+                  Constant(value='chief'),
+                  Constant(value='president'),
+                  Constant(value='founder'),
+                  Constant(value='co-founder'),
+                  Constant(value='vp'),
+                  Constant(value='vice president'),
+                  Constant(value='director'),
+                  Constant(value='head'),
+                  Constant(value='leader'),
+                  Constant(value='executive')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='recruiter_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='recruiter'),
+                  Constant(value='talent acquisition'),
+                  Constant(value='sourcer'),
+                  Constant(value='hiring manager'),
+                  Constant(value='hr'),
+                  Constant(value='human resources'),
+                  Constant(value='people'),
+                  Constant(value='recruitment')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='technical_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='engineer'),
+                  Constant(value='developer'),
+                  Constant(value='architect'),
+                  Constant(value='technical'),
+                  Constant(value='software'),
+                  Constant(value='engineering'),
+                  Constant(value='devops'),
+                  Constant(value='sre'),
+                  Constant(value='data scientist'),
+                  Constant(value='ml engineer')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='c_level_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='ceo'),
+                  Constant(value='cto'),
+                  Constant(value='cfo'),
+                  Constant(value='ciso'),
+                  Constant(value='chief'),
+                  Constant(value='president')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='vp_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='vp'),
+                  Constant(value='vice president')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='director_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='director'),
+                  Constant(value='head')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='sr_manager_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='senior manager'),
+                  Constant(value='sr manager'),
+                  Constant(value='lead')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='ic_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='engineer'),
+                  Constant(value='developer'),
+                  Constant(value='analyst'),
+                  Constant(value='specialist')]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='plan',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwonlyargs=[
+              arg(
+                arg='profile_data',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='outreach_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))],
+            kw_defaults=[
+              None,
+              None]),
+          body=[
+            Expr(
+              value=Constant(value='Generate a deterministic profile analysis plan.\n        \n        Args:\n            profile_data: LinkedIn/CRM profile fields (title, company, industry, etc.)\n            outreach_context: Context data including explicit overrides\n            \n        Returns:\n            Complete profile plan with archetype, seniority, confidence, and signals\n        ')),
+            Assign(
+              targets=[
+                Name(id='signals', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_extract_profile_signals',
+                  ctx=Load()),
+                args=[
+                  Name(id='profile_data', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='overrides', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_extract_overrides',
+                  ctx=Load()),
+                args=[
+                  Name(id='outreach_context', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='inferred_archetype', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_infer_archetype',
+                  ctx=Load()),
+                args=[
+                  Name(id='signals', ctx=Load()),
+                  Name(id='overrides', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='seniority_level', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_infer_seniority_level',
+                  ctx=Load()),
+                args=[
+                  Name(id='signals', ctx=Load()),
+                  Name(id='overrides', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='confidence_score', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_compute_confidence_score',
+                  ctx=Load()),
+                args=[
+                  Name(id='signals', ctx=Load()),
+                  Name(id='overrides', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='metadata', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='signal_count'),
+                  Constant(value='has_explicit_archetype_override'),
+                  Constant(value='has_explicit_seniority_override')],
+                values=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='signals', ctx=Load())]),
+                  Compare(
+                    left=Constant(value='archetype'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='overrides', ctx=Load())]),
+                  Compare(
+                    left=Constant(value='seniority_level'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='overrides', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='LICProfilePlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='inferred_archetype',
+                    value=Name(id='inferred_archetype', ctx=Load())),
+                  keyword(
+                    arg='seniority_level',
+                    value=Name(id='seniority_level', ctx=Load())),
+                  keyword(
+                    arg='confidence_score',
+                    value=Name(id='confidence_score', ctx=Load())),
+                  keyword(
+                    arg='overrides',
+                    value=Name(id='overrides', ctx=Load())),
+                  keyword(
+                    arg='signals',
+                    value=Name(id='signals', ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Name(id='metadata', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_safe_record_telemetry',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load())])),
+            Return(
+              value=Name(id='plan', ctx=Load()))],
+          returns=Name(id='LICProfilePlan', ctx=Load())),
+        FunctionDef(
+          name='_extract_profile_signals',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='profile_data',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Extract individual signals from profile data.')),
+            Assign(
+              targets=[
+                Name(id='signals', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='title', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='profile_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='title'),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            If(
+              test=Name(id='title', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='title_keywords', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_extract_title_keywords',
+                      ctx=Load()),
+                    args=[
+                      Name(id='title', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='LICProfileSignal', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='signal_type',
+                            value=Constant(value='title_keywords')),
+                          keyword(
+                            arg='value',
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value=','),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Name(id='title_keywords', ctx=Load())])),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.9)),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='raw_title')],
+                              values=[
+                                Name(id='title', ctx=Load())]))])]))]),
+            Assign(
+              targets=[
+                Name(id='company_size', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='profile_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company_size'),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            If(
+              test=Name(id='company_size', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='LICProfileSignal', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='signal_type',
+                            value=Constant(value='company_size')),
+                          keyword(
+                            arg='value',
+                            value=Name(id='company_size', ctx=Load())),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.8)),
+                          keyword(arg='metadata', value=Dict())])]))]),
+            Assign(
+              targets=[
+                Name(id='industry', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='profile_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='industry'),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            If(
+              test=Name(id='industry', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='LICProfileSignal', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='signal_type',
+                            value=Constant(value='industry')),
+                          keyword(
+                            arg='value',
+                            value=Name(id='industry', ctx=Load())),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.7)),
+                          keyword(arg='metadata', value=Dict())])]))]),
+            Assign(
+              targets=[
+                Name(id='experience_years', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='profile_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='experience_years'),
+                  Constant(value=0)])),
+            If(
+              test=Compare(
+                left=Name(id='experience_years', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='LICProfileSignal', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='signal_type',
+                            value=Constant(value='experience_years')),
+                          keyword(
+                            arg='value',
+                            value=Call(
+                              func=Name(id='str', ctx=Load()),
+                              args=[
+                                Name(id='experience_years', ctx=Load())])),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.8)),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='years')],
+                              values=[
+                                Name(id='experience_years', ctx=Load())]))])]))]),
+            Assign(
+              targets=[
+                Name(id='location', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='profile_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='location'),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load()))),
+            If(
+              test=Name(id='location', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='LICProfileSignal', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='signal_type',
+                            value=Constant(value='location')),
+                          keyword(
+                            arg='value',
+                            value=Name(id='location', ctx=Load())),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.6)),
+                          keyword(arg='metadata', value=Dict())])]))]),
+            Return(
+              value=Name(id='signals', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='LICProfileSignal', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_extract_title_keywords',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='title',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Extract relevant keywords from job title.')),
+            Assign(
+              targets=[
+                Name(id='words', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='title', ctx=Load()),
+                          attr='replace',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='-'),
+                          Constant(value=' ')]),
+                      attr='replace',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='/'),
+                      Constant(value=' ')]),
+                  attr='split',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='keywords', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='word', ctx=Store()),
+              iter=Name(id='words', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='word_clean', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='word', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='(),')]),
+                      attr='lower',
+                      ctx=Load()))),
+                If(
+                  test=Compare(
+                    left=Name(id='word_clean', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='executive_keywords',
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='keywords', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='word_clean', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='word_clean', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='recruiter_keywords',
+                            ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='keywords', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='word_clean', ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='word_clean', ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='technical_keywords',
+                                ctx=Load())]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='keywords', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='word_clean', ctx=Load())]))])])])]),
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Name(id='keywords', ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_extract_overrides',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='outreach_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Extract explicit overrides from outreach context.')),
+            Assign(
+              targets=[
+                Name(id='overrides', ctx=Store())],
+              value=Dict()),
+            If(
+              test=Compare(
+                left=Constant(value='archetype_override'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='outreach_context', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='archetype', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='outreach_context', ctx=Load()),
+                        slice=Constant(value='archetype_override'),
+                        ctx=Load()),
+                      attr='upper',
+                      ctx=Load()))),
+                If(
+                  test=Compare(
+                    left=Name(id='archetype', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='EXECUTIVE'),
+                          Constant(value='SENIOR_TA'),
+                          Constant(value='RECRUITER'),
+                          Constant(value='OTHER')],
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='overrides', ctx=Load()),
+                          slice=Constant(value='archetype'),
+                          ctx=Store())],
+                      value=Name(id='archetype', ctx=Load()))])]),
+            If(
+              test=Compare(
+                left=Constant(value='seniority_override'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='outreach_context', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='seniority', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='outreach_context', ctx=Load()),
+                        slice=Constant(value='seniority_override'),
+                        ctx=Load()),
+                      attr='upper',
+                      ctx=Load()))),
+                If(
+                  test=Compare(
+                    left=Name(id='seniority', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      List(
+                        elts=[
+                          Constant(value='C_LEVEL'),
+                          Constant(value='VP'),
+                          Constant(value='DIRECTOR'),
+                          Constant(value='SR_MANAGER'),
+                          Constant(value='IC')],
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='overrides', ctx=Load()),
+                          slice=Constant(value='seniority_level'),
+                          ctx=Store())],
+                      value=Name(id='seniority', ctx=Load()))])]),
+            If(
+              test=Compare(
+                left=Constant(value='confidence_override'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='outreach_context', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='confidence', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='outreach_context', ctx=Load()),
+                    slice=Constant(value='confidence_override'),
+                    ctx=Load())),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='confidence', ctx=Load()),
+                          Tuple(
+                            elts=[
+                              Name(id='int', ctx=Load()),
+                              Name(id='float', ctx=Load())],
+                            ctx=Load())]),
+                      Compare(
+                        left=Constant(value=0),
+                        ops=[
+                          LtE(),
+                          LtE()],
+                        comparators=[
+                          Name(id='confidence', ctx=Load()),
+                          Constant(value=1)])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='overrides', ctx=Load()),
+                          slice=Constant(value='confidence_score'),
+                          ctx=Store())],
+                      value=Name(id='confidence', ctx=Load()))])]),
+            Return(
+              value=Name(id='overrides', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_infer_archetype',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='signals',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='LICProfileSignal', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Infer archetype from signals, respecting overrides.')),
+            If(
+              test=Compare(
+                left=Constant(value='archetype'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='overrides', ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='overrides', ctx=Load()),
+                    slice=Constant(value='archetype'),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='title_signal', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='s', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Name(id='signals', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='s', ctx=Load()),
+                              attr='signal_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='title_keywords')])],
+                        is_async=0)]),
+                  Constant(value=None)])),
+            If(
+              test=Name(id='title_signal', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='keywords', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='title_signal', ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      attr='split',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=',')])),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='recruiter_keywords',
+                              ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Name(id='keywords', ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='RECRUITER'))]),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='executive_keywords',
+                              ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Name(id='keywords', ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='EXECUTIVE'))]),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='technical_keywords',
+                              ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Name(id='keywords', ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='SENIOR_TA'))])]),
+            Assign(
+              targets=[
+                Name(id='company_size_signal', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='s', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Name(id='signals', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='s', ctx=Load()),
+                              attr='signal_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='company_size')])],
+                        is_async=0)]),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Name(id='experience_signal', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='s', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Name(id='signals', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='s', ctx=Load()),
+                              attr='signal_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='experience_years')])],
+                        is_async=0)]),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='company_size_signal', ctx=Load()),
+                      Compare(
+                        left=Constant(value='large'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='company_size_signal', ctx=Load()),
+                            attr='value',
+                            ctx=Load())])]),
+                  BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='experience_signal', ctx=Load()),
+                      Compare(
+                        left=Call(
+                          func=Name(id='int', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='experience_signal', ctx=Load()),
+                              attr='value',
+                              ctx=Load())]),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Constant(value=15)])])]),
+              body=[
+                Return(
+                  value=Constant(value='EXECUTIVE'))],
+              orelse=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Name(id='experience_signal', ctx=Load()),
+                      Compare(
+                        left=Call(
+                          func=Name(id='int', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='experience_signal', ctx=Load()),
+                              attr='value',
+                              ctx=Load())]),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Constant(value=8)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='SENIOR_TA'))])]),
+            Return(
+              value=Constant(value='OTHER'))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_infer_seniority_level',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='signals',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='LICProfileSignal', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Infer seniority level from signals, respecting overrides.')),
+            If(
+              test=Compare(
+                left=Constant(value='seniority_level'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='overrides', ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='overrides', ctx=Load()),
+                    slice=Constant(value='seniority_level'),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='title_signal', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='s', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Name(id='signals', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='s', ctx=Load()),
+                              attr='signal_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='title_keywords')])],
+                        is_async=0)]),
+                  Constant(value=None)])),
+            If(
+              test=Name(id='title_signal', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='title', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='title_signal', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='raw_title'),
+                      Constant(value='')])),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='title', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='c_level_keywords',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='C_LEVEL'))]),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='title', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='vp_keywords',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='VP'))]),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='title', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='director_keywords',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='DIRECTOR'))]),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='title', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='sr_manager_keywords',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='SR_MANAGER'))]),
+                If(
+                  test=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Name(id='kw', ctx=Load()),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Name(id='title', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='kw', ctx=Store()),
+                            iter=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='ic_keywords',
+                              ctx=Load()),
+                            is_async=0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value='IC'))])]),
+            Assign(
+              targets=[
+                Name(id='experience_signal', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='s', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Name(id='signals', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='s', ctx=Load()),
+                              attr='signal_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='experience_years')])],
+                        is_async=0)]),
+                  Constant(value=None)])),
+            If(
+              test=Name(id='experience_signal', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='years', ctx=Store())],
+                  value=Call(
+                    func=Name(id='int', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='experience_signal', ctx=Load()),
+                        attr='value',
+                        ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='years', ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=20)]),
+                  body=[
+                    Return(
+                      value=Constant(value='C_LEVEL'))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='years', ctx=Load()),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Constant(value=15)]),
+                      body=[
+                        Return(
+                          value=Constant(value='VP'))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='years', ctx=Load()),
+                            ops=[
+                              GtE()],
+                            comparators=[
+                              Constant(value=10)]),
+                          body=[
+                            Return(
+                              value=Constant(value='DIRECTOR'))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Name(id='years', ctx=Load()),
+                                ops=[
+                                  GtE()],
+                                comparators=[
+                                  Constant(value=5)]),
+                              body=[
+                                Return(
+                                  value=Constant(value='SR_MANAGER'))],
+                              orelse=[
+                                Return(
+                                  value=Constant(value='IC'))])])])])]),
+            Return(
+              value=Constant(value='IC'))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_compute_confidence_score',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='signals',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='LICProfileSignal', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Compute overall confidence score based on signal agreement.')),
+            If(
+              test=Compare(
+                left=Constant(value='confidence_score'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='overrides', ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='overrides', ctx=Load()),
+                    slice=Constant(value='confidence_score'),
+                    ctx=Load()))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='signals', ctx=Load())),
+              body=[
+                Return(
+                  value=Constant(value=0.0))]),
+            Assign(
+              targets=[
+                Name(id='signal_confidences', ctx=Store())],
+              value=ListComp(
+                elt=Attribute(
+                  value=Name(id='s', ctx=Load()),
+                  attr='confidence',
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='s', ctx=Store()),
+                    iter=Name(id='signals', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='avg_confidence', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='sum', ctx=Load()),
+                  args=[
+                    Name(id='signal_confidences', ctx=Load())]),
+                op=Div(),
+                right=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='signal_confidences', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='boost', ctx=Store())],
+              value=Constant(value=0.0)),
+            If(
+              test=Compare(
+                left=Constant(value='archetype'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='overrides', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='boost', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.2))]),
+            If(
+              test=Compare(
+                left=Constant(value='seniority_level'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='overrides', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='boost', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            Assign(
+              targets=[
+                Name(id='title_signal', ctx=Store())],
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Name(id='s', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='s', ctx=Store()),
+                        iter=Name(id='signals', ctx=Load()),
+                        ifs=[
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='s', ctx=Load()),
+                              attr='signal_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='title_keywords')])],
+                        is_async=0)]),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='title_signal', ctx=Load()),
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='title_signal', ctx=Load()),
+                      attr='confidence',
+                      ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Constant(value=0.9)])]),
+              body=[
+                AugAssign(
+                  target=Name(id='boost', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.1))]),
+            Assign(
+              targets=[
+                Name(id='final_confidence', ctx=Store())],
+              value=Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='avg_confidence', ctx=Load()),
+                    op=Add(),
+                    right=Name(id='boost', ctx=Load())),
+                  Constant(value=1.0)])),
+            Return(
+              value=Call(
+                func=Name(id='round', ctx=Load()),
+                args=[
+                  Name(id='final_confidence', ctx=Load()),
+                  Constant(value=2)]))],
+          returns=Name(id='float', ctx=Load())),
+        FunctionDef(
+          name='_safe_record_telemetry',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='LICProfilePlan', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Record telemetry event safely without breaking planning.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='telemetry_bus',
+                  ctx=Load())),
+              body=[
+                Return()]),
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='telemetry_bus',
+                        ctx=Load()),
+                      attr='record_event',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='lic_profile_plan_created')],
+                    keywords=[
+                      keyword(
+                        arg='layer',
+                        value=Constant(value='L1')),
+                      keyword(
+                        arg='payload',
+                        value=Dict(
+                          keys=[
+                            Constant(value='inferred_archetype'),
+                            Constant(value='seniority_level'),
+                            Constant(value='confidence_score'),
+                            Constant(value='signal_count'),
+                            Constant(value='has_overrides')],
+                          values=[
+                            Attribute(
+                              value=Name(id='plan', ctx=Load()),
+                              attr='inferred_archetype',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='plan', ctx=Load()),
+                              attr='seniority_level',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='plan', ctx=Load()),
+                              attr='confidence_score',
+                              ctx=Load()),
+                            Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='plan', ctx=Load()),
+                                  attr='signals',
+                                  ctx=Load())]),
+                            Compare(
+                              left=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  Attribute(
+                                    value=Name(id='plan', ctx=Load()),
+                                    attr='overrides',
+                                    ctx=Load())]),
+                              ops=[
+                                Gt()],
+                              comparators=[
+                                Constant(value=0)])]))]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='debug',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='Failed to record telemetry for LIC profile plan')]))])])],
+          returns=Constant(value=None))])])

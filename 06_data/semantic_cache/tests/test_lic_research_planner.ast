@@ -1,0 +1,1734 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Tests for LIC Research Planner - L1 pure planning layer.')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='MagicMock')],
+      level=0),
+    ImportFrom(
+      module='l1.lic_research_planner',
+      names=[
+        alias(name='LICResearchPlanner'),
+        alias(name='LICResearchPlan'),
+        alias(name='LICResearchHop')],
+      level=0),
+    FunctionDef(
+      name='mock_telemetry_bus',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Mock telemetry bus.')),
+        Assign(
+          targets=[
+            Name(id='bus', ctx=Store())],
+          value=Call(
+            func=Name(id='MagicMock', ctx=Load()))),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='bus', ctx=Load()),
+              attr='record_event',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='MagicMock', ctx=Load()))),
+        Return(
+          value=Name(id='bus', ctx=Load()))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())]),
+    FunctionDef(
+      name='default_planner',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Default LIC research planner.')),
+        Return(
+          value=Call(
+            func=Name(id='LICResearchPlanner', ctx=Load())))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())]),
+    FunctionDef(
+      name='planner_with_telemetry',
+      args=arguments(
+        args=[
+          arg(arg='mock_telemetry_bus')]),
+      body=[
+        Expr(
+          value=Constant(value='LIC research planner with telemetry.')),
+        Return(
+          value=Call(
+            func=Name(id='LICResearchPlanner', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='telemetry_bus',
+                value=Name(id='mock_telemetry_bus', ctx=Load()))]))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())]),
+    FunctionDef(
+      name='sample_outreach_context',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Sample outreach context for testing.')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='recipient_profile'),
+              Constant(value='company_data'),
+              Constant(value='mission')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='role_title')],
+                values=[
+                  Constant(value='John Doe'),
+                  Constant(value='Senior Software Engineer')]),
+              Dict(
+                keys=[
+                  Constant(value='name'),
+                  Constant(value='industry')],
+                values=[
+                  Constant(value='TechCorp'),
+                  Constant(value='Technology')]),
+              Constant(value='Test mission')]))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())]),
+    ClassDef(
+      name='TestLICResearchPlanner',
+      body=[
+        Expr(
+          value=Constant(value='Test suite for LIC research planner.')),
+        FunctionDef(
+          name='test_creates_default_seed_queries',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that default seed queries are created correctly.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='expected_seed_queries', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Senior Software Engineer responsibilities at TechCorp'),
+                  Constant(value='TechCorp strategy Senior Software Engineer'),
+                  Constant(value='TechCorp product roadmap')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='seed_queries',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='expected_seed_queries', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='seed_queries',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)]))]),
+        FunctionDef(
+          name='test_generates_correct_number_of_hops',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that the correct number of hops is generated.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='max_hops',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='hop', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='hops',
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='start',
+                    value=Constant(value=1))]),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='hop', ctx=Load()),
+                      attr='hop_index',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='i', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_semantic_first_hop_strategy',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that first hop uses semantic expansion strategy.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='first_hop', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='hops',
+                  ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='first_hop', ctx=Load()),
+                  attr='expansion_strategy',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='semantic')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='first_hop', ctx=Load()),
+                  attr='requires_freshness',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='technical requirements'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='first_hop', ctx=Load()),
+                    attr='query_text',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='first_hop', ctx=Load()),
+                  attr='query_seed',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='seed_queries',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_temporal_second_hop_strategy',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that second hop uses temporal expansion strategy.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='second_hop', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='hops',
+                  ctx=Load()),
+                slice=Constant(value=1),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='second_hop', ctx=Load()),
+                  attr='expansion_strategy',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='temporal')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='second_hop', ctx=Load()),
+                  attr='requires_freshness',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='developments changes'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='second_hop', ctx=Load()),
+                    attr='query_text',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='second_hop', ctx=Load()),
+                  attr='query_seed',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='seed_queries',
+                      ctx=Load()),
+                    slice=Constant(value=1),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_hybrid_later_hops',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that later hops use role_synonym or hybrid strategy.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='third_hop', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='hops',
+                  ctx=Load()),
+                slice=Constant(value=2),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='third_hop', ctx=Load()),
+                  attr='expansion_strategy',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='role_synonym')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='third_hop', ctx=Load()),
+                  attr='requires_freshness',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='career growth'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='third_hop', ctx=Load()),
+                    attr='query_text',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='third_hop', ctx=Load()),
+                  attr='query_seed',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='seed_queries',
+                      ctx=Load()),
+                    slice=Constant(value=2),
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_expected_evidence_contains_funding_strategy_product',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that expected evidence contains required signal targets.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            For(
+              target=Name(id='hop', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='hops',
+                ctx=Load()),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Constant(value='funding'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expected_evidence',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='strategy'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expected_evidence',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='product'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expected_evidence',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='leadership moves'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expected_evidence',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='hiring signals'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expected_evidence',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='technology stack'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expected_evidence',
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_stop_condition_cache_when_enabled',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='planner_with_telemetry'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that stop condition is cache_good_enough when cache critique enabled.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner_with_telemetry', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='stop_condition',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='cache_good_enough')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='cache_critique_enabled'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)]))]),
+        FunctionDef(
+          name='test_stop_condition_max_hops_when_disabled',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that stop condition is max_hops when cache critique disabled.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='LICResearchPlanner', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enable_cache_critique',
+                    value=Constant(value=False))])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='stop_condition',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='max_hops')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='cache_critique_enabled'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)]))]),
+        FunctionDef(
+          name='test_metadata_contains_signal_targets',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that metadata contains required signal targets.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Constant(value='signal_targets'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='signal_targets', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='metadata',
+                  ctx=Load()),
+                slice=Constant(value='signal_targets'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='expected_targets', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='funding'),
+                  Constant(value='product'),
+                  Constant(value='strategy'),
+                  Constant(value='personnel'),
+                  Constant(value='market')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Name(id='signal_targets', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='expected_targets', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='cache_critique_enabled'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='temporal_signal_enabled'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='synonym_expansion_enabled'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)]))]),
+        FunctionDef(
+          name='test_plan_is_pure_and_has_no_execution',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that plan is pure with no external execution calls.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='LICResearchPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='role_title',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Senior Software Engineer')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='company_name',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='TechCorp')])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='seed_queries',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            For(
+              target=Name(id='hop', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='hops',
+                ctx=Load()),
+              body=[
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='hop', ctx=Load()),
+                      Name(id='LICResearchHop', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='query_text',
+                        ctx=Load()),
+                      Name(id='str', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='query_seed',
+                        ctx=Load()),
+                      Name(id='str', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expansion_strategy',
+                        ctx=Load()),
+                      Name(id='str', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='requires_freshness',
+                        ctx=Load()),
+                      Name(id='bool', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='expected_evidence',
+                        ctx=Load()),
+                      Name(id='list', ctx=Load())])),
+                Assert(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      Name(id='dict', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_custom_max_hops_configuration',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test custom max_hops configuration.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='LICResearchPlanner', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='max_hops',
+                    value=Constant(value=5))])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='max_hops',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=5)])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='hop', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='hops',
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='start',
+                    value=Constant(value=1))]),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='hop', ctx=Load()),
+                      attr='hop_index',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='i', ctx=Load())]))])]),
+        FunctionDef(
+          name='test_temporal_signal_disabled_configuration',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test configuration with temporal signal disabled.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='LICResearchPlanner', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enable_temporal_signal',
+                    value=Constant(value=False))])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='second_hop', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='hops',
+                  ctx=Load()),
+                slice=Constant(value=1),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='second_hop', ctx=Load()),
+                  attr='expansion_strategy',
+                  ctx=Load()),
+                ops=[
+                  NotEq()],
+                comparators=[
+                  Constant(value='temporal')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='second_hop', ctx=Load()),
+                  attr='requires_freshness',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='temporal_signal_enabled'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)]))]),
+        FunctionDef(
+          name='test_synonym_expansion_disabled_configuration',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test configuration with synonym expansion disabled.')),
+            Assign(
+              targets=[
+                Name(id='planner', ctx=Store())],
+              value=Call(
+                func=Name(id='LICResearchPlanner', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enable_synonym_expansion',
+                    value=Constant(value=False))])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='third_hop', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='hops',
+                  ctx=Load()),
+                slice=Constant(value=2),
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='third_hop', ctx=Load()),
+                  attr='expansion_strategy',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='hybrid')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='synonym_expansion_enabled'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=False)]))]),
+        FunctionDef(
+          name='test_telemetry_recording',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='planner_with_telemetry'),
+              arg(arg='sample_outreach_context'),
+              arg(arg='mock_telemetry_bus')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that telemetry is recorded correctly.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner_with_telemetry', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='mock_telemetry_bus', ctx=Load()),
+                    attr='record_event',
+                    ctx=Load()),
+                  attr='assert_called_once_with',
+                  ctx=Load()),
+                args=[
+                  Constant(value='lic_research_plan_created')],
+                keywords=[
+                  keyword(
+                    arg='layer',
+                    value=Constant(value='L1')),
+                  keyword(
+                    arg='payload',
+                    value=Dict(
+                      keys=[
+                        Constant(value='role_title'),
+                        Constant(value='company_name'),
+                        Constant(value='max_hops'),
+                        Constant(value='stop_condition'),
+                        Constant(value='hop_count'),
+                        Constant(value='cache_critique_enabled')],
+                      values=[
+                        Constant(value='Senior Software Engineer'),
+                        Constant(value='TechCorp'),
+                        Constant(value=3),
+                        Constant(value='cache_good_enough'),
+                        Constant(value=3),
+                        Constant(value=True)]))]))]),
+        FunctionDef(
+          name='test_telemetry_error_handling',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='planner_with_telemetry'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value="Test that telemetry errors don't break planning.")),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='planner_with_telemetry', ctx=Load()),
+                      attr='telemetry_bus',
+                      ctx=Load()),
+                    attr='record_event',
+                    ctx=Load()),
+                  attr='side_effect',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Exception', ctx=Load()),
+                args=[
+                  Constant(value='Telemetry failed')])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='planner_with_telemetry', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='LICResearchPlan', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='role_title',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Senior Software Engineer')]))]),
+        FunctionDef(
+          name='test_query_expansion_strategies_deterministic',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that query expansion is deterministic.')),
+            Assign(
+              targets=[
+                Name(id='plan1', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='plan2', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan1', ctx=Load()),
+                  attr='seed_queries',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='plan2', ctx=Load()),
+                    attr='seed_queries',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='plan1', ctx=Load()),
+                      attr='hops',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='plan2', ctx=Load()),
+                        attr='hops',
+                        ctx=Load())])])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='hop1', ctx=Store()),
+                  Name(id='hop2', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='zip', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan1', ctx=Load()),
+                    attr='hops',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='plan2', ctx=Load()),
+                    attr='hops',
+                    ctx=Load())]),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='hop1', ctx=Load()),
+                      attr='query_text',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop2', ctx=Load()),
+                        attr='query_text',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='hop1', ctx=Load()),
+                      attr='expansion_strategy',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop2', ctx=Load()),
+                        attr='expansion_strategy',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='hop1', ctx=Load()),
+                      attr='requires_freshness',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop2', ctx=Load()),
+                        attr='requires_freshness',
+                        ctx=Load())]))])]),
+        FunctionDef(
+          name='test_hop_metadata_structure',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test that hop metadata contains required fields.')),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='default_planner', ctx=Load()),
+                  attr='plan',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='role_title',
+                    value=Constant(value='Senior Software Engineer')),
+                  keyword(
+                    arg='company_name',
+                    value=Constant(value='TechCorp')),
+                  keyword(
+                    arg='outreach_context',
+                    value=Name(id='sample_outreach_context', ctx=Load()))])),
+            For(
+              target=Name(id='hop', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='hops',
+                ctx=Load()),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Constant(value='expansion_applied'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='role_aware'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Constant(value='vector_first'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      slice=Constant(value='expansion_applied'),
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=True)])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      slice=Constant(value='role_aware'),
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=True)])),
+                Assert(
+                  test=Compare(
+                    left=Subscript(
+                      value=Attribute(
+                        value=Name(id='hop', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load()),
+                      slice=Constant(value='vector_first'),
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=True)]))])]),
+        FunctionDef(
+          name='test_different_role_titles_and_companies',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='default_planner'),
+              arg(arg='sample_outreach_context')]),
+          body=[
+            Expr(
+              value=Constant(value='Test planner with different role titles and companies.')),
+            Assign(
+              targets=[
+                Name(id='test_cases', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='Product Manager'),
+                      Constant(value='StartupCo')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='Data Scientist'),
+                      Constant(value='DataCorp')],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='DevOps Engineer'),
+                      Constant(value='CloudTech')],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='role_title', ctx=Store()),
+                  Name(id='company_name', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='test_cases', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='plan', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='default_planner', ctx=Load()),
+                      attr='plan',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='role_title',
+                        value=Name(id='role_title', ctx=Load())),
+                      keyword(
+                        arg='company_name',
+                        value=Name(id='company_name', ctx=Load())),
+                      keyword(
+                        arg='outreach_context',
+                        value=Name(id='sample_outreach_context', ctx=Load()))])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='role_title',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='role_title', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='company_name',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Name(id='company_name', ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='hops',
+                          ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=3)])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='role_title', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='seed_queries',
+                          ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='company_name', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='seed_queries',
+                          ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='company_name', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='seed_queries',
+                          ctx=Load()),
+                        slice=Constant(value=1),
+                        ctx=Load())])),
+                Assert(
+                  test=Compare(
+                    left=Name(id='company_name', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Subscript(
+                        value=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='seed_queries',
+                          ctx=Load()),
+                        slice=Constant(value=2),
+                        ctx=Load())]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='main',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='__file__', ctx=Load())],
+                ctx=Load())]))])])

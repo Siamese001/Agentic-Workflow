@@ -1,0 +1,2478 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Minimal Pydantic-like shim tailored for the agentic workflow tests.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='inspect')]),
+    ImportFrom(
+      module='collections.abc',
+      names=[
+        alias(name='Mapping')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List'),
+        alias(name='Tuple'),
+        alias(name='Type'),
+        alias(name='Union'),
+        alias(name='get_args'),
+        alias(name='get_origin')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='_UNSET', ctx=Store())],
+      value=Call(
+        func=Name(id='object', ctx=Load()))),
+    ClassDef(
+      name='ValidationError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Pydantic-style validation error container.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='errors',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_errors',
+                  ctx=Store())],
+              value=ListComp(
+                elt=Dict(
+                  keys=[
+                    Constant(value='loc'),
+                    Constant(value='msg'),
+                    Constant(value='type')],
+                  values=[
+                    Call(
+                      func=Name(id='list', ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='error', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='loc'),
+                            List(ctx=Load())])]),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='error', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='msg'),
+                        Constant(value='')]),
+                    Call(
+                      func=Attribute(
+                        value=Name(id='error', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='type'),
+                        Constant(value='value_error')])]),
+                generators=[
+                  comprehension(
+                    target=Name(id='error', ctx=Store()),
+                    iter=Name(id='errors', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='message', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='; '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Subscript(
+                      value=Name(id='error', ctx=Load()),
+                      slice=Constant(value='msg'),
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='error', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_errors',
+                          ctx=Load()),
+                        is_async=0)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='message', ctx=Load())]))]),
+        FunctionDef(
+          name='errors',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_errors',
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='_error',
+      args=arguments(
+        args=[
+          arg(
+            arg='loc',
+            annotation=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='Any', ctx=Load()),
+                  Constant(value=Ellipsis)],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='msg',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='type_',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='loc'),
+              Constant(value='msg'),
+              Constant(value='type')],
+            values=[
+              Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='loc', ctx=Load())]),
+              Name(id='msg', ctx=Load()),
+              Name(id='type_', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='FieldInfo',
+      body=[
+        Assign(
+          targets=[
+            Name(id='__slots__', ctx=Store())],
+          value=Tuple(
+            elts=[
+              Constant(value='annotation'),
+              Constant(value='default'),
+              Constant(value='default_factory'),
+              Constant(value='metadata')],
+            ctx=Load())),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='default',
+                annotation=Name(id='Any', ctx=Load()))],
+            kwonlyargs=[
+              arg(arg='default_factory')],
+            kw_defaults=[
+              Constant(value=None)],
+            kwarg=arg(
+              arg='metadata',
+              annotation=Name(id='Any', ctx=Load())),
+            defaults=[
+              Name(id='_UNSET', ctx=Load())]),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='default', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Name(id='_UNSET', ctx=Load())]),
+                  Compare(
+                    left=Name(id='default_factory', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)])]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      Constant(value='default and default_factory cannot be used together')]))]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='default_factory', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='callable', ctx=Load()),
+                      args=[
+                        Name(id='default_factory', ctx=Load())]))]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='TypeError', ctx=Load()),
+                    args=[
+                      Constant(value='default_factory must be callable')]))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='annotation',
+                  ctx=Store())],
+              value=Name(id='Any', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='default',
+                  ctx=Store())],
+              value=Name(id='default', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='default_factory',
+                  ctx=Store())],
+              value=Name(id='default_factory', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='metadata',
+                  ctx=Store())],
+              value=Name(id='metadata', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='is_required',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='default',
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Name(id='_UNSET', ctx=Load())]),
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='default_factory',
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)])]))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='bool', ctx=Load()))]),
+    FunctionDef(
+      name='Field',
+      args=arguments(
+        args=[
+          arg(
+            arg='default',
+            annotation=Name(id='Any', ctx=Load()))],
+        kwonlyargs=[
+          arg(arg='default_factory')],
+        kw_defaults=[
+          Constant(value=None)],
+        kwarg=arg(
+          arg='metadata',
+          annotation=Name(id='Any', ctx=Load())),
+        defaults=[
+          Name(id='_UNSET', ctx=Load())]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='FieldInfo', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default',
+                value=Name(id='default', ctx=Load())),
+              keyword(
+                arg='default_factory',
+                value=Name(id='default_factory', ctx=Load())),
+              keyword(
+                value=Name(id='metadata', ctx=Load()))]))],
+      returns=Name(id='FieldInfo', ctx=Load())),
+    FunctionDef(
+      name='ConfigDict',
+      args=arguments(
+        kwarg=arg(
+          arg='kwargs',
+          annotation=Name(id='Any', ctx=Load()))),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='dict', ctx=Load()),
+            args=[
+              Name(id='kwargs', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='BaseModelMeta',
+      bases=[
+        Name(id='type', ctx=Load())],
+      body=[
+        FunctionDef(
+          name='__new__',
+          args=arguments(
+            args=[
+              arg(arg='mcls'),
+              arg(arg='name'),
+              arg(arg='bases'),
+              arg(arg='namespace')],
+            kwarg=arg(arg='kwargs')),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cls', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__new__',
+                  ctx=Load()),
+                args=[
+                  Name(id='mcls', ctx=Load()),
+                  Name(id='name', ctx=Load()),
+                  Name(id='bases', ctx=Load()),
+                  Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Name(id='namespace', ctx=Load())])])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='cls', ctx=Load()),
+                  attr='__fields__',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='mcls', ctx=Load()),
+                  attr='_collect_fields',
+                  ctx=Load()),
+                args=[
+                  Name(id='cls', ctx=Load()),
+                  Name(id='bases', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='cls', ctx=Load()),
+                  attr='__config__',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='mcls', ctx=Load()),
+                  attr='_build_config',
+                  ctx=Load()),
+                args=[
+                  Name(id='cls', ctx=Load()),
+                  Name(id='bases', ctx=Load())])),
+            Return(
+              value=Name(id='cls', ctx=Load()))]),
+        FunctionDef(
+          name='_build_config',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(arg='bases')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='config', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='extra'),
+                  Constant(value='arbitrary_types_allowed'),
+                  Constant(value='validate_assignment')],
+                values=[
+                  Constant(value='ignore'),
+                  Constant(value=False),
+                  Constant(value=False)])),
+            Assign(
+              targets=[
+                Name(id='config_cls', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='cls', ctx=Load()),
+                  Constant(value='Config'),
+                  Constant(value=None)])),
+            If(
+              test=Compare(
+                left=Name(id='config_cls', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                For(
+                  target=Name(id='base', ctx=Store()),
+                  iter=Name(id='bases', ctx=Load()),
+                  body=[
+                    If(
+                      test=Call(
+                        func=Name(id='hasattr', ctx=Load()),
+                        args=[
+                          Name(id='base', ctx=Load()),
+                          Constant(value='__config__')]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='config', ctx=Load()),
+                              attr='update',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='getattr', ctx=Load()),
+                                args=[
+                                  Name(id='base', ctx=Load()),
+                                  Constant(value='__config__')])])),
+                        Break()])]),
+                Return(
+                  value=Name(id='config', ctx=Load()))]),
+            For(
+              target=Name(id='key', ctx=Store()),
+              iter=Tuple(
+                elts=[
+                  Constant(value='extra'),
+                  Constant(value='arbitrary_types_allowed'),
+                  Constant(value='validate_assignment')],
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='config_cls', ctx=Load()),
+                      Name(id='key', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='config', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='config_cls', ctx=Load()),
+                          Name(id='key', ctx=Load())]))])]),
+            Return(
+              value=Name(id='config', ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())]),
+        FunctionDef(
+          name='_collect_fields',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(arg='bases')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='fields', ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Name(id='annotations', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Name(id='base', ctx=Store()),
+              iter=Call(
+                func=Name(id='reversed', ctx=Load()),
+                args=[
+                  Name(id='bases', ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='annotations', ctx=Load()),
+                      attr='update',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='base', ctx=Load()),
+                          Constant(value='__annotations__'),
+                          Dict()])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='fields', ctx=Load()),
+                      attr='update',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='base', ctx=Load()),
+                          Constant(value='__fields__'),
+                          Dict()])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='annotations', ctx=Load()),
+                  attr='update',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cls', ctx=Load()),
+                      Constant(value='__annotations__'),
+                      Dict()])])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='name', ctx=Store()),
+                  Name(id='annotation', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='annotations', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='default', ctx=Store())],
+                  value=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cls', ctx=Load()),
+                      Name(id='name', ctx=Load()),
+                      Name(id='_UNSET', ctx=Load())])),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='default', ctx=Load()),
+                      Name(id='FieldInfo', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='field_info', ctx=Store())],
+                      value=Name(id='default', ctx=Load())),
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='field_info', ctx=Load()),
+                          attr='default',
+                          ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Name(id='_UNSET', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='setattr', ctx=Load()),
+                            args=[
+                              Name(id='cls', ctx=Load()),
+                              Name(id='name', ctx=Load()),
+                              Attribute(
+                                value=Name(id='field_info', ctx=Load()),
+                                attr='default',
+                                ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Call(
+                            func=Name(id='hasattr', ctx=Load()),
+                            args=[
+                              Name(id='cls', ctx=Load()),
+                              Name(id='name', ctx=Load())]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Name(id='delattr', ctx=Load()),
+                                args=[
+                                  Name(id='cls', ctx=Load()),
+                                  Name(id='name', ctx=Load())]))])])],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='default', ctx=Load()),
+                        ops=[
+                          Is()],
+                        comparators=[
+                          Name(id='_UNSET', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='field_info', ctx=Store())],
+                          value=Call(
+                            func=Name(id='FieldInfo', ctx=Load())))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='field_info', ctx=Store())],
+                          value=Call(
+                            func=Name(id='FieldInfo', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='default',
+                                value=Name(id='default', ctx=Load()))]))])]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='field_info', ctx=Load()),
+                      attr='annotation',
+                      ctx=Store())],
+                  value=Name(id='annotation', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='fields', ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='field_info', ctx=Load()))]),
+            Return(
+              value=Name(id='fields', ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())])]),
+    ClassDef(
+      name='BaseModel',
+      keywords=[
+        keyword(
+          arg='metaclass',
+          value=Name(id='BaseModelMeta', ctx=Load()))],
+      body=[
+        AnnAssign(
+          target=Name(id='__fields__', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='FieldInfo', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        AnnAssign(
+          target=Name(id='__config__', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(
+            keys=[
+              Constant(value='extra'),
+              Constant(value='arbitrary_types_allowed'),
+              Constant(value='validate_assignment')],
+            values=[
+              Constant(value='ignore'),
+              Constant(value=False),
+              Constant(value=False)]),
+          simple=1),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwarg=arg(
+              arg='data',
+              annotation=Name(id='Any', ctx=Load()))),
+          body=[
+            Assign(
+              targets=[
+                Name(id='input_data', ctx=Store())],
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='data', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='values', ctx=Store())],
+              value=Dict()),
+            AnnAssign(
+              target=Name(id='errors', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='name', ctx=Store()),
+                  Name(id='field', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='__fields__',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='raw_value', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='input_data', ctx=Load()),
+                      attr='pop',
+                      ctx=Load()),
+                    args=[
+                      Name(id='name', ctx=Load()),
+                      Name(id='_UNSET', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='raw_value', ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Name(id='_UNSET', ctx=Load())]),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='field', ctx=Load()),
+                          attr='default',
+                          ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Name(id='_UNSET', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='value', ctx=Store())],
+                          value=Attribute(
+                            value=Name(id='field', ctx=Load()),
+                            attr='default',
+                            ctx=Load()))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='field', ctx=Load()),
+                              attr='default_factory',
+                              ctx=Load()),
+                            ops=[
+                              IsNot()],
+                            comparators=[
+                              Constant(value=None)]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='value', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='field', ctx=Load()),
+                                  attr='default_factory',
+                                  ctx=Load())))],
+                          orelse=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='errors', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Name(id='_error', ctx=Load()),
+                                    args=[
+                                      Tuple(
+                                        elts=[
+                                          Name(id='name', ctx=Load())],
+                                        ctx=Load()),
+                                      Constant(value='field required'),
+                                      Constant(value='value_error.missing')])])),
+                            Continue()])])],
+                  orelse=[
+                    Try(
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='value', ctx=Store())],
+                          value=Call(
+                            func=Name(id='_validate_type', ctx=Load()),
+                            args=[
+                              Name(id='raw_value', ctx=Load()),
+                              Attribute(
+                                value=Name(id='field', ctx=Load()),
+                                attr='annotation',
+                                ctx=Load()),
+                              Tuple(
+                                elts=[
+                                  Name(id='name', ctx=Load())],
+                                ctx=Load()),
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='__config__',
+                                ctx=Load())]))],
+                      handlers=[
+                        ExceptHandler(
+                          type=Name(id='ValidationError', ctx=Load()),
+                          name='exc',
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='errors', ctx=Load()),
+                                  attr='extend',
+                                  ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Attribute(
+                                      value=Name(id='exc', ctx=Load()),
+                                      attr='errors',
+                                      ctx=Load()))])),
+                            Continue()])])]),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='values', ctx=Load()),
+                      slice=Name(id='name', ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='value', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='extra_behavior', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='__config__',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='extra'),
+                  Constant(value='ignore')])),
+            If(
+              test=Compare(
+                left=Name(id='extra_behavior', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Set(
+                    elts=[
+                      Constant(value='allow'),
+                      Constant(value='ignore'),
+                      Constant(value='forbid')])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='extra_behavior', ctx=Store())],
+                  value=Constant(value='ignore'))]),
+            If(
+              test=Name(id='input_data', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='extra_behavior', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='forbid')]),
+                  body=[
+                    For(
+                      target=Name(id='key', ctx=Store()),
+                      iter=Call(
+                        func=Name(id='sorted', ctx=Load()),
+                        args=[
+                          Name(id='input_data', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='errors', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='_error', ctx=Load()),
+                                args=[
+                                  Tuple(
+                                    elts=[
+                                      Name(id='key', ctx=Load())],
+                                    ctx=Load()),
+                                  Constant(value='extra fields not permitted'),
+                                  Constant(value='value_error.extra')])]))])],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='extra_behavior', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='allow')]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='values', ctx=Load()),
+                              attr='update',
+                              ctx=Load()),
+                            args=[
+                              Name(id='input_data', ctx=Load())]))])])]),
+            If(
+              test=Name(id='errors', ctx=Load()),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      Name(id='errors', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='__dict__',
+                    ctx=Load()),
+                  attr='update',
+                  ctx=Load()),
+                args=[
+                  Name(id='values', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='parse_obj',
+          args=arguments(
+            args=[
+              arg(
+                arg='cls',
+                annotation=Subscript(
+                  value=Name(id='Type', ctx=Load()),
+                  slice=Constant(value='BaseModel'),
+                  ctx=Load())),
+              arg(
+                arg='obj',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='obj', ctx=Load()),
+                  Name(id='cls', ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='obj', ctx=Load()))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='obj', ctx=Load()),
+                  Name(id='str', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='obj', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='loads',
+                          ctx=Load()),
+                        args=[
+                          Name(id='obj', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Attribute(
+                        value=Name(id='json', ctx=Load()),
+                        attr='JSONDecodeError',
+                        ctx=Load()),
+                      name='exc',
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='ValidationError', ctx=Load()),
+                            args=[
+                              List(
+                                elts=[
+                                  Call(
+                                    func=Name(id='_error', ctx=Load()),
+                                    args=[
+                                      Tuple(ctx=Load()),
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Invalid JSON: '),
+                                          FormattedValue(
+                                            value=Attribute(
+                                              value=Name(id='exc', ctx=Load()),
+                                              attr='msg',
+                                              ctx=Load()),
+                                            conversion=-1)]),
+                                      Constant(value='value_error.jsondecode')])],
+                                ctx=Load())]),
+                          cause=Constant(value=None))])])]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='obj', ctx=Load()),
+                    Name(id='Mapping', ctx=Load())])),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Call(
+                            func=Name(id='_error', ctx=Load()),
+                            args=[
+                              Tuple(ctx=Load()),
+                              Constant(value='value is not a valid dict'),
+                              Constant(value='type_error.dict')])],
+                        ctx=Load())]))]),
+            Return(
+              value=Call(
+                func=Name(id='cls', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Call(
+                      func=Name(id='dict', ctx=Load()),
+                      args=[
+                        Name(id='obj', ctx=Load())]))]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Constant(value='BaseModel')),
+        FunctionDef(
+          name='model_validate',
+          args=arguments(
+            args=[
+              arg(arg='cls'),
+              arg(
+                arg='obj',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='cls', ctx=Load()),
+                  attr='parse_obj',
+                  ctx=Load()),
+                args=[
+                  Name(id='obj', ctx=Load())]))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Constant(value='BaseModel')),
+        FunctionDef(
+          name='dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Name(id='name', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='__fields__',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='hasattr', ctx=Load()),
+                    args=[
+                      Name(id='self', ctx=Load()),
+                      Name(id='name', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Name(id='name', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='_serialize_value', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='getattr', ctx=Load()),
+                            args=[
+                              Name(id='self', ctx=Load()),
+                              Name(id='name', ctx=Load())])]))])]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='__config__',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='extra')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='allow')]),
+              body=[
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='key', ctx=Store()),
+                      Name(id='value', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='__dict__',
+                        ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Compare(
+                            left=Name(id='key', ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Name(id='result', ctx=Load())]),
+                          Compare(
+                            left=Name(id='key', ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='__fields__',
+                                ctx=Load())])]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='result', ctx=Load()),
+                              slice=Name(id='key', ctx=Load()),
+                              ctx=Store())],
+                          value=Call(
+                            func=Name(id='_serialize_value', ctx=Load()),
+                            args=[
+                              Name(id='value', ctx=Load())]))])])]),
+            Return(
+              value=Name(id='result', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='model_dump',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='dict',
+                  ctx=Load())))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='json',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='dict',
+                      ctx=Load()))]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='model_dump_json',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='json',
+                  ctx=Load())))],
+          returns=Name(id='str', ctx=Load()))]),
+    FunctionDef(
+      name='_is_optional',
+      args=arguments(
+        args=[
+          arg(
+            arg='annotation',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='origin', ctx=Store())],
+          value=Call(
+            func=Name(id='get_origin', ctx=Load()),
+            args=[
+              Name(id='annotation', ctx=Load())])),
+        If(
+          test=Compare(
+            left=Name(id='origin', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='Union', ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Call(
+                  func=Name(id='type', ctx=Load()),
+                  args=[
+                    Constant(value=None)]),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Name(id='get_args', ctx=Load()),
+                    args=[
+                      Name(id='annotation', ctx=Load())])]))]),
+        Return(
+          value=Constant(value=False))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='_validate_type',
+      args=arguments(
+        args=[
+          arg(
+            arg='value',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='annotation',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='loc',
+            annotation=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='Any', ctx=Load()),
+                  Constant(value=Ellipsis)],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='config',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Name(id='annotation', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='Any', ctx=Load())]),
+              Compare(
+                left=Name(id='annotation', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)])]),
+          body=[
+            Return(
+              value=Name(id='value', ctx=Load()))]),
+        If(
+          test=Compare(
+            left=Name(id='annotation', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Call(
+                func=Name(id='type', ctx=Load()),
+                args=[
+                  Constant(value=None)])]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='value', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Return(
+                  value=Constant(value=None))]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValidationError', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Call(
+                        func=Name(id='_error', ctx=Load()),
+                        args=[
+                          Name(id='loc', ctx=Load()),
+                          Constant(value='value is not None'),
+                          Constant(value='type_error.none')])],
+                    ctx=Load())]))]),
+        Assign(
+          targets=[
+            Name(id='origin', ctx=Store())],
+          value=Call(
+            func=Name(id='get_origin', ctx=Load()),
+            args=[
+              Name(id='annotation', ctx=Load())])),
+        If(
+          test=Compare(
+            left=Name(id='origin', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='Union', ctx=Load())]),
+          body=[
+            AnnAssign(
+              target=Name(id='errors', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='arg', ctx=Store()),
+              iter=Call(
+                func=Name(id='get_args', ctx=Load()),
+                args=[
+                  Name(id='annotation', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Name(id='_validate_type', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Name(id='arg', ctx=Load()),
+                          Name(id='loc', ctx=Load()),
+                          Name(id='config', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ValidationError', ctx=Load()),
+                      name='exc',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='errors', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='exc', ctx=Load()),
+                                  attr='errors',
+                                  ctx=Load()))]))])])]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='errors', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='errors', ctx=Store())],
+                  value=List(
+                    elts=[
+                      Call(
+                        func=Name(id='_error', ctx=Load()),
+                        args=[
+                          Name(id='loc', ctx=Load()),
+                          Constant(value='value does not match any union type'),
+                          Constant(value='type_error.union')])],
+                    ctx=Load()))]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValidationError', ctx=Load()),
+                args=[
+                  Name(id='errors', ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='value', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='_is_optional', ctx=Load()),
+                args=[
+                  Name(id='annotation', ctx=Load())]),
+              body=[
+                Return(
+                  value=Constant(value=None))]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValidationError', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Call(
+                        func=Name(id='_error', ctx=Load()),
+                        args=[
+                          Name(id='loc', ctx=Load()),
+                          Constant(value='none is not an allowed value'),
+                          Constant(value='type_error.none.not_allowed')])],
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='origin', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Tuple(
+                elts=[
+                  Name(id='list', ctx=Load()),
+                  Name(id='List', ctx=Load()),
+                  Name(id='Iterable', ctx=Load())],
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='item_type', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='get_args', ctx=Load()),
+                  args=[
+                    Name(id='annotation', ctx=Load())]),
+                body=Subscript(
+                  value=Call(
+                    func=Name(id='get_args', ctx=Load()),
+                    args=[
+                      Name(id='annotation', ctx=Load())]),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                orelse=Name(id='Any', ctx=Load()))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='value', ctx=Load()),
+                    Tuple(
+                      elts=[
+                        Name(id='list', ctx=Load()),
+                        Name(id='tuple', ctx=Load())],
+                      ctx=Load())])),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Call(
+                            func=Name(id='_error', ctx=Load()),
+                            args=[
+                              Name(id='loc', ctx=Load()),
+                              Constant(value='value is not a valid list'),
+                              Constant(value='type_error.list')])],
+                        ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=List(ctx=Load())),
+            AnnAssign(
+              target=Name(id='errors', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='idx', ctx=Store()),
+                  Name(id='item', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='_validate_type', ctx=Load()),
+                            args=[
+                              Name(id='item', ctx=Load()),
+                              Name(id='item_type', ctx=Load()),
+                              BinOp(
+                                left=Name(id='loc', ctx=Load()),
+                                op=Add(),
+                                right=Tuple(
+                                  elts=[
+                                    Name(id='idx', ctx=Load())],
+                                  ctx=Load())),
+                              Name(id='config', ctx=Load())])]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ValidationError', ctx=Load()),
+                      name='exc',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='errors', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='exc', ctx=Load()),
+                                  attr='errors',
+                                  ctx=Load()))]))])])]),
+            If(
+              test=Name(id='errors', ctx=Load()),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      Name(id='errors', ctx=Load())]))]),
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='origin', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Tuple(
+                elts=[
+                  Name(id='dict', ctx=Load()),
+                  Name(id='Dict', ctx=Load()),
+                  Name(id='Mapping', ctx=Load())],
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='key_type', ctx=Store()),
+                    Name(id='value_type', ctx=Store())],
+                  ctx=Store())],
+              value=Subscript(
+                value=BinOp(
+                  left=Call(
+                    func=Name(id='get_args', ctx=Load()),
+                    args=[
+                      Name(id='annotation', ctx=Load())]),
+                  op=Add(),
+                  right=Tuple(
+                    elts=[
+                      Name(id='Any', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load())),
+                slice=Slice(
+                  upper=Constant(value=2)),
+                ctx=Load())),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='value', ctx=Load()),
+                    Name(id='Mapping', ctx=Load())])),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Call(
+                            func=Name(id='_error', ctx=Load()),
+                            args=[
+                              Name(id='loc', ctx=Load()),
+                              Constant(value='value is not a valid dict'),
+                              Constant(value='type_error.dict')])],
+                        ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='result_dict', ctx=Store())],
+              value=Dict()),
+            AnnAssign(
+              target=Name(id='errors', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='item', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='value', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='key_loc', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='loc', ctx=Load()),
+                    op=Add(),
+                    right=Tuple(
+                      elts=[
+                        Name(id='key', ctx=Load())],
+                      ctx=Load()))),
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='coerced_key', ctx=Store())],
+                      value=Call(
+                        func=Name(id='_validate_type', ctx=Load()),
+                        args=[
+                          Name(id='key', ctx=Load()),
+                          Name(id='key_type', ctx=Load()),
+                          Name(id='key_loc', ctx=Load()),
+                          Name(id='config', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ValidationError', ctx=Load()),
+                      name='exc',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='errors', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='exc', ctx=Load()),
+                                  attr='errors',
+                                  ctx=Load()))])),
+                        Continue()])]),
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='result_dict', ctx=Load()),
+                          slice=Name(id='coerced_key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='_validate_type', ctx=Load()),
+                        args=[
+                          Name(id='item', ctx=Load()),
+                          Name(id='value_type', ctx=Load()),
+                          Name(id='key_loc', ctx=Load()),
+                          Name(id='config', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ValidationError', ctx=Load()),
+                      name='exc',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='errors', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='exc', ctx=Load()),
+                                  attr='errors',
+                                  ctx=Load()))]))])])]),
+            If(
+              test=Name(id='errors', ctx=Load()),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      Name(id='errors', ctx=Load())]))]),
+            Return(
+              value=Name(id='result_dict', ctx=Load()))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='inspect', ctx=Load()),
+              attr='isclass',
+              ctx=Load()),
+            args=[
+              Name(id='annotation', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='issubclass', ctx=Load()),
+                args=[
+                  Name(id='annotation', ctx=Load()),
+                  Name(id='BaseModel', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='annotation', ctx=Load()),
+                          attr='parse_obj',
+                          ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load())]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ValidationError', ctx=Load()),
+                      name='exc',
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='errors', ctx=Store())],
+                          value=List(ctx=Load())),
+                        For(
+                          target=Name(id='error', ctx=Store()),
+                          iter=Call(
+                            func=Attribute(
+                              value=Name(id='exc', ctx=Load()),
+                              attr='errors',
+                              ctx=Load())),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='errors', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Name(id='_error', ctx=Load()),
+                                    args=[
+                                      BinOp(
+                                        left=Name(id='loc', ctx=Load()),
+                                        op=Add(),
+                                        right=Call(
+                                          func=Name(id='tuple', ctx=Load()),
+                                          args=[
+                                            Subscript(
+                                              value=Name(id='error', ctx=Load()),
+                                              slice=Constant(value='loc'),
+                                              ctx=Load())])),
+                                      Subscript(
+                                        value=Name(id='error', ctx=Load()),
+                                        slice=Constant(value='msg'),
+                                        ctx=Load()),
+                                      Subscript(
+                                        value=Name(id='error', ctx=Load()),
+                                        slice=Constant(value='type'),
+                                        ctx=Load())])]))]),
+                        Raise(
+                          exc=Call(
+                            func=Name(id='ValidationError', ctx=Load()),
+                            args=[
+                              Name(id='errors', ctx=Load())]))])])]),
+            If(
+              test=Compare(
+                left=Name(id='annotation', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Name(id='int', ctx=Load()),
+                      Name(id='float', ctx=Load()),
+                      Name(id='str', ctx=Load()),
+                      Name(id='bool', ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='_coerce_primitive', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='annotation', ctx=Load()),
+                      Name(id='loc', ctx=Load())]))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='annotation', ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='value', ctx=Load()))]),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='arbitrary_types_allowed')]),
+              body=[
+                Return(
+                  value=Name(id='value', ctx=Load()))]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValidationError', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Call(
+                        func=Name(id='_error', ctx=Load()),
+                        args=[
+                          Name(id='loc', ctx=Load()),
+                          JoinedStr(
+                            values=[
+                              Constant(value='value is not an instance of '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='annotation', ctx=Load()),
+                                  attr='__name__',
+                                  ctx=Load()),
+                                conversion=-1)]),
+                          Constant(value='type_error.arbitrary_type')])],
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='annotation', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Tuple(
+                elts=[
+                  Name(id='int', ctx=Load()),
+                  Name(id='float', ctx=Load()),
+                  Name(id='str', ctx=Load()),
+                  Name(id='bool', ctx=Load())],
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='_coerce_primitive', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='annotation', ctx=Load()),
+                  Name(id='loc', ctx=Load())]))]),
+        Return(
+          value=Name(id='value', ctx=Load()))],
+      returns=Name(id='Any', ctx=Load())),
+    FunctionDef(
+      name='_coerce_primitive',
+      args=arguments(
+        args=[
+          arg(
+            arg='value',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='expected_type',
+            annotation=Subscript(
+              value=Name(id='Type', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='loc',
+            annotation=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='Any', ctx=Load()),
+                  Constant(value=Ellipsis)],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        If(
+          test=Compare(
+            left=Name(id='expected_type', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='bool', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='bool', ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='value', ctx=Load()))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='str', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='lowered', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='value', ctx=Load()),
+                          attr='strip',
+                          ctx=Load())),
+                      attr='lower',
+                      ctx=Load()))),
+                If(
+                  test=Compare(
+                    left=Name(id='lowered', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Set(
+                        elts=[
+                          Constant(value='true'),
+                          Constant(value='1')])]),
+                  body=[
+                    Return(
+                      value=Constant(value=True))]),
+                If(
+                  test=Compare(
+                    left=Name(id='lowered', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Set(
+                        elts=[
+                          Constant(value='false'),
+                          Constant(value='0')])]),
+                  body=[
+                    Return(
+                      value=Constant(value=False))])]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Name(id='int', ctx=Load()),
+                      Name(id='float', ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='value', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Set(
+                        elts=[
+                          Constant(value=0),
+                          Constant(value=0.0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value=False))]),
+                If(
+                  test=Compare(
+                    left=Name(id='value', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Set(
+                        elts=[
+                          Constant(value=1),
+                          Constant(value=1.0)])]),
+                  body=[
+                    Return(
+                      value=Constant(value=True))])]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValidationError', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Call(
+                        func=Name(id='_error', ctx=Load()),
+                        args=[
+                          Name(id='loc', ctx=Load()),
+                          Constant(value='value is not a valid boolean'),
+                          Constant(value='type_error.bool')])],
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='expected_type', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='int', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='bool', ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Call(
+                            func=Name(id='_error', ctx=Load()),
+                            args=[
+                              Name(id='loc', ctx=Load()),
+                              Constant(value='value is not a valid integer'),
+                              Constant(value='type_error.integer')])],
+                        ctx=Load())]))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='int', ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='value', ctx=Load()))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='str', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Name(id='int', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='value', ctx=Load()),
+                              attr='strip',
+                              ctx=Load()))]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ValueError', ctx=Load()),
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='ValidationError', ctx=Load()),
+                            args=[
+                              List(
+                                elts=[
+                                  Call(
+                                    func=Name(id='_error', ctx=Load()),
+                                    args=[
+                                      Name(id='loc', ctx=Load()),
+                                      Constant(value='value is not a valid integer'),
+                                      Constant(value='type_error.integer')])],
+                                ctx=Load())]),
+                          cause=Constant(value=None))])])]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load()),
+                      Name(id='float', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='value', ctx=Load()),
+                      attr='is_integer',
+                      ctx=Load()))]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='int', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load())]))]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValidationError', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Call(
+                        func=Name(id='_error', ctx=Load()),
+                        args=[
+                          Name(id='loc', ctx=Load()),
+                          Constant(value='value is not a valid integer'),
+                          Constant(value='type_error.integer')])],
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='expected_type', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='float', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='bool', ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Call(
+                            func=Name(id='_error', ctx=Load()),
+                            args=[
+                              Name(id='loc', ctx=Load()),
+                              Constant(value='value is not a valid float'),
+                              Constant(value='type_error.float')])],
+                        ctx=Load())]))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Name(id='int', ctx=Load()),
+                      Name(id='float', ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='float', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load())]))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='str', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Name(id='float', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='value', ctx=Load()),
+                              attr='strip',
+                              ctx=Load()))]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='ValueError', ctx=Load()),
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='ValidationError', ctx=Load()),
+                            args=[
+                              List(
+                                elts=[
+                                  Call(
+                                    func=Name(id='_error', ctx=Load()),
+                                    args=[
+                                      Name(id='loc', ctx=Load()),
+                                      Constant(value='value is not a valid float'),
+                                      Constant(value='type_error.float')])],
+                                ctx=Load())]),
+                          cause=Constant(value=None))])])]),
+            Raise(
+              exc=Call(
+                func=Name(id='ValidationError', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Call(
+                        func=Name(id='_error', ctx=Load()),
+                        args=[
+                          Name(id='loc', ctx=Load()),
+                          Constant(value='value is not a valid float'),
+                          Constant(value='type_error.float')])],
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='expected_type', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Name(id='str', ctx=Load())]),
+          body=[
+            Try(
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValidationError', ctx=Load()),
+                        args=[
+                          List(
+                            elts=[
+                              Call(
+                                func=Name(id='_error', ctx=Load()),
+                                args=[
+                                  Name(id='loc', ctx=Load()),
+                                  Constant(value='value is not a valid string'),
+                                  Constant(value='type_error.string')])],
+                            ctx=Load())]),
+                      cause=Name(id='exc', ctx=Load()))])])]),
+        Raise(
+          exc=Call(
+            func=Name(id='ValidationError', ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Call(
+                    func=Name(id='_error', ctx=Load()),
+                    args=[
+                      Name(id='loc', ctx=Load()),
+                      JoinedStr(
+                        values=[
+                          Constant(value='unsupported type '),
+                          FormattedValue(
+                            value=Name(id='expected_type', ctx=Load()),
+                            conversion=-1)]),
+                      Constant(value='type_error')])],
+                ctx=Load())]))],
+      returns=Name(id='Any', ctx=Load())),
+    FunctionDef(
+      name='_serialize_value',
+      args=arguments(
+        args=[
+          arg(
+            arg='value',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='value', ctx=Load()),
+              Name(id='BaseModel', ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='value', ctx=Load()),
+                  attr='dict',
+                  ctx=Load())))]),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='value', ctx=Load()),
+              Name(id='list', ctx=Load())]),
+          body=[
+            Return(
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='_serialize_value', ctx=Load()),
+                  args=[
+                    Name(id='item', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='item', ctx=Store()),
+                    iter=Name(id='value', ctx=Load()),
+                    is_async=0)]))]),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='value', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          body=[
+            Return(
+              value=DictComp(
+                key=Name(id='key', ctx=Load()),
+                value=Call(
+                  func=Name(id='_serialize_value', ctx=Load()),
+                  args=[
+                    Name(id='val', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='key', ctx=Store()),
+                        Name(id='val', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='value', ctx=Load()),
+                        attr='items',
+                        ctx=Load())),
+                    is_async=0)]))]),
+        Return(
+          value=Name(id='value', ctx=Load()))],
+      returns=Name(id='Any', ctx=Load()))])

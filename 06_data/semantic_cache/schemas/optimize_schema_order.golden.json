@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nSchema definitions for schema order optimization and sequencing.\nContains only type definitions and data models - no execution logic.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Any, List, Tuple\nfrom enum import Enum\n\n\nclass OptimizationAlgorithm(Enum):\n    \"\"\"Order optimization algorithms.\"\"\"\n    TRAVELING_SALESMAN = \"traveling_salesman\"\n    GENETIC_ALGORITHM = \"genetic_algorithm\"\n    ANT_COLONY = \"ant_colony\"\n    SIMULATED_ANNEALING = \"simulated_annealing\"\n\n\nclass OrderObjective(Enum):\n    \"\"\"Order optimization objectives.\"\"\"\n    MINIMIZE_PROCESSING_TIME = \"minimize_processing_time\"\n    MAXIMIZE_ACCURACY = \"maximize_accuracy\"\n    BALANCE_WORKLOAD = \"balance_workload\"\n    OPTIMIZE_MEMORY_USAGE = \"optimize_memory_usage\"\n\n\n@dataclass\nclass OrderConstraints:\n    \"\"\"Schema for order optimization constraints.\"\"\"\n    mandatory_sequences: List[Tuple[str, str]]\n    forbidden_sequences: List[Tuple[str, str]]\n    time_limits: Dict[str, int]\n    resource_constraints: Dict",
+  "full_hash": "dd6a694989a3bfce8530804d82b34ccea7d1f668ad0ca822108897543c59ae75",
+  "generated_at": 1764728343.1933618,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\optimize_schema_order.py"
+}

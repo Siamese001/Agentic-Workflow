@@ -1,0 +1,903 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='metadata'),
+          Constant(value='bug_analysis'),
+          Constant(value='fix_strategy'),
+          Constant(value='changes'),
+          Constant(value='validation_checkpoints'),
+          Constant(value='deployment_instructions'),
+          Constant(value='success_criteria'),
+          Constant(value='regression_prevention'),
+          Constant(value='lessons_from_job_workflow')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='patch_id'),
+              Constant(value='patch_name'),
+              Constant(value='base_version'),
+              Constant(value='target_version'),
+              Constant(value='severity'),
+              Constant(value='created_date'),
+              Constant(value='author'),
+              Constant(value='status'),
+              Constant(value='bug_reference')],
+            values=[
+              Constant(value='LIC-P023-SCOPE-FIX'),
+              Constant(value='Staging Buffer Scope Isolation Fix - CRITICAL'),
+              Constant(value='v10.23'),
+              Constant(value='v10.23.1'),
+              Constant(value='CRITICAL'),
+              Constant(value='2025-10-15'),
+              Constant(value='System (based on Job Workflow v1.6.3 fix)'),
+              Constant(value='URGENT_DEPLOYMENT_REQUIRED'),
+              Constant(value='Same bug as Job Workflow BUG-1.6.2-001')]),
+          Dict(
+            keys=[
+              Constant(value='bug_id'),
+              Constant(value='title'),
+              Constant(value='severity'),
+              Constant(value='root_cause'),
+              Constant(value='evidence'),
+              Constant(value='impact')],
+            values=[
+              Constant(value='LIC-BUG-10.23-001'),
+              Constant(value='QA Engine V2 can still access Artist metadata despite ignore_artist_metadata flags'),
+              Constant(value='CRITICAL'),
+              Constant(value='Validation functions have access to both Artist output AND staging_buffer in scope'),
+              Dict(
+                keys=[
+                  Constant(value='job_workflow_precedent'),
+                  Constant(value='job_workflow_symptom'),
+                  Constant(value='lic_vulnerability'),
+                  Constant(value='risk')],
+                values=[
+                  Constant(value="v1.6.2 had identical issue - 'ignore' flags insufficient"),
+                  Constant(value='QA reported 129 words but actual text was 111 words'),
+                  Constant(value='LIC v10.23 has same architecture flaw - no hard scope isolation'),
+                  Constant(value="Artist can claim '215 words' in metadata while actual is '268 words', validation may read wrong source")]),
+              Dict(
+                keys=[
+                  Constant(value='false_positives'),
+                  Constant(value='user_trust'),
+                  Constant(value='smoke_tests'),
+                  Constant(value='v10.23_objective')],
+                values=[
+                  Constant(value='Messages may pass validation despite violating constraints'),
+                  Constant(value='Cannot trust QA validation results'),
+                  Constant(value="Current smoke tests don't verify scope isolation"),
+                  Constant(value='FAILED - staging buffer not truly isolated')])]),
+          Dict(
+            keys=[
+              Constant(value='approach'),
+              Constant(value='enforcement')],
+            values=[
+              Constant(value='HARD_SCOPE_ISOLATION (proven in Job Workflow v1.6.3)'),
+              List(
+                elts=[
+                  Constant(value='Delete Artist output from scope BEFORE calling any validation'),
+                  Constant(value='Validation function signatures accept ONLY staging_buffer parameter'),
+                  Constant(value='Add scope violation detection to every validation batch'),
+                  Constant(value='QA reports must include scope isolation verification section')],
+                ctx=Load())]),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='append_after'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='LIC-023.1-001'),
+                  Constant(value='5.5.staging_buffer'),
+                  Constant(value='extraction_logic'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Add Artist output deletion step after staging buffer creation'),
+                  Constant(value='step_8'),
+                  Dict(
+                    keys=[
+                      Constant(value='step_9'),
+                      Constant(value='step_10'),
+                      Constant(value='step_11'),
+                      Constant(value='step_12'),
+                      Constant(value='step_13'),
+                      Constant(value='scope_isolation_enforcement')],
+                    values=[
+                      Constant(value='Create backup: artist_output_backup = deepcopy(artist_output)'),
+                      Constant(value='DELETE from scope: del artist_output (enforces scope isolation)'),
+                      Constant(value="Verification: assert 'artist_output' not in locals()"),
+                      Constant(value='All validation passes staging_buffer ONLY'),
+                      Constant(value='After validation: Restore artist_output_backup for final message rendering'),
+                      Dict(
+                        keys=[
+                          Constant(value='critical_rule'),
+                          Constant(value='implementation')],
+                        values=[
+                          Constant(value='After step_10, artist_output MUST NOT exist in any scope accessible to validation'),
+                          Dict(
+                            keys=[
+                              Constant(value='python_pseudocode')],
+                            values=[
+                              List(
+                                elts=[
+                                  Constant(value='# Step 6: Store in staging_buffer'),
+                                  Constant(value='staging_buffer = {'),
+                                  Constant(value="  'K.1_greeting_actual': {'raw_text': k1_text, 'word_count': len(k1_text.split())},"),
+                                  Constant(value="  'K.3_body_actual': {'raw_text': k3_text, 'word_count': len(k3_text.split())},"),
+                                  Constant(value='  ...'),
+                                  Constant(value='}'),
+                                  Constant(value=''),
+                                  Constant(value='# Step 9: Backup for later file rendering'),
+                                  Constant(value='artist_output_backup = deepcopy(artist_output)'),
+                                  Constant(value=''),
+                                  Constant(value='# Step 10: DELETE to enforce scope isolation'),
+                                  Constant(value='del artist_output'),
+                                  Constant(value=''),
+                                  Constant(value='# Step 11: Verification'),
+                                  Constant(value="if 'artist_output' in dir():"),
+                                  Constant(value="    raise ScopeViolationError('Artist output still accessible after deletion')"),
+                                  Constant(value=''),
+                                  Constant(value='# Step 12: Validation can ONLY see staging_buffer'),
+                                  Constant(value='validation_result = run_all_qa_validations(staging_buffer)  # NO artist_output parameter'),
+                                  Constant(value=''),
+                                  Constant(value='# Step 13: Restore for file rendering'),
+                                  Constant(value='if validation_result.passed:'),
+                                  Constant(value='    artist_output = artist_output_backup'),
+                                  Constant(value='    render_final_message(staging_buffer, artist_output_backup)')],
+                                ctx=Load())])])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='old_block'),
+                  Constant(value='new_block')],
+                values=[
+                  Constant(value='LIC-023.1-002'),
+                  Constant(value='6.validation.qa_engine_v2'),
+                  Constant(value='validation_batches'),
+                  Constant(value='DESTRUCTIVE_OVERWRITE'),
+                  Constant(value='Rewrite validation batch signatures to accept ONLY staging_buffer'),
+                  Dict(
+                    keys=[
+                      Constant(value='note'),
+                      Constant(value='vulnerability')],
+                    values=[
+                      Constant(value='Current design allows both staging_buffer and artist_output in scope'),
+                      Constant(value='Validation could accidentally read artist_output instead of staging_buffer')]),
+                  Dict(
+                    keys=[
+                      Constant(value='function_signatures'),
+                      Constant(value='parameter_validation'),
+                      Constant(value='data_source_enforcement')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='run_validation_batch_1'),
+                          Constant(value='run_validation_batch_2'),
+                          Constant(value='run_validation_batch_3'),
+                          Constant(value='run_validation_batch_4'),
+                          Constant(value='critical_note')],
+                        values=[
+                          Constant(value='def run_validation_batch_1(staging_buffer: dict) -> ValidationResult'),
+                          Constant(value='def run_validation_batch_2(staging_buffer: dict) -> ValidationResult'),
+                          Constant(value='def run_validation_batch_3(staging_buffer: dict) -> ValidationResult'),
+                          Constant(value='def run_validation_batch_4(staging_buffer: dict) -> ValidationResult'),
+                          Constant(value='NO artist_output parameter - enforced by function signature')]),
+                      Dict(
+                        keys=[
+                          Constant(value='execute_first'),
+                          Constant(value='check'),
+                          Constant(value='error_message')],
+                        values=[
+                          Constant(value='Before any validation logic in each batch'),
+                          Constant(value="if 'artist_output' in dir() or 'artist_output' in globals(): raise ScopeViolationError()"),
+                          Constant(value='CRITICAL: artist_output accessible during validation - scope isolation violated')]),
+                      Dict(
+                        keys=[
+                          Constant(value='K.1_word_count'),
+                          Constant(value='K.3_word_count'),
+                          Constant(value='K.5_word_count'),
+                          Constant(value='full_message_word_count'),
+                          Constant(value='verification'),
+                          Constant(value='critical_rule')],
+                        values=[
+                          Constant(value="word_count = staging_buffer['K.1_greeting_actual']['word_count']"),
+                          Constant(value="word_count = staging_buffer['K.3_body_actual']['word_count']"),
+                          Constant(value="word_count = staging_buffer['K.5_cta_actual']['word_count']"),
+                          Constant(value="word_count = staging_buffer['full_message_actual']['word_count']"),
+                          Constant(value="These counts were calculated as len(staging_buffer[section]['raw_text'].split())"),
+                          Constant(value='NEVER recalculate from Artist output - staging_buffer is ground truth')])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='append_before'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='LIC-023.1-003'),
+                  Constant(value='6.validation.qa_engine_v2'),
+                  Constant(value='gate_decision_pattern'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Add scope isolation verification to gate decision logic'),
+                  Constant(value='try:'),
+                  Dict(
+                    keys=[
+                      Constant(value='scope_isolation_verification'),
+                      Constant(value='updated_gate_logic')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='check_1'),
+                          Constant(value='implementation_1'),
+                          Constant(value='check_2'),
+                          Constant(value='implementation_2'),
+                          Constant(value='check_3'),
+                          Constant(value='implementation_3')],
+                        values=[
+                          Constant(value='Verify artist_output deleted'),
+                          Constant(value="if 'artist_output' in locals() or 'artist_output' in globals(): raise ScopeViolationError('artist_output not deleted before validation')"),
+                          Constant(value='Verify staging_buffer populated'),
+                          Constant(value="if 'staging_buffer' not in locals(): raise ScopeViolationError('staging_buffer not created')"),
+                          Constant(value='Verify staging_buffer has required sections'),
+                          Constant(value="required = ['K.1_greeting_actual', 'K.3_body_actual', 'full_message_actual']; for section in required: assert section in staging_buffer")]),
+                      Dict(
+                        keys=[
+                          Constant(value='pseudocode')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value='# SCOPE ISOLATION VERIFICATION'),
+                              Constant(value="if 'artist_output' in dir():"),
+                              Constant(value="    raise ScopeViolationError('Artist output still accessible - scope isolation failed')"),
+                              Constant(value=''),
+                              Constant(value='# VALIDATION EXECUTION'),
+                              Constant(value='try:'),
+                              Constant(value='    run_validation_batch_1(staging_buffer)  # ONLY staging_buffer parameter'),
+                              Constant(value='    run_validation_batch_2(staging_buffer)  # Artist output CANNOT be accessed'),
+                              Constant(value='    run_validation_batch_3(staging_buffer)'),
+                              Constant(value='    run_validation_batch_4(staging_buffer)'),
+                              Constant(value='    all_validations_pass = True'),
+                              Constant(value='except FatalValidationException as e:'),
+                              Constant(value='    all_validations_pass = False'),
+                              Constant(value='    failure_report = generate_failure_report(e, staging_buffer)'),
+                              Constant(value=''),
+                              Constant(value='# GATE DECISION'),
+                              Constant(value='if all_validations_pass:'),
+                              Constant(value='    artist_output = artist_output_backup  # Restore for file rendering'),
+                              Constant(value='    write_final_message_file(staging_buffer.full_message_actual.raw_text)'),
+                              Constant(value='else:'),
+                              Constant(value='    display_failure_report(failure_report)'),
+                              Constant(value='    DO_NOT_WRITE_FILE')],
+                            ctx=Load())])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='append_to'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='LIC-023.1-004'),
+                  Constant(value='6.validation.qa_engine_v2.validation_batches'),
+                  Constant(value='ALL_BATCHES'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Add mandatory scope check as first step in every validation batch'),
+                  Constant(value='Beginning of each batch function (batch_1, batch_2, batch_3, batch_4)'),
+                  Dict(
+                    keys=[
+                      Constant(value='mandatory_scope_check')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='execute_first'),
+                          Constant(value='implementation'),
+                          Constant(value='on_violation')],
+                        values=[
+                          Constant(value='Before ANY validation logic'),
+                          List(
+                            elts=[
+                              Constant(value='# MANDATORY SCOPE ISOLATION CHECK'),
+                              Constant(value="if 'artist_output' in dir():"),
+                              Constant(value='    raise ScopeViolationError('),
+                              Constant(value="        f'Batch {batch_id}: artist_output accessible during validation',"),
+                              Constant(value='        batch_id=batch_id,'),
+                              Constant(value='        accessible_vars=dir()'),
+                              Constant(value='    )'),
+                              Constant(value=''),
+                              Constant(value='# Verify we have staging_buffer'),
+                              Constant(value="if 'staging_buffer' not in locals():"),
+                              Constant(value="    raise ScopeViolationError(f'Batch {batch_id}: staging_buffer not provided')"),
+                              Constant(value=''),
+                              Constant(value='# Proceed with validation using ONLY staging_buffer')],
+                            ctx=Load()),
+                          Constant(value='HALT_WORKFLOW immediately with scope violation error report')])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='LIC-023.1-005'),
+                  Constant(value='6.validation'),
+                  Constant(value='master_validation_gate'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Add scope isolation results to validation gate reporting'),
+                  Dict(
+                    keys=[
+                      Constant(value='scope_isolation_reporting')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='section_name'),
+                          Constant(value='display_location'),
+                          Constant(value='content'),
+                          Constant(value='display_format')],
+                        values=[
+                          Constant(value='Scope Isolation Verification'),
+                          Constant(value='Before validation batch results'),
+                          Dict(
+                            keys=[
+                              Constant(value='artist_output_deleted'),
+                              Constant(value='artist_output_accessible'),
+                              Constant(value='staging_buffer_created'),
+                              Constant(value='scope_check_results')],
+                            values=[
+                              Constant(value='boolean - True if del artist_output executed'),
+                              Constant(value='boolean - False if scope check passes'),
+                              Constant(value='boolean - True if staging_buffer populated'),
+                              List(
+                                elts=[
+                                  Dict(
+                                    keys=[
+                                      Constant(value='batch'),
+                                      Constant(value='artist_output_accessible'),
+                                      Constant(value='scope_check_passed')],
+                                    values=[
+                                      Constant(value='batch_1_constraint_compliance'),
+                                      Name(id='false', ctx=Load()),
+                                      Name(id='true', ctx=Load())]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='batch'),
+                                      Constant(value='artist_output_accessible'),
+                                      Constant(value='scope_check_passed')],
+                                    values=[
+                                      Constant(value='batch_2_confidence_validation'),
+                                      Name(id='false', ctx=Load()),
+                                      Name(id='true', ctx=Load())]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='batch'),
+                                      Constant(value='artist_output_accessible'),
+                                      Constant(value='scope_check_passed')],
+                                    values=[
+                                      Constant(value='batch_3_entity_validation'),
+                                      Name(id='false', ctx=Load()),
+                                      Name(id='true', ctx=Load())]),
+                                  Dict(
+                                    keys=[
+                                      Constant(value='batch'),
+                                      Constant(value='artist_output_accessible'),
+                                      Constant(value='scope_check_passed')],
+                                    values=[
+                                      Constant(value='batch_4_format_validation'),
+                                      Name(id='false', ctx=Load()),
+                                      Name(id='true', ctx=Load())])],
+                                ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='table'),
+                              Constant(value='columns'),
+                              Constant(value='pass_criteria')],
+                            values=[
+                              Name(id='true', ctx=Load()),
+                              List(
+                                elts=[
+                                  Constant(value='Validation Batch'),
+                                  Constant(value='Artist Output Accessible?'),
+                                  Constant(value='Scope Check'),
+                                  Constant(value='Status')],
+                                ctx=Load()),
+                              Constant(value="All batches show 'NO' for artist_output_accessible")])])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='LIC-023.1-006'),
+                  Constant(value='8.deployment.smoke_test_suite'),
+                  Constant(value='scope_isolation_tests'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Add scope isolation test suite (12 tests) to verify hard isolation'),
+                  Dict(
+                    keys=[
+                      Constant(value='test_suite_id'),
+                      Constant(value='priority'),
+                      Constant(value='total_tests'),
+                      Constant(value='unit_tests'),
+                      Constant(value='integration_tests'),
+                      Constant(value='smoke_tests'),
+                      Constant(value='acceptance_criteria')],
+                    values=[
+                      Constant(value='SCOPE_ISOLATION_TESTS'),
+                      Constant(value='CRITICAL - Must pass before v10.23.1 deployment'),
+                      Constant(value=12),
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-UNIT-001'),
+                              Constant(value='Artist output deletion verification'),
+                              Constant(value='After staging buffer creation, verify artist_output deleted from scope'),
+                              Constant(value='Try to access artist_output variable - should raise NameError'),
+                              Constant(value="NameError: name 'artist_output' is not defined"),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-UNIT-002'),
+                              Constant(value='Validation function signature check'),
+                              Constant(value='Verify all validation batch functions accept ONLY staging_buffer parameter'),
+                              Constant(value='Inspect function signatures using inspect.signature()'),
+                              Constant(value='All functions have signature: (staging_buffer: dict)'),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-UNIT-003'),
+                              Constant(value='Staging buffer word count source verification'),
+                              Constant(value='Verify staging_buffer word counts calculated from raw_text'),
+                              Constant(value="Recalculate: len(staging_buffer['K.3_body_actual']['raw_text'].split())"),
+                              Constant(value="Recalculated count EXACTLY matches staging_buffer['K.3_body_actual']['word_count']"),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-UNIT-004'),
+                              Constant(value='Scope check in validation batches'),
+                              Constant(value='Verify each batch has mandatory scope check as first step'),
+                              Constant(value="Code inspection - look for 'if artist_output in dir()' at function start"),
+                              Constant(value='All 4 batches have scope check before validation logic'),
+                              Name(id='true', ctx=Load())])],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-INT-001'),
+                              Constant(value='Artist metadata corruption test'),
+                              Constant(value='Corrupt artist_output metadata before deletion, verify validation unaffected'),
+                              List(
+                                elts=[
+                                  Constant(value="Set artist_output['K.3']['word_count'] = 999 (intentionally wrong)"),
+                                  Constant(value='Create staging_buffer with actual K.3 word_count = 215'),
+                                  Constant(value='Delete artist_output'),
+                                  Constant(value='Run validation'),
+                                  Constant(value='Verify validation uses 215 (staging_buffer), not 999 (corrupted artist)')],
+                                ctx=Load()),
+                              Constant(value='Validation passes with 215 words, ignores corrupted 999'),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-INT-002'),
+                              Constant(value='Scope violation detection test'),
+                              Constant(value='Simulate scope violation by NOT deleting artist_output'),
+                              List(
+                                elts=[
+                                  Constant(value='Create staging_buffer'),
+                                  Constant(value='DO NOT delete artist_output (simulate bug)'),
+                                  Constant(value='Attempt to run validation'),
+                                  Constant(value='Verify ScopeViolationError raised before any validation executes')],
+                                ctx=Load()),
+                              Constant(value='ScopeViolationError raised with message about artist_output accessibility'),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-INT-003'),
+                              Constant(value='E2E word count accuracy test'),
+                              Constant(value='Generate message, manually count words, compare to QA report'),
+                              List(
+                                elts=[
+                                  Constant(value='Generate INMAIL message with K.3 body'),
+                                  Constant(value='Extract K.3 raw_text from staging_buffer'),
+                                  Constant(value='Calculate: len(k3_text.split())'),
+                                  Constant(value='Compare to validation result word count')],
+                                ctx=Load()),
+                              Constant(value='Manual count EXACTLY matches validation word count (zero discrepancy)'),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-INT-004'),
+                              Constant(value='Backup and restore test'),
+                              Constant(value='Verify artist_output_backup correctly restored after validation'),
+                              List(
+                                elts=[
+                                  Constant(value='Create artist_output with known content'),
+                                  Constant(value='Create staging_buffer and backup'),
+                                  Constant(value='Delete artist_output'),
+                                  Constant(value='Run validation (passes)'),
+                                  Constant(value='Verify artist_output restored with correct content for file rendering')],
+                                ctx=Load()),
+                              Constant(value='artist_output_backup content matches original, available for rendering'),
+                              Name(id='false', ctx=Load())])],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical'),
+                              Constant(value='priority'),
+                              Constant(value='regression_test'),
+                              Constant(value='notes')],
+                            values=[
+                              Constant(value='LIC-SCOPE-SMOKE-001'),
+                              Constant(value='Manual verification test (CRITICAL)'),
+                              Constant(value='User manually verifies word count accuracy'),
+                              List(
+                                elts=[
+                                  Constant(value='Generate INMAIL message for EXECUTIVE archetype'),
+                                  Constant(value='Copy K.3 body text from QA report or final message'),
+                                  Constant(value='Paste into Microsoft Word'),
+                                  Constant(value='Check Tools → Word Count'),
+                                  Constant(value='Compare to QA validation report word count')],
+                                ctx=Load()),
+                              Constant(value='Word count in MS Word EXACTLY matches QA report (zero phantom words)'),
+                              Name(id='true', ctx=Load()),
+                              Constant(value='P0'),
+                              Name(id='true', ctx=Load()),
+                              Constant(value='This is the SAME test that failed in Job Workflow v1.6.2')]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-SMOKE-002'),
+                              Constant(value='Over-limit detection with scope isolation'),
+                              Constant(value='Verify over-limit violation detected using staging_buffer only'),
+                              List(
+                                elts=[
+                                  Constant(value='Generate K.3 with 268 words (over 250 limit)'),
+                                  Constant(value='Artist claims 215 words in metadata (false claim)'),
+                                  Constant(value='Delete artist_output before validation'),
+                                  Constant(value='Run validation'),
+                                  Constant(value='Verify validation detects 268 (staging_buffer), not 215 (deleted artist)')],
+                                ctx=Load()),
+                              Constant(value="Validation fails with message: 'K.3 word count 268 exceeds maximum 250'"),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-SMOKE-003'),
+                              Constant(value='Under-limit detection with scope isolation'),
+                              Constant(value='Verify under-limit violation detected using staging_buffer only'),
+                              List(
+                                elts=[
+                                  Constant(value='Generate K.3 with 165 words (under 180 minimum)'),
+                                  Constant(value='Artist claims 200 words in metadata (false claim)'),
+                                  Constant(value='Delete artist_output before validation'),
+                                  Constant(value='Run validation'),
+                                  Constant(value='Verify validation detects 165 (staging_buffer), not 200 (deleted artist)')],
+                                ctx=Load()),
+                              Constant(value="Validation fails with message: 'K.3 word count 165 below minimum 180'"),
+                              Name(id='true', ctx=Load())]),
+                          Dict(
+                            keys=[
+                              Constant(value='test_id'),
+                              Constant(value='name'),
+                              Constant(value='check'),
+                              Constant(value='method'),
+                              Constant(value='expected'),
+                              Constant(value='critical')],
+                            values=[
+                              Constant(value='LIC-SCOPE-SMOKE-004'),
+                              Constant(value='Scope isolation report verification'),
+                              Constant(value='Verify validation gate report includes scope isolation section'),
+                              List(
+                                elts=[
+                                  Constant(value='Generate any message'),
+                                  Constant(value='Run validation'),
+                                  Constant(value="Check validation report for 'Scope Isolation Verification' section"),
+                                  Constant(value='Verify all batches show artist_output_accessible = false')],
+                                ctx=Load()),
+                              Constant(value='Report includes scope isolation table with all checks passing'),
+                              Name(id='false', ctx=Load())])],
+                        ctx=Load()),
+                      Dict(
+                        keys=[
+                          Constant(value='unit_tests_pass_rate'),
+                          Constant(value='integration_tests_pass_rate'),
+                          Constant(value='smoke_tests_pass_rate'),
+                          Constant(value='critical_tests_pass_rate'),
+                          Constant(value='manual_verification'),
+                          Constant(value='deployment_blocker')],
+                        values=[
+                          Constant(value='100% (4/4)'),
+                          Constant(value='100% (4/4)'),
+                          Constant(value='100% (4/4)'),
+                          Constant(value='100% (9/9 critical tests)'),
+                          Constant(value='LIC-SCOPE-SMOKE-001 MUST pass (user validates in MS Word)'),
+                          Constant(value='Any critical test failure blocks v10.23.1 deployment')])])]),
+              Dict(
+                keys=[
+                  Constant(value='change_id'),
+                  Constant(value='section'),
+                  Constant(value='module'),
+                  Constant(value='action'),
+                  Constant(value='description'),
+                  Constant(value='append_to'),
+                  Constant(value='new_content')],
+                values=[
+                  Constant(value='LIC-023.1-007'),
+                  Constant(value='6.validation.critical_implementation_notes'),
+                  Constant(value='scope_isolation_rules'),
+                  Constant(value='ENHANCEMENT_APPEND'),
+                  Constant(value='Add hard scope isolation rules to critical implementation notes'),
+                  Constant(value='critical_implementation_notes array'),
+                  List(
+                    elts=[
+                      Constant(value='SCOPE ISOLATION: After staging buffer creation, artist_output MUST be deleted: del artist_output'),
+                      Constant(value='SCOPE ISOLATION: Validation functions signature: def validate(staging_buffer: dict) - NO artist_output parameter'),
+                      Constant(value="SCOPE ISOLATION: Every validation batch MUST check: if 'artist_output' in dir(): raise ScopeViolationError()"),
+                      Constant(value="SCOPE ISOLATION: QA reports word counts MUST come from staging_buffer[section]['word_count']"),
+                      Constant(value='SCOPE ISOLATION: Test LIC-SCOPE-SMOKE-001 (manual MS Word verification) MUST pass before production'),
+                      Constant(value='SCOPE ISOLATION: Backup artist_output before deletion: artist_output_backup = deepcopy(artist_output)'),
+                      Constant(value='SCOPE ISOLATION: Restore after validation: artist_output = artist_output_backup (for file rendering only)')],
+                    ctx=Load())])],
+            ctx=Load()),
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='checkpoint_id'),
+                  Constant(value='name'),
+                  Constant(value='when'),
+                  Constant(value='checks'),
+                  Constant(value='severity'),
+                  Constant(value='on_fail')],
+                values=[
+                  Constant(value='LIC-V-023.1-001'),
+                  Constant(value='Scope Isolation Implementation Verification'),
+                  Constant(value='After applying all changes'),
+                  List(
+                    elts=[
+                      Constant(value='Verify artist_output deleted after staging buffer creation (step 10)'),
+                      Constant(value='Verify all validation batch functions accept ONLY staging_buffer parameter'),
+                      Constant(value='Verify scope check in all 4 validation batches'),
+                      Constant(value='Verify artist_output_backup created before deletion'),
+                      Constant(value='Verify artist_output restored after validation passes')],
+                    ctx=Load()),
+                  Constant(value='CRITICAL'),
+                  Constant(value='DO NOT DEPLOY - scope isolation not implemented')]),
+              Dict(
+                keys=[
+                  Constant(value='checkpoint_id'),
+                  Constant(value='name'),
+                  Constant(value='when'),
+                  Constant(value='checks'),
+                  Constant(value='severity'),
+                  Constant(value='on_fail')],
+                values=[
+                  Constant(value='LIC-V-023.1-002'),
+                  Constant(value='Scope Isolation Test Suite Execution'),
+                  Constant(value='Before deployment'),
+                  List(
+                    elts=[
+                      Constant(value='Execute all 12 SCOPE_ISOLATION_TESTS'),
+                      Constant(value='Verify 100% pass rate on all tests'),
+                      Constant(value='Verify all 9 critical tests pass'),
+                      Constant(value='Execute LIC-SCOPE-SMOKE-001 (manual MS Word verification)')],
+                    ctx=Load()),
+                  Constant(value='CRITICAL'),
+                  Constant(value='DO NOT DEPLOY - scope isolation tests failed')]),
+              Dict(
+                keys=[
+                  Constant(value='checkpoint_id'),
+                  Constant(value='name'),
+                  Constant(value='when'),
+                  Constant(value='checks'),
+                  Constant(value='severity'),
+                  Constant(value='on_fail')],
+                values=[
+                  Constant(value='LIC-V-023.1-003'),
+                  Constant(value='Regression Test Verification'),
+                  Constant(value='After deployment to test environment'),
+                  List(
+                    elts=[
+                      Constant(value='Run original v10.23 smoke tests (4 tests)'),
+                      Constant(value='Verify all original tests still pass'),
+                      Constant(value='Verify no functionality regressions'),
+                      Constant(value='Verify word count accuracy improved (zero phantom counts)')],
+                    ctx=Load()),
+                  Constant(value='CRITICAL'),
+                  Constant(value='ROLLBACK to v10.23 - scope fix broke existing functionality')])],
+            ctx=Load()),
+          Dict(
+            keys=[
+              Constant(value='urgency'),
+              Constant(value='pre_deployment'),
+              Constant(value='deployment'),
+              Constant(value='post_deployment')],
+            values=[
+              Constant(value='CRITICAL - Deploy immediately to prevent false positives'),
+              List(
+                elts=[
+                  Constant(value='1. DO NOT deploy v10.23 to production (has scope isolation bug)'),
+                  Constant(value='2. Apply all 7 changes from this patch (LIC-023.1-001 through LIC-023.1-007)'),
+                  Constant(value='3. Run SCOPE_ISOLATION_TESTS suite (12 tests)'),
+                  Constant(value='4. Verify 100% pass rate on all tests'),
+                  Constant(value='5. Execute manual verification test (LIC-SCOPE-SMOKE-001)')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='1. Deploy v10.23.1 (with scope isolation fix) to test environment'),
+                  Constant(value='2. Generate 3 test messages (INMAIL, CONNECTION_REQ, FOLLOW_UP)'),
+                  Constant(value='3. For each message:'),
+                  Constant(value='   - Extract K.3 text'),
+                  Constant(value='   - Calculate word count in MS Word'),
+                  Constant(value='   - Compare to QA report'),
+                  Constant(value='   - Verify EXACT match (zero discrepancy)'),
+                  Constant(value='4. If all 3 match perfectly → proceed to production'),
+                  Constant(value='5. If ANY mismatch → DO NOT DEPLOY, debug scope isolation')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='1. Monitor for scope violation errors'),
+                  Constant(value='2. Track word count accuracy metrics'),
+                  Constant(value='3. Collect user feedback on QA report accuracy'),
+                  Constant(value='4. Run regression tests daily for first week'),
+                  Constant(value='5. If any scope violations detected → immediate rollback and investigation')],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='definition_of_done'),
+              Constant(value='failure_indicators')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='✅ artist_output deleted after staging buffer creation'),
+                  Constant(value='✅ All validation functions accept ONLY staging_buffer parameter'),
+                  Constant(value='✅ Scope check in all 4 validation batches'),
+                  Constant(value='✅ All 12 SCOPE_ISOLATION_TESTS pass (100%)'),
+                  Constant(value='✅ LIC-SCOPE-SMOKE-001 passes (MS Word count matches QA report)'),
+                  Constant(value='✅ Zero phantom word counts'),
+                  Constant(value='✅ Zero scope violation errors'),
+                  Constant(value='✅ Validation gate report includes scope isolation verification section')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='❌ artist_output accessible during validation'),
+                  Constant(value='❌ Word count in MS Word differs from QA report by even 1 word'),
+                  Constant(value='❌ Validation functions still have artist_output parameter'),
+                  Constant(value='❌ Any SCOPE_ISOLATION_TEST fails'),
+                  Constant(value='❌ ScopeViolationError not raised when artist_output accessible')],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='mandatory_test'),
+              Constant(value='frequency'),
+              Constant(value='acceptance_criteria'),
+              Constant(value='on_failure'),
+              Constant(value='notes')],
+            values=[
+              Constant(value='LIC-SCOPE-SMOKE-001 (Manual MS Word Verification)'),
+              Constant(value='Every production deployment'),
+              Constant(value='100% match between MS Word count and QA report'),
+              Constant(value='Immediate rollback and scope isolation audit'),
+              Constant(value='This is the SAME test that caught the Job Workflow v1.6.2 bug')]),
+          Dict(
+            keys=[
+              Constant(value='what_failed_in_v1.6.2'),
+              Constant(value='what_fixed_it_in_v1.6.3'),
+              Constant(value='applied_to_lic_v10.23.1')],
+            values=[
+              List(
+                elts=[
+                  Constant(value="Documentation said 'read from staging_buffer' but wasn't enforced"),
+                  Constant(value="Had 'ignore_artist_metadata' flags but validation still read artist metadata"),
+                  Constant(value='QA reported 129 words but actual text was 111 words (18 word phantom count)'),
+                  Constant(value='User discovered bug via MANUAL_001 test (MS Word verification)')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='HARD scope isolation: del artist_output before validation'),
+                  Constant(value='Function signatures enforced: def validate(staging_buffer: dict) ONLY'),
+                  Constant(value="Scope checks in every validation: if 'artist_output' in dir(): raise ScopeViolationError()"),
+                  Constant(value='Comprehensive test suite: 12 tests including manual MS Word verification')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Same hard scope isolation pattern'),
+                  Constant(value='Same function signature enforcement'),
+                  Constant(value='Same scope check in every validation batch'),
+                  Constant(value='Same manual verification test (LIC-SCOPE-SMOKE-001)'),
+                  Constant(value='Same backup/restore pattern for artist_output')],
+                ctx=Load())])]))])

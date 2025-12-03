@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\run_phase_0_5_semantic_cache.py",
+    "rel_path": "run_phase_0_5_semantic_cache.py",
+    "root_name": "schemas",
+    "file_hash": "ca6ee59d3080a889b885b9e9e7a0456f0c0f8147502161f174a2e038fe5a56f3",
+    "file_size": 22391,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.21867
+}

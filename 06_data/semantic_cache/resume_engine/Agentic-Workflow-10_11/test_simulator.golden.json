@@ -1,0 +1,6 @@
+{
+  "golden_content": "from tools.simulation import Engine\n\nfrom eval.simulation.models import SimScenario\nfrom eval.simulation.simulator import run_scenario\n\n\ndef test_run_scenario_uses_existing_engine():\n    scenarios = Engine.list()\n    assert scenarios, \"Expected at least one registered simulation scenario\"\n\n    scenario_id, description = next(iter(scenarios.items()))\n\n    scenario = SimScenario(\n        id=scenario_id,\n        description=description,\n        initial_context={},\n        execution_profile_name=\"default\",\n        run_count=1,\n    )\n\n    outcome = run_scenario(scenario)\n    assert outcome.scenario_id == scenario_id\n\n\n\n\n\n\n",
+  "full_hash": "51fc8f530ddf5ce24b29b854206101e31eba2e9d15c18ff12ba41ca87d284d19",
+  "generated_at": 1764728227.6045568,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\simulation\\test_simulator.py"
+}

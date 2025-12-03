@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nOrchestration layer error definitions.\n\nThis module provides error classes specific to orchestration operations,\nmoved from core/errors.py during canonical structure cleanup.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom enum import Enum\nfrom typing import Any, Dict, Optional\nfrom dataclasses import dataclass\n\n\nclass ErrorSeverity(str, Enum):\n    \"\"\"Severity levels for workflow errors.\"\"\"\n    LOW = \"low\"\n    MEDIUM = \"medium\"\n    HIGH = \"high\"\n    CRITICAL = \"critical\"\n\n\nclass WorkflowErrorCode(str, Enum):\n    \"\"\"Standard error codes for workflow operations.\"\"\"\n    NODE_EXECUTION_FAILED = \"node_execution_failed\"\n    SAFETY_VIOLATION = \"safety_violation\"\n    STATE_TRANSITION_FAILED = \"state_transition_failed\"\n    TIMEOUT = \"timeout\"\n    RESOURCE_EXHAUSTED = \"resource_exhausted\"\n    VALIDATION_FAILED = \"validation_failed\"\n    DEPENDENCY_FAILED = \"dependency_failed\"\n    CONFIGURATION_ERROR = \"configuration_error\"\n\n\n@dataclass\nclass ErrorContext:\n    \"\"\"Context information for workflow",
+  "full_hash": "02d176e00b1716f0acefcfad69a4d01a976b4361a95685f41bfd7bef152ea620",
+  "generated_at": 1764728225.783423,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\errors.py"
+}

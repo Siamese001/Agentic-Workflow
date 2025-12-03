@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: run_workflow.py\n# Description: Main executable for the LIC agentic workflow.\n\n__version__ = \"11.10\"\n\nimport asyncio\nimport json\nimport sys\nimport os\nfrom uuid import uuid4\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any\n\nfrom workflow import WorkflowOrchestrator\nfrom models import OutreachMission\n\n__version__ = \"11.10\"\n\ndef load_mission_input(filename: str = \"mission_input.json\") -> Dict[str, Any]:\n    \"\"\"Loads the mission input JSON file.\"\"\"\n    if not os.path.exists(filename):\n        print(f\"FATAL: {filename} not found. Please create it.\")\n        sys.exit(1)\n    try:\n        with open(filename, 'r') as f:\n            return json.load(f)\n    except json.JSONDecodeError as e:\n        print(f\"FATAL: Error decoding {filename}: {e}\")\n        sys.exit(1)\n\ndef create_orchestrator() -> WorkflowOrchestrator:\n    \"\"\"Create orchestrator instance\"\"\"\n    return WorkflowOrchestrator()\n\nasync def main():\n    \"\"\"Main execution\"\"\"\n    \n    print(\"\\n\" + \"=",
+  "full_hash": "3f51d85e0dbcc7b9646055e305b851fa92cf0bb7d8513865b6b6b6e409fe7d9e",
+  "generated_at": 1764728340.8235636,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\run_workflow.py"
+}

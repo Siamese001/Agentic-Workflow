@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 319,
+  "generated_at": 1764728347.7735121,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\router-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\routing.py"
+}

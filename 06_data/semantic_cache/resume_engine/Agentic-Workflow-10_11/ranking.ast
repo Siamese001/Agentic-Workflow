@@ -1,0 +1,2983 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nMeta ranking system for résumé evidence evaluation.\n\nProvides deterministic scoring and fusion to prioritize relevant résumé improvement content.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Sequence'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='runtime.observability',
+      names=[
+        alias(name='emit_telemetry_event'),
+        alias(name='emit_ranking_event')],
+      level=0),
+    FunctionDef(
+      name='_core_models',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Lazy imports core models to avoid circular dependencies.\n\n    Ensures clean module structure for reliable résumé processing.\n    ')),
+        ImportFrom(
+          module='core.models',
+          names=[
+            alias(name='models', asname='core_models')],
+          level=0),
+        Return(
+          value=Name(id='core_models', ctx=Load()))],
+      returns=Name(id='Any', ctx=Load())),
+    Expr(
+      value=Constant(value='\nProvides keyword relevance scoring for résumé evidence.\n\nPrioritizes exact matches to ensure comprehensive résumé content coverage.\n')),
+    FunctionDef(
+      name='_bm25_score',
+      args=arguments(
+        args=[
+          arg(
+            arg='item',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Calculates keyword relevance score for résumé evidence.\n    \n    Prioritizes exact matches to ensure comprehensive résumé content coverage.\n    ')),
+        Assign(
+          targets=[
+            Name(id='text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='item', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='text')]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='item', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='evidence')]),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='text', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=0.0))]),
+        Assign(
+          targets=[
+            Name(id='tokens', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='text', ctx=Load()),
+              attr='split',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='length', ctx=Store())],
+          value=Call(
+            func=Name(id='len', ctx=Load()),
+            args=[
+              Name(id='tokens', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='bonus', ctx=Store())],
+          value=Constant(value=0.0)),
+        Assign(
+          targets=[
+            Name(id='important', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='llm'),
+              Constant(value='resume'),
+              Constant(value='experience'),
+              Constant(value='impact'),
+              Constant(value='owner'),
+              Constant(value='lead')])),
+        For(
+          target=Name(id='t', ctx=Store()),
+          iter=Name(id='tokens', ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='t', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='important', ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Name(id='bonus', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.75))])]),
+        Assign(
+          targets=[
+            Name(id='base', ctx=Store())],
+          value=BinOp(
+            left=Name(id='bonus', ctx=Load()),
+            op=Div(),
+            right=BinOp(
+              left=Constant(value=1.0),
+              op=Add(),
+              right=BinOp(
+                left=Name(id='length', ctx=Load()),
+                op=Div(),
+                right=Constant(value=50.0))))),
+        Return(
+          value=Call(
+            func=Name(id='float', ctx=Load()),
+            args=[
+              Name(id='base', ctx=Load())]))],
+      returns=Name(id='float', ctx=Load())),
+    FunctionDef(
+      name='_dense_score',
+      args=arguments(
+        args=[
+          arg(
+            arg='item',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Calculates semantic similarity score for résumé content.\n    \n    Finds conceptually relevant evidence to enhance résumé job alignment.\n    ')),
+        Assign(
+          targets=[
+            Name(id='text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='item', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='text')]),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='item', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='evidence')]),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='text', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=0.0))]),
+        Assign(
+          targets=[
+            Name(id='h', ctx=Store())],
+          value=Call(
+            func=Name(id='hash', ctx=Load()),
+            args=[
+              Name(id='text', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='float', ctx=Load()),
+            args=[
+              BinOp(
+                left=BinOp(
+                  left=Name(id='h', ctx=Load()),
+                  op=Mod(),
+                  right=Constant(value=10000000)),
+                op=Div(),
+                right=Constant(value=10000000.0))]))],
+      returns=Name(id='float', ctx=Load())),
+    FunctionDef(
+      name='_hybrid_score',
+      args=arguments(
+        args=[
+          arg(
+            arg='item',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Combines keyword and semantic scores for résumé ranking.\n    \n    Balances exact matches with conceptual relevance for optimal résumé improvement.\n    ')),
+        Assign(
+          targets=[
+            Name(id='b', ctx=Store())],
+          value=Call(
+            func=Name(id='_bm25_score', ctx=Load()),
+            args=[
+              Name(id='item', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='d', ctx=Store())],
+          value=Call(
+            func=Name(id='_dense_score', ctx=Load()),
+            args=[
+              Name(id='item', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='float', ctx=Load()),
+            args=[
+              BinOp(
+                left=BinOp(
+                  left=Name(id='b', ctx=Load()),
+                  op=Add(),
+                  right=Name(id='d', ctx=Load())),
+                op=Div(),
+                right=Constant(value=2.0))]))],
+      returns=Name(id='float', ctx=Load())),
+    Expr(
+      value=Constant(value='\nProvides public ranking functions for résumé evidence evaluation.\n\nDelivers deterministic scoring to prioritize most relevant résumé improvement content.\n')),
+    FunctionDef(
+      name='bm25_score',
+      args=arguments(
+        args=[
+          arg(
+            arg='item',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Provides backward-compatible BM25 scoring for résumé evidence.\n    \n    Maintains legacy interface while delivering keyword relevance scoring for résumé content.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='_bm25_score', ctx=Load()),
+            args=[
+              Name(id='item', ctx=Load())]))],
+      returns=Name(id='float', ctx=Load())),
+    FunctionDef(
+      name='dense_score',
+      args=arguments(
+        args=[
+          arg(
+            arg='item',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Provides backward-compatible semantic scoring for résumé evidence.\n    \n    Maintains legacy interface while delivering conceptual relevance scoring for résumé content.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='_dense_score', ctx=Load()),
+            args=[
+              Name(id='item', ctx=Load())]))],
+      returns=Name(id='float', ctx=Load())),
+    FunctionDef(
+      name='bm25',
+      args=arguments(
+        args=[
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Ranks résumé evidence by keyword relevance.\n\n    Prioritizes exact matches to ensure comprehensive résumé content coverage.\n    ')),
+        AnnAssign(
+          target=Name(id='scored', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='it', ctx=Store()),
+          iter=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='items', ctx=Load()),
+              List(ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='new_it', ctx=Store())],
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='it', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='new_it', ctx=Load()),
+                  slice=Constant(value='score'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_bm25_score', ctx=Load()),
+                args=[
+                  Name(id='new_it', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scored', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='new_it', ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='scored', ctx=Load()),
+              attr='sort',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='x')]),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='x', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='score'),
+                      Constant(value=0.0)]))),
+              keyword(
+                arg='reverse',
+                value=Constant(value=True))])),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='idx', ctx=Store()),
+              Name(id='it', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='scored', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='it', ctx=Load()),
+                  slice=Constant(value='rank'),
+                  ctx=Store())],
+              value=BinOp(
+                left=Name(id='idx', ctx=Load()),
+                op=Add(),
+                right=Constant(value=1)))]),
+        Return(
+          value=Name(id='scored', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='dense',
+      args=arguments(
+        args=[
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Ranks résumé evidence by semantic similarity.\n    \n    Finds conceptually relevant content to enhance résumé job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='scored', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='it', ctx=Store()),
+          iter=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='items', ctx=Load()),
+              List(ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='new_it', ctx=Store())],
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='it', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='new_it', ctx=Load()),
+                  slice=Constant(value='score'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_dense_score', ctx=Load()),
+                args=[
+                  Name(id='new_it', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scored', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='new_it', ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='scored', ctx=Load()),
+              attr='sort',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='x')]),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='x', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='score'),
+                      Constant(value=0.0)]))),
+              keyword(
+                arg='reverse',
+                value=Constant(value=True))])),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='idx', ctx=Store()),
+              Name(id='it', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='scored', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='it', ctx=Load()),
+                  slice=Constant(value='rank'),
+                  ctx=Store())],
+              value=BinOp(
+                left=Name(id='idx', ctx=Load()),
+                op=Add(),
+                right=Constant(value=1)))]),
+        Return(
+          value=Name(id='scored', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='hybrid',
+      args=arguments(
+        args=[
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Ranks résumé evidence by combined relevance scoring.\n    \n    Balances exact matches with conceptual relevance for optimal résumé improvement.\n    ')),
+        AnnAssign(
+          target=Name(id='scored', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='it', ctx=Store()),
+          iter=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='items', ctx=Load()),
+              List(ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='new_it', ctx=Store())],
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='it', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='new_it', ctx=Load()),
+                  slice=Constant(value='score'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_hybrid_score', ctx=Load()),
+                args=[
+                  Name(id='new_it', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scored', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='new_it', ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='scored', ctx=Load()),
+              attr='sort',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='x')]),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='x', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='score'),
+                      Constant(value=0.0)]))),
+              keyword(
+                arg='reverse',
+                value=Constant(value=True))])),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='idx', ctx=Store()),
+              Name(id='it', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='scored', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='it', ctx=Load()),
+                  slice=Constant(value='rank'),
+                  ctx=Store())],
+              value=BinOp(
+                left=Name(id='idx', ctx=Load()),
+                op=Add(),
+                right=Constant(value=1)))]),
+        Return(
+          value=Name(id='scored', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='rank_documents',
+      args=arguments(
+        args=[
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='strategy',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value='hybrid')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Ranks résumé documents using optimal scoring strategy.\n    \n    Ensures relevant content is prioritized for comprehensive résumé enhancement.\n    ')),
+        Assign(
+          targets=[
+            Name(id='strat', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='strategy', ctx=Load()),
+                  Constant(value='hybrid')]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='strat', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='bm25')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='bm25', ctx=Load()),
+                args=[
+                  Name(id='items', ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='strat', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='dense')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='dense', ctx=Load()),
+                args=[
+                  Name(id='items', ctx=Load())]))]),
+        Return(
+          value=Call(
+            func=Name(id='hybrid', ctx=Load()),
+            args=[
+              Name(id='items', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    Expr(
+      value=Constant(value='\nProvides reciprocal rank fusion for résumé evidence ranking.\n\nCombines multiple ranking approaches for optimal résumé content prioritization.\n')),
+    FunctionDef(
+      name='_rrf_weights_from_config',
+      args=arguments(
+        args=[
+          arg(
+            arg='cfg',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='n_groups',
+            annotation=Name(id='int', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Calculates weighted fusion scores for résumé evidence.\n    \n    Optimizes ranking strategy to prioritize most relevant résumé improvement content.\n    ')),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Name(id='cfg', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='cfg', ctx=Load()),
+                    Constant(value='rrf_weights'),
+                    Constant(value=None)]))]),
+          body=[
+            Return(
+              value=BinOp(
+                left=List(
+                  elts=[
+                    Constant(value=1.0)],
+                  ctx=Load()),
+                op=Mult(),
+                right=Call(
+                  func=Name(id='max', ctx=Load()),
+                  args=[
+                    Constant(value=1),
+                    Name(id='n_groups', ctx=Load())])))]),
+        Assign(
+          targets=[
+            Name(id='raw', ctx=Store())],
+          value=Attribute(
+            value=Name(id='cfg', ctx=Load()),
+            attr='rrf_weights',
+            ctx=Load())),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='raw', ctx=Load()),
+                Tuple(
+                  elts=[
+                    Name(id='list', ctx=Load()),
+                    Name(id='tuple', ctx=Load())],
+                  ctx=Load())])),
+          body=[
+            Return(
+              value=BinOp(
+                left=List(
+                  elts=[
+                    Constant(value=1.0)],
+                  ctx=Load()),
+                op=Mult(),
+                right=Call(
+                  func=Name(id='max', ctx=Load()),
+                  args=[
+                    Constant(value=1),
+                    Name(id='n_groups', ctx=Load())])))]),
+        AnnAssign(
+          target=Name(id='w_list', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='w', ctx=Store()),
+          iter=Name(id='raw', ctx=Load()),
+          body=[
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='w_list', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='float', ctx=Load()),
+                        args=[
+                          Name(id='w', ctx=Load())])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Continue()])])]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='w_list', ctx=Load())),
+          body=[
+            Return(
+              value=BinOp(
+                left=List(
+                  elts=[
+                    Constant(value=1.0)],
+                  ctx=Load()),
+                op=Mult(),
+                right=Call(
+                  func=Name(id='max', ctx=Load()),
+                  args=[
+                    Constant(value=1),
+                    Name(id='n_groups', ctx=Load())])))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='w_list', ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Name(id='n_groups', ctx=Load())]),
+          body=[
+            Return(
+              value=Subscript(
+                value=Name(id='w_list', ctx=Load()),
+                slice=Slice(
+                  upper=Name(id='n_groups', ctx=Load())),
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='last', ctx=Store())],
+          value=Subscript(
+            value=Name(id='w_list', ctx=Load()),
+            slice=UnaryOp(
+              op=USub(),
+              operand=Constant(value=1)),
+            ctx=Load())),
+        Return(
+          value=BinOp(
+            left=Name(id='w_list', ctx=Load()),
+            op=Add(),
+            right=BinOp(
+              left=List(
+                elts=[
+                  Name(id='last', ctx=Load())],
+                ctx=Load()),
+              op=Mult(),
+              right=BinOp(
+                left=Name(id='n_groups', ctx=Load()),
+                op=Sub(),
+                right=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='w_list', ctx=Load())])))))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='float', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='fuse_ranked_groups',
+      args=arguments(
+        args=[
+          arg(
+            arg='groups',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='use_rrf',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='cfg',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='rrf_k',
+            annotation=Name(id='int', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=True),
+          Constant(value=None),
+          Constant(value=60)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Fuses multiple ranked lists for optimal résumé evidence prioritization.\n    \n    Combines retrieval strategies to ensure most relevant résumé content is ranked highest.\n    ')),
+        ImportFrom(
+          module='typing',
+          names=[
+            alias(name='Tuple')],
+          level=0),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='groups', ctx=Load())),
+          body=[
+            Return(
+              value=List(ctx=Load()))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='use_rrf', ctx=Load())),
+          body=[
+            AnnAssign(
+              target=Name(id='flattened', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            AnnAssign(
+              target=Name(id='seen', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='set', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load())),
+              simple=1),
+            For(
+              target=Name(id='group', ctx=Store()),
+              iter=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='groups', ctx=Load()),
+                  List(ctx=Load())]),
+              body=[
+                For(
+                  target=Name(id='item', ctx=Store()),
+                  iter=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='group', ctx=Load()),
+                      List(ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='key', ctx=Store())],
+                      value=Tuple(
+                        elts=[
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='item', ctx=Load()),
+                                  attr='get',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='query'),
+                                  Constant(value='')])]),
+                          Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='item', ctx=Load()),
+                                  attr='get',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='evidence'),
+                                  Constant(value='')])])],
+                        ctx=Load())),
+                    If(
+                      test=Compare(
+                        left=Name(id='key', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='seen', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='seen', ctx=Load()),
+                              attr='add',
+                              ctx=Load()),
+                            args=[
+                              Name(id='key', ctx=Load())])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='flattened', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  Name(id='item', ctx=Load())])]))])])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='flattened', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='x')]),
+                      body=Tuple(
+                        elts=[
+                          Call(
+                            func=Name(id='int', ctx=Load()),
+                            args=[
+                              Call(
+                                func=Attribute(
+                                  value=Name(id='x', ctx=Load()),
+                                  attr='get',
+                                  ctx=Load()),
+                                args=[
+                                  Constant(value='rank'),
+                                  Constant(value=9999999)])]),
+                          Call(
+                            func=Attribute(
+                              value=Call(
+                                func=Name(id='str', ctx=Load()),
+                                args=[
+                                  Call(
+                                    func=Attribute(
+                                      value=Name(id='x', ctx=Load()),
+                                      attr='get',
+                                      ctx=Load()),
+                                    args=[
+                                      Constant(value='evidence'),
+                                      Constant(value='')])]),
+                              attr='lower',
+                              ctx=Load()))],
+                        ctx=Load())))])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='idx', ctx=Store()),
+                  Name(id='item', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='flattened', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='item', ctx=Load()),
+                      slice=Constant(value='rank'),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='idx', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1)))]),
+            Expr(
+              value=Call(
+                func=Name(id='emit_telemetry_event', ctx=Load()),
+                args=[
+                  Constant(value='ranking.fuse.minrank'),
+                  Dict(
+                    keys=[
+                      Constant(value='strategy'),
+                      Constant(value='groups'),
+                      Constant(value='items_in'),
+                      Constant(value='items_out')],
+                    values=[
+                      Constant(value='min_rank'),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='groups', ctx=Load())]),
+                      Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                BoolOp(
+                                  op=Or(),
+                                  values=[
+                                    Name(id='g', ctx=Load()),
+                                    List(ctx=Load())])]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='g', ctx=Store()),
+                                iter=Name(id='groups', ctx=Load()),
+                                is_async=0)])]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='flattened', ctx=Load())])])])),
+            Return(
+              value=Name(id='flattened', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='weights', ctx=Store())],
+          value=Call(
+            func=Name(id='_rrf_weights_from_config', ctx=Load()),
+            args=[
+              Name(id='cfg', ctx=Load()),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='groups', ctx=Load())])])),
+        AnnAssign(
+          target=Name(id='doc_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        AnnAssign(
+          target=Name(id='doc_repr', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='g_idx', ctx=Store()),
+              Name(id='group', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='groups', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='w', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='g_idx', ctx=Load()),
+                  ops=[
+                    Lt()],
+                  comparators=[
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='weights', ctx=Load())])]),
+                body=Subscript(
+                  value=Name(id='weights', ctx=Load()),
+                  slice=Name(id='g_idx', ctx=Load()),
+                  ctx=Load()),
+                orelse=Constant(value=1.0))),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='rank_idx', ctx=Store()),
+                  Name(id='item', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='group', ctx=Load()),
+                      List(ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='key', ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='item', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='query'),
+                              Constant(value='')])]),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='item', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='evidence'),
+                              Constant(value='')])])],
+                    ctx=Load())),
+                If(
+                  test=Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='doc_repr', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='doc_repr', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='dict', ctx=Load()),
+                        args=[
+                          Name(id='item', ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Name(id='r', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='rank_idx', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='doc_scores', ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='doc_scores', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Name(id='key', ctx=Load()),
+                        Constant(value=0.0)]),
+                    op=Add(),
+                    right=BinOp(
+                      left=Name(id='w', ctx=Load()),
+                      op=Div(),
+                      right=Call(
+                        func=Name(id='float', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Name(id='rrf_k', ctx=Load()),
+                            op=Add(),
+                            right=Name(id='r', ctx=Load()))]))))])]),
+        AnnAssign(
+          target=Name(id='fused', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='key', ctx=Store()),
+              Name(id='score', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='doc_scores', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='item', ctx=Store())],
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='doc_repr', ctx=Load()),
+                    slice=Name(id='key', ctx=Load()),
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='item', ctx=Load()),
+                  slice=Constant(value='score'),
+                  ctx=Store())],
+              value=Name(id='score', ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='fused', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='item', ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='fused', ctx=Load()),
+              attr='sort',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='x')]),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='x', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='score'),
+                      Constant(value=0.0)]))),
+              keyword(
+                arg='reverse',
+                value=Constant(value=True))])),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='idx', ctx=Store()),
+              Name(id='item', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='fused', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='item', ctx=Load()),
+                  slice=Constant(value='rank'),
+                  ctx=Store())],
+              value=BinOp(
+                left=Name(id='idx', ctx=Load()),
+                op=Add(),
+                right=Constant(value=1)))]),
+        If(
+          test=Compare(
+            left=Name(id='cfg', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='core', ctx=Store())],
+              value=Call(
+                func=Name(id='_core_models', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='RankingEvent', ctx=Store())],
+              value=Attribute(
+                value=Name(id='core', ctx=Load()),
+                attr='RankingEvent',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='evt', ctx=Store())],
+              value=Call(
+                func=Name(id='RankingEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='stage',
+                    value=Constant(value='rrf_fusion')),
+                  keyword(
+                    arg='strategy',
+                    value=Call(
+                      func=Name(id='getattr', ctx=Load()),
+                      args=[
+                        Name(id='cfg', ctx=Load()),
+                        Constant(value='strategy'),
+                        Constant(value='unknown')])),
+                  keyword(
+                    arg='use_rrf',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='rrf_k'),
+                        Constant(value='groups'),
+                        Constant(value='items_in'),
+                        Constant(value='items_out'),
+                        Constant(value='weights')],
+                      values=[
+                        Name(id='rrf_k', ctx=Load()),
+                        Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='groups', ctx=Load())]),
+                        Call(
+                          func=Name(id='sum', ctx=Load()),
+                          args=[
+                            GeneratorExp(
+                              elt=Call(
+                                func=Name(id='len', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='g', ctx=Load()),
+                                      List(ctx=Load())])]),
+                              generators=[
+                                comprehension(
+                                  target=Name(id='g', ctx=Store()),
+                                  iter=Name(id='groups', ctx=Load()),
+                                  is_async=0)])]),
+                        Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='fused', ctx=Load())]),
+                        Name(id='weights', ctx=Load())]))])),
+            Expr(
+              value=Call(
+                func=Name(id='emit_ranking_event', ctx=Load()),
+                args=[
+                  Name(id='evt', ctx=Load())]))],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Name(id='emit_telemetry_event', ctx=Load()),
+                args=[
+                  Constant(value='ranking.rrf_fusion'),
+                  Dict(
+                    keys=[
+                      Constant(value='rrf_k'),
+                      Constant(value='groups'),
+                      Constant(value='items_in'),
+                      Constant(value='items_out'),
+                      Constant(value='weights')],
+                    values=[
+                      Name(id='rrf_k', ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='groups', ctx=Load())]),
+                      Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                BoolOp(
+                                  op=Or(),
+                                  values=[
+                                    Name(id='g', ctx=Load()),
+                                    List(ctx=Load())])]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='g', ctx=Store()),
+                                iter=Name(id='groups', ctx=Load()),
+                                is_async=0)])]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='fused', ctx=Load())]),
+                      Name(id='weights', ctx=Load())])]))]),
+        Return(
+          value=Name(id='fused', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    Expr(
+      value=Constant(value='\nProvides backward-compatible ranking fusion for résumé evidence.\n\nMaintains legacy interface while delivering optimal résumé content prioritization.\n')),
+    FunctionDef(
+      name='fuse_ranked_groups_for_strategy',
+      args=arguments(
+        args=[
+          arg(
+            arg='groups',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='strategy',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='cfg',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          Constant(value='hybrid'),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Applies optimal ranking fusion for résumé evidence groups.\n    \n    Maintains backward compatibility while delivering comprehensive résumé content ranking.\n    ')),
+        Assign(
+          targets=[
+            Name(id='use_rrf', ctx=Store())],
+          value=Constant(value=True)),
+        Return(
+          value=Call(
+            func=Name(id='fuse_ranked_groups', ctx=Load()),
+            args=[
+              Name(id='groups', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='use_rrf',
+                value=Name(id='use_rrf', ctx=Load())),
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    Expr(
+      value=Constant(value='\nProvides evidence-level ranking for RAG résumé retrieval.\n\nDelivers optimized scoring to prioritize most relevant résumé improvement evidence.\n')),
+    FunctionDef(
+      name='_canonical_evidence_key',
+      args=arguments(
+        args=[
+          arg(
+            arg='ev',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates canonical key for résumé evidence deduplication.\n    \n    Ensures unique identification to prevent duplicate résumé content in rankings.\n    ')),
+        Assign(
+          targets=[
+            Name(id='src', ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='ev', ctx=Load()),
+                attr='source',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='doc_id', ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              IfExp(
+                test=Attribute(
+                  value=Name(id='ev', ctx=Load()),
+                  attr='metadata',
+                  ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='ev', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='doc_id'),
+                    Constant(value='')]),
+                orelse=Constant(value=''))])),
+        If(
+          test=Name(id='doc_id', ctx=Load()),
+          body=[
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='src', ctx=Load()),
+                  Name(id='doc_id', ctx=Load())],
+                ctx=Load()))]),
+        Return(
+          value=Tuple(
+            elts=[
+              Name(id='src', ctx=Load()),
+              Attribute(
+                value=Name(id='ev', ctx=Load()),
+                attr='text',
+                ctx=Load())],
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='str', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='normalize_evidence_scores',
+      args=arguments(
+        args=[
+          arg(
+            arg='evidence',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Normalizes résumé evidence scores to consistent range.\n    \n    Ensures fair comparison and ranking of résumé improvement content across sources.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='evidence', ctx=Load())),
+          body=[
+            Return(
+              value=List(ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='scores', ctx=Store())],
+          value=ListComp(
+            elt=Attribute(
+              value=Name(id='e', ctx=Load()),
+              attr='score',
+              ctx=Load()),
+            generators=[
+              comprehension(
+                target=Name(id='e', ctx=Store()),
+                iter=Name(id='evidence', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='max_score', ctx=Store())],
+          value=Call(
+            func=Name(id='max', ctx=Load()),
+            args=[
+              Name(id='scores', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='min_score', ctx=Store())],
+          value=Call(
+            func=Name(id='min', ctx=Load()),
+            args=[
+              Name(id='scores', ctx=Load())])),
+        If(
+          test=Compare(
+            left=Name(id='max_score', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Name(id='min_score', ctx=Load())]),
+          body=[
+            Return(
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='e', ctx=Load()),
+                    attr='model_copy',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='update',
+                      value=Dict(
+                        keys=[
+                          Constant(value='score')],
+                        values=[
+                          Constant(value=1.0)]))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='e', ctx=Store()),
+                    iter=Name(id='evidence', ctx=Load()),
+                    is_async=0)]))]),
+        Assign(
+          targets=[
+            Name(id='span', ctx=Store())],
+          value=BinOp(
+            left=Name(id='max_score', ctx=Load()),
+            op=Sub(),
+            right=Name(id='min_score', ctx=Load()))),
+        AnnAssign(
+          target=Name(id='out', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='e', ctx=Store()),
+          iter=Name(id='evidence', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='norm', ctx=Store())],
+              value=BinOp(
+                left=BinOp(
+                  left=Attribute(
+                    value=Name(id='e', ctx=Load()),
+                    attr='score',
+                    ctx=Load()),
+                  op=Sub(),
+                  right=Name(id='min_score', ctx=Load())),
+                op=Div(),
+                right=Name(id='span', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='e', ctx=Load()),
+                      attr='model_copy',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='update',
+                        value=Dict(
+                          keys=[
+                            Constant(value='score')],
+                          values=[
+                            Call(
+                              func=Name(id='float', ctx=Load()),
+                              args=[
+                                Name(id='norm', ctx=Load())])]))])]))]),
+        Return(
+          value=Name(id='out', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='deduplicate_evidence',
+      args=arguments(
+        args=[
+          arg(
+            arg='evidence',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Removes duplicate résumé evidence by canonical key.\n    \n    Ensures unique content to improve résumé ranking accuracy and avoid redundancy.\n    ')),
+        AnnAssign(
+          target=Name(id='seen', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='set', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='set', ctx=Load())),
+          simple=1),
+        AnnAssign(
+          target=Name(id='out', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='ev', ctx=Store()),
+          iter=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='evidence', ctx=Load()),
+              List(ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='key', ctx=Store())],
+              value=Call(
+                func=Name(id='_canonical_evidence_key', ctx=Load()),
+                args=[
+                  Name(id='ev', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='seen', ctx=Load())]),
+              body=[
+                Continue()]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='seen', ctx=Load()),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='out', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='ev', ctx=Load())]))]),
+        Return(
+          value=Name(id='out', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='normalize_scores',
+      args=arguments(
+        args=[
+          arg(
+            arg='evidence',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Provides backward-compatible score normalization for résumé evidence.\n    \n    Maintains legacy interface while delivering consistent scoring for résumé content ranking.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='normalize_evidence_scores', ctx=Load()),
+            args=[
+              Name(id='evidence', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='merge_scores',
+      args=arguments(
+        args=[
+          arg(
+            arg='evidence',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Provides backward-compatible evidence merging for résumé rankings.\n    \n    Maintains legacy interface while delivering deduplication for résumé content optimization.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='deduplicate_evidence', ctx=Load()),
+            args=[
+              Name(id='evidence', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='rank_evidence',
+      args=arguments(
+        args=[
+          arg(
+            arg='evidence',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='top_k',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='normalize',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='max_chars',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='strategy',
+            annotation=Name(id='str', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=True),
+          Constant(value=0),
+          Constant(value='hybrid')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Rank Evidence items using the dict-based ranking functions underneath.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='evidence', ctx=Load())),
+          body=[
+            Return(
+              value=List(ctx=Load()))]),
+        AnnAssign(
+          target=Name(id='items', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='ev', ctx=Store()),
+          iter=Name(id='evidence', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='items', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='text'),
+                      Constant(value='evidence'),
+                      Constant(value='source'),
+                      Constant(value='rank'),
+                      Constant(value='score')],
+                    values=[
+                      Attribute(
+                        value=Name(id='ev', ctx=Load()),
+                        attr='text',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='ev', ctx=Load()),
+                        attr='text',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='ev', ctx=Load()),
+                        attr='source',
+                        ctx=Load()),
+                      Constant(value=1),
+                      Attribute(
+                        value=Name(id='ev', ctx=Load()),
+                        attr='score',
+                        ctx=Load())])]))]),
+        Assign(
+          targets=[
+            Name(id='ranked_dicts', ctx=Store())],
+          value=Call(
+            func=Name(id='rank_documents', ctx=Load()),
+            args=[
+              Name(id='items', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Name(id='strategy', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='core', ctx=Store())],
+          value=Call(
+            func=Name(id='_core_models', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='Evidence', ctx=Store())],
+          value=Attribute(
+            value=Name(id='core', ctx=Load()),
+            attr='Evidence',
+            ctx=Load())),
+        AnnAssign(
+          target=Name(id='ranked', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='d', ctx=Store()),
+          iter=Name(id='ranked_dicts', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ranked', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='Evidence', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Constant(value='')),
+                      keyword(
+                        arg='text',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='d', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='evidence'),
+                                Constant(value='')])])),
+                      keyword(
+                        arg='score',
+                        value=Call(
+                          func=Name(id='float', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='d', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='score'),
+                                Constant(value=0.0)])])),
+                      keyword(
+                        arg='source',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='d', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='source'),
+                                Constant(value='')])])),
+                      keyword(arg='metadata', value=Dict())])]))]),
+        If(
+          test=Name(id='normalize', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ranked', ctx=Store())],
+              value=Call(
+                func=Name(id='normalize_evidence_scores', ctx=Load()),
+                args=[
+                  Name(id='ranked', ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='max_chars', ctx=Load()),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)]),
+          body=[
+            AnnAssign(
+              target=Name(id='trimmed', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='Evidence', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='total_chars', ctx=Store())],
+              value=Constant(value=0)),
+            For(
+              target=Name(id='e', ctx=Store()),
+              iter=Name(id='ranked', ctx=Load()),
+              body=[
+                AugAssign(
+                  target=Name(id='total_chars', ctx=Store()),
+                  op=Add(),
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='e', ctx=Load()),
+                        attr='text',
+                        ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='total_chars', ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Name(id='max_chars', ctx=Load())]),
+                  body=[
+                    Break()]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='trimmed', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='e', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='ranked', ctx=Store())],
+              value=Name(id='trimmed', ctx=Load()))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='top_k', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Name(id='top_k', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ranked', ctx=Store())],
+              value=Subscript(
+                value=Name(id='ranked', ctx=Load()),
+                slice=Slice(
+                  upper=Name(id='top_k', ctx=Load())),
+                ctx=Load()))]),
+        Return(
+          value=Name(id='ranked', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='fuse_evidence_groups_rrf',
+      args=arguments(
+        args=[
+          arg(
+            arg='groups',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Sequence', ctx=Load()),
+                slice=Name(id='Any', ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='cfg',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='rrf_k',
+            annotation=Name(id='int', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=60)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Evidence-level Reciprocal Rank Fusion.\n\n        score(ev) = Σ_i w_i / (rrf_k + rank_i)\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='groups', ctx=Load())),
+          body=[
+            Return(
+              value=List(ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='weights', ctx=Store())],
+          value=Call(
+            func=Name(id='_rrf_weights_from_config', ctx=Load()),
+            args=[
+              Name(id='cfg', ctx=Load()),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='groups', ctx=Load())])])),
+        AnnAssign(
+          target=Name(id='scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reprs', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='g_idx', ctx=Store()),
+              Name(id='group', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='groups', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='w', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Name(id='g_idx', ctx=Load()),
+                  ops=[
+                    Lt()],
+                  comparators=[
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='weights', ctx=Load())])]),
+                body=Subscript(
+                  value=Name(id='weights', ctx=Load()),
+                  slice=Name(id='g_idx', ctx=Load()),
+                  ctx=Load()),
+                orelse=Constant(value=1.0))),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='rank_idx', ctx=Store()),
+                  Name(id='ev', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='group', ctx=Load()),
+                      List(ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='key', ctx=Store())],
+                  value=Call(
+                    func=Name(id='_canonical_evidence_key', ctx=Load()),
+                    args=[
+                      Name(id='ev', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='reprs', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='reprs', ctx=Load()),
+                          slice=Name(id='key', ctx=Load()),
+                          ctx=Store())],
+                      value=Name(id='ev', ctx=Load()))]),
+                Assign(
+                  targets=[
+                    Name(id='r', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='rank_idx', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='scores', ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='scores', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Name(id='key', ctx=Load()),
+                        Constant(value=0.0)]),
+                    op=Add(),
+                    right=BinOp(
+                      left=Name(id='w', ctx=Load()),
+                      op=Div(),
+                      right=Call(
+                        func=Name(id='float', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Name(id='rrf_k', ctx=Load()),
+                            op=Add(),
+                            right=Name(id='r', ctx=Load()))]))))])]),
+        AnnAssign(
+          target=Name(id='fused', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='key', ctx=Store()),
+              Name(id='score', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='scores', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ev', ctx=Store())],
+              value=Subscript(
+                value=Name(id='reprs', ctx=Load()),
+                slice=Name(id='key', ctx=Load()),
+                ctx=Load())),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='fused', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='ev', ctx=Load()),
+                      attr='model_copy',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='update',
+                        value=Dict(
+                          keys=[
+                            Constant(value='score')],
+                          values=[
+                            Call(
+                              func=Name(id='float', ctx=Load()),
+                              args=[
+                                Name(id='score', ctx=Load())])]))])]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='fused', ctx=Load()),
+              attr='sort',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='e')]),
+                  body=Attribute(
+                    value=Name(id='e', ctx=Load()),
+                    attr='score',
+                    ctx=Load()))),
+              keyword(
+                arg='reverse',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='core', ctx=Store())],
+          value=Call(
+            func=Name(id='_core_models', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='RankingEvent', ctx=Store())],
+          value=Attribute(
+            value=Name(id='core', ctx=Load()),
+            attr='RankingEvent',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='evt', ctx=Store())],
+          value=Call(
+            func=Name(id='RankingEvent', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='stage',
+                value=Constant(value='evidence_rrf')),
+              keyword(
+                arg='strategy',
+                value=IfExp(
+                  test=Compare(
+                    left=Name(id='cfg', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='cfg', ctx=Load()),
+                      Constant(value='strategy'),
+                      Constant(value='unknown')]),
+                  orelse=Constant(value='unknown'))),
+              keyword(
+                arg='use_rrf',
+                value=Constant(value=True)),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='rrf_k'),
+                    Constant(value='groups'),
+                    Constant(value='items_in'),
+                    Constant(value='items_out'),
+                    Constant(value='weights')],
+                  values=[
+                    Name(id='rrf_k', ctx=Load()),
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='groups', ctx=Load())]),
+                    Call(
+                      func=Name(id='sum', ctx=Load()),
+                      args=[
+                        GeneratorExp(
+                          elt=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              BoolOp(
+                                op=Or(),
+                                values=[
+                                  Name(id='g', ctx=Load()),
+                                  List(ctx=Load())])]),
+                          generators=[
+                            comprehension(
+                              target=Name(id='g', ctx=Store()),
+                              iter=Name(id='groups', ctx=Load()),
+                              is_async=0)])]),
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='fused', ctx=Load())]),
+                    Name(id='weights', ctx=Load())]))])),
+        Expr(
+          value=Call(
+            func=Name(id='emit_ranking_event', ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())])),
+        Return(
+          value=Name(id='fused', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='fuse_ranked_groups_rrf',
+      args=arguments(
+        args=[
+          arg(
+            arg='groups',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Sequence', ctx=Load()),
+                slice=Name(id='Any', ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='rrf_weights',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='float', ctx=Load()),
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='workflow_id',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='rrf_k',
+            annotation=Name(id='int', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=60)]),
+      body=[
+        Expr(
+          value=Constant(value='Wrapper used by retrieval.py for Evidence-level weighted RRF.\n\n    This function adapts the raw `rrf_weights` list (coming from\n    RetrievalConfig.rrf_weights) into a minimal RetrievalConfig instance\n    and delegates to `fuse_evidence_groups_rrf`.\n\n    It exists solely to preserve the existing retrieval.py call-site:\n\n        ranking.fuse_ranked_groups_rrf(\n            groups=groups,\n            rrf_weights=retrieval_cfg.rrf_weights,\n            workflow_id=workflow_id,\n        )\n\n    The `workflow_id` is accepted for signature compatibility but is\n    not used here; telemetry is emitted inside `fuse_evidence_groups_rrf`.\n    ')),
+        AnnAssign(
+          target=Name(id='cfg', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        If(
+          test=Compare(
+            left=Name(id='rrf_weights', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='core', ctx=Store())],
+              value=Call(
+                func=Name(id='_core_models', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='RetrievalConfig', ctx=Store())],
+              value=Attribute(
+                value=Name(id='core', ctx=Load()),
+                attr='RetrievalConfig',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='cfg', ctx=Store())],
+              value=Call(
+                func=Name(id='RetrievalConfig', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='rrf_weights',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='rrf_weights', ctx=Load())]))]),
+        Return(
+          value=Call(
+            func=Name(id='fuse_evidence_groups_rrf', ctx=Load()),
+            args=[
+              Name(id='groups', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='cfg',
+                value=Name(id='cfg', ctx=Load())),
+              keyword(
+                arg='rrf_k',
+                value=Name(id='rrf_k', ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Any', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='build_rag_result',
+      args=arguments(
+        args=[
+          arg(
+            arg='groups',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Sequence', ctx=Load()),
+                slice=Name(id='Any', ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='cfg',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='rag_plan',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='Any', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='top_k',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='int', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='max_chars',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='used_hyde',
+            annotation=Name(id='bool', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=0),
+          Constant(value=False)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    High-level helper to fuse and rank Evidence sets and produce a RAGResult.\n\n    If cfg.use_rrf is True:\n        • Apply evidence-level RRF across groups, then truncate/trim.\n    Otherwise:\n        • Concatenate groups, deduplicate, rank by score, truncate/trim.\n    ')),
+        Assign(
+          targets=[
+            Name(id='core', ctx=Store())],
+          value=Call(
+            func=Name(id='_core_models', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='RetrievalConfig', ctx=Store())],
+          value=Attribute(
+            value=Name(id='core', ctx=Load()),
+            attr='RetrievalConfig',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='RAGResult', ctx=Store())],
+          value=Attribute(
+            value=Name(id='core', ctx=Load()),
+            attr='RAGResult',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='RankingEvent', ctx=Store())],
+          value=Attribute(
+            value=Name(id='core', ctx=Load()),
+            attr='RankingEvent',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='cfg', ctx=Load()),
+              Call(
+                func=Name(id='RetrievalConfig', ctx=Load()))])),
+        If(
+          test=Attribute(
+            value=Name(id='cfg', ctx=Load()),
+            attr='use_rrf',
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='flat', ctx=Store())],
+              value=Call(
+                func=Name(id='fuse_evidence_groups_rrf', ctx=Load()),
+                args=[
+                  Name(id='groups', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='cfg',
+                    value=Name(id='cfg', ctx=Load()))]))],
+          orelse=[
+            AnnAssign(
+              target=Name(id='all_hits', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='Any', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='g', ctx=Store()),
+              iter=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='groups', ctx=Load()),
+                  List(ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='all_hits', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='list', ctx=Load()),
+                        args=[
+                          BoolOp(
+                            op=Or(),
+                            values=[
+                              Name(id='g', ctx=Load()),
+                              List(ctx=Load())])])]))]),
+            Assign(
+              targets=[
+                Name(id='flat', ctx=Store())],
+              value=Call(
+                func=Name(id='deduplicate_evidence', ctx=Load()),
+                args=[
+                  Name(id='all_hits', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='emit_telemetry_event', ctx=Load()),
+                args=[
+                  Constant(value='ranking.evidence.simple_fuse'),
+                  Dict(
+                    keys=[
+                      Constant(value='strategy'),
+                      Constant(value='groups'),
+                      Constant(value='items_in'),
+                      Constant(value='items_out')],
+                    values=[
+                      Attribute(
+                        value=Name(id='cfg', ctx=Load()),
+                        attr='strategy',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='groups', ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='all_hits', ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='flat', ctx=Load())])])]))]),
+        Assign(
+          targets=[
+            Name(id='ranked', ctx=Store())],
+          value=Call(
+            func=Name(id='rank_evidence', ctx=Load()),
+            args=[
+              Name(id='flat', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='top_k',
+                value=BoolOp(
+                  op=Or(),
+                  values=[
+                    Name(id='top_k', ctx=Load()),
+                    Attribute(
+                      value=Name(id='cfg', ctx=Load()),
+                      attr='max_hits',
+                      ctx=Load())])),
+              keyword(
+                arg='normalize',
+                value=Constant(value=True)),
+              keyword(
+                arg='max_chars',
+                value=Name(id='max_chars', ctx=Load())),
+              keyword(
+                arg='strategy',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='strategy',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='evt', ctx=Store())],
+          value=Call(
+            func=Name(id='RankingEvent', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='stage',
+                value=Constant(value='rag_result')),
+              keyword(
+                arg='strategy',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='strategy',
+                  ctx=Load())),
+              keyword(
+                arg='use_rrf',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='use_rrf',
+                  ctx=Load())),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='items_out'),
+                    Constant(value='used_hyde')],
+                  values=[
+                    Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='ranked', ctx=Load())]),
+                    Name(id='used_hyde', ctx=Load())]))])),
+        Expr(
+          value=Call(
+            func=Name(id='emit_ranking_event', ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Name(id='RAGResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='evidence',
+                value=Name(id='ranked', ctx=Load())),
+              keyword(
+                arg='used_hyde',
+                value=Name(id='used_hyde', ctx=Load()))]))],
+      returns=Name(id='Any', ctx=Load()))])

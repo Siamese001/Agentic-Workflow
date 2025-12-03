@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\budget-manager-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\sample_rg_resume_input.json",
+    "rel_path": "sample_rg_resume_input.json",
+    "root_name": "tests",
+    "file_hash": "965e2f91aa19db3c9b35f50d3aa81e0082c4fd5518cea7472ea72fecd39f97b2",
+    "file_size": 6303,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728353.7507899
+}

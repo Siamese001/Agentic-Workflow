@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 292,
+  "generated_at": 1764728349.1144366,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\prompt_registry.yaml"
+}

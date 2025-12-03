@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Telemetry helpers emitting MCP-compatible events.\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom typing import Any, Dict, Optional\n\nfrom mcp import emit_event\n\nlogger = logging.getLogger(\"telemetry_v10_7\")\n\n\ndef log_event(agent: str, event: str, data: Optional[Dict[str, Any]] = None) -> None:\n    \"\"\"Emit a telemetry event while preserving local logging.\"\"\"\n\n    payload = {\n        \"agent\": agent,\n        \"event\": event,\n        \"payload\": data or {},\n    }\n    emit_event(payload)\n    logger.debug(\"Telemetry emitted: %s - %s\", agent, event)\n\n__all__ = [\"log_event\"]\n",
+  "full_hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
+  "generated_at": 1764728329.7773516,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\telemetry_v10_7.py"
+}

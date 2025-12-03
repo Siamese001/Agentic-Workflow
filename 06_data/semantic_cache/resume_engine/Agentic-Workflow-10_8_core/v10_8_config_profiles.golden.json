@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nV10.8 Consolidated Module: Config Profiles\nMerged from 10 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nfrom observability import compute_optimization_hint\nfrom pathlib import Path\nfrom self_correction import SelfCorrectionSurface\nfrom typing import Any, Dict\nfrom typing import Any, Dict, List\nfrom typing import Dict\nfrom typing import List, Optional\nimport sys\n\n\n# ============================================================\n# From v10_8_conftest.py\n# ============================================================\n\nROOT = Path(__file__).resolve().parents[1]\nif str(ROOT) not in sys.path:\n    sys.path.insert(0, str(ROOT))\n\n# ============================================================\n# From v10_8_injection_output_profiles.py\n# ============================================================\n\n@dataclass\nclass SafetyOutputProfile:\n    prompt_shield: bool\n    data_ins",
+  "full_hash": "99bc0df31e5d499d33f91562231b357cfaf8959a4e1bd019b18e4102d6b6b468",
+  "generated_at": 1764728228.8512652,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_config_profiles.py"
+}

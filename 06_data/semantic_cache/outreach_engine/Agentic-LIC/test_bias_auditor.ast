@@ -1,0 +1,109 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.safety.bias_auditor',
+      names=[
+        alias(name='BiasAssessment'),
+        alias(name='audit_bias')],
+      level=0),
+    ClassDef(
+      name='_Inputs',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='prompt',
+                  ctx=Store())],
+              value=Name(id='prompt', ctx=Load()))])]),
+    FunctionDef(
+      name='test_bias_auditor_empty_prompt',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='assessment', ctx=Store())],
+          value=Call(
+            func=Name(id='audit_bias', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_Inputs', ctx=Load()),
+                args=[
+                  Constant(value='')])])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='assessment', ctx=Load()),
+              Name(id='BiasAssessment', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='assessment', ctx=Load()),
+              attr='score',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=0.0)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='no bias'),
+            ops=[
+              In()],
+            comparators=[
+              Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='assessment', ctx=Load()),
+                    attr='notes',
+                    ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))]))]),
+    FunctionDef(
+      name='test_bias_auditor_detects_inclusive_language',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='assessment', ctx=Store())],
+          value=Call(
+            func=Name(id='audit_bias', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_Inputs', ctx=Load()),
+                args=[
+                  Constant(value='We value diversity and inclusion')])])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='assessment', ctx=Load()),
+              attr='score',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=0.1)])),
+        Assert(
+          test=Compare(
+            left=Constant(value='inclusive'),
+            ops=[
+              In()],
+            comparators=[
+              Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='assessment', ctx=Load()),
+                    attr='notes',
+                    ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))]))])])

@@ -1,0 +1,1439 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRouting Policy for Agentic Workflow v10_10\n=========================================\n\nThis is the v10_10 refactor of the v10_9 routing layer.\n\nIt removes:\n    • PlanObject-dependent logic\n    • L5.ModelRouter\n    • PromptEnvelope construction\n    • META-only routing criteria classes\n    • direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)\n    • simulated model invocation stubs\n\nand replaces them with a **minimal, deterministic RoutingPolicy** that:\n\n    • Selects models based on task + ComplexityLevel.\n    • Is influenced by a MetaProfileSnapshot (read-only).\n    • Provides ToT branch counts for StrategyLLMAgent.\n    • Contains NO provider SDK calls.\n    • Contains NO L1/L2/L3/L4/L5 logic.\n\nThis module is used only by L2 cognitive agents and L1 complexity\nclassification. It is **pure decision logic**.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='ComplexityLevel'),
+        alias(name='SkillClassifierResult'),
+        alias(name='DomainClassifierResult')],
+      level=0),
+    ImportFrom(
+      module='meta_profile',
+      names=[
+        alias(name='MetaProfileSnapshot')],
+      level=0),
+    ImportFrom(
+      module='observability',
+      names=[
+        alias(name='get_all_events')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='LIGHT_MODELS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='openai'),
+          Constant(value='anthropic')],
+        values=[
+          Constant(value='gpt-4.1-mini'),
+          Constant(value='claude-3-haiku')])),
+    Assign(
+      targets=[
+        Name(id='MEDIUM_MODELS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='openai'),
+          Constant(value='anthropic')],
+        values=[
+          Constant(value='gpt-5.1'),
+          Constant(value='claude-3.5-sonnet')])),
+    Assign(
+      targets=[
+        Name(id='HEAVY_MODELS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='openai'),
+          Constant(value='anthropic')],
+        values=[
+          Constant(value='gpt-5.1-codex'),
+          Constant(value='claude-3.5-opus')])),
+    Assign(
+      targets=[
+        Name(id='DRAFTING_MODELS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='openai'),
+          Constant(value='anthropic')],
+        values=[
+          Constant(value='gpt-5.1-codex'),
+          Constant(value='claude-3.5-opus')])),
+    Assign(
+      targets=[
+        Name(id='QA_SAFETY_MODELS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='openai'),
+          Constant(value='anthropic')],
+        values=[
+          Constant(value='gpt-4.1'),
+          Constant(value='claude-3.5-sonnet')])),
+    ClassDef(
+      name='RoutingPolicy',
+      body=[
+        Expr(
+          value=Constant(value='\n    v10_10 RoutingPolicy: pure model-selection logic.\n\n    Fields:\n        prefer_anthropic: Prefer Anthropic models if True.\n        prefer_openai:    Prefer OpenAI models if True.\n        allow_heavy:      Allow heavy models (deep reasoning).\n        enforce_low_cost: Prefer light models when possible.\n\n    Notes:\n        - MetaProfileSnapshot can override provider preference based on\n          recent QA / correction rates.\n    ')),
+        AnnAssign(
+          target=Name(id='prefer_anthropic', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='prefer_openai', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='allow_heavy', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='enforce_low_cost', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        FunctionDef(
+          name='_choose_provider',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='meta_profile',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='MetaProfileSnapshot', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='provider', ctx=Store())],
+              value=Constant(value='openai')),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='prefer_anthropic',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='provider', ctx=Store())],
+                  value=Constant(value='anthropic'))]),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='prefer_openai',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='provider', ctx=Store())],
+                  value=Constant(value='openai'))]),
+            If(
+              test=Compare(
+                left=Name(id='meta_profile', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                If(
+                  test=Attribute(
+                    value=Name(id='meta_profile', ctx=Load()),
+                    attr='prefers_anthropic',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='provider', ctx=Store())],
+                      value=Constant(value='anthropic'))]),
+                If(
+                  test=Attribute(
+                    value=Name(id='meta_profile', ctx=Load()),
+                    attr='prefers_openai',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='provider', ctx=Store())],
+                      value=Constant(value='openai'))])]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='events', ctx=Store())],
+                  value=Call(
+                    func=Name(id='get_all_events', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='exception_count', ctx=Store())],
+                  value=Constant(value=0)),
+                For(
+                  target=Name(id='evt', ctx=Store()),
+                  iter=Name(id='events', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='attrs', ctx=Store())],
+                      value=BoolOp(
+                        op=Or(),
+                        values=[
+                          Call(
+                            func=Name(id='getattr', ctx=Load()),
+                            args=[
+                              Name(id='evt', ctx=Load()),
+                              Constant(value='attributes'),
+                              Dict()]),
+                          Dict()])),
+                    If(
+                      test=Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='attrs', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='event_type')]),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='exception')]),
+                      body=[
+                        AugAssign(
+                          target=Name(id='exception_count', ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1))])]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='exception_count', ctx=Load()),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Constant(value=20)]),
+                      Compare(
+                        left=Name(id='provider', ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Constant(value='openai')])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='provider', ctx=Store())],
+                      value=Constant(value='openai'))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Pass()])]),
+            Return(
+              value=Name(id='provider', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='strategy_branches_for',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='complexity',
+                annotation=Name(id='ComplexityLevel', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Number of branches StrategyLLMAgent should explore.\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='LOW',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Constant(value=1))]),
+            If(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='MEDIUM',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Constant(value=3))]),
+            Return(
+              value=Constant(value=4))],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='select_model',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='task',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='complexity',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='ComplexityLevel', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='meta_profile',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='MetaProfileSnapshot', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Select the appropriate model for a given task and complexity.\n\n        task:\n            A string identifier describing the logical task, e.g.:\n                - "strategy_generate_branch"\n                - "strategy_select_branch"\n                - "drafting_structure"\n                - "drafting_narrative"\n                - "drafting_compliance"\n                - "qa_semantic_check"\n                - "safety_check"\n\n        complexity:\n            L1-estimated ComplexityLevel for the workload.\n\n        meta_profile:\n            Optional MetaProfileSnapshot influencing provider choice.\n        ')),
+            Assign(
+              targets=[
+                Name(id='provider', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_choose_provider',
+                  ctx=Load()),
+                args=[
+                  Name(id='meta_profile', ctx=Load())])),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='task', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='drafting_')]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='DRAFTING_MODELS', ctx=Load()),
+                    slice=Name(id='provider', ctx=Load()),
+                    ctx=Load()))]),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='task', ctx=Load()),
+                      attr='startswith',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='qa_')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='task', ctx=Load()),
+                      attr='startswith',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety_')])]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='QA_SAFETY_MODELS', ctx=Load()),
+                    slice=Name(id='provider', ctx=Load()),
+                    ctx=Load()))]),
+            If(
+              test=Compare(
+                left=Name(id='task', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Constant(value='strategy_generate_branch'),
+                      Constant(value='strategy_select_branch')],
+                    ctx=Load())]),
+              body=[
+                If(
+                  test=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='allow_heavy',
+                    ctx=Load()),
+                  body=[
+                    Return(
+                      value=Subscript(
+                        value=Name(id='HEAVY_MODELS', ctx=Load()),
+                        slice=Name(id='provider', ctx=Load()),
+                        ctx=Load()))]),
+                Return(
+                  value=Subscript(
+                    value=Name(id='MEDIUM_MODELS', ctx=Load()),
+                    slice=Name(id='provider', ctx=Load()),
+                    ctx=Load()))]),
+            If(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='LOW',
+                    ctx=Load())]),
+              body=[
+                If(
+                  test=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='enforce_low_cost',
+                    ctx=Load()),
+                  body=[
+                    Return(
+                      value=Subscript(
+                        value=Name(id='LIGHT_MODELS', ctx=Load()),
+                        slice=Name(id='provider', ctx=Load()),
+                        ctx=Load()))]),
+                Return(
+                  value=Subscript(
+                    value=Name(id='MEDIUM_MODELS', ctx=Load()),
+                    slice=Name(id='provider', ctx=Load()),
+                    ctx=Load()))]),
+            If(
+              test=Compare(
+                left=Name(id='complexity', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ComplexityLevel', ctx=Load()),
+                    attr='MEDIUM',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='MEDIUM_MODELS', ctx=Load()),
+                    slice=Name(id='provider', ctx=Load()),
+                    ctx=Load()))]),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='allow_heavy',
+                ctx=Load()),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Name(id='HEAVY_MODELS', ctx=Load()),
+                    slice=Name(id='provider', ctx=Load()),
+                    ctx=Load()))]),
+            Return(
+              value=Subscript(
+                value=Name(id='MEDIUM_MODELS', ctx=Load()),
+                slice=Name(id='provider', ctx=Load()),
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='classify_skill_profile',
+      args=arguments(
+        args=[
+          arg(
+            arg='job',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='resume',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Deterministic, rule-based skill classifier (non-LLM).\n\n    Uses simple keyword / structural heuristics on job + resume to\n    derive a coarse skill profile. This is intentionally conservative\n    but stable for routing and complexity decisions.\n    ')),
+        AnnAssign(
+          target=Name(id='labels', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='features', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='title', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load()),
+                      Constant(value='title'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='desc', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load()),
+                      Constant(value='description'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='resume_text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='resume', ctx=Load()),
+                      Constant(value='raw_text'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='senior_tokens', ctx=Store())],
+          value=Tuple(
+            elts=[
+              Constant(value='vp'),
+              Constant(value='vice president'),
+              Constant(value='chief'),
+              Constant(value='director'),
+              Constant(value='head'),
+              Constant(value='principal')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='mid_tokens', ctx=Store())],
+          value=Tuple(
+            elts=[
+              Constant(value='manager'),
+              Constant(value='lead'),
+              Constant(value='senior')],
+            ctx=Load())),
+        If(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='t', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='title', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='t', ctx=Store()),
+                    iter=Name(id='senior_tokens', ctx=Load()),
+                    is_async=0)])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='senior_leadership')]))],
+          orelse=[
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='t', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='title', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='t', ctx=Store()),
+                        iter=Name(id='mid_tokens', ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='labels', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='senior_individual_contributor')]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='labels', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='individual_contributor')]))])]),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Constant(value='machine learning'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())]),
+              Compare(
+                left=Constant(value='ml'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())]),
+              Compare(
+                left=Constant(value='data science'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ml_data_science')]))]),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Constant(value='llm'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())]),
+              Compare(
+                left=Constant(value='prompt'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())]),
+              Compare(
+                left=Constant(value='rag'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='llm_systems')]))]),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Constant(value='actuary'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())]),
+              Compare(
+                left=Constant(value='insurance'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='desc', ctx=Load())])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='actuarial_insurance')]))]),
+        Assign(
+          targets=[
+            Name(id='exp_sections', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='resume', ctx=Load()),
+                  Constant(value='experience_sections'),
+                  List(ctx=Load())]),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='features', ctx=Load()),
+              slice=Constant(value='experience_sections'),
+              ctx=Store())],
+          value=Call(
+            func=Name(id='len', ctx=Load()),
+            args=[
+              Name(id='exp_sections', ctx=Load())])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='features', ctx=Load()),
+              slice=Constant(value='title'),
+              ctx=Store())],
+          value=Name(id='title', ctx=Load())),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='features', ctx=Load()),
+              slice=Constant(value='resume_contains_llm'),
+              ctx=Store())],
+          value=Compare(
+            left=Constant(value='llm'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='resume_text', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='primary_label', ctx=Store())],
+          value=IfExp(
+            test=Name(id='labels', ctx=Load()),
+            body=Subscript(
+              value=Name(id='labels', ctx=Load()),
+              slice=Constant(value=0),
+              ctx=Load()),
+            orelse=Constant(value=None))),
+        Assign(
+          targets=[
+            Name(id='confidence', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='primary_label', ctx=Load()),
+              ops=[
+                IsNot()],
+              comparators=[
+                Constant(value=None)]),
+            body=Constant(value=0.7),
+            orelse=Constant(value=0.0))),
+        Return(
+          value=Call(
+            func=Name(id='SkillClassifierResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='labels',
+                value=Name(id='labels', ctx=Load())),
+              keyword(
+                arg='primary_label',
+                value=Name(id='primary_label', ctx=Load())),
+              keyword(
+                arg='confidence',
+                value=Name(id='confidence', ctx=Load())),
+              keyword(
+                arg='features',
+                value=Name(id='features', ctx=Load()))]))],
+      returns=Name(id='SkillClassifierResult', ctx=Load())),
+    FunctionDef(
+      name='classify_domain_profile',
+      args=arguments(
+        args=[
+          arg(
+            arg='job',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='resume',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Deterministic domain / industry classifier (non-LLM).')),
+        AnnAssign(
+          target=Name(id='labels', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='features', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='company', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load()),
+                      Constant(value='company'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='desc', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load()),
+                      Constant(value='description'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='industry', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='hasattr', ctx=Load()),
+              args=[
+                Name(id='job', ctx=Load()),
+                Constant(value='metadata')]),
+            body=Call(
+              func=Attribute(
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='getattr', ctx=Load()),
+                          args=[
+                            Name(id='job', ctx=Load()),
+                            Constant(value='metadata'),
+                            Dict()]),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='industry'),
+                        Constant(value='')])]),
+                attr='lower',
+                ctx=Load())),
+            orelse=Constant(value=''))),
+        Assign(
+          targets=[
+            Name(id='text_blob', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value=' '),
+              attr='join',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='company', ctx=Load()),
+                  Name(id='desc', ctx=Load()),
+                  Name(id='industry', ctx=Load())],
+                ctx=Load())])),
+        If(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='tok', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='text_blob', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='tok', ctx=Store()),
+                    iter=Tuple(
+                      elts=[
+                        Constant(value='insurance'),
+                        Constant(value='actuarial'),
+                        Constant(value='p&c'),
+                        Constant(value='life insurance')],
+                      ctx=Load()),
+                    is_async=0)])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='insurance')]))]),
+        If(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='tok', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='text_blob', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='tok', ctx=Store()),
+                    iter=Tuple(
+                      elts=[
+                        Constant(value='bank'),
+                        Constant(value='fintech'),
+                        Constant(value='asset management'),
+                        Constant(value='trading'),
+                        Constant(value='brokerage')],
+                      ctx=Load()),
+                    is_async=0)])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='financial_services')]))]),
+        If(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='tok', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='text_blob', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='tok', ctx=Store()),
+                    iter=Tuple(
+                      elts=[
+                        Constant(value='healthcare'),
+                        Constant(value='hospital'),
+                        Constant(value='pharma'),
+                        Constant(value='biotech')],
+                      ctx=Load()),
+                    is_async=0)])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='healthcare')]))]),
+        If(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='tok', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='text_blob', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='tok', ctx=Store()),
+                    iter=Tuple(
+                      elts=[
+                        Constant(value='retail'),
+                        Constant(value='ecommerce'),
+                        Constant(value='marketplace')],
+                      ctx=Load()),
+                    is_async=0)])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='retail_ecommerce')]))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='labels', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='labels', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='general')]))]),
+        Assign(
+          targets=[
+            Name(id='primary_label', ctx=Store())],
+          value=Subscript(
+            value=Name(id='labels', ctx=Load()),
+            slice=Constant(value=0),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='confidence', ctx=Store())],
+          value=Constant(value=0.6)),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='features', ctx=Load()),
+              slice=Constant(value='company'),
+              ctx=Store())],
+          value=Name(id='company', ctx=Load())),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='features', ctx=Load()),
+              slice=Constant(value='industry'),
+              ctx=Store())],
+          value=Name(id='industry', ctx=Load())),
+        Return(
+          value=Call(
+            func=Name(id='DomainClassifierResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='labels',
+                value=Name(id='labels', ctx=Load())),
+              keyword(
+                arg='primary_label',
+                value=Name(id='primary_label', ctx=Load())),
+              keyword(
+                arg='confidence',
+                value=Name(id='confidence', ctx=Load())),
+              keyword(
+                arg='features',
+                value=Name(id='features', ctx=Load()))]))],
+      returns=Name(id='DomainClassifierResult', ctx=Load())),
+    FunctionDef(
+      name='classify_complexity',
+      args=arguments(
+        args=[
+          arg(
+            arg='job',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='resume',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='config',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='meta_profile',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='MetaProfileSnapshot', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Heuristic classifier used by L1 to estimate ComplexityLevel.\n\n    This version incorporates:\n        • Job seniority / requirements\n        • Resume length\n        • QA / correction rates from meta_profile\n        • Deterministic skill and domain classifiers (non-LLM)\n\n    All logic is deterministic and side-effect free.\n    ')),
+        Assign(
+          targets=[
+            Name(id='score', ctx=Store())],
+          value=Constant(value=1.0)),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='skill_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='classify_skill_profile', ctx=Load()),
+                args=[
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='domain_profile', ctx=Store())],
+              value=Call(
+                func=Name(id='classify_domain_profile', ctx=Load()),
+                args=[
+                  Name(id='job', ctx=Load()),
+                  Name(id='resume', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='skill_profile', ctx=Store())],
+                  value=Constant(value=None)),
+                Assign(
+                  targets=[
+                    Name(id='domain_profile', ctx=Store())],
+                  value=Constant(value=None))])]),
+        Assign(
+          targets=[
+            Name(id='seniority', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load()),
+                      Constant(value='seniority'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='title', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load()),
+                      Constant(value='title'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Name(id='seniority', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Constant(value='director'),
+                      Constant(value='vp'),
+                      Constant(value='svp'),
+                      Constant(value='c-level'),
+                      Constant(value='chief')],
+                    ctx=Load())]),
+              Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='t', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='title', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='t', ctx=Store()),
+                        iter=Tuple(
+                          elts=[
+                            Constant(value='director'),
+                            Constant(value='vp'),
+                            Constant(value='svp'),
+                            Constant(value='chief'),
+                            Constant(value='head')],
+                          ctx=Load()),
+                        is_async=0)])])]),
+          body=[
+            AugAssign(
+              target=Name(id='score', ctx=Store()),
+              op=Add(),
+              value=Constant(value=0.5))]),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='reqs', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='job', ctx=Load()),
+                      Constant(value='requirements'),
+                      List(ctx=Load())]),
+                  List(ctx=Load())])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='reqs', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=8)]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.3))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='reqs', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=15)]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.3))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Pass()])]),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='exp_sections', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='resume', ctx=Load()),
+                      Constant(value='experience_sections'),
+                      List(ctx=Load())]),
+                  List(ctx=Load())])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='exp_sections', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=6)]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.3))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='exp_sections', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=10)]),
+              body=[
+                AugAssign(
+                  target=Name(id='score', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=0.3))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Pass()])]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='skill_profile', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Constant(value='senior_leadership'),
+                ops=[
+                  In()],
+                comparators=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Attribute(
+                        value=Name(id='skill_profile', ctx=Load()),
+                        attr='labels',
+                        ctx=Load()),
+                      List(ctx=Load())])])]),
+          body=[
+            AugAssign(
+              target=Name(id='score', ctx=Store()),
+              op=Add(),
+              value=Constant(value=0.2))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='domain_profile', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              Compare(
+                left=Attribute(
+                  value=Name(id='domain_profile', ctx=Load()),
+                  attr='primary_label',
+                  ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Constant(value='insurance'),
+                      Constant(value='financial_services'),
+                      Constant(value='healthcare')],
+                    ctx=Load())])]),
+          body=[
+            AugAssign(
+              target=Name(id='score', ctx=Store()),
+              op=Add(),
+              value=Constant(value=0.1))]),
+        If(
+          test=Compare(
+            left=Name(id='meta_profile', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Try(
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='meta_profile', ctx=Load()),
+                      attr='qa_failure_rate_last_10',
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0.4)]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='score', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=0.3))]),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='meta_profile', ctx=Load()),
+                      attr='correction_rate_last_10',
+                      ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0.3)]),
+                  body=[
+                    AugAssign(
+                      target=Name(id='score', ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=0.2))])],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  body=[
+                    Pass()])])]),
+        If(
+          test=Compare(
+            left=Name(id='score', ctx=Load()),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=1.2)]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='ComplexityLevel', ctx=Load()),
+                attr='LOW',
+                ctx=Load()))]),
+        If(
+          test=Compare(
+            left=Name(id='score', ctx=Load()),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=1.8)]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='ComplexityLevel', ctx=Load()),
+                attr='MEDIUM',
+                ctx=Load()))]),
+        Return(
+          value=Attribute(
+            value=Name(id='ComplexityLevel', ctx=Load()),
+            attr='HIGH',
+            ctx=Load()))],
+      returns=Name(id='ComplexityLevel', ctx=Load()))])

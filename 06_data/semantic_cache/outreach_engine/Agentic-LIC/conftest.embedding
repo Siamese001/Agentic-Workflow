@@ -1,0 +1,1 @@
+{"import":2,"os":1,"sys":1,"root":2,"=":1,"os.path.abspath(os.path.join(os.path.dirname(__file__),":1,"\"..\"))":1,"if":1,"not":1,"in":1,"sys.path:":1,"sys.path.insert(0,":1,"root)":1}

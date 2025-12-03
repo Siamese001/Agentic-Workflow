@@ -1,0 +1,6 @@
+{
+  "golden_content": "--- LIC_10-02-2025_v6.5.json\n+++ LIC_10-03-2025_v6.6.json\n@@ -2,7 +2,7 @@\n   \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n   \"version\": \"LIC_10-01-2025_v4\",\n   \"metadata\": {\n-    \"version\": \"LIC_10-02-2025_v6.5\",\n+    \"version\": \"LIC_10-03-2025_v6.6\",\n     \"patches\": [\n       \"C001\",\n       \"C002\",\n@@ -14,7 +14,8 @@\n       \"C008\",\n       \"C009\",\n       \"C010\",\n-      \"C011\"\n+      \"C011\",\n+      \"C012\"\n     ],\n     \"changelog\": \"external://CHANGELOG.md\",\n     \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09\",\n@@ -3247,6 +3248,39 @@\n         \"top_p\": 0.9,\n         \"top_k\": 50\n       }\n+    },\n+    \"rag_execution_enforcement\": {\n+      \"name\": \"RAG Execution Enforcement\",\n+      \"version\": \"v1\",\n+      \"pre_execution_tooling_check\": {\n+        \"after_section\": 3,\n+        \"tool\": \"web_search\",\n+        \"block_on_unavailable\": true,\n+        \"dummy_probe\": \"test\"\n+      },\n+      \"audit_trail_contract\": {\n+        \"fields\": [\n+          \"k_node\",\n+       ",
+  "full_hash": "a722dbf5f37071ddf4a88f75a514166968fc2474f55d7193bbf57de18d9ec5e9",
+  "generated_at": 1764728333.304192,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v6.6_diff.txt"
+}

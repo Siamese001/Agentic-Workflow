@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\complete_implementation_report.json",
+    "rel_path": "complete_implementation_report.json",
+    "root_name": "schemas",
+    "file_hash": "e75a9987052f8a3d9fc1dd66da067cea089da3ea2445b80aa720e15a0ac614ad",
+    "file_size": 17448,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.4343815
+}

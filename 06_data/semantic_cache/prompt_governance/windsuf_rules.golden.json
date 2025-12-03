@@ -1,0 +1,6 @@
+{
+  "golden_content": "=============================================================================\nAGENTIC-WORKFLOW \u2014 HARDENED GLOBAL RULESET (REBUILT FOR PHASES 1\u20134)\n=============================================================================\nThis ruleset is absolute. It overrides all defaults, all tools, all templates,\nall heuristics, and governs the entire SubAtomic refactor.\n=============================================================================\n=============================================================================\n0. DOCKER-ONLY EXECUTION MODEL\n=============================================================================\n\n\u2022 All execution MUST assume a Linux container.\n\u2022 Allowed paths: /project_root/... only.\n\u2022 Forbidden: Windows paths, Mac paths, host paths, mounted volumes.\n\u2022 Any host path appearing in output MUST be auto-corrected.\n\u2022 All FS operations MUST occur inside the containerized project root.\n\u2022 No absolute host paths may ever appear in patches, scripts, imports, or logs.\n\n=====",
+  "full_hash": "7adeed44a5e89ef57892571aeb621dfd3493cd0d056489684bc84700c2272016",
+  "generated_at": 1764728348.268199,
+  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\windsuf_rules.md"
+}

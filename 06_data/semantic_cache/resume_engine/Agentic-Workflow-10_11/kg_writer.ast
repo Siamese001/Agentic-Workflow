@@ -1,0 +1,484 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL2 KG Writer for resume temporal graph data.\n\nWrites entities, relations, and events to Neo4jGraphStore\nto support resume timeline analysis and job alignment.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='graph_store_neo4j',
+          names=[
+            alias(name='Neo4jGraphStore')],
+          level=0),
+        AnnAssign(
+          target=Name(id='_neo4j_graph', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Neo4jGraphStore', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='Neo4jGraphStore', ctx=Load())),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='_NEO4J_AVAILABLE', ctx=Store())],
+          value=Constant(value=True))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='_neo4j_graph', ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='_NEO4J_AVAILABLE', ctx=Store())],
+              value=Constant(value=False))])]),
+    ImportFrom(
+      module='l4.temporal_schemas',
+      names=[
+        alias(name='TemporalEntity'),
+        alias(name='TemporalTriplet'),
+        alias(name='TemporalEvent')],
+      level=0),
+    AsyncFunctionDef(
+      name='insert_entity',
+      args=arguments(
+        args=[
+          arg(
+            arg='entity',
+            annotation=Name(id='TemporalEntity', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inserts resume entity into Neo4j for timeline analysis.\n\n    Mirrors canonical entity data to support resume job alignment.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='_NEO4J_AVAILABLE', ctx=Load())),
+          body=[
+            Return()]),
+        Try(
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='_neo4j_graph', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='_neo4j_graph', ctx=Load()),
+                      attr='upsert_entity',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='entity_id',
+                        value=Attribute(
+                          value=Name(id='entity', ctx=Load()),
+                          attr='entity_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='etype',
+                        value=Attribute(
+                          value=Name(id='entity', ctx=Load()),
+                          attr='entity_type',
+                          ctx=Load())),
+                      keyword(
+                        arg='name',
+                        value=Attribute(
+                          value=Name(id='entity', ctx=Load()),
+                          attr='entity_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='canonical_id'),
+                            Constant(value='aliases'),
+                            Constant(value='confidence'),
+                            Constant(value='created_at'),
+                            None],
+                          values=[
+                            Attribute(
+                              value=Name(id='entity', ctx=Load()),
+                              attr='canonical_id',
+                              ctx=Load()),
+                            Call(
+                              func=Name(id='list', ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='entity', ctx=Load()),
+                                  attr='aliases',
+                                  ctx=Load())]),
+                            Attribute(
+                              value=Name(id='entity', ctx=Load()),
+                              attr='confidence',
+                              ctx=Load()),
+                            Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='entity', ctx=Load()),
+                                  attr='created_at',
+                                  ctx=Load()),
+                                attr='isoformat',
+                                ctx=Load())),
+                            Attribute(
+                              value=Name(id='entity', ctx=Load()),
+                              attr='metadata',
+                              ctx=Load())]))]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Pass()])])],
+      returns=Constant(value=None)),
+    AsyncFunctionDef(
+      name='insert_triplet',
+      args=arguments(
+        args=[
+          arg(
+            arg='triplet',
+            annotation=Name(id='TemporalTriplet', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inserts resume triplet as relation in Neo4j for timeline analysis.\n\n    Creates RELATION edge to support resume job alignment.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='_NEO4J_AVAILABLE', ctx=Load())),
+          body=[
+            Return()]),
+        Try(
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='_neo4j_graph', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='_neo4j_graph', ctx=Load()),
+                      attr='upsert_relation',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='rel_id',
+                        value=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='triplet_id',
+                          ctx=Load())),
+                      keyword(
+                        arg='subject_id',
+                        value=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='subject',
+                          ctx=Load())),
+                      keyword(
+                        arg='predicate',
+                        value=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='predicate',
+                          ctx=Load())),
+                      keyword(
+                        arg='object_id',
+                        value=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='object',
+                          ctx=Load())),
+                      keyword(
+                        arg='valid_at',
+                        value=Call(
+                          func=Attribute(
+                            value=Attribute(
+                              value=Attribute(
+                                value=Name(id='triplet', ctx=Load()),
+                                attr='temporal_range',
+                                ctx=Load()),
+                              attr='valid_at',
+                              ctx=Load()),
+                            attr='isoformat',
+                            ctx=Load()))),
+                      keyword(
+                        arg='invalid_at',
+                        value=IfExp(
+                          test=Attribute(
+                            value=Attribute(
+                              value=Name(id='triplet', ctx=Load()),
+                              attr='temporal_range',
+                              ctx=Load()),
+                            attr='invalid_at',
+                            ctx=Load()),
+                          body=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Attribute(
+                                  value=Name(id='triplet', ctx=Load()),
+                                  attr='temporal_range',
+                                  ctx=Load()),
+                                attr='invalid_at',
+                                ctx=Load()),
+                              attr='isoformat',
+                              ctx=Load())),
+                          orelse=Constant(value=None))),
+                      keyword(
+                        arg='attrs',
+                        value=Dict(
+                          keys=[
+                            Constant(value='confidence'),
+                            Constant(value='source'),
+                            Constant(value='status'),
+                            None],
+                          values=[
+                            Attribute(
+                              value=Name(id='triplet', ctx=Load()),
+                              attr='confidence',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='triplet', ctx=Load()),
+                              attr='source',
+                              ctx=Load()),
+                            Attribute(
+                              value=Attribute(
+                                value=Name(id='triplet', ctx=Load()),
+                                attr='status',
+                                ctx=Load()),
+                              attr='value',
+                              ctx=Load()),
+                            Attribute(
+                              value=Name(id='triplet', ctx=Load()),
+                              attr='metadata',
+                              ctx=Load())]))]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Pass()])])],
+      returns=Constant(value=None)),
+    AsyncFunctionDef(
+      name='insert_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='event',
+            annotation=Name(id='TemporalEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Inserts resume temporal event in Neo4j for timeline analysis.\n\n    Updates relation invalidation to support resume job alignment.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='_NEO4J_AVAILABLE', ctx=Load())),
+          body=[
+            Return()]),
+        Try(
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='_neo4j_graph', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='event', ctx=Load()),
+                        attr='triplet_id',
+                        ctx=Load()),
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='event', ctx=Load()),
+                          attr='event_type',
+                          ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          List(
+                            elts=[
+                              Constant(value='invalidation'),
+                              Constant(value='expiration')],
+                            ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='invalid_at', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='event', ctx=Load()),
+                            attr='metadata',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='invalid_at')])),
+                    Assign(
+                      targets=[
+                        Name(id='invalidated_by', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='event', ctx=Load()),
+                            attr='metadata',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='invalidated_by')])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='_neo4j_graph', ctx=Load()),
+                          attr='update_relation_invalidity',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rel_id',
+                            value=Attribute(
+                              value=Name(id='event', ctx=Load()),
+                              attr='triplet_id',
+                              ctx=Load())),
+                          keyword(
+                            arg='invalid_at',
+                            value=IfExp(
+                              test=Call(
+                                func=Name(id='isinstance', ctx=Load()),
+                                args=[
+                                  Name(id='invalid_at', ctx=Load()),
+                                  Name(id='datetime', ctx=Load())]),
+                              body=Call(
+                                func=Attribute(
+                                  value=Name(id='invalid_at', ctx=Load()),
+                                  attr='isoformat',
+                                  ctx=Load())),
+                              orelse=Name(id='invalid_at', ctx=Load()))),
+                          keyword(
+                            arg='invalidated_by',
+                            value=Name(id='invalidated_by', ctx=Load()))]))])])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Pass()])])],
+      returns=Constant(value=None)),
+    AsyncFunctionDef(
+      name='batch_process_invalidation',
+      args=arguments(
+        args=[
+          arg(
+            arg='events_to_update',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='TemporalEvent', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Processes batch invalidation updates for resume timeline analysis.\n\n    Updates multiple relations to support resume job alignment.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='_NEO4J_AVAILABLE', ctx=Load())),
+          body=[
+            Return()]),
+        For(
+          target=Name(id='event', ctx=Store()),
+          iter=Name(id='events_to_update', ctx=Load()),
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='insert_event', ctx=Load()),
+                  args=[
+                    Name(id='event', ctx=Load())])))])],
+      returns=Constant(value=None)),
+    AsyncFunctionDef(
+      name='ingest_transcript',
+      args=arguments(
+        args=[
+          arg(
+            arg='transcript_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='entities',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='TemporalEntity', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='triplets',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='TemporalTriplet', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='events',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='TemporalEvent', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Ingests complete resume transcript data for timeline analysis.\n\n    Mirrors all components to support resume job alignment.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='_NEO4J_AVAILABLE', ctx=Load())),
+          body=[
+            Return()]),
+        For(
+          target=Name(id='entity', ctx=Store()),
+          iter=Name(id='entities', ctx=Load()),
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='insert_entity', ctx=Load()),
+                  args=[
+                    Name(id='entity', ctx=Load())])))]),
+        For(
+          target=Name(id='triplet', ctx=Store()),
+          iter=Name(id='triplets', ctx=Load()),
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='insert_triplet', ctx=Load()),
+                  args=[
+                    Name(id='triplet', ctx=Load())])))]),
+        For(
+          target=Name(id='event', ctx=Store()),
+          iter=Name(id='events', ctx=Load()),
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Name(id='insert_event', ctx=Load()),
+                  args=[
+                    Name(id='event', ctx=Load())])))])],
+      returns=Constant(value=None))])

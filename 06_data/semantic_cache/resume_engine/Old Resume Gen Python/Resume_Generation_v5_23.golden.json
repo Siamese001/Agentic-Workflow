@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.23 - COSINE SIMILARITY MATRIX RESTORED\n================================================================================\nCRITICAL v5.23 RESTORATION: Reimplements v1.9.2 cosine similarity deduplication\n\u2713 RESTORED: 78-check pairwise cosine similarity matrix (was deleted in v5.18)\n\u2713 RESTORED: K.5B/K.6B overview-to-bullet cosine similarity (<0.6 threshold)\n\u2713 UPGRADED: Jaccard similarity \u2192 TF-IDF cosine similarity in DuplicateDetector\n\u2713 ADDED: QA Report Section 5 - Deduplication Matrix (per v1.9.2 spec)\n\u2713 ADDED: QA Report Section 4 enhancement - K.5B/K.6B cosine tables\n\u2713 VALIDATION: Three-level similarity checking at HOP-2 and HOP-6\n\u2713 BASE: Complete v5.22 code preserved\n\nPATCH NOTES v5.23 (January 2025):\n\u2713 DuplicateDetector: Replaced Jaccard with TF-IDF cosine similarity\n\u2713 Added compute_similarity_matrix() - 78-check pairwise comparisons\n\u2713 Added compute_overview_bullet_similarity() - K.5B/K.6B validation\n\u2713 QA Report restructured: 9 sections (added Section 5 De",
+  "full_hash": "dcc51b71cfc760232ed091e6b0e71c71aabe51cbc38285ace42f641c28f87b50",
+  "generated_at": 1764728301.7184203,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_23.py"
+}

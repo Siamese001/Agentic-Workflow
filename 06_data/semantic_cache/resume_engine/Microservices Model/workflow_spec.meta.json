@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\workflow_spec.json",
+    "rel_path": "workflow_spec.json",
+    "root_name": "resume_engine/Microservices Model",
+    "file_hash": "95b4a312fd5fd864a6e848d496ba42dfa981dd39de123d580cccd76f1b678463",
+    "file_size": 5017,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728232.2224164
+}

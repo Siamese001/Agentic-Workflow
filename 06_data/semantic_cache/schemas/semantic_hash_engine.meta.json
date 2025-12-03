@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\semantic_hash_engine.py",
+    "rel_path": "semantic_hash_engine.py",
+    "root_name": "schemas",
+    "file_hash": "18da6ecf78bbdd8551373b009d4f4be3a1046b2f33f6e4ab754ea76eb493b844",
+    "file_size": 12527,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.631688
+}

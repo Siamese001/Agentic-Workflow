@@ -1,0 +1,217 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRelevance scoring for résumé processing context items.\n\nProvides deterministic scoring to prioritize relevant information for résumé improvement workflows.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Tuple')],
+      level=0),
+    ClassDef(
+      name='ContextItem',
+      body=[
+        Expr(
+          value=Constant(value='\n    Represents context item for résumé processing relevance scoring.\n\n    Enables intelligent information prioritization for comprehensive résumé enhancement.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='score_relevance',
+      args=arguments(
+        args=[
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='ContextItem', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Scores context items by relevance to résumé improvement queries.\n\n    Prioritizes information that supports comprehensive résumé enhancement processing.\n    ')),
+        Assign(
+          targets=[
+            Name(id='q_tokens', ctx=Store())],
+          value=Call(
+            func=Name(id='set', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=BoolOp(
+                        op=Or(),
+                        values=[
+                          Name(id='query', ctx=Load()),
+                          Constant(value='')]),
+                      attr='lower',
+                      ctx=Load())),
+                  attr='split',
+                  ctx=Load()))])),
+        AnnAssign(
+          target=Name(id='scored', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='ContextItem', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='item', ctx=Store()),
+          iter=Name(id='items', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='tokens', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=BoolOp(
+                            op=Or(),
+                            values=[
+                              Attribute(
+                                value=Name(id='item', ctx=Load()),
+                                attr='text',
+                                ctx=Load()),
+                              Constant(value='')]),
+                          attr='lower',
+                          ctx=Load())),
+                      attr='split',
+                      ctx=Load()))])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='tokens', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='score', ctx=Store())],
+                  value=Constant(value=0.0))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='inter', ctx=Store())],
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='q_tokens', ctx=Load()),
+                        op=BitAnd(),
+                        right=Name(id='tokens', ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='union', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Name(id='q_tokens', ctx=Load()),
+                            op=BitOr(),
+                            right=Name(id='tokens', ctx=Load()))]),
+                      Constant(value=1)])),
+                Assign(
+                  targets=[
+                    Name(id='score', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='inter', ctx=Load()),
+                    op=Div(),
+                    right=Name(id='union', ctx=Load())))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='scored', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Tuple(
+                    elts=[
+                      Name(id='item', ctx=Load()),
+                      Call(
+                        func=Name(id='float', ctx=Load()),
+                        args=[
+                          Name(id='score', ctx=Load())])],
+                    ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='scored', ctx=Load()),
+              attr='sort',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='x')]),
+                  body=Tuple(
+                    elts=[
+                      UnaryOp(
+                        op=USub(),
+                        operand=Subscript(
+                          value=Name(id='x', ctx=Load()),
+                          slice=Constant(value=1),
+                          ctx=Load())),
+                      Attribute(
+                        value=Subscript(
+                          value=Name(id='x', ctx=Load()),
+                          slice=Constant(value=0),
+                          ctx=Load()),
+                        attr='id',
+                        ctx=Load())],
+                    ctx=Load())))])),
+        Return(
+          value=Name(id='scored', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Tuple', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='ContextItem', ctx=Load()),
+              Name(id='float', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()))])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_21_LLM_INTEGRATED.py",
+    "rel_path": "Resume_Generation_v5_21_LLM_INTEGRATED.py",
+    "root_name": "resume_engine/Old Resume Gen Python",
+    "file_hash": "2f10e7b44f8fbb081644e72fec286986c92392544f4fee9f227dc64814283eab",
+    "file_size": 186344,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728301.2377036
+}

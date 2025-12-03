@@ -1,0 +1,165 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Iterable'),
+        alias(name='Type')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel')],
+      level=0),
+    FunctionDef(
+      name='_get_schema_version',
+      args=arguments(
+        args=[
+          arg(
+            arg='obj',
+            annotation=Name(id='Any', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Best-effort helper to read a schema_version attribute from a model.\n\n    The validator is intentionally defensive and never raises on simple\n    attribute access issues; it only raises when the value is present but\n    incompatible with expectations.\n    ')),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='obj', ctx=Load()),
+                  Constant(value='schema_version'),
+                  Constant(value=None)]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Return(
+                  value=Constant(value=None))])])],
+      returns=BinOp(
+        left=Name(id='str', ctx=Load()),
+        op=BitOr(),
+        right=Constant(value=None))),
+    FunctionDef(
+      name='validate_schema_version',
+      args=arguments(
+        args=[
+          arg(
+            arg='obj',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='expected_versions',
+            annotation=Subscript(
+              value=Name(id='Iterable', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='model_type',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Type', ctx=Load()),
+                slice=Name(id='BaseModel', ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        defaults=[
+          Tuple(
+            elts=[
+              Constant(value='v1')],
+            ctx=Load()),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Validate that a Pydantic model has an expected schema_version.\n\n    This is a light-weight guard used on critical cross-layer contracts\n    (e.g., WorkflowPlanBundle, L2ResultBundle) so that incompatible data\n    shapes surface early during development and testing.\n\n    The function is intentionally conservative:\n        • If obj is not a BaseModel (and model_type is not given), it is a no-op.\n        • If schema_version is missing or None, it is a no-op for now.\n        • If schema_version is present but not in expected_versions, it raises\n          a ValueError to signal an incompatible contract.\n    ')),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='model_type', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='obj', ctx=Load()),
+                    Name(id='model_type', ctx=Load())]))]),
+          body=[
+            Return()]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='model_type', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='obj', ctx=Load()),
+                    Name(id='BaseModel', ctx=Load())]))]),
+          body=[
+            Return()]),
+        Assign(
+          targets=[
+            Name(id='version', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_schema_version', ctx=Load()),
+            args=[
+              Name(id='obj', ctx=Load())])),
+        If(
+          test=Compare(
+            left=Name(id='version', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return()]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='str', ctx=Load()),
+              args=[
+                Name(id='version', ctx=Load())]),
+            ops=[
+              NotIn()],
+            comparators=[
+              Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Name(id='expected_versions', ctx=Load())])]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ValueError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Unexpected schema_version='),
+                      FormattedValue(
+                        value=Name(id='version', ctx=Load()),
+                        conversion=114),
+                      Constant(value='; expected one of '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='tuple', ctx=Load()),
+                          args=[
+                            Name(id='expected_versions', ctx=Load())]),
+                        conversion=114)])]))])],
+      returns=Constant(value=None))])

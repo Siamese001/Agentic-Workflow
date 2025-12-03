@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 167,
+  "generated_at": 1764728350.3756115,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\budget-manager-layer\\validate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\otlp_exporter.py"
+}

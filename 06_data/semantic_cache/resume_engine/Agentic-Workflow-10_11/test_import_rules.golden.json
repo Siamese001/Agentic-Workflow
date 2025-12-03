@@ -1,0 +1,6 @@
+{
+  "golden_content": "import ast\nfrom pathlib import Path\n\n\nPROJECT_ROOT = Path(__file__).resolve().parents[2]\n\n\ndef _iter_py_files(root: Path):\n    if not root.exists():\n        return\n    for path in root.rglob(\"*.py\"):\n        if path.name.startswith(\"test_\"):\n            continue\n        yield path\n\n\ndef _parse_imports(path: Path):\n    try:\n        source = path.read_text(encoding=\"utf-8\")\n    except OSError:\n        return []\n    try:\n        tree = ast.parse(source, filename=str(path))\n    except SyntaxError:\n        return []\n\n    imports: list[str] = []\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Import):\n            for alias in node.names:\n                imports.append(alias.name)\n        elif isinstance(node, ast.ImportFrom):\n            if node.module:\n                imports.append(node.module)\n    return imports\n\n\ndef _has_forbidden_import(root: Path, forbidden_prefixes: list[str]) -> list[tuple[Path, str]]:\n    violations: list[tuple[Path, str]] = []\n    for path in _iter",
+  "full_hash": "589c11b87b6ffb3f12dada5a84edaee5d7b80ffb61d485a023f690b8dd65f5ca",
+  "generated_at": 1764728227.3214977,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_import_rules.py"
+}

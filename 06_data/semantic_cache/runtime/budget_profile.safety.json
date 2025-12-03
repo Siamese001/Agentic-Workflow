@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 17,
+  "generated_at": 1764728347.7298784,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\router-microagent-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\budget_profile.py"
+}

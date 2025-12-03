@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.2 - AMIT AYER MASTER RESUME\n========================================================\nComplete destructive overwrite with Master_Resume_V2.14.json\n- All Gerald Brewer data replaced with Amit Ayer data\n- Uses uploaded JSON structure for all professional experience\n- Maintains v5.0 architecture (elasticity, signals, 5 outputs)\n- Dynamic bullet pool selection from JSON\n\nVersion: 5.2\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nfrom datetime import datetime\nfrom dataclasses import dataclass\nimport math\n\n__version__ = \"5.2\"\n\n# ============================================================================\n# LOAD MASTER RESUME JSON\n# ============================================================================\n\ndef load_master_resume():\n    \"\"\"Load Amit Ayer's master resume from uploaded JSON.\"\"\"\n    try:\n        with open('/mnt/user-data/uploads/Master_Resume_V2_14.json', 'r') as f:\n  ",
+  "full_hash": "613ff9a6547deeea6b2a3adec21948357a4960d42b5dcefaf6fda7b067a98f42",
+  "generated_at": 1764728297.4371264,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.2.py"
+}

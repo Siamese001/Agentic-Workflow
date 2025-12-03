@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"v10.8 soft-mode context budget enforcement.\"\"\"\n\nfrom __future__ import annotations\n\nimport copy\nimport logging\nfrom typing import Any, MutableMapping, Optional\n\nfrom pydantic import BaseModel\n\nlogger = logging.getLogger(__name__)\n\n\nclass ContextBudgetConfig(BaseModel):\n    max_episodic_messages: int = 50\n    max_rag_documents: int = 10\n    max_summary_chars: int = 4000\n\n\nclass ContextBudgetManager:\n    \"\"\"Lightweight state-aware budget manager for L4.\n\n    Soft mode intentionally avoids aggressive pruning to prevent regressions\n    while the P4/P5 migration is in progress.\n    \"\"\"\n\n    _TRIGGER_RATIO: float = 1.0\n\n    def __init__(\n        self,\n        config: Optional[ContextBudgetConfig] = None,\n        *,\n        delegate: Any = None,\n    ) -> None:\n        self.config = config or ContextBudgetConfig()\n        self.delegate = delegate\n        self.logger = logging.getLogger(f\"{__name__}.ContextBudgetManager\")\n\n    async def prune(self, document: str, max_tokens: Optional[int] = ",
+  "full_hash": "cd3609dbc2d46694aacf27b779b6691f8adcdc79fe8f13717bc56ac039ebb5be",
+  "generated_at": 1764728229.4724164,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\context_budget_v10_8.py"
+}

@@ -1,0 +1,179 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema state inspection and monitoring.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='InspectionType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of schema inspections.')),
+        Assign(
+          targets=[
+            Name(id='STRUCTURAL', ctx=Store())],
+          value=Constant(value='structural')),
+        Assign(
+          targets=[
+            Name(id='SEMANTIC', ctx=Store())],
+          value=Constant(value='semantic')),
+        Assign(
+          targets=[
+            Name(id='PERFORMANCE', ctx=Store())],
+          value=Constant(value='performance')),
+        Assign(
+          targets=[
+            Name(id='COMPLIANCE', ctx=Store())],
+          value=Constant(value='compliance'))]),
+    ClassDef(
+      name='InspectionScope',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema inspection scopes.')),
+        Assign(
+          targets=[
+            Name(id='SINGLE_SCHEMA', ctx=Store())],
+          value=Constant(value='single_schema')),
+        Assign(
+          targets=[
+            Name(id='SCHEMA_COLLECTION', ctx=Store())],
+          value=Constant(value='schema_collection')),
+        Assign(
+          targets=[
+            Name(id='DEPENDENCY_GRAPH', ctx=Store())],
+          value=Constant(value='dependency_graph')),
+        Assign(
+          targets=[
+            Name(id='ENTIRE_REGISTRY', ctx=Store())],
+          value=Constant(value='entire_registry'))]),
+    ClassDef(
+      name='InspectionParameters',
+      body=[
+        Expr(
+          value=Constant(value='Schema for inspection parameters.')),
+        AnnAssign(
+          target=Name(id='inspection_type', ctx=Store()),
+          annotation=Name(id='InspectionType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='scope', ctx=Store()),
+          annotation=Name(id='InspectionScope', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_ids', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='depth_limit', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=10),
+          simple=1),
+        AnnAssign(
+          target=Name(id='include_metadata', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='InspectionFinding',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual inspection finding.')),
+        AnnAssign(
+          target=Name(id='finding_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='category', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='location', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recommendation', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='InspectionResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for complete inspection results.')),
+        AnnAssign(
+          target=Name(id='inspection_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='inspection_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_schemas_inspected', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='findings', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='InspectionFinding', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='summary_statistics', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='int', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

@@ -1,0 +1,190 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='subprocess')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='AsyncMock'),
+        alias(name='patch')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    FunctionDef(
+      name='test_no_todo_or_mock_comments',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='subprocess', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Constant(value='grep'),
+                  Constant(value='-R'),
+                  Constant(value='TODO'),
+                  Constant(value='agentic_workflow/')],
+                ctx=Load())],
+            keywords=[
+              keyword(
+                arg='capture_output',
+                value=Constant(value=True)),
+              keyword(
+                arg='text',
+                value=Constant(value=True))])),
+        Assert(
+          test=Compare(
+            left=Constant(value='TODO'),
+            ops=[
+              NotIn()],
+            comparators=[
+              Attribute(
+                value=Name(id='result', ctx=Load()),
+                attr='stdout',
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='mock',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_no_identity_function_returns',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='subprocess', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Constant(value='grep'),
+                  Constant(value='-R'),
+                  Constant(value='return input'),
+                  Constant(value='agentic_workflow/')],
+                ctx=Load())],
+            keywords=[
+              keyword(
+                arg='capture_output',
+                value=Constant(value=True)),
+              keyword(
+                arg='text',
+                value=Constant(value=True))])),
+        Assert(
+          test=Compare(
+            left=Constant(value='return input'),
+            ops=[
+              NotIn()],
+            comparators=[
+              Attribute(
+                value=Name(id='result', ctx=Load()),
+                attr='stdout',
+                ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='mock',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_mock_llm_client_triggers_idempotency',
+      args=arguments(
+        args=[
+          arg(arg='mock_workflow_context'),
+          arg(arg='mock_llm_client')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='cached_response', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='content'),
+              Constant(value='usage')],
+            values=[
+              Constant(value='cached'),
+              Dict()])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='mock_workflow_context', ctx=Load()),
+                attr='cache_manager',
+                ctx=Load()),
+              attr='get_llm_cache',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='AsyncMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='return_value',
+                value=Name(id='cached_response', ctx=Load()))])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='patch', ctx=Load()),
+                  attr='object',
+                  ctx=Load()),
+                args=[
+                  Name(id='mock_llm_client', ctx=Load()),
+                  Constant(value='_run_idempotency_check')],
+                keywords=[
+                  keyword(
+                    arg='new_callable',
+                    value=Name(id='AsyncMock', ctx=Load()))]),
+              optional_vars=Name(id='run_check', ctx=Store()))],
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='mock_llm_client', ctx=Load()),
+                    attr='chat_completion_async',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='messages',
+                      value=List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='role'),
+                              Constant(value='content')],
+                            values=[
+                              Constant(value='user'),
+                              Constant(value='hello')])],
+                        ctx=Load())),
+                    keyword(
+                      arg='temperature',
+                      value=Constant(value=0.2))])))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='run_check', ctx=Load()),
+              attr='assert_called_once',
+              ctx=Load())))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

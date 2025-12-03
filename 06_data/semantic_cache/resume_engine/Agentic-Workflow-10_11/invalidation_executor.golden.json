@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTemporal fact invalidation executor for resume processing workflows.\n\nDetects and marks outdated or contradictory facts in resume\nenhancement operations for accurate job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List, Optional, Set\nfrom datetime import datetime, timedelta, UTC\nfrom enum import Enum\n\nfrom l4.triplet_store import Triplet, TripletStore, TripletStatus, TripletQuery\n\n\nclass InvalidationReason(str, Enum):\n    \"\"\"Reasons for resume fact invalidation in job alignment workflows.\"\"\"\n    SUPERSEDED = \"superseded\"           # Replaced by newer fact\n    CONTRADICTED = \"contradicted\"       # Contradicts another fact\n    EXPIRED = \"expired\"                 # Temporal validity expired\n    RETRACTED = \"retracted\"             # Source retracted the fact\n    LOW_CONFIDENCE = \"low_confidence\"   # Below confidence threshold\n    MANUAL = \"manual\"                   # Manual invalidation\n\n\n@dataclass\nclass In",
+  "full_hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
+  "generated_at": 1764728224.9971058,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\invalidation_executor.py"
+}

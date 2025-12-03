@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\orc-layer\\safety-phase\\check-schema-rules\\policy\\check-safety\\validate_orchestration_ethics.py",
+    "rel_path": "validate_orchestration_ethics.py",
+    "root_name": "schemas",
+    "file_hash": "8ba6f529da02c5b84de0607b145caa99596ebdb0c368ecd34f486d7296051521",
+    "file_size": 1356,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.8767498
+}

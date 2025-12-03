@@ -1,0 +1,133 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='meta.metacognition.models',
+      names=[
+        alias(name='Hypothesis')],
+      level=0),
+    FunctionDef(
+      name='refine_low_confidence',
+      args=arguments(
+        args=[
+          arg(
+            arg='hypotheses',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='Hypothesis', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='threshold',
+            annotation=Name(id='float', ctx=Load()))],
+        defaults=[
+          Constant(value=0.4)]),
+      body=[
+        Expr(
+          value=Constant(value='Refine hypotheses below a confidence threshold.\n\n    Rules:\n    - if confidence < threshold / 2, mark hypothesis as effectively discarded\n      by prepending a cautionary prefix.\n    - elif confidence < 1.0, append a cautious qualifier asking for more\n      evidence before acting.\n    - otherwise leave content unchanged.\n    ')),
+        AnnAssign(
+          target=Name(id='refined', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Hypothesis', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='h', ctx=Store()),
+          iter=Name(id='hypotheses', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='conf', ctx=Store())],
+              value=Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='h', ctx=Load()),
+                    attr='confidence',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Attribute(
+                value=Name(id='h', ctx=Load()),
+                attr='content',
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Name(id='conf', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  BinOp(
+                    left=Name(id='threshold', ctx=Load()),
+                    op=Div(),
+                    right=Constant(value=2))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='new_content', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='[DISCARDED_CANDIDATE] '),
+                      FormattedValue(
+                        value=Name(id='content', ctx=Load()),
+                        conversion=-1)]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='conf', ctx=Load()),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Constant(value=1.0)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='new_content', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='content', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' (needs further evidence before acting)')]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='new_content', ctx=Store())],
+                      value=Name(id='content', ctx=Load()))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='refined', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='h', ctx=Load()),
+                      attr='model_copy',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='update',
+                        value=Dict(
+                          keys=[
+                            Constant(value='content')],
+                          values=[
+                            Name(id='new_content', ctx=Load())]))])]))]),
+        Return(
+          value=Name(id='refined', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='Hypothesis', ctx=Load()),
+        ctx=Load()))])

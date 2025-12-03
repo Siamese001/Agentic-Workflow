@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nOrchestration DAG models - re-exported from core.models for backward compatibility.\n\nThis module re-exports DAG models from core.models to maintain import compatibility\nduring the canonical structure cleanup.\n\"\"\"\n\n# Re-export all DAG models from core.models\nfrom core.models.dag_models import *\n",
+  "full_hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
+  "generated_at": 1764728225.8593717,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\models\\dag_models.py"
+}

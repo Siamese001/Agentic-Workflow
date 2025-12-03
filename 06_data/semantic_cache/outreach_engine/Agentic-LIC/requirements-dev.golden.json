@@ -1,0 +1,6 @@
+{
+  "golden_content": "pytest>=7.0\npytest-cov>=4.0\n",
+  "full_hash": "f3f7cc77e3a24776557aa9607d8d44bca10e136dbe353e8701602e4c1eac095e",
+  "generated_at": 1764728330.3879442,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\requirements-dev.txt"
+}

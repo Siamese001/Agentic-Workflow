@@ -1,0 +1,367 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='MCPClient discovery and invocation tests.')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='src.lic_agentic.mcp',
+      names=[
+        alias(name='MCPClient'),
+        alias(name='ToolSpec')],
+      level=0),
+    FunctionDef(
+      name='test_discover_filters_by_capability_and_trust',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='MCPClient', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='tools',
+                value=List(
+                  elts=[
+                    Call(
+                      func=Name(id='ToolSpec', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='id',
+                          value=Constant(value='alpha')),
+                        keyword(
+                          arg='name',
+                          value=Constant(value='Alpha')),
+                        keyword(
+                          arg='capabilities',
+                          value=Tuple(
+                            elts=[
+                              Constant(value='profile_lookup')],
+                            ctx=Load())),
+                        keyword(
+                          arg='cost',
+                          value=Constant(value=0.2)),
+                        keyword(
+                          arg='trust_tier',
+                          value=Constant(value='high')),
+                        keyword(
+                          arg='latency_ms',
+                          value=Constant(value=200))]),
+                    Call(
+                      func=Name(id='ToolSpec', ctx=Load()),
+                      keywords=[
+                        keyword(
+                          arg='id',
+                          value=Constant(value='beta')),
+                        keyword(
+                          arg='name',
+                          value=Constant(value='Beta')),
+                        keyword(
+                          arg='capabilities',
+                          value=Tuple(
+                            elts=[
+                              Constant(value='profile_lookup'),
+                              Constant(value='enrichment')],
+                            ctx=Load())),
+                        keyword(
+                          arg='cost',
+                          value=Constant(value=0.4)),
+                        keyword(
+                          arg='trust_tier',
+                          value=Constant(value='low')),
+                        keyword(
+                          arg='latency_ms',
+                          value=Constant(value=300))])],
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='discover',
+              ctx=Load()),
+            args=[
+              Constant(value='profile_lookup'),
+              Dict(
+                keys=[
+                  Constant(value='min_trust')],
+                values=[
+                  Constant(value='medium')])])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='results', ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Subscript(
+                value=Name(id='results', ctx=Load()),
+                slice=Constant(value=0),
+                ctx=Load()),
+              attr='id',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='alpha')])),
+        Assign(
+          targets=[
+            Name(id='payload', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='invoke',
+              ctx=Load()),
+            args=[
+              Constant(value='alpha'),
+              Dict(
+                keys=[
+                  Constant(value='query')],
+                values=[
+                  Constant(value='ACME')])])),
+        Assert(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Subscript(
+                value=Name(id='payload', ctx=Load()),
+                slice=Constant(value='ok'),
+                ctx=Load()),
+              Compare(
+                left=Subscript(
+                  value=Name(id='payload', ctx=Load()),
+                  slice=Constant(value='usage_count'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)])]))]),
+    FunctionDef(
+      name='test_discover_honors_allowlist_and_cost_filters',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='MCPClient', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='allow_only', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='discover',
+              ctx=Load()),
+            args=[
+              Constant(value='web_search'),
+              Dict(
+                keys=[
+                  Constant(value='allowlist')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='web_search_v1')],
+                    ctx=Load())])])),
+        Assert(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='allow_only', ctx=Load()),
+              Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Attribute(
+                        value=Name(id='spec', ctx=Load()),
+                        attr='id',
+                        ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='web_search_v1')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='spec', ctx=Store()),
+                        iter=Name(id='allow_only', ctx=Load()),
+                        is_async=0)])])])),
+        Assign(
+          targets=[
+            Name(id='denied', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='discover',
+              ctx=Load()),
+            args=[
+              Constant(value='web_search'),
+              Dict(
+                keys=[
+                  Constant(value='denylist')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='web_search_v1')],
+                    ctx=Load())])])),
+        Assert(
+          test=Call(
+            func=Name(id='all', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Attribute(
+                    value=Name(id='spec', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  ops=[
+                    NotEq()],
+                  comparators=[
+                    Constant(value='web_search_v1')]),
+                generators=[
+                  comprehension(
+                    target=Name(id='spec', ctx=Store()),
+                    iter=Name(id='denied', ctx=Load()),
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='cheap', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='discover',
+              ctx=Load()),
+            args=[
+              Constant(value='web_search'),
+              Dict(
+                keys=[
+                  Constant(value='max_cost')],
+                values=[
+                  Constant(value=0.3)])])),
+        Assert(
+          test=Call(
+            func=Name(id='all', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Attribute(
+                    value=Name(id='spec', ctx=Load()),
+                    attr='cost',
+                    ctx=Load()),
+                  ops=[
+                    LtE()],
+                  comparators=[
+                    Constant(value=0.3)]),
+                generators=[
+                  comprehension(
+                    target=Name(id='spec', ctx=Store()),
+                    iter=Name(id='cheap', ctx=Load()),
+                    is_async=0)])]))]),
+    FunctionDef(
+      name='test_usage_count_tracks_invocations',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='MCPClient', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='invoke',
+              ctx=Load()),
+            args=[
+              Constant(value='web_search_v1'),
+              Dict(
+                keys=[
+                  Constant(value='query')],
+                values=[
+                  Constant(value='one')])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='invoke',
+              ctx=Load()),
+            args=[
+              Constant(value='web_search_v1'),
+              Dict(
+                keys=[
+                  Constant(value='query')],
+                values=[
+                  Constant(value='two')])])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='client', ctx=Load()),
+                attr='usage_count',
+                ctx=Load()),
+              args=[
+                Constant(value='web_search_v1')]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=2)]))]),
+    FunctionDef(
+      name='test_discover_returns_empty_for_unknown_capability',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='MCPClient', ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='client', ctx=Load()),
+                attr='discover',
+                ctx=Load()),
+              args=[
+                Constant(value='nonexistent'),
+                Dict()]),
+            ops=[
+              Eq()],
+            comparators=[
+              List(ctx=Load())]))]),
+    FunctionDef(
+      name='test_invoke_unknown_tool_raises_key_error',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='MCPClient', ctx=Load()))),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='raises',
+                  ctx=Load()),
+                args=[
+                  Name(id='KeyError', ctx=Load())]))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='client', ctx=Load()),
+                  attr='invoke',
+                  ctx=Load()),
+                args=[
+                  Constant(value='missing')]))])])])

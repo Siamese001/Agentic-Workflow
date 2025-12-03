@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTree-of-thought reasoning framework for r\u00e9sum\u00e9 processing workflows.\n\nProvides deterministic thought exploration for comprehensive r\u00e9sum\u00e9 enhancement problem solving.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List, Tuple\n\n\n@dataclass\nclass ThoughtNode:\n    \"\"\"\n    Represents thought node in r\u00e9sum\u00e9 processing reasoning tree.\n\n    Enables structured exploration of solution paths for r\u00e9sum\u00e9 improvement tasks.\n    \"\"\"\n    content: str\n    score: float\n\n\ndef tree_search(seed: str, max_depth: int = 2, branching: int = 2) -> Tuple[List[ThoughtNode], List[ThoughtNode]]:\n    \"\"\"\n    Executes tree-of-thought search for r\u00e9sum\u00e9 processing tasks.\n\n    Explores multiple reasoning paths to find optimal r\u00e9sum\u00e9 enhancement solutions.\n    \"\"\"\n\n    seed = (seed or \"\").strip()\n    if not seed:\n        return [], []\n\n    # Simple heuristic: split by sentences or clauses.\n    parts = [p.strip() for p in seed.replace(\";\", \".\").split(\".\") if p.strip()]\n    explored: List[ThoughtNode] = [Th",
+  "full_hash": "d999b38effc78e356b66fb2a07bf0920d8dad735a90dd2b2360b2c717b5b2bb7",
+  "generated_at": 1764728224.2844017,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\reasoning\\tot.py"
+}

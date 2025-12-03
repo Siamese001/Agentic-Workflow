@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nLIC-AGENTIC-v11.1: LinkedIn InMail Cold Outreach - Agentic AI Architecture\n===========================================================================\n\nVersion: 11.1\nBase Version: 10.24\nArchitecture: Event-Driven Microservices with Agentic Research & Generation Loops\nStatus: PRODUCTION_READY\n\nKey Upgrades from v10.24:\n-------------------------\n1. Event-Driven Architecture: Decoupled microservices via message bus\n2. Agentic Research Loop: Execute-Critique-Replan with adversarial checking\n3. Multi-Model Consensus: Critical decisions use multiple LLMs\n4. Enhanced State Management: Comprehensive OutreachState tracking\n5. Semantic Caching: Reduce redundant API calls\n6. Circuit Breakers: Graceful degradation under failures\n7. HYDE-Style Queries: Hypothetical document generation for RAG\n8. Pre-Analysis Agent: Profile understanding before generation\n9. Dedicated Services: Telemetry, Logging, Validation as first-class services\n\nArchitectural Principles:\n------------------------\n- No Cost/Ti",
+  "full_hash": "ed0563b49779e4d679dc360b24904bffd9d44c591b405e69ba0dab9af96d4b1a",
+  "generated_at": 1764728338.765599,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_1.py"
+}

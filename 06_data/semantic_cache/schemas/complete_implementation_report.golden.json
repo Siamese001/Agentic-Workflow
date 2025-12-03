@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"report_title\": \"Agentic-Workflow Complete Implementation Report\",\n  \"generated_timestamp\": \"2025-12-02T21:06:32.108259\",\n  \"workspace_root\": \"c:/Git/Agentic-Workflow\",\n  \"implementation_status\": \"COMPLETE_100_PERCENT_COMPLIANCE\",\n  \"summary\": {\n    \"total_k_keys\": 42,\n    \"passed_k_keys\": 42,\n    \"failed_k_keys\": 0,\n    \"skipped_k_keys\": 0,\n    \"compliance_percentage\": 100.0,\n    \"validation_status\": \"PHASE_VALIDATION_COMPLETE_ALL_KEYS_PASS\"\n  },\n  \"foundational_gaps\": {\n    \"total_gaps\": 7,\n    \"completed_gaps\": 7,\n    \"gaps\": {\n      \"G1-G2\": {\n        \"title\": \"YAML/META binding confirmation\",\n        \"status\": \"COMPLETED\",\n        \"description\": \"Verified existing binding fields in main YAML and META sidecar\",\n        \"validation\": \"K1-K2 validator passes\",\n        \"artifacts\": [\n          \"unified_structure_subatomic.yaml\",\n          \"unified_structure_subatomic_meta.yaml\"\n        ]\n      },\n      \"G3-G4\": {\n        \"title\": \"Zero-loss baseline reconciliation and mapping\",\n  ",
+  "full_hash": "e75a9987052f8a3d9fc1dd66da067cea089da3ea2445b80aa720e15a0ac614ad",
+  "generated_at": 1764728342.4318326,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\complete_implementation_report.json"
+}

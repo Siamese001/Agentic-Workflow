@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728353.262249,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\expand-phase\\vectorize-resume\\semantic\\adjust-scores\\calibrate_fit_score.py"
+}

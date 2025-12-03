@@ -1,0 +1,1469 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nResume Generation Engine v5.41 - MULTI-LLM SUPPORT (Claude + Gemini)\n\nv5.41 CHANGES - MULTI-LLM INTEGRATION:\n✓ NEW: Support for both Claude and Gemini APIs\n✓ NEW: LLM_PROVIDER configuration variable\n✓ NEW: _call_gemini_api() method\n✓ NEW: _call_llm_api() unified wrapper\n✓ MODIFIED: All API calls route through unified wrapper\n✓ Environment variables: ANTHROPIC_API_KEY and GEMINI_API_KEY\n✓ Easy switching between providers with single variable change\n\nAll v5.40 functionality maintained:\n✓ Single source of truth architecture\n✓ Real API integration (not mock)\n✓ Comprehensive error handling\n✓ All 74 RAG pipeline calls\n✓ JD Enforcement System\n✓ Complete validation suite\n')),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    Import(
+      names=[
+        alias(name='math')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='time')]),
+    Import(
+      names=[
+        alias(name='requests')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Tuple'),
+        alias(name='Optional'),
+        alias(name='Any'),
+        alias(name='Set')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field'),
+        alias(name='asdict')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    Import(
+      names=[
+        alias(name='copy')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='5.41')),
+    Assign(
+      targets=[
+        Name(id='LLM_PROVIDER', ctx=Store())],
+      value=Constant(value='gemini')),
+    Assign(
+      targets=[
+        Name(id='LLM_MODELS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='claude'),
+          Constant(value='gemini')],
+        values=[
+          Constant(value='claude-sonnet-4-20250514'),
+          Constant(value='gemini-2.0-flash-exp')])),
+    Assign(
+      targets=[
+        Name(id='LLM_ENDPOINTS', ctx=Store())],
+      value=Dict(
+        keys=[
+          Constant(value='claude'),
+          Constant(value='gemini')],
+        values=[
+          Constant(value='https://api.anthropic.com/v1/messages'),
+          Constant(value='https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent')])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='basicConfig',
+          ctx=Load()),
+        keywords=[
+          keyword(
+            arg='level',
+            value=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='INFO',
+              ctx=Load())),
+          keyword(
+            arg='format',
+            value=Constant(value='%(asctime)s - %(name)s - %(levelname)s - %(message)s'))])),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Name(id='logger', ctx=Load()),
+          attr='info',
+          ctx=Load()),
+        args=[
+          BinOp(
+            left=JoinedStr(
+              values=[
+                Constant(value='=')]),
+            op=Mult(),
+            right=Constant(value=80))])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Name(id='logger', ctx=Load()),
+          attr='info',
+          ctx=Load()),
+        args=[
+          JoinedStr(
+            values=[
+              Constant(value='Resume Generation Engine v'),
+              FormattedValue(
+                value=Name(id='__version__', ctx=Load()),
+                conversion=-1)])])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Name(id='logger', ctx=Load()),
+          attr='info',
+          ctx=Load()),
+        args=[
+          JoinedStr(
+            values=[
+              Constant(value='LLM Provider: '),
+              FormattedValue(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='LLM_PROVIDER', ctx=Load()),
+                    attr='upper',
+                    ctx=Load())),
+                conversion=-1)])])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Name(id='logger', ctx=Load()),
+          attr='info',
+          ctx=Load()),
+        args=[
+          JoinedStr(
+            values=[
+              Constant(value='Model: '),
+              FormattedValue(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='LLM_MODELS', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='LLM_PROVIDER', ctx=Load()),
+                    Constant(value='Unknown')]),
+                conversion=-1)])])),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Name(id='logger', ctx=Load()),
+          attr='info',
+          ctx=Load()),
+        args=[
+          BinOp(
+            left=JoinedStr(
+              values=[
+                Constant(value='=')]),
+            op=Mult(),
+            right=Constant(value=80))])),
+    ClassDef(
+      name='JDEnforcementRule',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Enforcement rules ensuring JD is always used.')),
+        Assign(
+          targets=[
+            Name(id='E1_JD_MIN_LENGTH', ctx=Store())],
+          value=Constant(value='JD must be non-empty (min 100 characters)')),
+        Assign(
+          targets=[
+            Name(id='E2_JD_NON_NULL', ctx=Store())],
+          value=Constant(value='JD must be provided to workflow (not None/empty)'))]),
+    ClassDef(
+      name='JDEnforcementResult',
+      body=[
+        Expr(
+          value=Constant(value='Result of a JD enforcement check.')),
+        AnnAssign(
+          target=Name(id='rule', ctx=Store()),
+          annotation=Name(id='JDEnforcementRule', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='passed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='gate_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load()))))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MultiLLMProvider',
+      body=[
+        Expr(
+          value=Constant(value='\n    Multi-LLM provider supporting both Claude and Gemini APIs.\n    \n    Features:\n    - Unified interface for multiple LLM providers\n    - Automatic provider selection based on configuration\n    - Retry logic and error handling for both APIs\n    - Environment variable management for API keys\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='provider',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Initialize Multi-LLM Provider.\n        \n        Args:\n            provider: "claude" or "gemini". If None, uses global LLM_PROVIDER\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='provider',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='provider', ctx=Load()),
+                  Name(id='LLM_PROVIDER', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='model',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='LLM_MODELS', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='provider',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='endpoint',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='LLM_ENDPOINTS', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='provider',
+                    ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='model',
+                      ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='endpoint',
+                      ctx=Load()))]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Unknown provider: '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='provider',
+                              ctx=Load()),
+                            conversion=-1),
+                          Constant(value=". Must be 'claude' or 'gemini'")])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Initialized '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='provider',
+                              ctx=Load()),
+                            attr='upper',
+                            ctx=Load())),
+                        conversion=-1),
+                      Constant(value=' provider with model '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='model',
+                          ctx=Load()),
+                        conversion=-1)])]))]),
+        FunctionDef(
+          name='_call_claude_api',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='system_prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=''),
+              Constant(value=0.7),
+              Constant(value=500)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Call Claude API using Anthropic Messages API.\n        \n        Args:\n            prompt: User prompt\n            system_prompt: System prompt\n            temperature: Sampling temperature (0.0-1.0)\n            max_tokens: Maximum tokens to generate\n        \n        Returns:\n            Generated text from Claude\n        \n        Raises:\n            Exception: If API call fails or API key not set\n        ')),
+            Assign(
+              targets=[
+                Name(id='api_key', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='environ',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ANTHROPIC_API_KEY')])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='api_key', ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='Exception', ctx=Load()),
+                    args=[
+                      Constant(value="ANTHROPIC_API_KEY not found. Please set it using:\nexport ANTHROPIC_API_KEY='your-api-key-here'")]))]),
+            Assign(
+              targets=[
+                Name(id='url', ctx=Store())],
+              value=Constant(value='https://api.anthropic.com/v1/messages')),
+            Assign(
+              targets=[
+                Name(id='headers', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Content-Type'),
+                  Constant(value='anthropic-version'),
+                  Constant(value='x-api-key')],
+                values=[
+                  Constant(value='application/json'),
+                  Constant(value='2023-06-01'),
+                  Name(id='api_key', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='payload', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='model'),
+                  Constant(value='max_tokens'),
+                  Constant(value='temperature'),
+                  Constant(value='messages')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='model',
+                    ctx=Load()),
+                  Name(id='max_tokens', ctx=Load()),
+                  Name(id='temperature', ctx=Load()),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='role'),
+                          Constant(value='content')],
+                        values=[
+                          Constant(value='user'),
+                          Name(id='prompt', ctx=Load())])],
+                    ctx=Load())])),
+            If(
+              test=Name(id='system_prompt', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='payload', ctx=Load()),
+                      slice=Constant(value='system'),
+                      ctx=Store())],
+                  value=Name(id='system_prompt', ctx=Load()))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_make_request_with_retry',
+                  ctx=Load()),
+                args=[
+                  Name(id='url', ctx=Load()),
+                  Name(id='headers', ctx=Load()),
+                  Name(id='payload', ctx=Load()),
+                  Constant(value='claude')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_call_gemini_api',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='system_prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=''),
+              Constant(value=0.7),
+              Constant(value=500)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Call Gemini API using Google GenerativeLanguage API.\n        \n        Args:\n            prompt: User prompt\n            system_prompt: System instruction\n            temperature: Sampling temperature (0.0-2.0 for Gemini)\n            max_tokens: Maximum tokens to generate\n        \n        Returns:\n            Generated text from Gemini\n        \n        Raises:\n            Exception: If API call fails or API key not set\n        ')),
+            Assign(
+              targets=[
+                Name(id='api_key', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='environ',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='GEMINI_API_KEY')])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='api_key', ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='Exception', ctx=Load()),
+                    args=[
+                      Constant(value="GEMINI_API_KEY not found. Please set it using:\nexport GEMINI_API_KEY='your-api-key-here'\nGet your key at: https://makersuite.google.com/app/apikey")]))]),
+            Assign(
+              targets=[
+                Name(id='url', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='endpoint',
+                    ctx=Load()),
+                  attr='format',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model',
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='model',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='url', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='url', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='?key='),
+                  FormattedValue(
+                    value=Name(id='api_key', ctx=Load()),
+                    conversion=-1)])),
+            Assign(
+              targets=[
+                Name(id='headers', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='Content-Type')],
+                values=[
+                  Constant(value='application/json')])),
+            Assign(
+              targets=[
+                Name(id='full_prompt', ctx=Store())],
+              value=Name(id='prompt', ctx=Load())),
+            If(
+              test=Name(id='system_prompt', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='full_prompt', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='system_prompt', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n\n'),
+                      FormattedValue(
+                        value=Name(id='prompt', ctx=Load()),
+                        conversion=-1)]))]),
+            Assign(
+              targets=[
+                Name(id='payload', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='contents'),
+                  Constant(value='generationConfig')],
+                values=[
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='parts')],
+                        values=[
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='text')],
+                                values=[
+                                  Name(id='full_prompt', ctx=Load())])],
+                            ctx=Load())])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='temperature'),
+                      Constant(value='maxOutputTokens'),
+                      Constant(value='topP'),
+                      Constant(value='topK')],
+                    values=[
+                      Name(id='temperature', ctx=Load()),
+                      Name(id='max_tokens', ctx=Load()),
+                      Constant(value=0.95),
+                      Constant(value=40)])])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_make_request_with_retry',
+                  ctx=Load()),
+                args=[
+                  Name(id='url', ctx=Load()),
+                  Name(id='headers', ctx=Load()),
+                  Name(id='payload', ctx=Load()),
+                  Constant(value='gemini')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_make_request_with_retry',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='url',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='headers',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='payload',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='provider_type',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Make HTTP request with exponential backoff retry logic.\n        \n        Args:\n            url: API endpoint URL\n            headers: Request headers\n            payload: Request payload\n            provider_type: "claude" or "gemini" for response parsing\n        \n        Returns:\n            Generated text from API\n        \n        Raises:\n            Exception: If all retry attempts fail\n        ')),
+            Assign(
+              targets=[
+                Name(id='max_retries', ctx=Store())],
+              value=Constant(value=3)),
+            Assign(
+              targets=[
+                Name(id='retry_delay', ctx=Store())],
+              value=Constant(value=2)),
+            For(
+              target=Name(id='attempt', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='max_retries', ctx=Load())]),
+              body=[
+                Try(
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='debug',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='provider_type', ctx=Load()),
+                                    attr='upper',
+                                    ctx=Load())),
+                                conversion=-1),
+                              Constant(value=' API call attempt '),
+                              FormattedValue(
+                                value=BinOp(
+                                  left=Name(id='attempt', ctx=Load()),
+                                  op=Add(),
+                                  right=Constant(value=1)),
+                                conversion=-1),
+                              Constant(value='/'),
+                              FormattedValue(
+                                value=Name(id='max_retries', ctx=Load()),
+                                conversion=-1)])])),
+                    Assign(
+                      targets=[
+                        Name(id='response', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='requests', ctx=Load()),
+                          attr='post',
+                          ctx=Load()),
+                        args=[
+                          Name(id='url', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='headers',
+                            value=Name(id='headers', ctx=Load())),
+                          keyword(
+                            arg='json',
+                            value=Name(id='payload', ctx=Load())),
+                          keyword(
+                            arg='timeout',
+                            value=Constant(value=60))])),
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='response', ctx=Load()),
+                          attr='status_code',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value=200)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='response_data', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='response', ctx=Load()),
+                              attr='json',
+                              ctx=Load()))),
+                        If(
+                          test=Compare(
+                            left=Name(id='provider_type', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='claude')]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='generated_text', ctx=Store())],
+                              value=Subscript(
+                                value=Subscript(
+                                  value=Subscript(
+                                    value=Name(id='response_data', ctx=Load()),
+                                    slice=Constant(value='content'),
+                                    ctx=Load()),
+                                  slice=Constant(value=0),
+                                  ctx=Load()),
+                                slice=Constant(value='text'),
+                                ctx=Load()))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Name(id='provider_type', ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value='gemini')]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='generated_text', ctx=Store())],
+                                  value=Subscript(
+                                    value=Subscript(
+                                      value=Subscript(
+                                        value=Subscript(
+                                          value=Subscript(
+                                            value=Subscript(
+                                              value=Name(id='response_data', ctx=Load()),
+                                              slice=Constant(value='candidates'),
+                                              ctx=Load()),
+                                            slice=Constant(value=0),
+                                            ctx=Load()),
+                                          slice=Constant(value='content'),
+                                          ctx=Load()),
+                                        slice=Constant(value='parts'),
+                                        ctx=Load()),
+                                      slice=Constant(value=0),
+                                      ctx=Load()),
+                                    slice=Constant(value='text'),
+                                    ctx=Load()))],
+                              orelse=[
+                                Raise(
+                                  exc=Call(
+                                    func=Name(id='ValueError', ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Unknown provider type: '),
+                                          FormattedValue(
+                                            value=Name(id='provider_type', ctx=Load()),
+                                            conversion=-1)])]))])]),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='debug',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='API call successful, response length: '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='len', ctx=Load()),
+                                      args=[
+                                        Name(id='generated_text', ctx=Load())]),
+                                    conversion=-1),
+                                  Constant(value=' chars')])])),
+                        Return(
+                          value=Name(id='generated_text', ctx=Load()))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='response', ctx=Load()),
+                              attr='status_code',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value=429)]),
+                          body=[
+                            If(
+                              test=Compare(
+                                left=Name(id='attempt', ctx=Load()),
+                                ops=[
+                                  Lt()],
+                                comparators=[
+                                  BinOp(
+                                    left=Name(id='max_retries', ctx=Load()),
+                                    op=Sub(),
+                                    right=Constant(value=1))]),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='logger', ctx=Load()),
+                                      attr='warning',
+                                      ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Rate limit hit, retrying in '),
+                                          FormattedValue(
+                                            value=Name(id='retry_delay', ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value='s...')])])),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='time', ctx=Load()),
+                                      attr='sleep',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='retry_delay', ctx=Load())])),
+                                AugAssign(
+                                  target=Name(id='retry_delay', ctx=Store()),
+                                  op=Mult(),
+                                  value=Constant(value=2)),
+                                Continue()],
+                              orelse=[
+                                Raise(
+                                  exc=Call(
+                                    func=Name(id='Exception', ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Rate limit exceeded after '),
+                                          FormattedValue(
+                                            value=Name(id='max_retries', ctx=Load()),
+                                            conversion=-1),
+                                          Constant(value=' attempts')])]))])],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Attribute(
+                                  value=Name(id='response', ctx=Load()),
+                                  attr='status_code',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Constant(value=400)]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='error_msg', ctx=Store())],
+                                  value=JoinedStr(
+                                    values=[
+                                      Constant(value='Bad Request: '),
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='response', ctx=Load()),
+                                          attr='text',
+                                          ctx=Load()),
+                                        conversion=-1)])),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='logger', ctx=Load()),
+                                      attr='error',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='error_msg', ctx=Load())])),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='logger', ctx=Load()),
+                                      attr='error',
+                                      ctx=Load()),
+                                    args=[
+                                      JoinedStr(
+                                        values=[
+                                          Constant(value='Payload that caused error: '),
+                                          FormattedValue(
+                                            value=Call(
+                                              func=Attribute(
+                                                value=Name(id='json', ctx=Load()),
+                                                attr='dumps',
+                                                ctx=Load()),
+                                              args=[
+                                                Name(id='payload', ctx=Load())],
+                                              keywords=[
+                                                keyword(
+                                                  arg='indent',
+                                                  value=Constant(value=2))]),
+                                            conversion=-1)])])),
+                                Raise(
+                                  exc=Call(
+                                    func=Name(id='Exception', ctx=Load()),
+                                    args=[
+                                      Name(id='error_msg', ctx=Load())]))],
+                              orelse=[
+                                Assign(
+                                  targets=[
+                                    Name(id='error_msg', ctx=Store())],
+                                  value=JoinedStr(
+                                    values=[
+                                      Constant(value='API Error '),
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='response', ctx=Load()),
+                                          attr='status_code',
+                                          ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=': '),
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='response', ctx=Load()),
+                                          attr='text',
+                                          ctx=Load()),
+                                        conversion=-1)])),
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='logger', ctx=Load()),
+                                      attr='error',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='error_msg', ctx=Load())])),
+                                If(
+                                  test=Compare(
+                                    left=Name(id='attempt', ctx=Load()),
+                                    ops=[
+                                      Lt()],
+                                    comparators=[
+                                      BinOp(
+                                        left=Name(id='max_retries', ctx=Load()),
+                                        op=Sub(),
+                                        right=Constant(value=1))]),
+                                  body=[
+                                    Expr(
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Name(id='logger', ctx=Load()),
+                                          attr='warning',
+                                          ctx=Load()),
+                                        args=[
+                                          JoinedStr(
+                                            values=[
+                                              Constant(value='Retrying in '),
+                                              FormattedValue(
+                                                value=Name(id='retry_delay', ctx=Load()),
+                                                conversion=-1),
+                                              Constant(value='s...')])])),
+                                    Expr(
+                                      value=Call(
+                                        func=Attribute(
+                                          value=Name(id='time', ctx=Load()),
+                                          attr='sleep',
+                                          ctx=Load()),
+                                        args=[
+                                          Name(id='retry_delay', ctx=Load())])),
+                                    AugAssign(
+                                      target=Name(id='retry_delay', ctx=Store()),
+                                      op=Mult(),
+                                      value=Constant(value=2)),
+                                    Continue()],
+                                  orelse=[
+                                    Raise(
+                                      exc=Call(
+                                        func=Name(id='Exception', ctx=Load()),
+                                        args=[
+                                          Name(id='error_msg', ctx=Load())]))])])])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Attribute(
+                        value=Attribute(
+                          value=Name(id='requests', ctx=Load()),
+                          attr='exceptions',
+                          ctx=Load()),
+                        attr='Timeout',
+                        ctx=Load()),
+                      body=[
+                        If(
+                          test=Compare(
+                            left=Name(id='attempt', ctx=Load()),
+                            ops=[
+                              Lt()],
+                            comparators=[
+                              BinOp(
+                                left=Name(id='max_retries', ctx=Load()),
+                                op=Sub(),
+                                right=Constant(value=1))]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='logger', ctx=Load()),
+                                  attr='warning',
+                                  ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Request timeout, retrying in '),
+                                      FormattedValue(
+                                        value=Name(id='retry_delay', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value='s...')])])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='time', ctx=Load()),
+                                  attr='sleep',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='retry_delay', ctx=Load())])),
+                            Continue()],
+                          orelse=[
+                            Raise(
+                              exc=Call(
+                                func=Name(id='Exception', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Request timeout after '),
+                                      FormattedValue(
+                                        value=Name(id='max_retries', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=' attempts')])]))])]),
+                    ExceptHandler(
+                      type=Attribute(
+                        value=Attribute(
+                          value=Name(id='requests', ctx=Load()),
+                          attr='exceptions',
+                          ctx=Load()),
+                        attr='RequestException',
+                        ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Request failed: '),
+                                  FormattedValue(
+                                    value=Call(
+                                      func=Name(id='str', ctx=Load()),
+                                      args=[
+                                        Name(id='e', ctx=Load())]),
+                                    conversion=-1)])])),
+                        If(
+                          test=Compare(
+                            left=Name(id='attempt', ctx=Load()),
+                            ops=[
+                              Lt()],
+                            comparators=[
+                              BinOp(
+                                left=Name(id='max_retries', ctx=Load()),
+                                op=Sub(),
+                                right=Constant(value=1))]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='time', ctx=Load()),
+                                  attr='sleep',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='retry_delay', ctx=Load())])),
+                            Continue()],
+                          orelse=[
+                            Raise(
+                              exc=Call(
+                                func=Name(id='Exception', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='Request failed after '),
+                                      FormattedValue(
+                                        value=Name(id='max_retries', ctx=Load()),
+                                        conversion=-1),
+                                      Constant(value=' attempts: '),
+                                      FormattedValue(
+                                        value=Call(
+                                          func=Name(id='str', ctx=Load()),
+                                          args=[
+                                            Name(id='e', ctx=Load())]),
+                                        conversion=-1)])]))])])])]),
+            Raise(
+              exc=Call(
+                func=Name(id='Exception', ctx=Load()),
+                args=[
+                  Constant(value='API call failed after all retry attempts')]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='call_llm',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='system_prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='temperature',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='max_tokens',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=''),
+              Constant(value=0.7),
+              Constant(value=500)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Unified method to call configured LLM provider.\n        \n        This is the main method you should use in your code.\n        It automatically routes to the correct API based on configuration.\n        \n        Args:\n            prompt: User prompt\n            system_prompt: System prompt/instruction\n            temperature: Sampling temperature\n            max_tokens: Maximum tokens to generate\n        \n        Returns:\n            Generated text from configured LLM\n        \n        Raises:\n            Exception: If API call fails\n        ')),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='provider',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='claude')]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_call_claude_api',
+                      ctx=Load()),
+                    args=[
+                      Name(id='prompt', ctx=Load()),
+                      Name(id='system_prompt', ctx=Load()),
+                      Name(id='temperature', ctx=Load()),
+                      Name(id='max_tokens', ctx=Load())]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='provider',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='gemini')]),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_call_gemini_api',
+                          ctx=Load()),
+                        args=[
+                          Name(id='prompt', ctx=Load()),
+                          Name(id='system_prompt', ctx=Load()),
+                          Name(id='temperature', ctx=Load()),
+                          Name(id='max_tokens', ctx=Load())]))],
+                  orelse=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Unknown provider: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='provider',
+                                  ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Name(id='str', ctx=Load()))]),
+    FunctionDef(
+      name='test_multi_llm',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Test function to verify both APIs work.')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=80)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='TESTING MULTI-LLM PROVIDER')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        Assign(
+          targets=[
+            Name(id='test_prompt', ctx=Store())],
+          value=Constant(value='\n    You are helping to tailor a resume. Given this job description snippet:\n    "Looking for a senior software engineer with Python experience and cloud architecture skills."\n    \n    Suggest 2 technical skills that should be highlighted on the resume.\n    Provide just the skill names, one per line.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\n1. Testing CLAUDE API...')])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='claude_provider', ctx=Store())],
+              value=Call(
+                func=Name(id='MultiLLMProvider', ctx=Load()),
+                args=[
+                  Constant(value='claude')])),
+            Assign(
+              targets=[
+                Name(id='claude_response', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='claude_provider', ctx=Load()),
+                  attr='call_llm',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='prompt',
+                    value=Name(id='test_prompt', ctx=Load())),
+                  keyword(
+                    arg='system_prompt',
+                    value=Constant(value='You are a professional resume writer.')),
+                  keyword(
+                    arg='temperature',
+                    value=Constant(value=0.7)),
+                  keyword(
+                    arg='max_tokens',
+                    value=Constant(value=200))])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='✓ Claude Response:\n'),
+                      FormattedValue(
+                        value=Name(id='claude_response', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='✗ Claude API failed: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='\n')])]))])]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='2. Testing GEMINI API...')])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='gemini_provider', ctx=Store())],
+              value=Call(
+                func=Name(id='MultiLLMProvider', ctx=Load()),
+                args=[
+                  Constant(value='gemini')])),
+            Assign(
+              targets=[
+                Name(id='gemini_response', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='gemini_provider', ctx=Load()),
+                  attr='call_llm',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='prompt',
+                    value=Name(id='test_prompt', ctx=Load())),
+                  keyword(
+                    arg='system_prompt',
+                    value=Constant(value='You are a professional resume writer.')),
+                  keyword(
+                    arg='temperature',
+                    value=Constant(value=0.7)),
+                  keyword(
+                    arg='max_tokens',
+                    value=Constant(value=200))])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='✓ Gemini Response:\n'),
+                      FormattedValue(
+                        value=Name(id='gemini_response', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='✗ Gemini API failed: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='\n')])]))])]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))]))]),
+    Expr(
+      value=Constant(value='\nINTEGRATION GUIDE:\n\nTo integrate this into your existing v5.40 code:\n\n1. Add the configuration section (lines 61-80) to the top of your file\n\n2. Replace your existing _call_claude_api method with the MultiLLMProvider class\n\n3. In your existing classes (like ContentEnrichmentEngine), modify the __init__:\n   \n   def __init__(self):\n       self.llm_provider = MultiLLMProvider()  # Add this line\n       # ... rest of your init code\n\n4. Replace all calls to self._call_claude_api() with self.llm_provider.call_llm()\n   \n   Example:\n   OLD: response = self._call_claude_api(prompt, system_prompt, ...)\n   NEW: response = self.llm_provider.call_llm(prompt, system_prompt, ...)\n\n5. Update your main() function to check for the correct API key:\n\n   def main():\n       # Check API key based on provider\n       if LLM_PROVIDER == "claude":\n           if not os.environ.get("ANTHROPIC_API_KEY"):\n               raise Exception("ANTHROPIC_API_KEY not set!")\n       elif LLM_PROVIDER == "gemini":\n           if not os.environ.get("GEMINI_API_KEY"):\n               raise Exception("GEMINI_API_KEY not set!")\n       \n       # ... rest of your main code\n\n6. To switch providers, just change the LLM_PROVIDER variable at the top:\n   LLM_PROVIDER = "claude"  # or "gemini"\n\nThat\'s it! Your entire script will now use the selected provider.\n')),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='test_multi_llm', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=80)))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='SETUP INSTRUCTIONS')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='='),
+                op=Mult(),
+                right=Constant(value=80))])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nTo use Claude API:')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value="  export ANTHROPIC_API_KEY='your-anthropic-key-here'")])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value="  Then set LLM_PROVIDER = 'claude' in the code")])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='\nTo use Gemini API:')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value="  export GEMINI_API_KEY='your-gemini-key-here'")])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='  Get key at: https://makersuite.google.com/app/apikey')])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value="  Then set LLM_PROVIDER = 'gemini' in the code")])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value='\n'),
+                op=Add(),
+                right=BinOp(
+                  left=Constant(value='='),
+                  op=Mult(),
+                  right=Constant(value=80)))]))])])

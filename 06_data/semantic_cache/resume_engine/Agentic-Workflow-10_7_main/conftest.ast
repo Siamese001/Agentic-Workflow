@@ -1,0 +1,9 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='pytest_plugins', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='tests.shared.conftest')],
+        ctx=Load()))])

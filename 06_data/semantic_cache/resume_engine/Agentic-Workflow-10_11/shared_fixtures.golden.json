@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Shared Test Fixtures.\"\"\"\nimport pytest\n\n@pytest.fixture\ndef mock_execution_context():\n    \"\"\"Shared fixture for mock execution context.\"\"\"\n    return {\n        \"user_id\": \"test_user\",\n        \"session_id\": \"test_session\",\n        \"profile_name\": \"default\",\n    }\n\n@pytest.fixture\ndef mock_config():\n    \"\"\"Shared fixture for mock configuration.\"\"\"\n    return {\n        \"profile_id\": \"test_profile\",\n        \"enable_rag\": True,\n        \"enable_qa\": True,\n    }\n",
+  "full_hash": "7f85a3447ad04fbf5c00b431420d869966ec8934dec914c0a3f2948a6ea39343",
+  "generated_at": 1764728227.5578847,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\fixtures\\shared_fixtures.py"
+}

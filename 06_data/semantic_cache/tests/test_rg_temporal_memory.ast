@@ -1,0 +1,109 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L4 Temporal Knowledge Graph Tests.')),
+    ClassDef(
+      name='TestL4TemporalKG',
+      body=[
+        Expr(
+          value=Constant(value='Tests for L4 temporal knowledge graph.')),
+        FunctionDef(
+          name='test_triplet_creation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test triplet creation in KG.')),
+            Assign(
+              targets=[
+                Name(id='triplet', ctx=Store())],
+              value=Tuple(
+                elts=[
+                  Constant(value='entity1'),
+                  Constant(value='relates_to'),
+                  Constant(value='entity2')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='triplet', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)]))]),
+        FunctionDef(
+          name='test_temporal_validity',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test temporal validity of KG entries.')),
+            Assign(
+              targets=[
+                Name(id='entry', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='created'),
+                  Constant(value='expires')],
+                values=[
+                  Constant(value=1000),
+                  Constant(value=2000)])),
+            Assign(
+              targets=[
+                Name(id='is_valid', ctx=Store())],
+              value=Compare(
+                left=Subscript(
+                  value=Name(id='entry', ctx=Load()),
+                  slice=Constant(value='expires'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='entry', ctx=Load()),
+                    slice=Constant(value='created'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='is_valid', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)]))]),
+        FunctionDef(
+          name='test_kg_query',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test KG query execution.')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='s'),
+                      Constant(value='p'),
+                      Constant(value='o')],
+                    values=[
+                      Constant(value='e1'),
+                      Constant(value='has'),
+                      Constant(value='skill')])],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]))])])])

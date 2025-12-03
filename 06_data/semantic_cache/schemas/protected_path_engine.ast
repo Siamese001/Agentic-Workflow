@@ -1,0 +1,1760 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nProtected-Path Loader and Expansion Engine for Agentic-Workflow\n\nImplements G6: Protected-path loader + expansion engine\n\nProvides runtime pattern loading, expansion logic, and cross-phase shared\nprotected-path definitions that all phases can reference for enforcement.\n')),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='fnmatch')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    Import(
+      names=[
+        alias(name='yaml')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Set'),
+        alias(name='Optional'),
+        alias(name='Union')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ProtectionLevel',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='READ_ONLY', ctx=Store())],
+          value=Constant(value='read_only')),
+        Assign(
+          targets=[
+            Name(id='NO_DELETE', ctx=Store())],
+          value=Constant(value='no_delete')),
+        Assign(
+          targets=[
+            Name(id='NO_RENAME', ctx=Store())],
+          value=Constant(value='no_rename')),
+        Assign(
+          targets=[
+            Name(id='NO_MOVE', ctx=Store())],
+          value=Constant(value='no_move')),
+        Assign(
+          targets=[
+            Name(id='IMMUTABLE', ctx=Store())],
+          value=Constant(value='immutable'))]),
+    ClassDef(
+      name='ProtectedPath',
+      body=[
+        AnnAssign(
+          target=Name(id='pattern', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='level', ctx=Store()),
+          annotation=Name(id='ProtectionLevel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase_scope', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expanded_paths', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ProtectedPathEngine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Protected-path loader and expansion engine\n    \n    Loads protected path patterns from META, expands them to concrete paths,\n    and provides enforcement APIs for all phases to use.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workspace_root',
+                annotation=Name(id='Path', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='workspace_root', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml_path',
+                  ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='unified_structure_subatomic_meta.yaml'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='sys', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='insert',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0),
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='workspace_root',
+                          ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='02_schemas'))])])),
+            ImportFrom(
+              module='ssot_merger',
+              names=[
+                alias(name='SSoTMerger')],
+              level=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='ssot_merger',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SSoTMerger', ctx=Load()),
+                args=[
+                  Name(id='workspace_root', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='canonical_ssot',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='ssot_merger',
+                    ctx=Load()),
+                  attr='merge',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='protected_paths',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='ProtectedPath', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='expanded_cache',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='List', ctx=Load()),
+                      slice=Name(id='str', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)]),
+        FunctionDef(
+          name='load_protected_paths_from_meta',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Load protected path patterns from META YAML\n        \n        Returns:\n            List of ProtectedPath objects\n        ')),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='meta_yaml_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='meta', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='yaml', ctx=Load()),
+                          attr='safe_load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Name(id='protected_patterns', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='meta', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='protected_paths'),
+                      List(ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='paths', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='pattern', ctx=Store()),
+                  iter=Name(id='protected_patterns', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='level', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_determine_protection_level',
+                          ctx=Load()),
+                        args=[
+                          Name(id='pattern', ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='phase_scope', ctx=Store())],
+                      value=List(
+                        elts=[
+                          Constant(value='0.5'),
+                          Constant(value='1'),
+                          Constant(value='2'),
+                          Constant(value='3'),
+                          Constant(value='4')],
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='protected_path', ctx=Store())],
+                      value=Call(
+                        func=Name(id='ProtectedPath', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='pattern',
+                            value=Name(id='pattern', ctx=Load())),
+                          keyword(
+                            arg='level',
+                            value=Name(id='level', ctx=Load())),
+                          keyword(
+                            arg='description',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='Protected pattern: '),
+                                FormattedValue(
+                                  value=Name(id='pattern', ctx=Load()),
+                                  conversion=-1)])),
+                          keyword(
+                            arg='phase_scope',
+                            value=Name(id='phase_scope', ctx=Load())),
+                          keyword(
+                            arg='expanded_paths',
+                            value=List(ctx=Load()))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='paths', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='protected_path', ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='protected_paths',
+                      ctx=Store())],
+                  value=Name(id='paths', ctx=Load())),
+                Return(
+                  value=Name(id='paths', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load protected paths from META: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ProtectedPath', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_determine_protection_level',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='pattern',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Determine protection level based on pattern characteristics\n        \n        Args:\n            pattern: Glob pattern string\n            \n        Returns:\n            ProtectionLevel enum value\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='pattern', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='**/__init__.py')]),
+              body=[
+                Return(
+                  value=Attribute(
+                    value=Name(id='ProtectionLevel', ctx=Load()),
+                    attr='IMMUTABLE',
+                    ctx=Load()))],
+              orelse=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='pattern', ctx=Load()),
+                      attr='endswith',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='*.md')]),
+                  body=[
+                    Return(
+                      value=Attribute(
+                        value=Name(id='ProtectionLevel', ctx=Load()),
+                        attr='NO_DELETE',
+                        ctx=Load()))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='pattern', ctx=Load()),
+                          attr='startswith',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='**/')]),
+                      body=[
+                        Return(
+                          value=Attribute(
+                            value=Name(id='ProtectionLevel', ctx=Load()),
+                            attr='NO_MOVE',
+                            ctx=Load()))],
+                      orelse=[
+                        Return(
+                          value=Attribute(
+                            value=Name(id='ProtectionLevel', ctx=Load()),
+                            attr='READ_ONLY',
+                            ctx=Load()))])])])],
+          returns=Name(id='ProtectionLevel', ctx=Load())),
+        FunctionDef(
+          name='expand_pattern_to_paths',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='pattern',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Expand a glob pattern to concrete paths in the workspace\n        \n        Args:\n            pattern: Glob pattern to expand\n            \n        Returns:\n            List of matching concrete paths\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='pattern', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='expanded_cache',
+                    ctx=Load())]),
+              body=[
+                Return(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='expanded_cache',
+                      ctx=Load()),
+                    slice=Name(id='pattern', ctx=Load()),
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='expanded', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='regex_pattern', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_glob_to_regex',
+                  ctx=Load()),
+                args=[
+                  Name(id='pattern', ctx=Load())])),
+            For(
+              target=Name(id='path', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='workspace_root',
+                    ctx=Load()),
+                  attr='rglob',
+                  ctx=Load()),
+                args=[
+                  Constant(value='*')]),
+              body=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='path', ctx=Load()),
+                      attr='is_file',
+                      ctx=Load())),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='relative_path', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='path', ctx=Load()),
+                          attr='relative_to',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='workspace_root',
+                            ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='path_str', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Name(id='str', ctx=Load()),
+                            args=[
+                              Name(id='relative_path', ctx=Load())]),
+                          attr='replace',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='\\'),
+                          Constant(value='/')])),
+                    If(
+                      test=BoolOp(
+                        op=Or(),
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='fnmatch', ctx=Load()),
+                              attr='fnmatch',
+                              ctx=Load()),
+                            args=[
+                              Name(id='path_str', ctx=Load()),
+                              Name(id='pattern', ctx=Load())]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='re', ctx=Load()),
+                              attr='match',
+                              ctx=Load()),
+                            args=[
+                              Name(id='regex_pattern', ctx=Load()),
+                              Name(id='path_str', ctx=Load())])]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='expanded', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='path_str', ctx=Load())]))])])]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='expanded_cache',
+                    ctx=Load()),
+                  slice=Name(id='pattern', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='expanded', ctx=Load())),
+            Return(
+              value=Name(id='expanded', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_glob_to_regex',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='pattern',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Convert glob pattern to regex for enhanced matching\n        \n        Args:\n            pattern: Glob pattern\n            \n        Returns:\n            Regex pattern string\n        ')),
+            Assign(
+              targets=[
+                Name(id='regex', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='pattern', ctx=Load()),
+                          attr='replace',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='**'),
+                          Constant(value='.*')]),
+                      attr='replace',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='*'),
+                      Constant(value='[^/]*')]),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value='?'),
+                  Constant(value='[^/]')])),
+            Assign(
+              targets=[
+                Name(id='regex', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='^'),
+                  FormattedValue(
+                    value=Name(id='regex', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='$')])),
+            Return(
+              value=Name(id='regex', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='expand_all_protected_paths',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Expand all protected path patterns to concrete paths\n        \n        Returns:\n            Dict mapping patterns to expanded path lists\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='protected_paths',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_protected_paths_from_meta',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='expansion_results', ctx=Store())],
+              value=Dict()),
+            For(
+              target=Name(id='protected_path', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='protected_paths',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='expanded', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='expand_pattern_to_paths',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='protected_path', ctx=Load()),
+                        attr='pattern',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='protected_path', ctx=Load()),
+                      attr='expanded_paths',
+                      ctx=Store())],
+                  value=Name(id='expanded', ctx=Load())),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='expansion_results', ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='protected_path', ctx=Load()),
+                        attr='pattern',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='expanded', ctx=Load()))]),
+            Return(
+              value=Name(id='expansion_results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='check_path_protection',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='path',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='operation',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='phase',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='read'),
+              Constant(value='all')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Check if a path is protected for a given operation and phase\n        \n        Args:\n            path: Path to check (relative to workspace root)\n            operation: Operation type (read, write, delete, rename, move)\n            phase: Phase identifier (0.5, 1, 2, 3, 4, or all)\n            \n        Returns:\n            ProtectedPath if protected, None if not protected\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='protected_paths',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_protected_paths_from_meta',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='normalized_path', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\'),
+                  Constant(value='/')])),
+            For(
+              target=Name(id='protected_path', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='protected_paths',
+                ctx=Load()),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Compare(
+                        left=Name(id='phase', ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Constant(value='all')]),
+                      Compare(
+                        left=Name(id='phase', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='protected_path', ctx=Load()),
+                            attr='phase_scope',
+                            ctx=Load())])]),
+                  body=[
+                    Continue()]),
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='fnmatch', ctx=Load()),
+                      attr='fnmatch',
+                      ctx=Load()),
+                    args=[
+                      Name(id='normalized_path', ctx=Load()),
+                      Attribute(
+                        value=Name(id='protected_path', ctx=Load()),
+                        attr='pattern',
+                        ctx=Load())]),
+                  body=[
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_is_operation_blocked',
+                          ctx=Load()),
+                        args=[
+                          Name(id='operation', ctx=Load()),
+                          Attribute(
+                            value=Name(id='protected_path', ctx=Load()),
+                            attr='level',
+                            ctx=Load())]),
+                      body=[
+                        Return(
+                          value=Name(id='protected_path', ctx=Load()))])])]),
+            Return(
+              value=Constant(value=None))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='ProtectedPath', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_is_operation_blocked',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='operation',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='level',
+                annotation=Name(id='ProtectionLevel', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Check if an operation is blocked by protection level\n        \n        Args:\n            operation: Operation to check\n            level: Protection level\n            \n        Returns:\n            True if operation is blocked\n        ')),
+            Assign(
+              targets=[
+                Name(id='blocked_ops', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Attribute(
+                    value=Name(id='ProtectionLevel', ctx=Load()),
+                    attr='IMMUTABLE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ProtectionLevel', ctx=Load()),
+                    attr='NO_DELETE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ProtectionLevel', ctx=Load()),
+                    attr='NO_RENAME',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ProtectionLevel', ctx=Load()),
+                    attr='NO_MOVE',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='ProtectionLevel', ctx=Load()),
+                    attr='READ_ONLY',
+                    ctx=Load())],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='write'),
+                      Constant(value='delete'),
+                      Constant(value='rename'),
+                      Constant(value='move')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='delete')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='rename')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='move')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='write'),
+                      Constant(value='delete'),
+                      Constant(value='rename'),
+                      Constant(value='move')],
+                    ctx=Load())])),
+            Return(
+              value=Compare(
+                left=Name(id='operation', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='blocked_ops', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='level', ctx=Load()),
+                      List(ctx=Load())])]))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='get_phase_protected_paths',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='phase',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Get all protected paths that apply to a specific phase\n        \n        Args:\n            phase: Phase identifier\n            \n        Returns:\n            List of ProtectedPath objects for the phase\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='protected_paths',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_protected_paths_from_meta',
+                      ctx=Load())))]),
+            Return(
+              value=ListComp(
+                elt=Name(id='p', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='p', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='protected_paths',
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Name(id='phase', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='p', ctx=Load()),
+                            attr='phase_scope',
+                            ctx=Load())])],
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ProtectedPath', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_phase_operations',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='phase',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='operations',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='str', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value="\n        Validate a list of operations for a phase against protected paths\n        \n        Args:\n            phase: Phase identifier\n            operations: List of operation dicts with 'path' and 'operation' keys\n            \n        Returns:\n            List of validation results\n        ")),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='op', ctx=Store()),
+              iter=Name(id='operations', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='path', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='op', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='path'),
+                      Constant(value='')])),
+                Assign(
+                  targets=[
+                    Name(id='operation', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='op', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='operation'),
+                      Constant(value='read')])),
+                Assign(
+                  targets=[
+                    Name(id='protection', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='check_path_protection',
+                      ctx=Load()),
+                    args=[
+                      Name(id='path', ctx=Load()),
+                      Name(id='operation', ctx=Load()),
+                      Name(id='phase', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='path'),
+                      Constant(value='operation'),
+                      Constant(value='allowed'),
+                      Constant(value='protected_path'),
+                      Constant(value='protection_level'),
+                      Constant(value='phase')],
+                    values=[
+                      Name(id='path', ctx=Load()),
+                      Name(id='operation', ctx=Load()),
+                      Compare(
+                        left=Name(id='protection', ctx=Load()),
+                        ops=[
+                          Is()],
+                        comparators=[
+                          Constant(value=None)]),
+                      IfExp(
+                        test=Name(id='protection', ctx=Load()),
+                        body=Attribute(
+                          value=Name(id='protection', ctx=Load()),
+                          attr='pattern',
+                          ctx=Load()),
+                        orelse=Constant(value=None)),
+                      IfExp(
+                        test=Name(id='protection', ctx=Load()),
+                        body=Attribute(
+                          value=Attribute(
+                            value=Name(id='protection', ctx=Load()),
+                            attr='level',
+                            ctx=Load()),
+                          attr='value',
+                          ctx=Load()),
+                        orelse=Constant(value=None)),
+                      Name(id='phase', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='result', ctx=Load())]))]),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='generate_protection_report',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate comprehensive protection report\n        \n        Returns:\n            Dict with protection analysis\n        ')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='load_protected_paths_from_meta',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='expansion_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='expand_all_protected_paths',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='workspace_root'),
+                  Constant(value='total_patterns'),
+                  Constant(value='total_protected_paths'),
+                  Constant(value='patterns_by_level'),
+                  Constant(value='expansion_results'),
+                  Constant(value='phase_coverage')],
+                values=[
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workspace_root',
+                        ctx=Load())]),
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='protected_paths',
+                        ctx=Load())]),
+                  Call(
+                    func=Name(id='sum', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='paths', ctx=Load())]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='paths', ctx=Store()),
+                            iter=Call(
+                              func=Attribute(
+                                value=Name(id='expansion_results', ctx=Load()),
+                                attr='values',
+                                ctx=Load())),
+                            is_async=0)])]),
+                  Dict(),
+                  Name(id='expansion_results', ctx=Load()),
+                  Dict()])),
+            For(
+              target=Name(id='protected_path', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='protected_paths',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='level', ctx=Store())],
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='protected_path', ctx=Load()),
+                      attr='level',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load())),
+                If(
+                  test=Compare(
+                    left=Name(id='level', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Subscript(
+                        value=Name(id='report', ctx=Load()),
+                        slice=Constant(value='patterns_by_level'),
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Subscript(
+                            value=Name(id='report', ctx=Load()),
+                            slice=Constant(value='patterns_by_level'),
+                            ctx=Load()),
+                          slice=Name(id='level', ctx=Load()),
+                          ctx=Store())],
+                      value=List(ctx=Load()))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Subscript(
+                          value=Name(id='report', ctx=Load()),
+                          slice=Constant(value='patterns_by_level'),
+                          ctx=Load()),
+                        slice=Name(id='level', ctx=Load()),
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='pattern'),
+                          Constant(value='description'),
+                          Constant(value='phase_scope')],
+                        values=[
+                          Attribute(
+                            value=Name(id='protected_path', ctx=Load()),
+                            attr='pattern',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='protected_path', ctx=Load()),
+                            attr='description',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='protected_path', ctx=Load()),
+                            attr='phase_scope',
+                            ctx=Load())])]))]),
+            For(
+              target=Name(id='phase', ctx=Store()),
+              iter=List(
+                elts=[
+                  Constant(value='0.5'),
+                  Constant(value='1'),
+                  Constant(value='2'),
+                  Constant(value='3'),
+                  Constant(value='4')],
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='phase_paths', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='get_phase_protected_paths',
+                      ctx=Load()),
+                    args=[
+                      Name(id='phase', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='report', ctx=Load()),
+                        slice=Constant(value='phase_coverage'),
+                        ctx=Load()),
+                      slice=Name(id='phase', ctx=Load()),
+                      ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='pattern_count'),
+                      Constant(value='total_paths')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='phase_paths', ctx=Load())]),
+                      Call(
+                        func=Name(id='sum', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                BoolOp(
+                                  op=Or(),
+                                  values=[
+                                    Attribute(
+                                      value=Name(id='p', ctx=Load()),
+                                      attr='expanded_paths',
+                                      ctx=Load()),
+                                    List(ctx=Load())])]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='p', ctx=Store()),
+                                iter=Name(id='phase_paths', ctx=Load()),
+                                is_async=0)])])]))]),
+            Return(
+              value=Name(id='report', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='save_protection_report',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output_path',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Path', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Save protection report to file\n        \n        Args:\n            output_path: Optional custom output path\n            \n        Returns:\n            Path where report was saved\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='output_path', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=BinOp(
+                    left=BinOp(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workspace_root',
+                        ctx=Load()),
+                      op=Div(),
+                      right=Constant(value='02_schemas')),
+                    op=Div(),
+                    right=Constant(value='protected_path_report.json')))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='output_path', ctx=Load()),
+                    attr='parent',
+                    ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='parents',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='exist_ok',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='generate_protection_report',
+                  ctx=Load()))),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='output_path', ctx=Load()),
+                      Constant(value='w')],
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='report', ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2)),
+                      keyword(
+                        arg='ensure_ascii',
+                        value=Constant(value=False))]))]),
+            Return(
+              value=Name(id='output_path', ctx=Load()))],
+          returns=Name(id='Path', ctx=Load()))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    CLI entry point for protected path engine\n    \n    Usage:\n    python protected_path_engine.py [--workspace /path/to/workspace] [--report /path/to/report.json]\n    ')),
+        Import(
+          names=[
+            alias(name='argparse')]),
+        Import(
+          names=[
+            alias(name='yaml')]),
+        Import(
+          names=[
+            alias(name='json')]),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='Protected path loader and expansion engine'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--workspace')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='Path', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='Path', ctx=Load()),
+                    attr='cwd',
+                    ctx=Load()))),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to Agentic-Workflow workspace'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--report')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='Path', ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Output path for protection report'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--check-path')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Check if a specific path is protected'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--operation')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value='read')),
+              keyword(
+                arg='choices',
+                value=List(
+                  elts=[
+                    Constant(value='read'),
+                    Constant(value='write'),
+                    Constant(value='delete'),
+                    Constant(value='rename'),
+                    Constant(value='move')],
+                  ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Operation to check for protected path'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--phase')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Constant(value='all')),
+              keyword(
+                arg='help',
+                value=Constant(value='Phase to check protection for'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='ProtectedPathEngine', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='workspace',
+                ctx=Load())])),
+        Try(
+          body=[
+            If(
+              test=Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='check_path',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='protection', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='engine', ctx=Load()),
+                      attr='check_path_protection',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='check_path',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='operation',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='phase',
+                        ctx=Load())])),
+                If(
+                  test=Name(id='protection', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="✗ Path '"),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='args', ctx=Load()),
+                                  attr='check_path',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' is PROTECTED")])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  Pattern: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='protection', ctx=Load()),
+                                  attr='pattern',
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='  Level: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='protection', ctx=Load()),
+                                    attr='level',
+                                    ctx=Load()),
+                                  attr='value',
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="  Operation '"),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='args', ctx=Load()),
+                                  attr='operation',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' blocked: "),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='engine', ctx=Load()),
+                                    attr='_is_operation_blocked',
+                                    ctx=Load()),
+                                  args=[
+                                    Attribute(
+                                      value=Name(id='args', ctx=Load()),
+                                      attr='operation',
+                                      ctx=Load()),
+                                    Attribute(
+                                      value=Name(id='protection', ctx=Load()),
+                                      attr='level',
+                                      ctx=Load())]),
+                                conversion=-1)])]))],
+                  orelse=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="✓ Path '"),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='args', ctx=Load()),
+                                  attr='check_path',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' is not protected for operation '"),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='args', ctx=Load()),
+                                  attr='operation',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value="'")])]))])],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='report_path', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='engine', ctx=Load()),
+                      attr='save_protection_report',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='report',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='report', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='engine', ctx=Load()),
+                      attr='generate_protection_report',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='=== PROTECTED PATH ANALYSIS ===')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Total patterns: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='report', ctx=Load()),
+                              slice=Constant(value='total_patterns'),
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Total protected paths: '),
+                          FormattedValue(
+                            value=Subscript(
+                              value=Name(id='report', ctx=Load()),
+                              slice=Constant(value='total_protected_paths'),
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Report saved: '),
+                          FormattedValue(
+                            value=Name(id='report_path', ctx=Load()),
+                            conversion=-1)])])),
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='level', ctx=Store()),
+                      Name(id='patterns', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='report', ctx=Load()),
+                        slice=Constant(value='patterns_by_level'),
+                        ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='\n'),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='level', ctx=Load()),
+                                    attr='upper',
+                                    ctx=Load())),
+                                conversion=-1),
+                              Constant(value=' patterns: '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='patterns', ctx=Load())]),
+                                conversion=-1)])])),
+                    For(
+                      target=Name(id='pattern', ctx=Store()),
+                      iter=Name(id='patterns', ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='  - '),
+                                  FormattedValue(
+                                    value=Subscript(
+                                      value=Name(id='pattern', ctx=Load()),
+                                      slice=Constant(value='pattern'),
+                                      ctx=Load()),
+                                    conversion=-1)])]))])])]),
+            Return(
+              value=Constant(value=0))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='✗ Protected path engine error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=1))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='exit', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='main', ctx=Load()))]))])])

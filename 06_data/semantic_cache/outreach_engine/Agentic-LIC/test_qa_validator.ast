@@ -1,0 +1,249 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.qa',
+      names=[
+        alias(name='QAValidator')],
+      level=0),
+    FunctionDef(
+      name='test_missing_subject_fails',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='validator', ctx=Store())],
+          value=Call(
+            func=Name(id='QAValidator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Hello\n\nBody without subject')),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='validator', ctx=Load()),
+              attr='validate',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='123')],
+                values=[
+                  Constant(value='summary')])])),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='ok',
+              ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Constant(value='subject'),
+            ops=[
+              In()],
+            comparators=[
+              Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='missing_sections',
+                    ctx=Load())])]))]),
+    FunctionDef(
+      name='test_complete_message_passes',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='validator', ctx=Store())],
+          value=Call(
+            func=Name(id='QAValidator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Update\n\nHello there\n[artifact_id:123] summary\nCTA: Can we connect?\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='validator', ctx=Load()),
+              attr='validate',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='123')],
+                values=[
+                  Constant(value='summary')])])),
+        Assert(
+          test=Attribute(
+            value=Name(id='result', ctx=Load()),
+            attr='ok',
+            ctx=Load()))]),
+    FunctionDef(
+      name='test_unknown_and_missing_artifacts_are_reported',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='validator', ctx=Store())],
+          value=Call(
+            func=Name(id='QAValidator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Proof\n\nHello\n[artifact_id:known] data\n[artifact_id:unknown] extra\nCTA: Talk soon?\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='artifacts', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='known'),
+              Constant(value='missing')],
+            values=[
+              Constant(value='data'),
+              Constant(value='oops')])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='validator', ctx=Load()),
+              attr='validate',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load()),
+              Name(id='artifacts', ctx=Load())])),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='ok',
+              ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Constant(value='missing'),
+            ops=[
+              In()],
+            comparators=[
+              Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='reasons',
+                    ctx=Load())])])),
+        Assert(
+          test=Compare(
+            left=Constant(value='unknown'),
+            ops=[
+              In()],
+            comparators=[
+              Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='reasons',
+                    ctx=Load())])]))]),
+    FunctionDef(
+      name='test_long_body_triggers_style_violation',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='validator', ctx=Store())],
+          value=Call(
+            func=Name(id='QAValidator', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='max_body_chars',
+                value=Constant(value=20))])),
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Length\n\nHello there\n[artifact_id:1] short\nCTA: Meet?\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='validator', ctx=Load()),
+              attr='validate',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='1')],
+                values=[
+                  Constant(value='short')])])),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='ok',
+              ctx=Load()))),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Constant(value='character'),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='reason', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='reason', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='reasons',
+                      ctx=Load()),
+                    is_async=0)])]))]),
+    FunctionDef(
+      name='test_qa_package_exports_symbols',
+      args=arguments(),
+      body=[
+        Import(
+          names=[
+            alias(name='importlib')]),
+        Assign(
+          targets=[
+            Name(id='module', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='importlib', ctx=Load()),
+              attr='import_module',
+              ctx=Load()),
+            args=[
+              Constant(value='src.lic_agentic.qa')])),
+        Assert(
+          test=Compare(
+            left=Constant(value='QAValidator'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='module', ctx=Load()),
+                attr='__all__',
+                ctx=Load())]))])])

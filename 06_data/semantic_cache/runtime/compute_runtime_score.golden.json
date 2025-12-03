@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - compute_runtime_score\nImplements L5 Safety/Policy Layer for compute runtime score operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ComputeRuntimeScoreSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass ComputeRuntimeScoreSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ComputeRuntimeScoreSafetyResult:\n    \"\"\"L5 Safety result with full ",
+  "full_hash": "8e849ba801dc827ce3034b6ba95ce0cbe4a5c17c61836915971ca9e44c693e4a",
+  "generated_at": 1764728347.8387232,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\safe-layer\\safety-phase\\check-runtime-rules\\semantic\\adjust-scores\\compute_runtime_score.py"
+}

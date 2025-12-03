@@ -1,0 +1,1088 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='artifact'),
+          Constant(value='version'),
+          Constant(value='metadata'),
+          Constant(value='instructions'),
+          Constant(value='governance'),
+          Constant(value='1.role'),
+          Constant(value='2.task'),
+          Constant(value='3.context'),
+          Constant(value='message_types'),
+          Constant(value='message_type_router'),
+          Constant(value='agentic_parameters_by_message_type'),
+          Constant(value='4.reasoning'),
+          Constant(value='5.output'),
+          Constant(value='6.conditions')],
+        values=[
+          Constant(value='LinkedIn Outreach Orchestrator (LIC)'),
+          Constant(value='v9.23-overwrite'),
+          Dict(
+            keys=[
+              Constant(value='last_saved_utc'),
+              Constant(value='sources'),
+              Constant(value='notes'),
+              Constant(value='sha256')],
+            values=[
+              Constant(value='2025-09-29T22:40:49Z'),
+              List(
+                elts=[
+                  Constant(value='LIC_2025-09-23_v3.4.json'),
+                  Constant(value='LIC_9.26.2025_v7.6.json')],
+                ctx=Load()),
+              Constant(value='Full overwrite merge: carries LIC 7.6 router and message-type parameters into the 9/23 canonical shell. Strict MZLO and QA retained.'),
+              Constant(value='7902fdba75aae9da7c721873fb15f5085ff76e452cb8109be9b4aebef82b5ab2')]),
+          List(
+            elts=[
+              Constant(value='Do not emit Section 1 (Role) or Section 2 (Task) in visible output.'),
+              Constant(value='Run Section 3 (Context) once and pause.'),
+              Constant(value='Run all of Section 4 (K.1..K.9) and pause.'),
+              Constant(value='Run all of Section 5 (K.1..K.11 as applicable) and pause.'),
+              Constant(value='Do not batch multiple artifacts in a single run.')],
+            ctx=Load()),
+          Dict(
+            keys=[
+              Constant(value='RequireRuntimeLinkedInInput'),
+              Constant(value='LinkedInInputGates'),
+              Constant(value='block_on_missing'),
+              Constant(value='router_requires_details')],
+            values=[
+              Name(id='true', ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='name'),
+                  Constant(value='title'),
+                  Constant(value='about'),
+                  Constant(value='profile_url')],
+                ctx=Load()),
+              Name(id='true', ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='name'),
+                  Constant(value='title'),
+                  Constant(value='about'),
+                  Constant(value='profile_url')],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='name'),
+              Constant(value='authority'),
+              Constant(value='standards'),
+              Constant(value='canonical_boundary'),
+              Constant(value='minimal_runtime_inputs')],
+            values=[
+              Constant(value='LinkedIn Outreach Orchestrator'),
+              Constant(value='Convert any prompt into a six-section LIC workflow with audit and QA.'),
+              Dict(
+                keys=[
+                  Constant(value='reasoning_isolation'),
+                  Constant(value='strict_mzlo')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='methods_allowed'),
+                      Constant(value='confined_to_section'),
+                      Constant(value='enforced')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='CoT'),
+                          Constant(value='ToT')],
+                        ctx=Load()),
+                      Constant(value=4),
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='requirements'),
+                      Constant(value='record_conformance')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='zero_loss'),
+                          Constant(value='zero_ambiguity'),
+                          Constant(value='zero_omission'),
+                          Constant(value='zero_misrepresentation')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())])]),
+              Dict(
+                keys=[
+                  Constant(value='forbid_beyond_sections_1_to_6')],
+                values=[
+                  Name(id='true', ctx=Load())]),
+              List(
+                elts=[
+                  Constant(value='Recipient archetype'),
+                  Constant(value='Message type'),
+                  Constant(value='Governance version pins'),
+                  Constant(value='Context plan')],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='deliverable_target'),
+              Constant(value='success_criteria')],
+            values=[
+              Constant(value='Restructure outreach into the six-section LIC shell and produce a compliant message.'),
+              Dict(
+                keys=[
+                  Constant(value='rules')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='Produce compliant LinkedIn outreach artifact for specified archetype.'),
+                      Constant(value='Audience options: C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER, SHORT_NEW.'),
+                      Constant(value='Apply strict QA grid; block on failure.'),
+                      Constant(value='Insert pause marker after Sections 3, 4, and 5.')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='output_gate'),
+                  Constant(value='reasoning_gate')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='LinkedIn QA Grid PASS'),
+                      Constant(value='Archetype microstructure PASS'),
+                      Constant(value='AI Filter v10 PASS')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='CoT and ToT present in Section 4 when SHOW_REASONING true')],
+                    ctx=Load())])]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='runtime_toggles'),
+              Constant(value='dynamic_context_assembly'),
+              Constant(value='version_pins'),
+              Constant(value='short_new_policy'),
+              Constant(value='signature_policy')],
+            values=[
+              Constant(value='Declare runtime controls, version pins, and assembly plan for LIC.'),
+              Dict(
+                keys=[
+                  Constant(value='table_3A'),
+                  Constant(value='table_3A_enforcement')],
+                values=[
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='DECODING_STRATEGY'),
+                          Constant(value='sample'),
+                          Constant(value='sample'),
+                          Constant(value='4,5'),
+                          Constant(value='greedy|sample|beam|contrastive|mirostat'),
+                          Constant(value='Controls exploration vs determinism'),
+                          Constant(value='Slow or incoherent if mismatched')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='TEMPERATURE'),
+                          Constant(value='0.2'),
+                          Constant(value='0.2'),
+                          Constant(value='4,5'),
+                          Constant(value='Sampling randomness'),
+                          Constant(value='Higher more creative; lower deterministic'),
+                          Constant(value='Coherence loss')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='TOP_P'),
+                          Constant(value='0.9'),
+                          Constant(value='0.9'),
+                          Constant(value='4,5'),
+                          Constant(value='Nucleus mass'),
+                          Constant(value='Reduces long-tail tokens'),
+                          Constant(value='Noise if too high')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='TOP_K'),
+                          Constant(value='50'),
+                          Constant(value='50'),
+                          Constant(value='4,5'),
+                          Constant(value='Keep top-K tokens'),
+                          Constant(value='Focus vs variety'),
+                          Constant(value='Factuality drop if extreme')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='MIN_P'),
+                          Constant(value='0.05'),
+                          Constant(value='0.05'),
+                          Constant(value='4,5'),
+                          Constant(value='Minimum token prob'),
+                          Constant(value='Stabilizes sampling'),
+                          Constant(value='Prunes valid options')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='MAX_TOKENS'),
+                          Constant(value='512'),
+                          Constant(value='512'),
+                          Constant(value='5'),
+                          Constant(value='Upper token bound'),
+                          Constant(value='Prevents overlong answers'),
+                          Constant(value='Truncation if too low')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='STOP_SEQUENCES'),
+                          Constant(value='[]'),
+                          Constant(value='[]'),
+                          Constant(value='5'),
+                          Constant(value='End markers'),
+                          Constant(value='Clean termination'),
+                          Constant(value='Leak scaffolding if missing')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Decoding'),
+                          Constant(value='REPETITION_PENALTY'),
+                          Constant(value='1.1'),
+                          Constant(value='1.1'),
+                          Constant(value='4,5'),
+                          Constant(value='Penalize n-gram repeats'),
+                          Constant(value='Reduces loops'),
+                          Constant(value='Awkward phrasing')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Methods'),
+                          Constant(value='COT'),
+                          Constant(value='true'),
+                          Constant(value='true'),
+                          Constant(value='4'),
+                          Constant(value='Chain-of-thought'),
+                          Constant(value='Stepwise plan'),
+                          Constant(value='Verbose')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Methods'),
+                          Constant(value='TOT'),
+                          Constant(value='true'),
+                          Constant(value='true'),
+                          Constant(value='4'),
+                          Constant(value='Tree-of-thought'),
+                          Constant(value='Explore alternatives'),
+                          Constant(value='Token sprawl')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Methods'),
+                          Constant(value='SELF_CONSISTENCY'),
+                          Constant(value='true'),
+                          Constant(value='true'),
+                          Constant(value='4,5'),
+                          Constant(value='Voting among chains'),
+                          Constant(value='Higher quality'),
+                          Constant(value='Latency')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='RAG'),
+                          Constant(value='RAG_MODE'),
+                          Constant(value='ON'),
+                          Constant(value='ON'),
+                          Constant(value='3,4,5'),
+                          Constant(value='Retrieval-augmented generation'),
+                          Constant(value='Evidence-grounded'),
+                          Constant(value='Over-grounding')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Retrieval'),
+                          Constant(value='AGENTIC_MODE'),
+                          Constant(value='ON'),
+                          Constant(value='ON'),
+                          Constant(value='3,4'),
+                          Constant(value='Multi-hop retrieval'),
+                          Constant(value='Completeness'),
+                          Constant(value='Loops')]),
+                      Dict(
+                        keys=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        values=[
+                          Constant(value='Retrieval'),
+                          Constant(value='AGENTIC_MAX_HOPS'),
+                          Constant(value='2'),
+                          Constant(value='2'),
+                          Constant(value='3,4'),
+                          Constant(value='Max retrieval hops'),
+                          Constant(value='Bounded iteration'),
+                          Constant(value='Drift')])],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='required_fields'),
+                      Constant(value='block_on_missing_or_empty')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='group'),
+                          Constant(value='toggle'),
+                          Constant(value='default'),
+                          Constant(value='current'),
+                          Constant(value='prompt_section'),
+                          Constant(value='configures'),
+                          Constant(value='impact'),
+                          Constant(value='risk_if_too_high')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())])]),
+              Dict(
+                keys=[
+                  Constant(value='table_3B')],
+                values=[
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='order'),
+                          Constant(value='layer'),
+                          Constant(value='contents')],
+                        values=[
+                          Constant(value=1),
+                          Constant(value='cinstr'),
+                          Constant(value='Sections 1-2 constraints')]),
+                      Dict(
+                        keys=[
+                          Constant(value='order'),
+                          Constant(value='layer'),
+                          Constant(value='contents')],
+                        values=[
+                          Constant(value=2),
+                          Constant(value='cquery'),
+                          Constant(value='User request canonized')]),
+                      Dict(
+                        keys=[
+                          Constant(value='order'),
+                          Constant(value='layer'),
+                          Constant(value='contents')],
+                        values=[
+                          Constant(value=3),
+                          Constant(value='cmem'),
+                          Constant(value='Relevant memory slices')]),
+                      Dict(
+                        keys=[
+                          Constant(value='order'),
+                          Constant(value='layer'),
+                          Constant(value='contents')],
+                        values=[
+                          Constant(value=4),
+                          Constant(value='cknow'),
+                          Constant(value='External knowledge via hybrid retrieval')]),
+                      Dict(
+                        keys=[
+                          Constant(value='order'),
+                          Constant(value='layer'),
+                          Constant(value='contents')],
+                        values=[
+                          Constant(value=5),
+                          Constant(value='cretrieval_plan'),
+                          Constant(value='Multi-hop log (queries, gaps)')]),
+                      Dict(
+                        keys=[
+                          Constant(value='order'),
+                          Constant(value='layer'),
+                          Constant(value='contents')],
+                        values=[
+                          Constant(value=6),
+                          Constant(value='ctools'),
+                          Constant(value='Available tools')]),
+                      Dict(
+                        keys=[
+                          Constant(value='order'),
+                          Constant(value='layer'),
+                          Constant(value='contents')],
+                        values=[
+                          Constant(value=7),
+                          Constant(value='cstate'),
+                          Constant(value='Time and status')])],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='Prompt_Shell'),
+                  Constant(value='App_Schema'),
+                  Constant(value='App_Tracker_QA'),
+                  Constant(value='AI_FILTER'),
+                  Constant(value='Transformer_Metrics')],
+                values=[
+                  Constant(value='v3.0'),
+                  Constant(value='v4'),
+                  Constant(value='v5'),
+                  Constant(value='v10'),
+                  Constant(value='v1')]),
+              Dict(
+                keys=[
+                  Constant(value='char_count_normalized_min'),
+                  Constant(value='char_count_normalized_max'),
+                  Constant(value='greeting'),
+                  Constant(value='salutation'),
+                  Constant(value='exact_requirements')],
+                values=[
+                  Constant(value=360),
+                  Constant(value=380),
+                  Constant(value='Hi FirstName,'),
+                  Constant(value='Regards, Amit'),
+                  List(
+                    elts=[
+                      Constant(value='Exactly one quantified resume metric'),
+                      Constant(value='One role or company anchor'),
+                      Constant(value='Connection-only CTA as last sentence'),
+                      Constant(value='No URLs or metadata in char count')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='block'),
+                  Constant(value='immutable')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='Regards,'),
+                      Constant(value=''),
+                      Constant(value='Amit Ayer'),
+                      Constant(value='amitayer1@gmail.com'),
+                      Constant(value='+1.917.239.3830'),
+                      Constant(value='https://www.linkedin.com/in/amitayer1/')],
+                    ctx=Load()),
+                  Name(id='true', ctx=Load())])]),
+          List(
+            elts=[
+              Constant(value='C_LEVEL'),
+              Constant(value='EXECUTIVE'),
+              Constant(value='SENIOR_TA'),
+              Constant(value='RECRUITER'),
+              Constant(value='SHORT_NEW')],
+            ctx=Load()),
+          Dict(
+            keys=[
+              Constant(value='inputs_required'),
+              Constant(value='features'),
+              Constant(value='weights'),
+              Constant(value='thresholds'),
+              Constant(value='tie_breakers'),
+              Constant(value='mapping'),
+              Constant(value='smoke_tests')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='name'),
+                  Constant(value='title'),
+                  Constant(value='about'),
+                  Constant(value='profile_url')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='seniority_cues'),
+                  Constant(value='org_level_in_title'),
+                  Constant(value='scope_markers'),
+                  Constant(value='about_signals'),
+                  Constant(value='geo_signals'),
+                  Constant(value='industry_terms'),
+                  Constant(value='function_terms'),
+                  Constant(value='company_size_hint')],
+                ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='boardroom_fit'),
+                  Constant(value='exec_fit'),
+                  Constant(value='role_fit'),
+                  Constant(value='other')],
+                values=[
+                  Constant(value=0.45),
+                  Constant(value=0.3),
+                  Constant(value=0.2),
+                  Constant(value=0.05)]),
+              Dict(
+                keys=[
+                  Constant(value='c_level_min'),
+                  Constant(value='executive_min'),
+                  Constant(value='role_fit_min')],
+                values=[
+                  Constant(value=0.75),
+                  Constant(value=0.6),
+                  Constant(value=0.55)]),
+              List(
+                elts=[
+                  Constant(value='prefer boardroom_fit'),
+                  Constant(value='else exec_fit'),
+                  Constant(value='else highest role_fit with strongest company_size_hint')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='if'),
+                      Constant(value='route')],
+                    values=[
+                      Constant(value='boardroom_fit>=c_level_min'),
+                      Constant(value='C_LEVEL')]),
+                  Dict(
+                    keys=[
+                      Constant(value='elif'),
+                      Constant(value='route')],
+                    values=[
+                      Constant(value='exec_fit>=executive_min'),
+                      Constant(value='EXECUTIVE')]),
+                  Dict(
+                    keys=[
+                      Constant(value='elif'),
+                      Constant(value='route')],
+                    values=[
+                      Constant(value="role_fit>=role_fit_min and 'TA' in function_terms"),
+                      Constant(value='SENIOR_TA')]),
+                  Dict(
+                    keys=[
+                      Constant(value='elif'),
+                      Constant(value='route')],
+                    values=[
+                      Constant(value="role_fit>=role_fit_min and 'Recruiter' in function_terms"),
+                      Constant(value='RECRUITER')]),
+                  Dict(
+                    keys=[
+                      Constant(value='else')],
+                    values=[
+                      Constant(value='SHORT_NEW')])],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Router blocks if any required LinkedIn field is missing'),
+                  Constant(value='Router returns one of the five message types'),
+                  Constant(value='Scores are logged to audit with features contributing to top route')],
+                ctx=Load())]),
+          Dict(
+            keys=[
+              Constant(value='C_LEVEL'),
+              Constant(value='EXECUTIVE'),
+              Constant(value='SENIOR_TA'),
+              Constant(value='RECRUITER'),
+              Constant(value='SHORT_NEW')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='decoding'),
+                  Constant(value='structure')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='temperature'),
+                      Constant(value='top_p'),
+                      Constant(value='top_k'),
+                      Constant(value='min_p')],
+                    values=[
+                      Constant(value=0.2),
+                      Constant(value=0.9),
+                      Constant(value=50),
+                      Constant(value=0.05)]),
+                  Dict(
+                    keys=[
+                      Constant(value='intro'),
+                      Constant(value='insights'),
+                      Constant(value='bullets'),
+                      Constant(value='cta'),
+                      Constant(value='bridge')],
+                    values=[
+                      Constant(value='strategic priorities framing'),
+                      Constant(value=3),
+                      Constant(value=2),
+                      Constant(value='two week window; connection ask precedes meeting ask'),
+                      Constant(value='In my current role as Chief AI Officer...')])]),
+              Dict(
+                keys=[
+                  Constant(value='decoding'),
+                  Constant(value='structure')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='temperature'),
+                      Constant(value='top_p'),
+                      Constant(value='top_k'),
+                      Constant(value='min_p')],
+                    values=[
+                      Constant(value=0.25),
+                      Constant(value=0.9),
+                      Constant(value=50),
+                      Constant(value=0.05)]),
+                  Dict(
+                    keys=[
+                      Constant(value='transition'),
+                      Constant(value='insights'),
+                      Constant(value='bullets'),
+                      Constant(value='cta')],
+                    values=[
+                      Constant(value='Two strategic insights...'),
+                      Constant(value=2),
+                      Constant(value=3),
+                      Constant(value='lifecycle aligned')])]),
+              Dict(
+                keys=[
+                  Constant(value='decoding'),
+                  Constant(value='structure')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='temperature'),
+                      Constant(value='top_p'),
+                      Constant(value='top_k'),
+                      Constant(value='min_p')],
+                    values=[
+                      Constant(value=0.3),
+                      Constant(value=0.9),
+                      Constant(value=50),
+                      Constant(value=0.05)]),
+                  Dict(
+                    keys=[
+                      Constant(value='transition'),
+                      Constant(value='insights'),
+                      Constant(value='bullets'),
+                      Constant(value='cta')],
+                    values=[
+                      Constant(value='Two lessons/themes...'),
+                      Constant(value=2),
+                      Constant(value=3),
+                      Constant(value='ATS or senior opportunity scope; resume clause required')])]),
+              Dict(
+                keys=[
+                  Constant(value='decoding'),
+                  Constant(value='structure')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='temperature'),
+                      Constant(value='top_p'),
+                      Constant(value='top_k'),
+                      Constant(value='min_p')],
+                    values=[
+                      Constant(value=0.3),
+                      Constant(value=0.9),
+                      Constant(value=50),
+                      Constant(value=0.05)]),
+                  Dict(
+                    keys=[
+                      Constant(value='transition'),
+                      Constant(value='insights'),
+                      Constant(value='bullets'),
+                      Constant(value='cta')],
+                    values=[
+                      Constant(value='Two lessons/themes...'),
+                      Constant(value=2),
+                      Constant(value=3),
+                      Constant(value='executive role alignment; resume clause required')])]),
+              Dict(
+                keys=[
+                  Constant(value='decoding'),
+                  Constant(value='structure')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='temperature'),
+                      Constant(value='top_p'),
+                      Constant(value='top_k'),
+                      Constant(value='min_p')],
+                    values=[
+                      Constant(value=0.2),
+                      Constant(value=0.92),
+                      Constant(value=50),
+                      Constant(value=0.05)]),
+                  Dict(
+                    keys=[
+                      Constant(value='body_chars_min'),
+                      Constant(value='body_chars_max'),
+                      Constant(value='greeting'),
+                      Constant(value='salutation')],
+                    values=[
+                      Constant(value=360),
+                      Constant(value=380),
+                      Constant(value='Hi FirstName,'),
+                      Constant(value='Regards, Amit')])])]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='policy_guardrails'),
+              Constant(value='phase_3_hybrid_execution'),
+              Constant(value='phase_5_qa_precheck')],
+            values=[
+              Constant(value='Hold all logic and audit traces; output remains clean.'),
+              Dict(
+                keys=[
+                  Constant(value='separation_and_leakage_prevention'),
+                  Constant(value='hybrid_path_enforcement'),
+                  Constant(value='enhanced_qa_gates')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='output_contains_only_requested_visible_content')],
+                    values=[
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='min_paths_per_k'),
+                      Constant(value='block_on_fail')],
+                    values=[
+                      Constant(value=3),
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='style_hygiene_lint')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='rules'),
+                          Constant(value='block_on_fail')],
+                        values=[
+                          List(
+                            elts=[
+                              Constant(value='ban_em_dash'),
+                              Constant(value='ban_en_dash'),
+                              Constant(value='ban_double_hyphen'),
+                              Constant(value='ascii_only')],
+                            ctx=Load()),
+                          Name(id='true', ctx=Load())])])]),
+              Dict(
+                keys=[
+                  Constant(value='min_hybrid_paths')],
+                values=[
+                  Constant(value=3)]),
+              Dict(
+                keys=[
+                  Constant(value='block_progress_to_output_on_fail')],
+                values=[
+                  Name(id='true', ctx=Load())])]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='deliverable_structure'),
+              Constant(value='qa_grid'),
+              Constant(value='detected_settings_summary_template'),
+              Constant(value='render_gate')],
+            values=[
+              Constant(value='Produce final, user-facing LinkedIn message output for the selected message type.'),
+              Dict(
+                keys=[
+                  Constant(value='archetype_microstructures'),
+                  Constant(value='short_new'),
+                  Constant(value='signature_block')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='C_LEVEL'),
+                      Constant(value='EXECUTIVE'),
+                      Constant(value='SENIOR_TA'),
+                      Constant(value='RECRUITER')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='Intro: strategic priorities framing'),
+                          Constant(value='Insights: 3 with recent time cues'),
+                          Constant(value='Bridge line'),
+                          Constant(value='Bullets: 2 third person quantified'),
+                          Constant(value='CTA sequencing')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Transition line'),
+                          Constant(value='Insights: 2'),
+                          Constant(value='Bullets: 3'),
+                          Constant(value='Lifecycle CTA')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Transition line'),
+                          Constant(value='Insights: 2'),
+                          Constant(value='Bullets: 3'),
+                          Constant(value='CTA with ATS or senior opportunity scope; Resume clause required')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Transition line'),
+                          Constant(value='Insights: 2'),
+                          Constant(value='Bullets: 3'),
+                          Constant(value='CTA with executive role scope; Resume clause required')],
+                        ctx=Load())]),
+                  List(
+                    elts=[
+                      Constant(value='Pre-step RAG enrichment >= 3 bullets'),
+                      Constant(value='Body: 360-380 normalized chars'),
+                      Constant(value='Final sentence: connection-only CTA'),
+                      Constant(value='At least one quantified resume metric and one role/company anchor'),
+                      Constant(value='Markers: BEGIN MESSAGE BODY...END MESSAGE BODY, Chars N'),
+                      Constant(value='Greeting and salutation per policy')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Regards,'),
+                      Constant(value=''),
+                      Constant(value='Amit Ayer'),
+                      Constant(value='amitayer1@gmail.com'),
+                      Constant(value='+1.917.239.3830'),
+                      Constant(value='https://www.linkedin.com/in/amitayer1/')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='required_checks')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='Lifecycle/routing captured'),
+                      Constant(value='Archetype correct for seniority'),
+                      Constant(value='Insights count and time cues'),
+                      Constant(value='Bridge phrase before bullets (where applicable)'),
+                      Constant(value='Bullets count and third person'),
+                      Constant(value='Quantified outcomes in bullets'),
+                      Constant(value='CTA sequencing connect then meeting (where applicable)'),
+                      Constant(value='Role mention present'),
+                      Constant(value='Signature format exact'),
+                      Constant(value='Subject not in body'),
+                      Constant(value='Canonical URLs only'),
+                      Constant(value='No em/en dashes or double hyphens'),
+                      Constant(value='Straight quotes only'),
+                      Constant(value='Short NEW within 360-380 chars'),
+                      Constant(value='Greeting and salutation exact for SHORT_NEW')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='table_5A_columns'),
+                  Constant(value='required_rows')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='Setting'),
+                      Constant(value='Active Configuration')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='DECODING_STRATEGY'),
+                      Constant(value='TEMPERATURE'),
+                      Constant(value='TOP_P'),
+                      Constant(value='TOP_K'),
+                      Constant(value='MIN_P'),
+                      Constant(value='MAX_TOKENS'),
+                      Constant(value='STOP_SEQUENCES'),
+                      Constant(value='RAG_MODE'),
+                      Constant(value='AGENTIC_MODE'),
+                      Constant(value='AGENTIC_MAX_HOPS'),
+                      Constant(value='RETRIEVAL_COUNT'),
+                      Constant(value='QUERY_REFINEMENT'),
+                      Constant(value='SOURCE_ATTRIBUTION')],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='emit_output_if'),
+                  Constant(value='fallback')],
+                values=[
+                  Constant(value='RUN_ALLOWED=true'),
+                  Constant(value='emit 6.conditions with remediation steps')])]),
+          Dict(
+            keys=[
+              Constant(value='purpose'),
+              Constant(value='immediate_execution'),
+              Constant(value='schema_enforcement'),
+              Constant(value='mzlo_compliance'),
+              Constant(value='toggle_guard'),
+              Constant(value='privacy_memory'),
+              Constant(value='external_evidence'),
+              Constant(value='computational_accuracy'),
+              Constant(value='smoke_tests')],
+            values=[
+              Constant(value='Define non-negotiable execution constraints and QA release criteria.'),
+              Constant(value='Execute now; forbid deferral.'),
+              Dict(
+                keys=[
+                  Constant(value='validate_structure_prior_to_generation'),
+                  Constant(value='require_all_mirror_keys_present')],
+                values=[
+                  Name(id='true', ctx=Load()),
+                  Name(id='true', ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='enforce_zero_loss')],
+                values=[
+                  Name(id='true', ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='forbid_invocation_of_disabled_modes')],
+                values=[
+                  Name(id='true', ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='verify_memory_relevance')],
+                values=[
+                  Name(id='true', ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='treat_external_info_as_evidence')],
+                values=[
+                  Name(id='true', ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='digit_by_digit_calculations')],
+                values=[
+                  Name(id='true', ctx=Load())]),
+              List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='name'),
+                      Constant(value='checks'),
+                      Constant(value='block_on_fail')],
+                    values=[
+                      Constant(value='ST-LinkedInPromptGate'),
+                      List(
+                        elts=[
+                          Constant(value='about present'),
+                          Constant(value='profile_url canonical'),
+                          Constant(value='name present'),
+                          Constant(value='title present')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='name'),
+                      Constant(value='checks'),
+                      Constant(value='block_on_fail')],
+                    values=[
+                      Constant(value='ST-Router-Types'),
+                      List(
+                        elts=[
+                          Constant(value='router returns one of 5 types'),
+                          Constant(value='scores logged')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='name'),
+                      Constant(value='checks'),
+                      Constant(value='block_on_fail')],
+                    values=[
+                      Constant(value='ST-Decoding-Bind'),
+                      List(
+                        elts=[
+                          Constant(value='settings echoed in 5A'),
+                          Constant(value='parity with runtime toggles')],
+                        ctx=Load()),
+                      Name(id='true', ctx=Load())])],
+                ctx=Load())])]))])

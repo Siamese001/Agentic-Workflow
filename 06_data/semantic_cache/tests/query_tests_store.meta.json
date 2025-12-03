@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\mem-layer\\retrieve-phase\\get-tests-info\\general\\understand-request\\query_tests_store.py",
+    "rel_path": "query_tests_store.py",
+    "root_name": "tests",
+    "file_hash": "59c5b260f212a367687d4ef282fee3e34def560dee3fc17dad4c3960dd8d505c",
+    "file_size": 6636,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.1150556
+}

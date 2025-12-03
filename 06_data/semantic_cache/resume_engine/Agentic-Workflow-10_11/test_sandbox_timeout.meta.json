@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_sandbox_timeout.py",
+    "rel_path": "test_sandbox_timeout.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "5213c0fc3430c402254eab34de7048c41ec44f68ea8a2adb575c6fe40ef95587",
+    "file_size": 425,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.5019662
+}

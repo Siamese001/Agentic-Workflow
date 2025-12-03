@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\datasets\\golden_job_dataset.json",
+    "rel_path": "golden_job_dataset.json",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "1c98ae66b1194e32a6b1fb698dcaf52bfa53b0406c844d569cbb2d2c8d6c53bb",
+    "file_size": 520,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728226.6359599
+}

@@ -1,0 +1,627 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='ValidatorAgent behavior tests.')),
+    ImportFrom(
+      module='src.lic_agentic.agents.k7_validator_agent',
+      names=[
+        alias(name='ValidationResult'),
+        alias(name='ValidatorAgent')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.qa',
+      names=[
+        alias(name='QAResult')],
+      level=0),
+    ClassDef(
+      name='StubQAValidator',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='responses')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_responses',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='iter', ctx=Load()),
+                args=[
+                  Name(id='responses', ctx=Load())]))]),
+        FunctionDef(
+          name='validate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='draft'),
+              arg(arg='artifacts'),
+              arg(arg='pii_placeholders')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='next', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_responses',
+                    ctx=Load())]))])]),
+    FunctionDef(
+      name='test_validator_passes_with_subject_and_artifact',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Hello\n\nHello there,\nBody with [artifact_id:123] token\nCTA: Let me know if next week works.\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='verdict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='ValidatorAgent', ctx=Load())),
+              attr='check',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None)),
+              keyword(arg='pii_map', value=Dict()),
+              keyword(
+                arg='artifacts',
+                value=Dict(
+                  keys=[
+                    Constant(value='123')],
+                  values=[
+                    Constant(value='token')]))])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='verdict', ctx=Load()),
+              Name(id='ValidationResult', ctx=Load())])),
+        Assert(
+          test=Attribute(
+            value=Name(id='verdict', ctx=Load()),
+            attr='passed',
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='verdict', ctx=Load()),
+              attr='reasons',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Tuple(ctx=Load())]))]),
+    FunctionDef(
+      name='test_validator_flags_missing_placeholders',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Hi\n\nHello there,\nBody with [artifact_id:123] token\nCTA: Can we connect?\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='verdict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='ValidatorAgent', ctx=Load())),
+              attr='check',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None)),
+              keyword(
+                arg='pii_map',
+                value=Dict(
+                  keys=[
+                    Constant(value='<PII_1>')],
+                  values=[
+                    Constant(value='alice@example.com')])),
+              keyword(
+                arg='artifacts',
+                value=Dict(
+                  keys=[
+                    Constant(value='123')],
+                  values=[
+                    Constant(value='token')]))])),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='verdict', ctx=Load()),
+              attr='passed',
+              ctx=Load()))),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Constant(value='Placeholder <PII_1>'),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='reason', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='reason', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='verdict', ctx=Load()),
+                      attr='reasons',
+                      ctx=Load()),
+                    is_async=0)])]))]),
+    FunctionDef(
+      name='test_validator_retry_inserts_cta_before_signature',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Hi\n\nHello there,\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='verdict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='ValidatorAgent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='max_retries',
+                    value=Constant(value=1))]),
+              attr='check',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None)),
+              keyword(arg='pii_map', value=Dict()),
+              keyword(
+                arg='artifacts',
+                value=Dict(
+                  keys=[
+                    Constant(value='aid')],
+                  values=[
+                    Constant(value='Grounded')]))])),
+        Assert(
+          test=Attribute(
+            value=Name(id='verdict', ctx=Load()),
+            attr='passed',
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Constant(value='CTA:'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='verdict', ctx=Load()),
+                attr='final_draft',
+                ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='verdict', ctx=Load()),
+                    attr='final_draft',
+                    ctx=Load()),
+                  attr='strip',
+                  ctx=Load())),
+              attr='endswith',
+              ctx=Load()),
+            args=[
+              Constant(value='LIC Outreach Bot')]))]),
+    FunctionDef(
+      name='test_validator_without_artifacts_flags_missing_value_wedge',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Hi\n\nHello there,\nCTA: Talk soon?\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='verdict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='ValidatorAgent', ctx=Load())),
+              attr='check',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None)),
+              keyword(arg='pii_map', value=Dict()),
+              keyword(arg='artifacts', value=Dict())])),
+        Assert(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='verdict', ctx=Load()),
+              attr='passed',
+              ctx=Load()))),
+        Assert(
+          test=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Constant(value='evidence'),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='reason', ctx=Load()),
+                        attr='lower',
+                        ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='reason', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='verdict', ctx=Load()),
+                      attr='reasons',
+                      ctx=Load()),
+                    is_async=0)])]))]),
+    FunctionDef(
+      name='test_validator_adds_signature_when_missing',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Hi\n\nHello there,\n[artifact_id:aid] detail')),
+        Assign(
+          targets=[
+            Name(id='verdict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='ValidatorAgent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='max_retries',
+                    value=Constant(value=1))]),
+              attr='check',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None)),
+              keyword(arg='pii_map', value=Dict()),
+              keyword(
+                arg='artifacts',
+                value=Dict(
+                  keys=[
+                    Constant(value='aid')],
+                  values=[
+                    Constant(value='detail')]))])),
+        Assert(
+          test=Attribute(
+            value=Name(id='verdict', ctx=Load()),
+            attr='passed',
+            ctx=Load())),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='verdict', ctx=Load()),
+                    attr='final_draft',
+                    ctx=Load()),
+                  attr='strip',
+                  ctx=Load())),
+              attr='endswith',
+              ctx=Load()),
+            args=[
+              Constant(value='LIC Outreach Bot')]))]),
+    FunctionDef(
+      name='test_validator_inserts_missing_artifacts',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='draft', ctx=Store())],
+          value=Constant(value='Subject: Hi\n\nHello there,\nCTA: Talk soon?\nBest regards,\nLIC Outreach Bot')),
+        Assign(
+          targets=[
+            Name(id='verdict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='ValidatorAgent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='max_retries',
+                    value=Constant(value=1))]),
+              attr='check',
+              ctx=Load()),
+            args=[
+              Name(id='draft', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None)),
+              keyword(arg='pii_map', value=Dict()),
+              keyword(
+                arg='artifacts',
+                value=Dict(
+                  keys=[
+                    Constant(value='aid')],
+                  values=[
+                    Constant(value='Summary')]))])),
+        Assert(
+          test=Compare(
+            left=Constant(value='[artifact_id:aid]'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='verdict', ctx=Load()),
+                attr='final_draft',
+                ctx=Load())]))]),
+    FunctionDef(
+      name='test_validator_retry_repairs_all_missing_sections',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='failing', ctx=Store())],
+          value=Call(
+            func=Name(id='QAResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='ok',
+                value=Constant(value=False)),
+              keyword(
+                arg='reasons',
+                value=Tuple(
+                  elts=[
+                    Constant(value='Missing subject')],
+                  ctx=Load())),
+              keyword(
+                arg='missing_sections',
+                value=Tuple(
+                  elts=[
+                    Constant(value='subject'),
+                    Constant(value='opener'),
+                    Constant(value='value_wedge'),
+                    Constant(value='cta'),
+                    Constant(value='signature')],
+                  ctx=Load())),
+              keyword(
+                arg='missing_artifacts',
+                value=Tuple(
+                  elts=[
+                    Constant(value='aid')],
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='passing', ctx=Store())],
+          value=Call(
+            func=Name(id='QAResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='ok',
+                value=Constant(value=True)),
+              keyword(
+                arg='reasons',
+                value=Tuple(ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='ValidatorAgent', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='qa_validator',
+                value=Call(
+                  func=Name(id='StubQAValidator', ctx=Load()),
+                  args=[
+                    List(
+                      elts=[
+                        Name(id='failing', ctx=Load()),
+                        Name(id='passing', ctx=Load())],
+                      ctx=Load())])),
+              keyword(
+                arg='max_retries',
+                value=Constant(value=2))])),
+        Assign(
+          targets=[
+            Name(id='verdict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='agent', ctx=Load()),
+              attr='check',
+              ctx=Load()),
+            args=[
+              Constant(value='')],
+            keywords=[
+              keyword(
+                arg='route_decision',
+                value=Constant(value=None)),
+              keyword(arg='pii_map', value=Dict()),
+              keyword(
+                arg='artifacts',
+                value=Dict(
+                  keys=[
+                    Constant(value='aid')],
+                  values=[
+                    Constant(value='Summary')]))])),
+        Assert(
+          test=Attribute(
+            value=Name(id='verdict', ctx=Load()),
+            attr='passed',
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='verdict', ctx=Load()),
+              attr='attempts',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=2)])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='verdict', ctx=Load()),
+                attr='final_draft',
+                ctx=Load()),
+              attr='startswith',
+              ctx=Load()),
+            args=[
+              Constant(value='Subject: Quick idea for you')])),
+        Assert(
+          test=Compare(
+            left=Constant(value='Hello there,'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='verdict', ctx=Load()),
+                attr='final_draft',
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='CTA:'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='verdict', ctx=Load()),
+                attr='final_draft',
+                ctx=Load())])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='verdict', ctx=Load()),
+                    attr='final_draft',
+                    ctx=Load()),
+                  attr='strip',
+                  ctx=Load())),
+              attr='endswith',
+              ctx=Load()),
+            args=[
+              Constant(value='LIC Outreach Bot')])),
+        Assert(
+          test=Compare(
+            left=Constant(value='[artifact_id:aid]'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Name(id='verdict', ctx=Load()),
+                attr='final_draft',
+                ctx=Load())]))]),
+    FunctionDef(
+      name='test_find_signature_index_detects_keywords',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='ValidatorAgent', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='lines', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='Body line'),
+              Constant(value='Best regards,')],
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='_find_signature_index',
+                ctx=Load()),
+              args=[
+                Name(id='lines', ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='_find_signature_index',
+                ctx=Load()),
+              args=[
+                List(
+                  elts=[
+                    Constant(value='Body line')],
+                  ctx=Load())]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]))]),
+    FunctionDef(
+      name='test_estimate_token_drift_caps_value',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='agent', ctx=Store())],
+          value=Call(
+            func=Name(id='ValidatorAgent', ctx=Load()))),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='_estimate_token_drift',
+                ctx=Load()),
+              args=[
+                Constant(value=100)]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=0)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Attribute(
+                value=Name(id='agent', ctx=Load()),
+                attr='_estimate_token_drift',
+                ctx=Load()),
+              args=[
+                Constant(value=300)]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=0.1)]))])])

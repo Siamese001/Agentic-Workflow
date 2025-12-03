@@ -1,0 +1,80 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='timestamp'),
+          Constant(value='operations'),
+          Constant(value='hash_mappings'),
+          Constant(value='content_reconstructed'),
+          Constant(value='layer_integrity')],
+        values=[
+          Constant(value='2025-12-02T11:37:49.745957'),
+          List(
+            elts=[
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2'),
+              Constant(value="[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'"),
+              Constant(value='[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase2')],
+            ctx=Load()),
+          Constant(value=5),
+          Constant(value=10),
+          Dict(
+            keys=[
+              Constant(value='L1'),
+              Constant(value='L2'),
+              Constant(value='L3'),
+              Constant(value='L4'),
+              Constant(value='L5')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='files_processed'),
+                  Constant(value='conflicts')],
+                values=[
+                  Constant(value=5),
+                  Constant(value=0)]),
+              Dict(
+                keys=[
+                  Constant(value='content_validated'),
+                  Constant(value='safety_violations')],
+                values=[
+                  Constant(value=10),
+                  Constant(value=0)]),
+              Dict(
+                keys=[
+                  Constant(value='canonical_preserved'),
+                  Constant(value='mutations_detected')],
+                values=[
+                  Constant(value=10),
+                  Constant(value=0)]),
+              Dict(
+                keys=[
+                  Constant(value='semantic_integrity'),
+                  Constant(value='meaning_lost')],
+                values=[
+                  Constant(value=10),
+                  Constant(value=0)]),
+              Dict(
+                keys=[
+                  Constant(value='final_certified'),
+                  Constant(value='validation_failed')],
+                values=[
+                  Constant(value=10),
+                  Constant(value=0)])])]))])

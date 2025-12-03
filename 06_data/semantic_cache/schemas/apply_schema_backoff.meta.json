@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\act-phase\\use-schema-tools\\routing\\retry-task\\apply_schema_backoff.py",
+    "rel_path": "apply_schema_backoff.py",
+    "root_name": "schemas",
+    "file_hash": "e9fc2e2736dbc66548266065a34712f5da439eecb40903083082acde7e7fd97e",
+    "file_size": 1354,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.9360015
+}

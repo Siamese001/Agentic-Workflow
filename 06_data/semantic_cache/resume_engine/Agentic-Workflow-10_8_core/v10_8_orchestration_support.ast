@@ -1,0 +1,2942 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nV10.8 Consolidated Module: Orchestration Support\nMerged from 8 source files\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='copy',
+      names=[
+        alias(name='deepcopy')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='errors_controlflow',
+      names=[
+        alias(name='DAGValidationError')],
+      level=0),
+    ImportFrom(
+      module='errors_controlflow',
+      names=[
+        alias(name='NodeExecutionError')],
+      level=0),
+    ImportFrom(
+      module='l3_orchestration',
+      names=[
+        alias(name='DAG')],
+      level=0),
+    ImportFrom(
+      module='meta_profile',
+      names=[
+        alias(name='META_PROFILE')],
+      level=0),
+    ImportFrom(
+      module='multi_agent',
+      names=[
+        alias(name='AgentRole')],
+      level=0),
+    ImportFrom(
+      module='node_result',
+      names=[
+        alias(name='NodeResult')],
+      level=0),
+    ImportFrom(
+      module='node_result',
+      names=[
+        alias(name='NodeResult'),
+        alias(name='NodeStatus')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Callable'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Set')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ClassDef(
+      name='DAGExecutor',
+      body=[
+        Expr(
+          value=Constant(value='Deterministic executor for DAG nodes with retry logic.')),
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag',
+                annotation=Name(id='DAG', ctx=Load())),
+              arg(
+                arg='initial_context',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='dag', ctx=Load()),
+                  attr='validate',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Name(id='context', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=IfExp(
+                test=Name(id='initial_context', ctx=Load()),
+                body=Call(
+                  func=Name(id='deepcopy', ctx=Load()),
+                  args=[
+                    Name(id='initial_context', ctx=Load())]),
+                orelse=Dict()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='parents', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_parents_map',
+                  ctx=Load()),
+                args=[
+                  Name(id='dag', ctx=Load())])),
+            AnnAssign(
+              target=Name(id='ready', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Name(id='name', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='name', ctx=Store()),
+                            Name(id='deps', ctx=Store())],
+                          ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='parents', ctx=Load()),
+                            attr='items',
+                            ctx=Load())),
+                        ifs=[
+                          UnaryOp(
+                            op=Not(),
+                            operand=Name(id='deps', ctx=Load()))],
+                        is_async=0)])]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='executed', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load())),
+              simple=1),
+            While(
+              test=Name(id='ready', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='node_name', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ready', ctx=Load()),
+                      attr='pop',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0)])),
+                If(
+                  test=Compare(
+                    left=Name(id='node_name', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='executed', ctx=Load())]),
+                  body=[
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='node', ctx=Store())],
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='dag', ctx=Load()),
+                      attr='nodes',
+                      ctx=Load()),
+                    slice=Name(id='node_name', ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='result', ctx=Store()),
+                        Name(id='attempted_nodes', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_execute_with_retries',
+                      ctx=Load()),
+                    args=[
+                      Name(id='node_name', ctx=Load()),
+                      Name(id='node', ctx=Load()),
+                      Name(id='context', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='status',
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='NodeStatus', ctx=Load()),
+                        attr='SUCCESS',
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='context', ctx=Load()),
+                          attr='update',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='payload',
+                            ctx=Load())])),
+                    If(
+                      test=Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='parallel',
+                        ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='context', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_execute_parallel_nodes',
+                              ctx=Load()),
+                            args=[
+                              Name(id='dag', ctx=Load()),
+                              Attribute(
+                                value=Name(id='node', ctx=Load()),
+                                attr='parallel',
+                                ctx=Load()),
+                              Name(id='context', ctx=Load()),
+                              Name(id='executed', ctx=Load())]))]),
+                    Assign(
+                      targets=[
+                        Name(id='outgoing', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_determine_edges',
+                          ctx=Load()),
+                        args=[
+                          Name(id='dag', ctx=Load()),
+                          Name(id='node', ctx=Load()),
+                          Name(id='context', ctx=Load())]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='outgoing', ctx=Store())],
+                      value=IfExp(
+                        test=Attribute(
+                          value=Name(id='node', ctx=Load()),
+                          attr='fallback_edge',
+                          ctx=Load()),
+                        body=List(
+                          elts=[
+                            Attribute(
+                              value=Name(id='node', ctx=Load()),
+                              attr='fallback_edge',
+                              ctx=Load())],
+                          ctx=Load()),
+                        orelse=List(ctx=Load())))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='executed', ctx=Load()),
+                      attr='update',
+                      ctx=Load()),
+                    args=[
+                      Name(id='attempted_nodes', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='executed', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Name(id='node_name', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_enqueue_targets',
+                      ctx=Load()),
+                    args=[
+                      Name(id='outgoing', ctx=Load()),
+                      Name(id='dag', ctx=Load()),
+                      Name(id='parents', ctx=Load()),
+                      Name(id='executed', ctx=Load()),
+                      Name(id='ready', ctx=Load())]))]),
+            Return(
+              value=Name(id='context', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_execute_with_retries',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='node_name',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='node',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            AnnAssign(
+              target=Name(id='attempted', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load())),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='attempts', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='node', ctx=Load()),
+                  attr='retries',
+                  ctx=Load()),
+                op=Add(),
+                right=Constant(value=1))),
+            AnnAssign(
+              target=Name(id='last_result', ctx=Store()),
+              annotation=BinOp(
+                left=Name(id='NodeResult', ctx=Load()),
+                op=BitOr(),
+                right=Constant(value=None)),
+              value=Constant(value=None),
+              simple=1),
+            For(
+              target=Name(id='_', ctx=Store()),
+              iter=Call(
+                func=Name(id='range', ctx=Load()),
+                args=[
+                  Name(id='attempts', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='last_result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='node', ctx=Load()),
+                      attr='run',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='deepcopy', ctx=Load()),
+                        args=[
+                          Name(id='context', ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='attempted', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Name(id='node_name', ctx=Load())])),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='last_result', ctx=Load()),
+                      attr='status',
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='NodeStatus', ctx=Load()),
+                        attr='SUCCESS',
+                        ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Tuple(
+                        elts=[
+                          Name(id='last_result', ctx=Load()),
+                          Name(id='attempted', ctx=Load())],
+                        ctx=Load()))])]),
+            Assert(
+              test=Compare(
+                left=Name(id='last_result', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Call(
+                    func=Name(id='NodeResult', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='NodeStatus', ctx=Load()),
+                        attr='FAILURE',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='last_result', ctx=Load()),
+                        attr='payload',
+                        ctx=Load())]),
+                  Name(id='attempted', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='NodeResult', ctx=Load()),
+                Subscript(
+                  value=Name(id='Set', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_determine_edges',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag',
+                annotation=Name(id='DAG', ctx=Load())),
+              arg(
+                arg='node',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            If(
+              test=Attribute(
+                value=Name(id='node', ctx=Load()),
+                attr='condition',
+                ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='condition_result', ctx=Store())],
+                      value=Call(
+                        func=Name(id='bool', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='node', ctx=Load()),
+                              attr='condition',
+                              ctx=Load()),
+                            args=[
+                              Name(id='context', ctx=Load())])]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='condition_result', ctx=Store())],
+                          value=Constant(value=False))])]),
+                If(
+                  test=Name(id='condition_result', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='node', ctx=Load()),
+                            attr='conditional_edges',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='condition_true'),
+                          List(ctx=Load())]))])]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='dag', ctx=Load()),
+                    attr='edges',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='node', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  List(ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_build_parents_map',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag',
+                annotation=Name(id='DAG', ctx=Load()))]),
+          body=[
+            AnnAssign(
+              target=Name(id='parents', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='Set', ctx=Load()),
+                      slice=Name(id='str', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=DictComp(
+                key=Name(id='name', ctx=Load()),
+                value=Call(
+                  func=Name(id='set', ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='name', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='dag', ctx=Load()),
+                      attr='nodes',
+                      ctx=Load()),
+                    is_async=0)]),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='source', ctx=Store()),
+                  Name(id='targets', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='dag', ctx=Load()),
+                    attr='edges',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                For(
+                  target=Name(id='target', ctx=Store()),
+                  iter=Name(id='targets', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Name(id='parents', ctx=Load()),
+                            slice=Name(id='target', ctx=Load()),
+                            ctx=Load()),
+                          attr='add',
+                          ctx=Load()),
+                        args=[
+                          Name(id='source', ctx=Load())]))])]),
+            For(
+              target=Name(id='node', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='dag', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                For(
+                  target=Name(id='conditional_targets', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='conditional_edges',
+                        ctx=Load()),
+                      attr='values',
+                      ctx=Load())),
+                  body=[
+                    For(
+                      target=Name(id='target', ctx=Store()),
+                      iter=Name(id='conditional_targets', ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Subscript(
+                                value=Name(id='parents', ctx=Load()),
+                                slice=Name(id='target', ctx=Load()),
+                                ctx=Load()),
+                              attr='add',
+                              ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='node', ctx=Load()),
+                                attr='name',
+                                ctx=Load())]))])])]),
+            Return(
+              value=Name(id='parents', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='Set', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_enqueue_targets',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='targets',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='dag',
+                annotation=Name(id='DAG', ctx=Load())),
+              arg(
+                arg='parents',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Subscript(
+                        value=Name(id='Set', ctx=Load()),
+                        slice=Name(id='str', ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='executed',
+                annotation=Subscript(
+                  value=Name(id='Set', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='ready',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            For(
+              target=Name(id='target', ctx=Store()),
+              iter=Name(id='targets', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='target', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='dag', ctx=Load()),
+                        attr='nodes',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='NodeExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="Edge target '"),
+                              FormattedValue(
+                                value=Name(id='target', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' is not a defined node in the DAG.")])]))]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='parents', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Name(id='target', ctx=Load()),
+                              Call(
+                                func=Name(id='set', ctx=Load()))]),
+                          attr='issubset',
+                          ctx=Load()),
+                        args=[
+                          Name(id='executed', ctx=Load())]),
+                      Compare(
+                        left=Name(id='target', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Name(id='ready', ctx=Load())])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='ready', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='target', ctx=Load())]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ready', ctx=Load()),
+                  attr='sort',
+                  ctx=Load())))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_execute_parallel_nodes',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='dag',
+                annotation=Name(id='DAG', ctx=Load())),
+              arg(
+                arg='parallel_nodes',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='executed',
+                annotation=Subscript(
+                  value=Name(id='Set', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='merged', ctx=Store())],
+              value=Call(
+                func=Name(id='deepcopy', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())])),
+            For(
+              target=Name(id='child_name', ctx=Store()),
+              iter=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  Name(id='parallel_nodes', ctx=Load())]),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='child_name', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='dag', ctx=Load()),
+                        attr='nodes',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='NodeExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="Parallel target '"),
+                              FormattedValue(
+                                value=Name(id='child_name', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' is not a defined node in the DAG.")])]))]),
+                Assign(
+                  targets=[
+                    Name(id='child_node', ctx=Store())],
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='dag', ctx=Load()),
+                      attr='nodes',
+                      ctx=Load()),
+                    slice=Name(id='child_name', ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='child_result', ctx=Store()),
+                        Name(id='_', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_execute_with_retries',
+                      ctx=Load()),
+                    args=[
+                      Name(id='child_name', ctx=Load()),
+                      Name(id='child_node', ctx=Load()),
+                      Name(id='merged', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='merged', ctx=Load()),
+                      attr='update',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='child_result', ctx=Load()),
+                        attr='payload',
+                        ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='executed', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Name(id='child_name', ctx=Load())]))]),
+            Return(
+              value=Name(id='merged', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='DAGNode',
+      body=[
+        Expr(
+          value=Constant(value='Structural node definition for DAG orchestration.')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='run', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Callable', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                List(
+                  elts=[
+                    Subscript(
+                      value=Name(id='Dict', ctx=Load()),
+                      slice=Tuple(
+                        elts=[
+                          Name(id='str', ctx=Load()),
+                          Name(id='Any', ctx=Load())],
+                        ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                Name(id='NodeResult', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='condition', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Callable', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  List(
+                    elts=[
+                      Subscript(
+                        value=Name(id='Dict', ctx=Load()),
+                        slice=Tuple(
+                          elts=[
+                            Name(id='str', ctx=Load()),
+                            Name(id='Any', ctx=Load())],
+                          ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  Name(id='bool', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='conditional_edges', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retries', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='fallback_edge', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parallel', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='__post_init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='name',
+                  ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='DAGValidationError', ctx=Load()),
+                    args=[
+                      Constant(value='DAG nodes require a non-empty name.')]))])],
+          returns=Constant(value=None))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='DAG',
+      body=[
+        Expr(
+          value=Constant(value='A directed acyclic graph of orchestration steps.')),
+        AnnAssign(
+          target=Name(id='nodes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='DAGNode', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='edges', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='validate',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Validate the DAG is well-formed and acyclic.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='nodes',
+                  ctx=Load())),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='DAGValidationError', ctx=Load()),
+                    args=[
+                      Constant(value='DAG must define at least one node.')]))]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='node_name', ctx=Store()),
+                  Name(id='node', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='node_name', ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='name',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='DAGValidationError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="Node key '"),
+                              FormattedValue(
+                                value=Name(id='node_name', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' does not match node name '"),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='node', ctx=Load()),
+                                  attr='name',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value="'.")])]))])]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='source', ctx=Store()),
+                  Name(id='targets', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='edges',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='source', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='nodes',
+                        ctx=Load())]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='DAGValidationError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value="Edge source '"),
+                              FormattedValue(
+                                value=Name(id='source', ctx=Load()),
+                                conversion=-1),
+                              Constant(value="' is not a defined node.")])]))]),
+                For(
+                  target=Name(id='target', ctx=Store()),
+                  iter=Name(id='targets', ctx=Load()),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='target', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='nodes',
+                            ctx=Load())]),
+                      body=[
+                        Raise(
+                          exc=Call(
+                            func=Name(id='DAGValidationError', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value="Edge target '"),
+                                  FormattedValue(
+                                    value=Name(id='target', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value="' from '"),
+                                  FormattedValue(
+                                    value=Name(id='source', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value="' is not a defined node.")])]))])])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='topological_sort',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Return a deterministic topological ordering of the DAG nodes.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='validate',
+                  ctx=Load()))),
+            AnnAssign(
+              target=Name(id='in_degree', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='int', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=DictComp(
+                key=Name(id='name', ctx=Load()),
+                value=Constant(value=0),
+                generators=[
+                  comprehension(
+                    target=Name(id='name', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='nodes',
+                      ctx=Load()),
+                    is_async=0)]),
+              simple=1),
+            For(
+              target=Name(id='targets', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='edges',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                For(
+                  target=Name(id='target', ctx=Store()),
+                  iter=Name(id='targets', ctx=Load()),
+                  body=[
+                    AugAssign(
+                      target=Subscript(
+                        value=Name(id='in_degree', ctx=Load()),
+                        slice=Name(id='target', ctx=Load()),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1))])]),
+            Assign(
+              targets=[
+                Name(id='ready', ctx=Store())],
+              value=Call(
+                func=Name(id='sorted', ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Name(id='name', ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='name', ctx=Store()),
+                            Name(id='degree', ctx=Store())],
+                          ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='in_degree', ctx=Load()),
+                            attr='items',
+                            ctx=Load())),
+                        ifs=[
+                          Compare(
+                            left=Name(id='degree', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value=0)])],
+                        is_async=0)])])),
+            AnnAssign(
+              target=Name(id='order', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            While(
+              test=Name(id='ready', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='current', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ready', ctx=Load()),
+                      attr='pop',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0)])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='order', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='current', ctx=Load())])),
+                For(
+                  target=Name(id='neighbor', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='sorted', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='edges',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Name(id='current', ctx=Load()),
+                          List(ctx=Load())])]),
+                  body=[
+                    AugAssign(
+                      target=Subscript(
+                        value=Name(id='in_degree', ctx=Load()),
+                        slice=Name(id='neighbor', ctx=Load()),
+                        ctx=Store()),
+                      op=Sub(),
+                      value=Constant(value=1)),
+                    If(
+                      test=Compare(
+                        left=Subscript(
+                          value=Name(id='in_degree', ctx=Load()),
+                          slice=Name(id='neighbor', ctx=Load()),
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value=0)]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='ready', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='neighbor', ctx=Load())]))])])]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='order', ctx=Load())]),
+                ops=[
+                  NotEq()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='nodes',
+                        ctx=Load())])]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='DAGValidationError', ctx=Load()),
+                    args=[
+                      Constant(value='DAG contains cycles; topological sort failed.')]))]),
+            Return(
+              value=Name(id='order', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RoutingCriteria',
+      body=[
+        AnnAssign(
+          target=Name(id='task_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='complexity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='low'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='latency_target_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=2000),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cost_ceiling_usd', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.05),
+          simple=1),
+        AnnAssign(
+          target=Name(id='risk_level', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='normal'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_available', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RoutingDecision',
+      body=[
+        AnnAssign(
+          target=Name(id='model', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='endpoint', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rationale', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='decide_route',
+      args=arguments(
+        args=[
+          arg(
+            arg='criteria',
+            annotation=Name(id='RoutingCriteria', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic routing strategy based on criteria.\n    No external calls, no randomness.\n    ')),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='complexity',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='high')]),
+              Compare(
+                left=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='risk_level',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='strict')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=Call(
+                func=Name(id='RoutingDecision', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model',
+                    value=Constant(value='gpt-4o')),
+                  keyword(
+                    arg='endpoint',
+                    value=Constant(value='default')),
+                  keyword(
+                    arg='rationale',
+                    value=Constant(value='High complexity or strict risk requires GPT-4o.'))]))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='latency_target_ms',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=1000)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='decision', ctx=Store())],
+                  value=Call(
+                    func=Name(id='RoutingDecision', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='model',
+                        value=Constant(value='gpt-4o-mini')),
+                      keyword(
+                        arg='endpoint',
+                        value=Constant(value='fast')),
+                      keyword(
+                        arg='rationale',
+                        value=Constant(value='Low latency target; use lightweight model.'))]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='decision', ctx=Store())],
+                  value=Call(
+                    func=Name(id='RoutingDecision', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='model',
+                        value=Constant(value='gpt-4o-mini')),
+                      keyword(
+                        arg='endpoint',
+                        value=Constant(value='default')),
+                      keyword(
+                        arg='rationale',
+                        value=Constant(value='Default routing for normal tasks.'))]))])]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='criteria', ctx=Load()),
+              attr='model_available',
+              ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=Call(
+                func=Name(id='RoutingDecision', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model',
+                    value=Constant(value='gpt-4o-mini')),
+                  keyword(
+                    arg='endpoint',
+                    value=Constant(value='fast')),
+                  keyword(
+                    arg='rationale',
+                    value=Constant(value='Primary route unavailable; using fallback fast endpoint.'))]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='META_PROFILE', ctx=Load()),
+                    attr='routing_bias',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prefer_fast')]),
+              Compare(
+                left=Attribute(
+                  value=Name(id='decision', ctx=Load()),
+                  attr='endpoint',
+                  ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Constant(value='fast'),
+                      Constant(value='default')],
+                    ctx=Load())])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=Call(
+                func=Name(id='RoutingDecision', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model',
+                    value=Attribute(
+                      value=Name(id='decision', ctx=Load()),
+                      attr='model',
+                      ctx=Load())),
+                  keyword(
+                    arg='endpoint',
+                    value=Constant(value='fast')),
+                  keyword(
+                    arg='rationale',
+                    value=Attribute(
+                      value=Name(id='decision', ctx=Load()),
+                      attr='rationale',
+                      ctx=Load()))]))]),
+        Return(
+          value=Name(id='decision', ctx=Load()))],
+      returns=Name(id='RoutingDecision', ctx=Load())),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='model_invocation',
+      names=[
+        alias(name='invoke_model')],
+      level=0),
+    ClassDef(
+      name='ModelClient',
+      body=[
+        Expr(
+          value=Constant(value='Abstract client for model execution. Deterministic stub only.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='route_metadata',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='route_metadata',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='route_metadata', ctx=Load()),
+                  Dict()]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='complete',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='config',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Invoke the deterministic stub with a fully rendered prompt.')),
+            Assign(
+              targets=[
+                Name(id='merged_metadata', ctx=Store())],
+              value=Dict(
+                keys=[
+                  None,
+                  None],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='route_metadata',
+                    ctx=Load()),
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='config', ctx=Load()),
+                      Dict()])])),
+            Return(
+              value=Call(
+                func=Name(id='invoke_model', ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load()),
+                  Name(id='merged_metadata', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='build_client_for_route',
+      args=arguments(
+        args=[
+          arg(
+            arg='route',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='ModelClient', ctx=Load()),
+            args=[
+              Name(id='route', ctx=Load())]))],
+      returns=Name(id='ModelClient', ctx=Load())),
+    FunctionDef(
+      name='configure_for_routing',
+      args=arguments(
+        args=[
+          arg(
+            arg='route',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='selected_model', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='route', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='selected_model')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='route', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='model')])])),
+        Assign(
+          targets=[
+            Name(id='model_name', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='selected_model', ctx=Load()),
+              BinOp(
+                left=Constant(value='stub-model-for-'),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Name(id='route', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='complexity'),
+                    Constant(value='default')]))])),
+        Assign(
+          targets=[
+            Name(id='endpoint', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='route', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='endpoint')]),
+              BinOp(
+                left=Constant(value='/v1/'),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Name(id='route', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='complexity'),
+                    Constant(value='default')]))])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='model'),
+              Constant(value='model_name'),
+              Constant(value='endpoint'),
+              Constant(value='route')],
+            values=[
+              Name(id='model_name', ctx=Load()),
+              Name(id='model_name', ctx=Load()),
+              Name(id='endpoint', ctx=Load()),
+              Name(id='route', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='run_model_for_plan',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        ImportFrom(
+          module='prompt_utils',
+          names=[
+            alias(name='build_prompt_from_plan_and_state')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='rendered', ctx=Store())],
+          value=Call(
+            func=Name(id='build_prompt_from_plan_and_state', ctx=Load()),
+            args=[
+              Name(id='plan', ctx=Load()),
+              Name(id='state', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='routing_plan', ctx=Store())],
+          value=Call(
+            func=Name(id='get_routing_plan', ctx=Load()),
+            args=[
+              Name(id='plan', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='safety_metadata', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='plan', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='safety_metadata'),
+                Dict()]),
+            orelse=Dict())),
+        Assign(
+          targets=[
+            Name(id='latency_seconds', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='routing_plan', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='latency_target'),
+              Constant(value=0)])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='latency_ms', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='latency_seconds', ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=1000))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='latency_ms', ctx=Store())],
+                  value=Constant(value=0))])]),
+        Assign(
+          targets=[
+            Name(id='criteria', ctx=Store())],
+          value=Call(
+            func=Name(id='RoutingCriteria', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='task_type',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='mode'),
+                        Constant(value='unknown')])])),
+              keyword(
+                arg='complexity',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='routing_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='complexity'),
+                        Constant(value='low')])])),
+              keyword(
+                arg='latency_target_ms',
+                value=Name(id='latency_ms', ctx=Load())),
+              keyword(
+                arg='cost_ceiling_usd',
+                value=Call(
+                  func=Name(id='float', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='routing_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='cost_ceiling'),
+                        Constant(value=0.0)])])),
+              keyword(
+                arg='risk_level',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='routing_plan', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='risk_level'),
+                        IfExp(
+                          test=Compare(
+                            left=Call(
+                              func=Attribute(
+                                value=Name(id='safety_metadata', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='sensitivity')]),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Constant(value='high')]),
+                          body=Constant(value='strict'),
+                          orelse=Constant(value='normal'))])]))])),
+        Assign(
+          targets=[
+            Name(id='decision', ctx=Store())],
+          value=Call(
+            func=Name(id='decide_route', ctx=Load()),
+            args=[
+              Name(id='criteria', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='routing_dict', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='selected_model'),
+              Constant(value='endpoint'),
+              Constant(value='rationale')],
+            values=[
+              Attribute(
+                value=Name(id='decision', ctx=Load()),
+                attr='model',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='decision', ctx=Load()),
+                attr='endpoint',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='decision', ctx=Load()),
+                attr='rationale',
+                ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='routing_plan', ctx=Load()),
+              attr='update',
+              ctx=Load()),
+            args=[
+              Name(id='routing_dict', ctx=Load())])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='plan', ctx=Load()),
+              slice=Constant(value='routing'),
+              ctx=Store())],
+          value=Name(id='routing_plan', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='build_client_for_route', ctx=Load()),
+            args=[
+              Name(id='routing_dict', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='configure_for_routing', ctx=Load()),
+            args=[
+              Name(id='routing_dict', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='complete',
+              ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='rendered', ctx=Load()),
+                slice=Constant(value='prompt'),
+                ctx=Load()),
+              Name(id='config', ctx=Load())])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='prompt'),
+              Constant(value='model_output'),
+              Constant(value='routing')],
+            values=[
+              Subscript(
+                value=Name(id='rendered', ctx=Load()),
+                slice=Constant(value='prompt'),
+                ctx=Load()),
+              Name(id='result', ctx=Load()),
+              Name(id='routing_dict', ctx=Load())]))]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    FunctionDef(
+      name='get_routing_plan',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='routing'),
+                  Dict()]),
+              attr='copy',
+              ctx=Load())))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='get_routing_model_name',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='routing', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='plan', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='routing'),
+              Dict()])),
+        Return(
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='routing', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='selected_model')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='routing', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='complexity'),
+                  Constant(value='unknown')])]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='get_routing_metadata',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='routing'),
+                  Dict()]),
+              attr='copy',
+              ctx=Load())))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='RoutingCriteria',
+      body=[
+        AnnAssign(
+          target=Name(id='task_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='complexity', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='low'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='latency_target_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=2000),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cost_ceiling_usd', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.05),
+          simple=1),
+        AnnAssign(
+          target=Name(id='risk_level', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='normal'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='model_available', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RoutingDecision',
+      body=[
+        AnnAssign(
+          target=Name(id='model', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='endpoint', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rationale', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='decide_route',
+      args=arguments(
+        args=[
+          arg(
+            arg='criteria',
+            annotation=Name(id='RoutingCriteria', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic routing strategy based on criteria.\n    No external calls, no randomness.\n    ')),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='complexity',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='high')]),
+              Compare(
+                left=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='risk_level',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='strict')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=Call(
+                func=Name(id='RoutingDecision', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model',
+                    value=Constant(value='gpt-4o')),
+                  keyword(
+                    arg='endpoint',
+                    value=Constant(value='default')),
+                  keyword(
+                    arg='rationale',
+                    value=Constant(value='High complexity or strict risk requires GPT-4o.'))]))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='criteria', ctx=Load()),
+                  attr='latency_target_ms',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=1000)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='decision', ctx=Store())],
+                  value=Call(
+                    func=Name(id='RoutingDecision', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='model',
+                        value=Constant(value='gpt-4o-mini')),
+                      keyword(
+                        arg='endpoint',
+                        value=Constant(value='fast')),
+                      keyword(
+                        arg='rationale',
+                        value=Constant(value='Low latency target; use lightweight model.'))]))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='decision', ctx=Store())],
+                  value=Call(
+                    func=Name(id='RoutingDecision', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='model',
+                        value=Constant(value='gpt-4o-mini')),
+                      keyword(
+                        arg='endpoint',
+                        value=Constant(value='default')),
+                      keyword(
+                        arg='rationale',
+                        value=Constant(value='Default routing for normal tasks.'))]))])]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='criteria', ctx=Load()),
+              attr='model_available',
+              ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=Call(
+                func=Name(id='RoutingDecision', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model',
+                    value=Constant(value='gpt-4o-mini')),
+                  keyword(
+                    arg='endpoint',
+                    value=Constant(value='fast')),
+                  keyword(
+                    arg='rationale',
+                    value=Constant(value='Primary route unavailable; using fallback fast endpoint.'))]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='META_PROFILE', ctx=Load()),
+                    attr='routing_bias',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prefer_fast')]),
+              Compare(
+                left=Attribute(
+                  value=Name(id='decision', ctx=Load()),
+                  attr='endpoint',
+                  ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Constant(value='fast'),
+                      Constant(value='default')],
+                    ctx=Load())])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='decision', ctx=Store())],
+              value=Call(
+                func=Name(id='RoutingDecision', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='model',
+                    value=Attribute(
+                      value=Name(id='decision', ctx=Load()),
+                      attr='model',
+                      ctx=Load())),
+                  keyword(
+                    arg='endpoint',
+                    value=Constant(value='fast')),
+                  keyword(
+                    arg='rationale',
+                    value=Attribute(
+                      value=Name(id='decision', ctx=Load()),
+                      attr='rationale',
+                      ctx=Load()))]))]),
+        Return(
+          value=Name(id='decision', ctx=Load()))],
+      returns=Name(id='RoutingDecision', ctx=Load())),
+    FunctionDef(
+      name='get_routing_plan',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='routing'),
+                  Dict()]),
+              attr='copy',
+              ctx=Load())))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='get_routing_model_name',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='routing', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='plan', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='routing'),
+              Dict()])),
+        Return(
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='routing', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='selected_model')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='routing', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='complexity'),
+                  Constant(value='unknown')])]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='get_routing_metadata',
+      args=arguments(
+        args=[
+          arg(
+            arg='plan',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='routing'),
+                  Dict()]),
+              attr='copy',
+              ctx=Load())))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='ArbitrationEngine',
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic stub arbitration engine.\n\n    evaluate(state, qa_report, safety_patch) -> Dict[str,str]\n    returns one of: accept, retry, replan, escalate\n    ')),
+        FunctionDef(
+          name='evaluate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='qa_report',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='safety_patch',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='sg', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='safety_patch', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='safety_gateway'),
+                  Dict()])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='sg', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='status')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='blocked')]),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='action'),
+                      Constant(value='reason'),
+                      Constant(value='surface_hint')],
+                    values=[
+                      Constant(value='escalate'),
+                      Constant(value='safety_blocked'),
+                      Constant(value='strategy_replan')]))]),
+            Assign(
+              targets=[
+                Name(id='findings', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='qa_report', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='findings'),
+                  List(ctx=Load())])),
+            For(
+              target=Name(id='f', ctx=Store()),
+              iter=Name(id='findings', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='f', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='status')]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value='pending')]),
+                  body=[
+                    Return(
+                      value=Dict(
+                        keys=[
+                          Constant(value='action'),
+                          Constant(value='reason'),
+                          Constant(value='surface_hint')],
+                        values=[
+                          Constant(value='retry'),
+                          Constant(value='qa_pending'),
+                          Constant(value='qa_recheck')]))])]),
+            Assign(
+              targets=[
+                Name(id='messages', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='messages'),
+                  List(ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='messages', ctx=Load())),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='action'),
+                      Constant(value='reason'),
+                      Constant(value='surface_hint')],
+                    values=[
+                      Constant(value='replan'),
+                      Constant(value='no_messages'),
+                      Constant(value='strategy_replan')]))]),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='action'),
+                  Constant(value='reason'),
+                  Constant(value='surface_hint')],
+                values=[
+                  Constant(value='accept'),
+                  Constant(value='default_accept'),
+                  Constant(value='qa_recheck')]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='can_delegate',
+      args=arguments(
+        args=[
+          arg(
+            arg='from_role',
+            annotation=Name(id='AgentRole', ctx=Load())),
+          arg(
+            arg='to_role',
+            annotation=Name(id='AgentRole', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic fixed delegation policy.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='PLANNER',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Set(
+                    elts=[
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='RETRIEVER',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='DRAFTER',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='AgentRole', ctx=Load()),
+                        attr='QA',
+                        ctx=Load())])]))]),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='RETRIEVER',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='DRAFTER',
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='DRAFTER',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='QA',
+                    ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='from_role', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Attribute(
+                value=Name(id='AgentRole', ctx=Load()),
+                attr='QA',
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Compare(
+                left=Name(id='to_role', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='AgentRole', ctx=Load()),
+                    attr='SAFETY',
+                    ctx=Load())]))]),
+        Return(
+          value=Constant(value=False))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='delegation_metadata',
+      args=arguments(
+        args=[
+          arg(
+            arg='sender',
+            annotation=Name(id='AgentRole', ctx=Load())),
+          arg(
+            arg='recipient',
+            annotation=Name(id='AgentRole', ctx=Load()))]),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='from'),
+              Constant(value='to'),
+              Constant(value='allowed')],
+            values=[
+              Attribute(
+                value=Name(id='sender', ctx=Load()),
+                attr='value',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='recipient', ctx=Load()),
+                attr='value',
+                ctx=Load()),
+              Call(
+                func=Name(id='can_delegate', ctx=Load()),
+                args=[
+                  Name(id='sender', ctx=Load()),
+                  Name(id='recipient', ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='deterministic_vote',
+      args=arguments(
+        args=[
+          arg(
+            arg='candidates',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Deterministic selection:\n    - Highest score wins\n    - Ties broken by smallest id\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='candidates', ctx=Load())),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='score'),
+                  Constant(value='rationale')],
+                values=[
+                  Constant(value=None),
+                  Constant(value=0.0),
+                  Constant(value='no_candidates')]))]),
+        Assign(
+          targets=[
+            Name(id='sorted_candidates', ctx=Store())],
+          value=Call(
+            func=Name(id='sorted', ctx=Load()),
+            args=[
+              Name(id='candidates', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='c')]),
+                  body=Tuple(
+                    elts=[
+                      UnaryOp(
+                        op=USub(),
+                        operand=Call(
+                          func=Name(id='float', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='c', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='score'),
+                                Constant(value=0.0)])])),
+                      Call(
+                        func=Name(id='int', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='c', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='id'),
+                              Constant(value=999999)])])],
+                    ctx=Load())))])),
+        Return(
+          value=Subscript(
+            value=Name(id='sorted_candidates', ctx=Load()),
+            slice=Constant(value=0),
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

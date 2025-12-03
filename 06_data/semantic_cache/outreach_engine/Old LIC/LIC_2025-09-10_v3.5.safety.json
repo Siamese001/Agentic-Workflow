@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 352,
+  "generated_at": 1764728337.1559052,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_2025-09-10_v3.5.md"
+}

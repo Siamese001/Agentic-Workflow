@@ -1,0 +1,384 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='time')]),
+    Import(
+      names=[
+        alias(name='uuid')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict')],
+      level=0),
+    ImportFrom(
+      module='observability',
+      names=[
+        alias(name='record_event')],
+      level=0),
+    ImportFrom(
+      module='infra.sandbox.models',
+      names=[
+        alias(name='ToolCallRequest'),
+        alias(name='ToolCallResult')],
+      level=0),
+    ImportFrom(
+      module='infra.sandbox.sandbox_errors',
+      names=[
+        alias(name='SandboxTimeoutError')],
+      level=0),
+    ClassDef(
+      name='MicroVM',
+      body=[
+        Expr(
+          value=Constant(value='Lightweight handle representing a sandboxed microVM instance.\n\n    This is a deterministic stub; no real virtualization is performed.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resource_limits', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='created_at_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='create_vm',
+      args=arguments(
+        args=[
+          arg(
+            arg='resource_limits',
+            annotation=BinOp(
+              left=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              op=BitOr(),
+              right=Constant(value=None)))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='vm', ctx=Store())],
+          value=Call(
+            func=Name(id='MicroVM', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='uuid', ctx=Load()),
+                        attr='uuid4',
+                        ctx=Load()))])),
+              keyword(
+                arg='resource_limits',
+                value=Call(
+                  func=Name(id='dict', ctx=Load()),
+                  args=[
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='resource_limits', ctx=Load()),
+                        Dict()])])),
+              keyword(
+                arg='created_at_ms',
+                value=Call(
+                  func=Name(id='_now_ms', ctx=Load())))])),
+        Expr(
+          value=Call(
+            func=Name(id='record_event', ctx=Load()),
+            args=[
+              Constant(value='sandbox_start'),
+              Dict(
+                keys=[
+                  Constant(value='vm_id'),
+                  Constant(value='resource_limits')],
+                values=[
+                  Attribute(
+                    value=Name(id='vm', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='vm', ctx=Load()),
+                    attr='resource_limits',
+                    ctx=Load())])])),
+        Return(
+          value=Name(id='vm', ctx=Load()))],
+      returns=Name(id='MicroVM', ctx=Load())),
+    FunctionDef(
+      name='teardown_vm',
+      args=arguments(
+        args=[
+          arg(
+            arg='vm',
+            annotation=Name(id='MicroVM', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='record_event', ctx=Load()),
+            args=[
+              Constant(value='sandbox_stop'),
+              Dict(
+                keys=[
+                  Constant(value='vm_id'),
+                  Constant(value='uptime_ms')],
+                values=[
+                  Attribute(
+                    value=Name(id='vm', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  BinOp(
+                    left=Call(
+                      func=Name(id='_now_ms', ctx=Load())),
+                    op=Sub(),
+                    right=Attribute(
+                      value=Name(id='vm', ctx=Load()),
+                      attr='created_at_ms',
+                      ctx=Load()))])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='exec_in_vm',
+      args=arguments(
+        args=[
+          arg(
+            arg='vm',
+            annotation=Name(id='MicroVM', ctx=Load())),
+          arg(
+            arg='request',
+            annotation=Name(id='ToolCallRequest', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Execute a tool call inside the microVM.\n\n    This implementation is deterministic and does not run arbitrary\n    code. It simulates execution and supports basic timeout behavior.\n    ')),
+        Assign(
+          targets=[
+            Name(id='start_ms', ctx=Store())],
+          value=Call(
+            func=Name(id='_now_ms', ctx=Load()))),
+        If(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='request', ctx=Load()),
+              attr='timeout_s',
+              ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=0)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='sandbox_timeout'),
+                  Dict(
+                    keys=[
+                      Constant(value='vm_id'),
+                      Constant(value='tool_name'),
+                      Constant(value='timeout_s')],
+                    values=[
+                      Attribute(
+                        value=Name(id='vm', ctx=Load()),
+                        attr='id',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='request', ctx=Load()),
+                        attr='tool_name',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='request', ctx=Load()),
+                        attr='timeout_s',
+                        ctx=Load())])])),
+            Raise(
+              exc=Call(
+                func=Name(id='SandboxTimeoutError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Tool '"),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='request', ctx=Load()),
+                          attr='tool_name',
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' timed out before start")])]))]),
+        Assign(
+          targets=[
+            Name(id='simulated_duration_ms', ctx=Store())],
+          value=Call(
+            func=Name(id='min', ctx=Load()),
+            args=[
+              BinOp(
+                left=Constant(value=50),
+                op=Mult(),
+                right=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='request', ctx=Load()),
+                      attr='args',
+                      ctx=Load())])),
+              Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Attribute(
+                      value=Name(id='request', ctx=Load()),
+                      attr='timeout_s',
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Constant(value=1000))])])),
+        Assign(
+          targets=[
+            Name(id='stdout', ctx=Store())],
+          value=JoinedStr(
+            values=[
+              Constant(value='TOOL '),
+              FormattedValue(
+                value=Attribute(
+                  value=Name(id='request', ctx=Load()),
+                  attr='tool_name',
+                  ctx=Load()),
+                conversion=-1),
+              Constant(value=' ARGS '),
+              FormattedValue(
+                value=Attribute(
+                  value=Name(id='request', ctx=Load()),
+                  attr='args',
+                  ctx=Load()),
+                conversion=-1)])),
+        Assign(
+          targets=[
+            Name(id='stderr', ctx=Store())],
+          value=Constant(value='')),
+        Assign(
+          targets=[
+            Name(id='exit_code', ctx=Store())],
+          value=Constant(value=0)),
+        Assign(
+          targets=[
+            Name(id='duration_ms', ctx=Store())],
+          value=Name(id='simulated_duration_ms', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='ToolCallResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='success',
+                value=Constant(value=True)),
+              keyword(
+                arg='stdout',
+                value=Name(id='stdout', ctx=Load())),
+              keyword(
+                arg='stderr',
+                value=Name(id='stderr', ctx=Load())),
+              keyword(
+                arg='exit_code',
+                value=Name(id='exit_code', ctx=Load())),
+              keyword(
+                arg='resource_usage',
+                value=Dict(
+                  keys=[
+                    Constant(value='cpu_ms'),
+                    Constant(value='memory_mb')],
+                  values=[
+                    Name(id='duration_ms', ctx=Load()),
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='request', ctx=Load()),
+                          attr='resource_limits',
+                          ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='memory_mb'),
+                        Constant(value=0)])])),
+              keyword(
+                arg='duration_ms',
+                value=Name(id='duration_ms', ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Name(id='record_event', ctx=Load()),
+            args=[
+              Constant(value='sandbox_tool_complete'),
+              Dict(
+                keys=[
+                  Constant(value='vm_id'),
+                  Constant(value='tool_name'),
+                  Constant(value='success'),
+                  Constant(value='exit_code'),
+                  Constant(value='duration_ms')],
+                values=[
+                  Attribute(
+                    value=Name(id='vm', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='request', ctx=Load()),
+                    attr='tool_name',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='success',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='exit_code',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='result', ctx=Load()),
+                    attr='duration_ms',
+                    ctx=Load())])])),
+        Return(
+          value=Name(id='result', ctx=Load()))],
+      returns=Name(id='ToolCallResult', ctx=Load())),
+    FunctionDef(
+      name='_now_ms',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='int', ctx=Load()),
+            args=[
+              BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='time', ctx=Load()),
+                    attr='time',
+                    ctx=Load())),
+                op=Mult(),
+                right=Constant(value=1000))]))],
+      returns=Name(id='int', ctx=Load()))])

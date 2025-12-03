@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": true,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 608,
+  "generated_at": 1764728340.7803385,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\rag_LIC v11_10.py"
+}

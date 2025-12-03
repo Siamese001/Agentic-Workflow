@@ -1,0 +1,29 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L1 Planning Layer Integration Tests.')),
+    ClassDef(
+      name='TestL1PlanningIntegration',
+      body=[
+        Expr(
+          value=Constant(value='Integration tests for L1 planning layer.')),
+        FunctionDef(
+          name='test_workflow_strategy_integration',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test workflow and strategy planning integration.')),
+            Assert(
+              test=Constant(value=True))]),
+        FunctionDef(
+          name='test_safety_workflow_integration',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test safety and workflow planning integration.')),
+            Assert(
+              test=Constant(value=True))])])])

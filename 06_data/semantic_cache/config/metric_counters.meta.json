@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\rank-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\metric_counters.yaml",
+    "rel_path": "metric_counters.yaml",
+    "root_name": "config",
+    "file_hash": "7cfb00c6aac2e204286759accf4a48889bb233e2915e56ecaced1112059b4aab",
+    "file_size": 7083,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.1254
+}

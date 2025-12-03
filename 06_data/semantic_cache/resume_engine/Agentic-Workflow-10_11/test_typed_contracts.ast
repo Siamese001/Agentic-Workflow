@@ -1,0 +1,348 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel')],
+      level=0),
+    ImportFrom(
+      module='meta.schema_validation',
+      names=[
+        alias(name='validate_schema_version')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='StrategyPlan'),
+        alias(name='StrategyResult'),
+        alias(name='DraftingPlan'),
+        alias(name='DraftingResult'),
+        alias(name='QAPlan'),
+        alias(name='QAResult'),
+        alias(name='SafetyPlan'),
+        alias(name='SafetyResult'),
+        alias(name='WorkflowPlanBundle'),
+        alias(name='RAGPlan'),
+        alias(name='RAGResult'),
+        alias(name='L2ResultBundle')],
+      level=0),
+    FunctionDef(
+      name='test_core_models_have_v1_schema_version_defaults',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='simple_plans', ctx=Store())],
+          value=List(
+            elts=[
+              Name(id='StrategyPlan', ctx=Load()),
+              Name(id='DraftingPlan', ctx=Load()),
+              Name(id='QAPlan', ctx=Load()),
+              Name(id='SafetyPlan', ctx=Load()),
+              Name(id='RAGPlan', ctx=Load())],
+            ctx=Load())),
+        For(
+          target=Name(id='cls', ctx=Store()),
+          iter=Name(id='simple_plans', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='obj', ctx=Store())],
+              value=Call(
+                func=Name(id='cls', ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='obj', ctx=Load()),
+                    Constant(value='schema_version'),
+                    Constant(value='v1')]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='v1')]))]),
+        Assign(
+          targets=[
+            Name(id='strategy_res', ctx=Store())],
+          value=Call(
+            func=Name(id='StrategyResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='branches',
+                value=List(ctx=Load()))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='strategy_res', ctx=Load()),
+              attr='schema_version',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='v1')])),
+        Assign(
+          targets=[
+            Name(id='drafting_res', ctx=Store())],
+          value=Call(
+            func=Name(id='DraftingResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='sections',
+                value=List(ctx=Load()))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='drafting_res', ctx=Load()),
+              attr='schema_version',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='v1')])),
+        Assign(
+          targets=[
+            Name(id='qa_res', ctx=Store())],
+          value=Call(
+            func=Name(id='QAResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='findings',
+                value=List(ctx=Load()))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='qa_res', ctx=Load()),
+              attr='schema_version',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='v1')])),
+        Assign(
+          targets=[
+            Name(id='safety_res', ctx=Store())],
+          value=Call(
+            func=Name(id='SafetyResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='findings',
+                value=List(ctx=Load()))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='safety_res', ctx=Load()),
+              attr='schema_version',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='v1')])),
+        Assign(
+          targets=[
+            Name(id='rag_res', ctx=Store())],
+          value=Call(
+            func=Name(id='RAGResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='evidence',
+                value=List(ctx=Load())),
+              keyword(
+                arg='used_hyde',
+                value=Constant(value=False))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='rag_res', ctx=Load()),
+              attr='schema_version',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='v1')])),
+        Assign(
+          targets=[
+            Name(id='bundle', ctx=Store())],
+          value=Call(
+            func=Name(id='WorkflowPlanBundle', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Call(
+                  func=Name(id='StrategyPlan', ctx=Load()))),
+              keyword(
+                arg='rag',
+                value=Call(
+                  func=Name(id='RAGPlan', ctx=Load()))),
+              keyword(
+                arg='drafting',
+                value=Call(
+                  func=Name(id='DraftingPlan', ctx=Load()))),
+              keyword(
+                arg='qa',
+                value=Call(
+                  func=Name(id='QAPlan', ctx=Load()))),
+              keyword(
+                arg='safety',
+                value=Call(
+                  func=Name(id='SafetyPlan', ctx=Load())))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='bundle', ctx=Load()),
+              attr='schema_version',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='v1')])),
+        Assign(
+          targets=[
+            Name(id='l2_result', ctx=Store())],
+          value=Call(
+            func=Name(id='L2ResultBundle', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Call(
+                  func=Name(id='StrategyResult', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='branches',
+                      value=List(ctx=Load()))])),
+              keyword(
+                arg='rag',
+                value=Call(
+                  func=Name(id='RAGResult', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='evidence',
+                      value=List(ctx=Load())),
+                    keyword(
+                      arg='used_hyde',
+                      value=Constant(value=False))])),
+              keyword(
+                arg='drafting',
+                value=Call(
+                  func=Name(id='DraftingResult', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='sections',
+                      value=List(ctx=Load()))])),
+              keyword(
+                arg='qa',
+                value=Call(
+                  func=Name(id='QAResult', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='findings',
+                      value=List(ctx=Load()))])),
+              keyword(
+                arg='safety',
+                value=Call(
+                  func=Name(id='SafetyResult', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='findings',
+                      value=List(ctx=Load()))]))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='l2_result', ctx=Load()),
+              attr='schema_version',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='v1')]))]),
+    FunctionDef(
+      name='test_validate_schema_version_accepts_matching_models',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='bundle', ctx=Store())],
+          value=Call(
+            func=Name(id='WorkflowPlanBundle', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='strategy',
+                value=Call(
+                  func=Name(id='StrategyPlan', ctx=Load()))),
+              keyword(
+                arg='rag',
+                value=Call(
+                  func=Name(id='RAGPlan', ctx=Load()))),
+              keyword(
+                arg='drafting',
+                value=Call(
+                  func=Name(id='DraftingPlan', ctx=Load()))),
+              keyword(
+                arg='qa',
+                value=Call(
+                  func=Name(id='QAPlan', ctx=Load()))),
+              keyword(
+                arg='safety',
+                value=Call(
+                  func=Name(id='SafetyPlan', ctx=Load())))])),
+        Expr(
+          value=Call(
+            func=Name(id='validate_schema_version', ctx=Load()),
+            args=[
+              Name(id='bundle', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='model_type',
+                value=Name(id='WorkflowPlanBundle', ctx=Load()))]))]),
+    FunctionDef(
+      name='test_validate_schema_version_rejects_mismatched_version',
+      args=arguments(),
+      body=[
+        ClassDef(
+          name='DummyModel',
+          bases=[
+            Name(id='BaseModel', ctx=Load())],
+          body=[
+            AnnAssign(
+              target=Name(id='schema_version', ctx=Store()),
+              annotation=Name(id='str', ctx=Load()),
+              value=Constant(value='v2'),
+              simple=1)]),
+        Assign(
+          targets=[
+            Name(id='m', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyModel', ctx=Load()))),
+        Try(
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='validate_schema_version', ctx=Load()),
+                args=[
+                  Name(id='m', ctx=Load())]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='ValueError', ctx=Load()),
+              name='exc',
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Constant(value='Unexpected schema_version'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='exc', ctx=Load())])]))])],
+          orelse=[
+            Raise(
+              exc=Call(
+                func=Name(id='AssertionError', ctx=Load()),
+                args=[
+                  Constant(value='validate_schema_version did not reject mismatched version')]))])])])

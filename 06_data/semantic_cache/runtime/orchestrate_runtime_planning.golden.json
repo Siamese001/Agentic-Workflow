@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - orchestrate_runtime_planning\nImplements L1 Cognitive Planning Layer for orchestrate runtime planning operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass OrchestrateRuntimePlanningOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass OrchestrateRuntimePlanningOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass OrchestrateRuntimePlanningOrchestratorResult:\n    \"\"\"L5 Resu",
+  "full_hash": "f8e21f91e1b19de0ea72594e5c6d76116017408c2df4163cf98cf85225d314e1",
+  "generated_at": 1764728347.109739,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\plan-phase\\get-runtime-info\\general\\understand-request\\orchestrate_runtime_planning.py"
+}

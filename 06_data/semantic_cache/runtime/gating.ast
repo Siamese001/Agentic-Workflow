@@ -1,0 +1,205 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict')],
+      level=0),
+    FunctionDef(
+      name='gate_experiment',
+      args=arguments(
+        args=[
+          arg(
+            arg='new_scores',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='baseline_scores',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Return True if the experiment meets or exceeds baseline.\n\n    For now we only enforce that avg_score is not worse and that\n    pass_count is not lower when both metrics are present.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='baseline_scores', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=True))]),
+        Assign(
+          targets=[
+            Name(id='new_avg', ctx=Store())],
+          value=Call(
+            func=Name(id='float', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='new_scores', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='avg_score'),
+                  Constant(value=0.0)])])),
+        Assign(
+          targets=[
+            Name(id='base_avg', ctx=Store())],
+          value=Call(
+            func=Name(id='float', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='baseline_scores', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='avg_score'),
+                  Constant(value=0.0)])])),
+        If(
+          test=Compare(
+            left=Name(id='new_avg', ctx=Load()),
+            ops=[
+              Lt()],
+            comparators=[
+              Name(id='base_avg', ctx=Load())]),
+          body=[
+            Return(
+              value=Constant(value=False))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Constant(value='pass_count'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='baseline_scores', ctx=Load())]),
+              Compare(
+                left=Constant(value='pass_count'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='new_scores', ctx=Load())])]),
+          body=[
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='float', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='new_scores', ctx=Load()),
+                      slice=Constant(value='pass_count'),
+                      ctx=Load())]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Call(
+                    func=Name(id='float', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='baseline_scores', ctx=Load()),
+                        slice=Constant(value='pass_count'),
+                        ctx=Load())])]),
+              body=[
+                Return(
+                  value=Constant(value=False))])]),
+        Return(
+          value=Constant(value=True))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='gate_against_baseline',
+      args=arguments(
+        args=[
+          arg(
+            arg='current_scores',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='baseline_scores',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='tolerance',
+            annotation=Name(id='float', ctx=Load()))],
+        defaults=[
+          Constant(value=0.0)]),
+      body=[
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='baseline_scores', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=True))]),
+        Assign(
+          targets=[
+            Name(id='adjusted_baseline', ctx=Store())],
+          value=Call(
+            func=Name(id='dict', ctx=Load()),
+            args=[
+              Name(id='baseline_scores', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='base_avg', ctx=Store())],
+          value=Call(
+            func=Name(id='float', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='baseline_scores', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='avg_score'),
+                  Constant(value=0.0)])])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='adjusted_baseline', ctx=Load()),
+              slice=Constant(value='avg_score'),
+              ctx=Store())],
+          value=Call(
+            func=Name(id='max', ctx=Load()),
+            args=[
+              Constant(value=0.0),
+              BinOp(
+                left=Name(id='base_avg', ctx=Load()),
+                op=Sub(),
+                right=Name(id='tolerance', ctx=Load()))])),
+        Return(
+          value=Call(
+            func=Name(id='gate_experiment', ctx=Load()),
+            args=[
+              Name(id='current_scores', ctx=Load()),
+              Name(id='adjusted_baseline', ctx=Load())]))],
+      returns=Name(id='bool', ctx=Load()))])

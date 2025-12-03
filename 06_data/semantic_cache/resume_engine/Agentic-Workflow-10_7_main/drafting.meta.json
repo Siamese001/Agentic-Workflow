@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\drafting.py",
+    "rel_path": "drafting.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "9cfdd1937689d24cad6d7001279e2c59e55d720f103b8bdda8b9c77f39e0cfc6",
+    "file_size": 25932,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728229.6849415
+}

@@ -1,0 +1,19 @@
+Module(
+  body=[
+    Expr(
+      value=Compare(
+        left=Name(id='pytest', ctx=Load()),
+        ops=[
+          GtE()],
+        comparators=[
+          Constant(value=7.0)])),
+    Expr(
+      value=Compare(
+        left=BinOp(
+          left=Name(id='pytest', ctx=Load()),
+          op=Sub(),
+          right=Name(id='cov', ctx=Load())),
+        ops=[
+          GtE()],
+        comparators=[
+          Constant(value=4.0)]))])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tools\\consolidate_repo.py",
+    "rel_path": "consolidate_repo.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c",
+    "file_size": 4025,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.6805494
+}

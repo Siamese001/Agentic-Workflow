@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nV6 Prompt Integration for resume generation system.\n\nIntegrates instructional prompts with planners to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom .instructional_injection_v6 import (\n    InstructionalPrompt,\n    InstructionalLayer,\n    InstructionalExtension,\n    LayerContent,\n    ExtensionContent,\n    create_l1_planner_prompt,\n    create_l2_executor_prompt,\n    add_rag_extension,\n    add_temporal_extension,\n    add_cot_extension,\n)\nfrom .many_shot_examples import (\n    ExampleType,\n    get_examples,\n    format_examples_for_prompt,\n)\n\n\n# =============================================================================\n# L1 Planner Prompt Factories\n# =============================================================================\n\n\ndef create_strategy_planner_prompt(\n    include_examples: bool = True,\n    enable_cot: bool = True,\n) -> str:\n    \"\"\"\nCreates v6 prompt for L1 strategy plann",
+  "full_hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
+  "generated_at": 1764728224.8723352,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\v6_prompt_integration.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v14.34\n\nKeyError Fix: focus_instruction Missing in K5_EY_NARRATIVE Context\n\nThis version fixes a KeyError that occurred when generating the K5 (EY Narrative)\nsection. The _build_context_narrative method was not setting focus_instruction\nfor the K5_EY_NARRATIVE branch, causing a KeyError when the prompt template\nattempted to format with the missing key.\n\nKey Changes from v14.33:\n1. Fixed _build_context_narrative to set focus_instruction for K5_EY_NARRATIVE\n   - Added explicit focus_instruction assignment in the K5 elif branch\n   - Ensures all narrative sections have a defined focus_instruction value\n\nThe issue manifested as:\n  KeyError: 'focus_instruction'\n  at line 4285: prompt = prompt_template.format_map(...)\n\nAll other functionality from v14.33 is retained:\n- Explicit API Key Configuration at Module Initialization\n- Enhanced API Call Logging\n- Configuration Context Logging\n- Data Flow & Transformation Snapshots\n- Intermediate Validation & Decision Loggin",
+  "full_hash": "583713629b9ce37560bc9050b2dc133b4c89b924bfa8275f4e184e66d04fb1e6",
+  "generated_at": 1764728282.0142348,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v14_34.py"
+}

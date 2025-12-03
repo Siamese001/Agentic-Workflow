@@ -1,0 +1,392 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nOrchestration layer error definitions.\n\nThis module provides error classes specific to orchestration operations,\nmoved from core/errors.py during canonical structure cleanup.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ClassDef(
+      name='ErrorSeverity',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Severity levels for workflow errors.')),
+        Assign(
+          targets=[
+            Name(id='LOW', ctx=Store())],
+          value=Constant(value='low')),
+        Assign(
+          targets=[
+            Name(id='MEDIUM', ctx=Store())],
+          value=Constant(value='medium')),
+        Assign(
+          targets=[
+            Name(id='HIGH', ctx=Store())],
+          value=Constant(value='high')),
+        Assign(
+          targets=[
+            Name(id='CRITICAL', ctx=Store())],
+          value=Constant(value='critical'))]),
+    ClassDef(
+      name='WorkflowErrorCode',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Standard error codes for workflow operations.')),
+        Assign(
+          targets=[
+            Name(id='NODE_EXECUTION_FAILED', ctx=Store())],
+          value=Constant(value='node_execution_failed')),
+        Assign(
+          targets=[
+            Name(id='SAFETY_VIOLATION', ctx=Store())],
+          value=Constant(value='safety_violation')),
+        Assign(
+          targets=[
+            Name(id='STATE_TRANSITION_FAILED', ctx=Store())],
+          value=Constant(value='state_transition_failed')),
+        Assign(
+          targets=[
+            Name(id='TIMEOUT', ctx=Store())],
+          value=Constant(value='timeout')),
+        Assign(
+          targets=[
+            Name(id='RESOURCE_EXHAUSTED', ctx=Store())],
+          value=Constant(value='resource_exhausted')),
+        Assign(
+          targets=[
+            Name(id='VALIDATION_FAILED', ctx=Store())],
+          value=Constant(value='validation_failed')),
+        Assign(
+          targets=[
+            Name(id='DEPENDENCY_FAILED', ctx=Store())],
+          value=Constant(value='dependency_failed')),
+        Assign(
+          targets=[
+            Name(id='CONFIGURATION_ERROR', ctx=Store())],
+          value=Constant(value='configuration_error'))]),
+    ClassDef(
+      name='ErrorContext',
+      body=[
+        Expr(
+          value=Constant(value='Context information for workflow errors.')),
+        AnnAssign(
+          target=Name(id='node_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='additional_data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='WorkflowError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Base class for all workflow-related errors.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='error_code',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='WorkflowErrorCode', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='severity',
+                annotation=Name(id='ErrorSeverity', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='ErrorContext', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Attribute(
+                value=Name(id='ErrorSeverity', ctx=Load()),
+                attr='MEDIUM',
+                ctx=Load()),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='message', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='error_code',
+                  ctx=Store())],
+              value=Name(id='error_code', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='severity',
+                  ctx=Store())],
+              value=Name(id='severity', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='context', ctx=Load()),
+                  Call(
+                    func=Name(id='ErrorContext', ctx=Load()))]))])]),
+    ClassDef(
+      name='NodeExecutionError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when a node execution fails.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='node_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='ErrorContext', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='message', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='error_code',
+                    value=Attribute(
+                      value=Name(id='WorkflowErrorCode', ctx=Load()),
+                      attr='NODE_EXECUTION_FAILED',
+                      ctx=Load())),
+                  keyword(
+                    arg='context',
+                    value=Name(id='context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='node_id',
+                  ctx=Store())],
+              value=Name(id='node_id', ctx=Load()))])]),
+    ClassDef(
+      name='SafetyViolationError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when safety validation fails.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='violation_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='ErrorContext', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='message', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='error_code',
+                    value=Attribute(
+                      value=Name(id='WorkflowErrorCode', ctx=Load()),
+                      attr='SAFETY_VIOLATION',
+                      ctx=Load())),
+                  keyword(
+                    arg='severity',
+                    value=Attribute(
+                      value=Name(id='ErrorSeverity', ctx=Load()),
+                      attr='HIGH',
+                      ctx=Load())),
+                  keyword(
+                    arg='context',
+                    value=Name(id='context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='violation_type',
+                  ctx=Store())],
+              value=Name(id='violation_type', ctx=Load()))])]),
+    ClassDef(
+      name='StateTransitionError',
+      bases=[
+        Name(id='WorkflowError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when state transition fails.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='from_state',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='to_state',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='ErrorContext', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='message', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='error_code',
+                    value=Attribute(
+                      value=Name(id='WorkflowErrorCode', ctx=Load()),
+                      attr='STATE_TRANSITION_FAILED',
+                      ctx=Load())),
+                  keyword(
+                    arg='context',
+                    value=Name(id='context', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='from_state',
+                  ctx=Store())],
+              value=Name(id='from_state', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='to_state',
+                  ctx=Store())],
+              value=Name(id='to_state', ctx=Load()))])])])

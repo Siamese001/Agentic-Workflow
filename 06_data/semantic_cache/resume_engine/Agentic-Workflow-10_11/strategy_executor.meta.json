@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\strategy_executor.py",
+    "rel_path": "strategy_executor.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "dc73a0c1dc2b27c4183658bcec487d27f50f1c349e2e1c96f7db7864ec8db9d9",
+    "file_size": 2011,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728225.0534406
+}

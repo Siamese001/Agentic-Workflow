@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__validation__test_semantic_and_qa_validation_v10_7.py",
+    "rel_path": "test_flat__validation__test_semantic_and_qa_validation_v10_7.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "8e164d1ca05dd733a838105fc1ed1cb8ab66b27ea0f0422caf8409ae4f8e0e32",
+    "file_size": 8870,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.3757572
+}

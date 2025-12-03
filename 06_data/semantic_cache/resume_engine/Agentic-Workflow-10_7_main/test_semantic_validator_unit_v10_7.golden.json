@@ -1,0 +1,6 @@
+{
+  "golden_content": "from core_v10_7 import MetricsCollector, SemanticValidator\n\n\ndef _validator() -> SemanticValidator:\n    metrics = MetricsCollector()\n    return SemanticValidator(metrics_collector=metrics)\n\n\ndef test_word_count_within_range_passes():\n    validator = _validator()\n    ok, message = validator.check_word_count(\"a b c d\", min_words=2, max_words=10)\n    assert ok is True\n    assert \"Word count OK\" in message\n\n\ndef test_word_count_out_of_range_fails():\n    validator = _validator()\n    ok, message = validator.check_word_count(\"one\", min_words=2, max_words=5)\n    assert ok is False\n    assert \"FAILED\" in message\n\n\ndef test_llm_reported_count_discrepancy_logs_metric():\n    metrics = MetricsCollector()\n    validator = SemanticValidator(metrics_collector=metrics)\n    validator.check_word_count(\"token token\", min_words=1, max_words=10, llm_reported_count=100, workflow_id=\"wf-123\")\n    assert any(m[\"task_name\"] == \"word_count_discrepancy\" for m in metrics.metrics)\n",
+  "full_hash": "c97ac8bf8e981719a77b896306e2626aeb1322ce30bda33027969125009c4fec",
+  "generated_at": 1764728230.51317,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\core\\test_semantic_validator_unit_v10_7.py"
+}

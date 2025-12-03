@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - invoke_data_actions\nImplements L1 Cognitive Planning Layer for invoke data actions operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass InvokeDataActionsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass InvokeDataActionsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass InvokeDataActionsOrchestratorResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n",
+  "full_hash": "6aef641a46f926e7b23e3e88d8ee9b1cc16296cc889afb1a8d40c58a0dc684c5",
+  "generated_at": 1764728349.6951566,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\orc-layer\\act-phase\\use-data-tools\\general\\use-a-tool\\invoke_data_actions.py"
+}

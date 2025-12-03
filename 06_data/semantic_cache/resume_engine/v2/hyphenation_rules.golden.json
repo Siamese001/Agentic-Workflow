@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"description\": \"A comprehensive suite of rules for style enforcement, including hyphenation and advanced AI text sanitization inspired by principles from leading language models.\",\n  \"style_version\": \"v2.1-Comprehensive\",\n  \"rules\": {\n    \"unnatural_hyphens_remove\": [\n      {\"from\": \"AI-powered\", \"to\": \"AI powered\"},\n      {\"from\": \"PS-centric\", \"to\": \"professional services\"},\n      {\"from\": \"high-velocity\", \"to\": \"high velocity\"},\n      {\"from\": \"automation-first\", \"to\": \"automation\"},\n      {\"from\": \"lifecycle-based\", \"to\": \"lifecycle based\"}\n    ],\n    \"natural_hyphens_preserve\": [\n      \"best-in-class\", \"business-to-business\", \"business-to-consumer\", \"co-author\",\n      \"co-deliver\", \"co-founder\", \"cost-effective\", \"cross-functional\", \"customer-centric\",\n      \"cutting-edge\", \"data-driven\", \"day-to-day\", \"deep-learning\", \"end-to-end\",\n      \"enterprise-wide\", \"forward-thinking\", \"go-to-market\", \"hands-on\", \"high-performance\",\n      \"long-term\", \"machine-learning\", \"mission-criti",
+  "full_hash": "047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457",
+  "generated_at": 1764728327.0859165,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v2\\hyphenation_rules.json"
+}

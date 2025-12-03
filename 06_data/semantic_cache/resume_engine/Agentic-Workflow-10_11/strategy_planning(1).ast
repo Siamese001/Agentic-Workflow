@@ -1,0 +1,761 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nStrategy planning for comprehensive resume improvement and job alignment.\n\nCreates targeted plans to enhance resume content and structure\nfor optimal job application success.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='config',
+      names=[
+        alias(name='config_profiles_v10_10', asname='config_profiles')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='DraftingPlan', asname='WorkflowDraftingPlan'),
+        alias(name='ExecutionContext'),
+        alias(name='RAGResult'),
+        alias(name='StrategyPlan', asname='WorkflowStrategyPlan'),
+        alias(name='StrategyResult')],
+      level=0),
+    ImportFrom(
+      module='infra.reasoning.cot',
+      names=[
+        alias(name='expand_chain_of_thought')],
+      level=0),
+    ImportFrom(
+      module='infra.reasoning.react',
+      names=[
+        alias(name='run_react_loop')],
+      level=0),
+    ImportFrom(
+      module='infra.reasoning.reflexion',
+      names=[
+        alias(name='apply_reflexion')],
+      level=0),
+    ImportFrom(
+      module='infra.reasoning.tot',
+      names=[
+        alias(name='tree_search')],
+      level=0),
+    ImportFrom(
+      module='l1.builders.prompt_builder',
+      names=[
+        alias(name='PromptInstance'),
+        alias(name='build_drafting_prompt')],
+      level=0),
+    ImportFrom(
+      module='l1.v6_prompt_adapter',
+      names=[
+        alias(name='build_v6_strategy_prompt'),
+        alias(name='V6PromptConfig')],
+      level=0),
+    ImportFrom(
+      module='l5.injection_detection',
+      names=[
+        alias(name='InjectionDetector'),
+        alias(name='SafetyContext')],
+      level=0),
+    ImportFrom(
+      module='infra.di_container',
+      names=[
+        alias(name='get_service')],
+      level=0),
+    ImportFrom(
+      module='l5.policy',
+      names=[
+        alias(name='SafetyEngine')],
+      level=0),
+    ClassDef(
+      name='StrategyPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Defines resume strategy planning structure.\n\n    Ensures systematic approach to comprehensive resume\n    improvement and job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='prompt', ctx=Store()),
+          annotation=Name(id='PromptInstance', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='DraftPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Structures resume drafting planning approach.\n\n    Guides content creation for professional resume\n    enhancement and improved job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='prompt', ctx=Store()),
+          annotation=Name(id='PromptInstance', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='LatentThinkingPlan',
+      body=[
+        Expr(
+          value=Constant(value='\n    Coordinates cognitive processing for resume analysis.\n\n    Enhances reasoning capabilities for strategic resume\n    planning and improved job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='profile_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reasoning_mode', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='depth', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='trace', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    FunctionDef(
+      name='plan_strategy',
+      args=arguments(
+        args=[
+          arg(
+            arg='strategy_plan',
+            annotation=Name(id='WorkflowStrategyPlan', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='job',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='resume',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='config',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='v6_config',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='V6PromptConfig', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          None,
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates comprehensive resume improvement strategy plan.\n\n    Generates targeted approach to enhance resume job\n    alignment and application success.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='v6_config', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='v6_config', ctx=Store())],
+              value=Call(
+                func=Name(id='V6PromptConfig', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='include_examples',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='enable_cot',
+                    value=Constant(value=True))]))]),
+        Assign(
+          targets=[
+            Name(id='v6_prompt', ctx=Store())],
+          value=Call(
+            func=Name(id='build_v6_strategy_prompt', ctx=Load()),
+            args=[
+              Name(id='ctx', ctx=Load()),
+              Name(id='job', ctx=Load()),
+              Name(id='resume', ctx=Load()),
+              Name(id='config', ctx=Load()),
+              Name(id='v6_config', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='safety_engine', ctx=Store())],
+          value=Call(
+            func=Name(id='get_service', ctx=Load()),
+            args=[
+              Name(id='SafetyEngine', ctx=Load())])),
+        If(
+          test=Name(id='safety_engine', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='safety_context', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyContext', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='content_type',
+                    value=Constant(value='strategy_prompt')),
+                  keyword(
+                    arg='source',
+                    value=Constant(value='l1_strategy_planning')),
+                  keyword(
+                    arg='destination',
+                    value=Constant(value='l2_execution')),
+                  keyword(
+                    arg='content',
+                    value=Name(id='v6_prompt', ctx=Load())),
+                  keyword(
+                    arg='user_id',
+                    value=Call(
+                      func=Name(id='getattr', ctx=Load()),
+                      args=[
+                        Name(id='ctx', ctx=Load()),
+                        Constant(value='user_id'),
+                        Constant(value='unknown')])),
+                  keyword(
+                    arg='session_id',
+                    value=Call(
+                      func=Name(id='getattr', ctx=Load()),
+                      args=[
+                        Name(id='ctx', ctx=Load()),
+                        Constant(value='session_id'),
+                        Constant(value='unknown')])),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='agent'),
+                        Constant(value='v6_enabled')],
+                      values=[
+                        Constant(value='strategy_planner'),
+                        Constant(value=True)]))])),
+            Assign(
+              targets=[
+                Name(id='policy_result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='safety_engine', ctx=Load()),
+                  attr='evaluate',
+                  ctx=Load()),
+                args=[
+                  Name(id='safety_context', ctx=Load())])),
+            If(
+              test=Attribute(
+                value=Name(id='policy_result', ctx=Load()),
+                attr='blocking_findings',
+                ctx=Load()),
+              body=[
+                Import(
+                  names=[
+                    alias(name='logging')]),
+                Assign(
+                  targets=[
+                    Name(id='logger', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='getLogger',
+                      ctx=Load()),
+                    args=[
+                      Name(id='__name__', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Security violations in strategy prompt: '),
+                          FormattedValue(
+                            value=ListComp(
+                              elt=Attribute(
+                                value=Name(id='f', ctx=Load()),
+                                attr='message',
+                                ctx=Load()),
+                              generators=[
+                                comprehension(
+                                  target=Name(id='f', ctx=Store()),
+                                  iter=Attribute(
+                                    value=Name(id='policy_result', ctx=Load()),
+                                    attr='blocking_findings',
+                                    ctx=Load()),
+                                  is_async=0)]),
+                            conversion=-1)])]))])]),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptInstance', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Constant(value='system.strategy.v6')),
+              keyword(
+                arg='content',
+                value=Name(id='v6_prompt', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Constant(value='L1')),
+              keyword(
+                arg='agent',
+                value=Constant(value='strategy')),
+              keyword(
+                arg='model_tier',
+                value=Constant(value='balanced')),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='v6_prompt'),
+                    Constant(value='security_validated')],
+                  values=[
+                    Constant(value=True),
+                    Compare(
+                      left=Name(id='safety_engine', ctx=Load()),
+                      ops=[
+                        IsNot()],
+                      comparators=[
+                        Constant(value=None)])]))])),
+        Return(
+          value=Call(
+            func=Name(id='StrategyPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt',
+                value=Name(id='prompt', ctx=Load()))]))],
+      returns=Name(id='StrategyPlan', ctx=Load())),
+    FunctionDef(
+      name='plan_draft',
+      args=arguments(
+        args=[
+          arg(
+            arg='drafting_plan',
+            annotation=Name(id='WorkflowDraftingPlan', ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load())),
+          arg(
+            arg='strategy_result',
+            annotation=Name(id='StrategyResult', ctx=Load())),
+          arg(
+            arg='rag_result',
+            annotation=Name(id='RAGResult', ctx=Load())),
+          arg(
+            arg='job',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='resume',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='config',
+            annotation=Name(id='Any', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          None,
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates comprehensive resume drafting plan.\n\n    Structures approach for generating professional resume\n    content aligned with job requirements.\n    ')),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Name(id='build_drafting_prompt', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='plan',
+                value=Name(id='drafting_plan', ctx=Load())),
+              keyword(
+                arg='ctx',
+                value=Name(id='ctx', ctx=Load())),
+              keyword(
+                arg='strategy',
+                value=Name(id='strategy_result', ctx=Load())),
+              keyword(
+                arg='rag',
+                value=Name(id='rag_result', ctx=Load())),
+              keyword(
+                arg='job',
+                value=Name(id='job', ctx=Load())),
+              keyword(
+                arg='resume',
+                value=Name(id='resume', ctx=Load())),
+              keyword(
+                arg='layer',
+                value=Constant(value='L2')),
+              keyword(
+                arg='agent',
+                value=Constant(value='drafting')),
+              keyword(
+                arg='model_tier',
+                value=Constant(value='balanced'))])),
+        Return(
+          value=Call(
+            func=Name(id='DraftPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='prompt',
+                value=Name(id='prompt', ctx=Load()))]))],
+      returns=Name(id='DraftPlan', ctx=Load())),
+    FunctionDef(
+      name='generate_latent_thinking_plan',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='Any', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Name(id='ExecutionContext', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Generates cognitive processing plan for resume analysis.\n\n    Optimizes reasoning strategy to enhance resume\n    improvement quality and job alignment.\n    ')),
+        Assign(
+          targets=[
+            Name(id='profile_name', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='ctx', ctx=Load()),
+                  Constant(value='profile_name'),
+                  Constant(value=None)]),
+              Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='ctx', ctx=Load()),
+                    attr='config',
+                    ctx=Load()),
+                  Constant(value='profile_id'),
+                  Constant(value='default')])])),
+        Assign(
+          targets=[
+            Name(id='reasoning_mode', ctx=Store())],
+          value=Constant(value='cot')),
+        Assign(
+          targets=[
+            Name(id='depth', ctx=Store())],
+          value=Constant(value=1)),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='spec', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='config_profiles', ctx=Load()),
+                  attr='get_profile',
+                  ctx=Load()),
+                args=[
+                  Name(id='profile_name', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='reasoning_mode', ctx=Store())],
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='spec', ctx=Load()),
+                          Constant(value='reasoning_mode'),
+                          Constant(value='cot')]),
+                      Constant(value='cot')])])),
+            Assign(
+              targets=[
+                Name(id='depth', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='spec', ctx=Load()),
+                          Constant(value='drafting_depth'),
+                          Constant(value=1)]),
+                      Constant(value=1)])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='reasoning_mode', ctx=Store())],
+                  value=Constant(value='cot')),
+                Assign(
+                  targets=[
+                    Name(id='depth', ctx=Store())],
+                  value=Constant(value=1))])]),
+        AnnAssign(
+          target=Name(id='sections', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='drafting_result', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='result', ctx=Load()),
+                  Constant(value='drafting'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Name(id='sections', ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Name(id='drafting_result', ctx=Load()),
+                          Constant(value='sections'),
+                          List(ctx=Load())]),
+                      List(ctx=Load())])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='sections', ctx=Store())],
+                  value=List(ctx=Load()))])]),
+        AnnAssign(
+          target=Name(id='trace', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        If(
+          test=Name(id='sections', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='seed_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Name(id='getattr', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='sections', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          Constant(value='body'),
+                          Constant(value=None)]),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            If(
+              test=Name(id='seed_text', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='mode', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='reasoning_mode', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))),
+                    If(
+                      test=Compare(
+                        left=Constant(value='tot'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='mode', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Tuple(
+                              elts=[
+                                Name(id='path', ctx=Store()),
+                                Name(id='_', ctx=Store())],
+                              ctx=Store())],
+                          value=Call(
+                            func=Name(id='tree_search', ctx=Load()),
+                            args=[
+                              Name(id='seed_text', ctx=Load())],
+                            keywords=[
+                              keyword(
+                                arg='max_depth',
+                                value=Constant(value=2)),
+                              keyword(
+                                arg='branching',
+                                value=Call(
+                                  func=Name(id='max', ctx=Load()),
+                                  args=[
+                                    Constant(value=1),
+                                    Name(id='depth', ctx=Load())]))])),
+                        Assign(
+                          targets=[
+                            Name(id='trace', ctx=Store())],
+                          value=ListComp(
+                            elt=Attribute(
+                              value=Name(id='node', ctx=Load()),
+                              attr='content',
+                              ctx=Load()),
+                            generators=[
+                              comprehension(
+                                target=Name(id='node', ctx=Store()),
+                                iter=Name(id='path', ctx=Load()),
+                                is_async=0)]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Constant(value='react'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='mode', ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='steps', ctx=Store())],
+                              value=Call(
+                                func=Name(id='run_react_loop', ctx=Load()),
+                                args=[
+                                  Name(id='seed_text', ctx=Load())],
+                                keywords=[
+                                  keyword(
+                                    arg='max_steps',
+                                    value=Call(
+                                      func=Name(id='max', ctx=Load()),
+                                      args=[
+                                        Constant(value=1),
+                                        Name(id='depth', ctx=Load())]))])),
+                            Assign(
+                              targets=[
+                                Name(id='trace', ctx=Store())],
+                              value=ListComp(
+                                elt=Attribute(
+                                  value=Name(id='step', ctx=Load()),
+                                  attr='thought',
+                                  ctx=Load()),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='step', ctx=Store()),
+                                    iter=Name(id='steps', ctx=Load()),
+                                    is_async=0)]))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Constant(value='reflex'),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='mode', ctx=Load())]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='trace', ctx=Store())],
+                                  value=Call(
+                                    func=Name(id='apply_reflexion', ctx=Load()),
+                                    args=[
+                                      Name(id='seed_text', ctx=Load())]))],
+                              orelse=[
+                                Assign(
+                                  targets=[
+                                    Name(id='trace', ctx=Store())],
+                                  value=Call(
+                                    func=Name(id='expand_chain_of_thought', ctx=Load()),
+                                    args=[
+                                      Name(id='seed_text', ctx=Load())],
+                                    keywords=[
+                                      keyword(
+                                        arg='steps',
+                                        value=Call(
+                                          func=Name(id='max', ctx=Load()),
+                                          args=[
+                                            Constant(value=1),
+                                            Name(id='depth', ctx=Load())]))]))])])])],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='trace', ctx=Store())],
+                          value=List(ctx=Load()))])])])]),
+        Return(
+          value=Call(
+            func=Name(id='LatentThinkingPlan', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='profile_name',
+                value=Name(id='profile_name', ctx=Load())),
+              keyword(
+                arg='reasoning_mode',
+                value=Name(id='reasoning_mode', ctx=Load())),
+              keyword(
+                arg='depth',
+                value=Name(id='depth', ctx=Load())),
+              keyword(
+                arg='trace',
+                value=Name(id='trace', ctx=Load()))]))],
+      returns=Name(id='LatentThinkingPlan', ctx=Load()))])

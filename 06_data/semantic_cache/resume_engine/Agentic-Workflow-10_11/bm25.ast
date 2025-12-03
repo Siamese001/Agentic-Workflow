@@ -1,0 +1,308 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='BM25-based lexical retriever (v10_10 · META layer).\n\nThis module wraps the ``rank-bm25`` library behind a simple function\nthat can be used by the retrieval layer. It is safe to import even if\n``rank_bm25`` is not installed: imports are performed lazily and\nexposed as explicit errors.\n\nResponsibilities:\n    • Provide a BM25Okapi-backed search over an in-memory corpus.\n    • Return results as simple dicts suitable for adaptation into\n      Evidence objects or other downstream structures.\n\nNon-responsibilities:\n    • No knowledge of prompts, agents, or workflow plans.\n    • No persistence or indexing beyond the in-memory corpus.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Sequence')],
+      level=0),
+    ClassDef(
+      name='BM25ClientError',
+      bases=[
+        Name(id='RuntimeError', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when rank-bm25 cannot be imported or used.'))]),
+    FunctionDef(
+      name='_import_bm25',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Import BM25Okapi lazily from rank_bm25.')),
+        Try(
+          body=[
+            ImportFrom(
+              module='rank_bm25',
+              names=[
+                alias(name='BM25Okapi')],
+              level=0)],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='ImportError', ctx=Load()),
+              name='exc',
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='BM25ClientError', ctx=Load()),
+                    args=[
+                      Constant(value='rank-bm25 package not installed')]),
+                  cause=Name(id='exc', ctx=Load()))])]),
+        Return(
+          value=Name(id='BM25Okapi', ctx=Load()))]),
+    ClassDef(
+      name='BM25Config',
+      body=[
+        Expr(
+          value=Constant(value='Configuration for BM25 retrieval.')),
+        AnnAssign(
+          target=Name(id='k1', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.5),
+          simple=1),
+        AnnAssign(
+          target=Name(id='b', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.75),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_hits', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=20),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='_tokenize',
+      args=arguments(
+        args=[
+          arg(
+            arg='text',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Very simple whitespace tokenizer.')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='text', ctx=Load()),
+                      Constant(value='')]),
+                  attr='lower',
+                  ctx=Load())),
+              attr='split',
+              ctx=Load())))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='bm25_search',
+      args=arguments(
+        args=[
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='corpus',
+            annotation=Subscript(
+              value=Name(id='Sequence', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='cfg',
+            annotation=Name(id='BM25Config', ctx=Load()))],
+        kw_defaults=[
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='Run BM25 search over an in-memory corpus.\n\n    Parameters\n    ----------\n    query:\n        Query string.\n    corpus:\n        Sequence of dict items; each must contain a ``text`` field.\n    cfg:\n        BM25Config with k1 / b / max_hits.\n\n    Returns\n    -------\n    List[Dict[str, Any]]\n        Items annotated with ``score`` and sorted by descending score.\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='corpus', ctx=Load())),
+          body=[
+            Return(
+              value=List(ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='BM25Okapi', ctx=Store())],
+          value=Call(
+            func=Name(id='_import_bm25', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='documents', ctx=Store())],
+          value=ListComp(
+            elt=BoolOp(
+              op=Or(),
+              values=[
+                Call(
+                  func=Attribute(
+                    value=Name(id='item', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='text')]),
+                Constant(value='')]),
+            generators=[
+              comprehension(
+                target=Name(id='item', ctx=Store()),
+                iter=Name(id='corpus', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='tokenized_corpus', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Name(id='_tokenize', ctx=Load()),
+              args=[
+                Name(id='doc', ctx=Load())]),
+            generators=[
+              comprehension(
+                target=Name(id='doc', ctx=Store()),
+                iter=Name(id='documents', ctx=Load()),
+                is_async=0)])),
+        Assign(
+          targets=[
+            Name(id='bm25', ctx=Store())],
+          value=Call(
+            func=Name(id='BM25Okapi', ctx=Load()),
+            args=[
+              Name(id='tokenized_corpus', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='k1',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='k1',
+                  ctx=Load())),
+              keyword(
+                arg='b',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='b',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='scores', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='bm25', ctx=Load()),
+              attr='get_scores',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_tokenize', ctx=Load()),
+                args=[
+                  Name(id='query', ctx=Load())])])),
+        AnnAssign(
+          target=Name(id='enriched', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='item', ctx=Store()),
+              Name(id='score', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='zip', ctx=Load()),
+            args=[
+              Name(id='corpus', ctx=Load()),
+              Name(id='scores', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='new_item', ctx=Store())],
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='item', ctx=Load())])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='new_item', ctx=Load()),
+                  slice=Constant(value='score'),
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='float', ctx=Load()),
+                args=[
+                  Name(id='score', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='enriched', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='new_item', ctx=Load())]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='enriched', ctx=Load()),
+              attr='sort',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='key',
+                value=Lambda(
+                  args=arguments(
+                    args=[
+                      arg(arg='x')]),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='x', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='score'),
+                      Constant(value=0.0)]))),
+              keyword(
+                arg='reverse',
+                value=Constant(value=True))])),
+        Return(
+          value=Subscript(
+            value=Name(id='enriched', ctx=Load()),
+            slice=Slice(
+              upper=Attribute(
+                value=Name(id='cfg', ctx=Load()),
+                attr='max_hits',
+                ctx=Load())),
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()))])

@@ -1,0 +1,602 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nObservability / Telemetry Layer (v10_10 · Phase 3)\n==================================================\n\nThis module provides:\n    • Structured spans (start_span / end_span)\n    • Structured events (emit_node_event, emit_telemetry_event)\n    • Typed retrieval + ranking events:\n          – RetrievalAttemptEvent\n          – RetrievalSuccessEvent\n          – RetrievalFailureEvent\n          – RankingEvent\n    • Cost snapshot emission\n    • Deterministic logging for DAG orchestration (L3)\n    • Zero external I/O (collects events; callers decide persistence)\n\nDesign constraints:\n    • No LLM calls.\n    • No state mutation outside in-memory telemetry buffers.\n    • No routing / planning decisions.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='time')]),
+    Import(
+      names=[
+        alias(name='uuid')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='TelemetryEvent'),
+        alias(name='RetrievalAttemptEvent'),
+        alias(name='RetrievalSuccessEvent'),
+        alias(name='RetrievalFailureEvent'),
+        alias(name='RankingEvent'),
+        alias(name='CostSnapshot')],
+      level=0),
+    AnnAssign(
+      target=Name(id='_telemetry_buffer', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='TelemetryEvent', ctx=Load()),
+        ctx=Load()),
+      value=List(ctx=Load()),
+      simple=1),
+    AnnAssign(
+      target=Name(id='_span_stack', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()),
+      value=List(ctx=Load()),
+      simple=1),
+    FunctionDef(
+      name='_now_ms',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='int', ctx=Load()),
+            args=[
+              BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='time', ctx=Load()),
+                    attr='time',
+                    ctx=Load())),
+                op=Mult(),
+                right=Constant(value=1000))]))],
+      returns=Name(id='int', ctx=Load())),
+    FunctionDef(
+      name='_log',
+      args=arguments(
+        args=[
+          arg(
+            arg='evt',
+            annotation=Name(id='TelemetryEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Store event in in-memory buffer; downstream layers\n    can choose to flush, export, persist, or ignore.\n    ')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_telemetry_buffer', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='start_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='ctx',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Create a uniquely identified span and record the start time.\n\n    Returns a span record dict that must be passed to end_span().\n    ')),
+        Assign(
+          targets=[
+            Name(id='span_id', ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='uuid', ctx=Load()),
+                  attr='uuid4',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='record', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='span_id'),
+              Constant(value='name'),
+              Constant(value='start_ms'),
+              Constant(value='ctx')],
+            values=[
+              Name(id='span_id', ctx=Load()),
+              Name(id='name', ctx=Load()),
+              Call(
+                func=Name(id='_now_ms', ctx=Load())),
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='ctx', ctx=Load()),
+                  Dict()])])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_span_stack', ctx=Load()),
+              attr='append',
+              ctx=Load()),
+            args=[
+              Name(id='record', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='span_id',
+                    value=Name(id='span_id', ctx=Load())),
+                  keyword(
+                    arg='ts_ms',
+                    value=Subscript(
+                      value=Name(id='record', ctx=Load()),
+                      slice=Constant(value='start_ms'),
+                      ctx=Load())),
+                  keyword(
+                    arg='attributes',
+                    value=Dict(
+                      keys=[
+                        Constant(value='event_type'),
+                        Constant(value='span_id'),
+                        Constant(value='ctx')],
+                      values=[
+                        Constant(value='span_start'),
+                        Name(id='span_id', ctx=Load()),
+                        BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='ctx', ctx=Load()),
+                            Dict()])]))])])),
+        Return(
+          value=Name(id='record', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='end_span',
+      args=arguments(
+        args=[
+          arg(
+            arg='span_record',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Close a previously-started span.\n\n    If the span is not in the stack (already closed or unknown), this\n    is a no-op.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='span_record', ctx=Load()),
+            ops=[
+              NotIn()],
+            comparators=[
+              Name(id='_span_stack', ctx=Load())]),
+          body=[
+            Return()]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_span_stack', ctx=Load()),
+              attr='remove',
+              ctx=Load()),
+            args=[
+              Name(id='span_record', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='end_ms', ctx=Store())],
+          value=Call(
+            func=Name(id='_now_ms', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='duration', ctx=Store())],
+          value=BinOp(
+            left=Name(id='end_ms', ctx=Load()),
+            op=Sub(),
+            right=Subscript(
+              value=Name(id='span_record', ctx=Load()),
+              slice=Constant(value='start_ms'),
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Subscript(
+                      value=Name(id='span_record', ctx=Load()),
+                      slice=Constant(value='name'),
+                      ctx=Load())),
+                  keyword(
+                    arg='span_id',
+                    value=Subscript(
+                      value=Name(id='span_record', ctx=Load()),
+                      slice=Constant(value='span_id'),
+                      ctx=Load())),
+                  keyword(
+                    arg='ts_ms',
+                    value=Name(id='end_ms', ctx=Load())),
+                  keyword(
+                    arg='attributes',
+                    value=Dict(
+                      keys=[
+                        Constant(value='event_type'),
+                        Constant(value='span_id'),
+                        Constant(value='duration_ms'),
+                        Constant(value='ctx')],
+                      values=[
+                        Constant(value='span_end'),
+                        Subscript(
+                          value=Name(id='span_record', ctx=Load()),
+                          slice=Constant(value='span_id'),
+                          ctx=Load()),
+                        Name(id='duration', ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='span_record', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='ctx'),
+                            Dict()])]))])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='emit_node_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='node',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='status',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='details',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Node-level events for L3 orchestration visibility.\n\n    Example:\n        emit_node_event("strategy", "start")\n        emit_node_event("strategy", "success")\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='node', ctx=Load())),
+                  keyword(
+                    arg='ts_ms',
+                    value=Call(
+                      func=Name(id='_now_ms', ctx=Load()))),
+                  keyword(
+                    arg='attributes',
+                    value=Dict(
+                      keys=[
+                        Constant(value='event_type'),
+                        Constant(value='status'),
+                        Constant(value='details')],
+                      values=[
+                        Constant(value='node'),
+                        Name(id='status', ctx=Load()),
+                        Name(id='details', ctx=Load())]))])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='emit_telemetry_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='attributes',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    General-purpose event emission for arbitrary telemetry use cases.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='ts_ms',
+                    value=Call(
+                      func=Name(id='_now_ms', ctx=Load()))),
+                  keyword(
+                    arg='attributes',
+                    value=Name(id='attributes', ctx=Load()))])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='log_exception',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='exc',
+            annotation=Name(id='Exception', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Emit an error-level telemetry event for exceptions.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Name(id='name', ctx=Load())),
+                  keyword(
+                    arg='ts_ms',
+                    value=Call(
+                      func=Name(id='_now_ms', ctx=Load()))),
+                  keyword(
+                    arg='attributes',
+                    value=Dict(
+                      keys=[
+                        Constant(value='event_type'),
+                        Constant(value='error')],
+                      values=[
+                        Constant(value='exception'),
+                        Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Name(id='exc', ctx=Load())])]))])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='record_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='attributes',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convenience wrapper so infrastructure code can call record_event(...)\n    without depending on TelemetryEvent directly.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='emit_telemetry_event', ctx=Load()),
+            args=[
+              Name(id='name', ctx=Load()),
+              Name(id='attributes', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='record_exception',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='exc',
+            annotation=Name(id='Exception', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convenience wrapper so infrastructure code can call record_exception(...)\n    and still use the same telemetry pipeline as log_exception.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='log_exception', ctx=Load()),
+            args=[
+              Name(id='name', ctx=Load()),
+              Name(id='exc', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='emit_retrieval_attempt',
+      args=arguments(
+        args=[
+          arg(
+            arg='evt',
+            annotation=Name(id='RetrievalAttemptEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Emit a typed retrieval attempt event.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='emit_retrieval_success',
+      args=arguments(
+        args=[
+          arg(
+            arg='evt',
+            annotation=Name(id='RetrievalSuccessEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Emit a typed retrieval success event.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='emit_retrieval_failure',
+      args=arguments(
+        args=[
+          arg(
+            arg='evt',
+            annotation=Name(id='RetrievalFailureEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Emit a typed retrieval failure event.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='emit_ranking_event',
+      args=arguments(
+        args=[
+          arg(
+            arg='evt',
+            annotation=Name(id='RankingEvent', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Emit a typed ranking event (e.g. for RRF fusion).\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Name(id='evt', ctx=Load())]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='emit_cost_snapshot',
+      args=arguments(
+        args=[
+          arg(
+            arg='snapshot',
+            annotation=Name(id='CostSnapshot', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Used by L2 after Strategy/Drafting/QA/Safety completes.\n\n    The CostSnapshot is converted into telemetry attributes.\n    ')),
+        Expr(
+          value=Call(
+            func=Name(id='_log', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='TelemetryEvent', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='name',
+                    value=Constant(value='costs')),
+                  keyword(
+                    arg='ts_ms',
+                    value=Call(
+                      func=Name(id='_now_ms', ctx=Load()))),
+                  keyword(
+                    arg='attributes',
+                    value=Dict(
+                      keys=[
+                        Constant(value='event_type'),
+                        None],
+                      values=[
+                        Constant(value='cost_snapshot'),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='snapshot', ctx=Load()),
+                            attr='model_dump',
+                            ctx=Load()))]))])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='get_all_events',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Return a shallow copy of the telemetry buffer.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Name(id='_telemetry_buffer', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='TelemetryEvent', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='clear_events',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Clear all telemetry events and open spans.\n\n    Intended primarily for unit tests.\n    ')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_telemetry_buffer', ctx=Load()),
+              attr='clear',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_span_stack', ctx=Load()),
+              attr='clear',
+              ctx=Load())))],
+      returns=Constant(value=None))])

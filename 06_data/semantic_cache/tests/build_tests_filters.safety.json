@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728354.5495944,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\plan-layer\\plan-phase\\get-tests-info\\utility\\prepare-information\\build_tests_filters.py"
+}

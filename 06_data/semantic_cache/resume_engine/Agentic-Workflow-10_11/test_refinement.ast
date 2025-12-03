@@ -1,0 +1,90 @@
+Module(
+  body=[
+    ImportFrom(
+      module='meta.metacognition.models',
+      names=[
+        alias(name='Hypothesis')],
+      level=0),
+    ImportFrom(
+      module='meta.metacognition.refinement',
+      names=[
+        alias(name='refine_low_confidence')],
+      level=0),
+    FunctionDef(
+      name='test_refine_marks_very_low_confidence_as_discarded',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='hs', ctx=Store())],
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='Hypothesis', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='id',
+                    value=Constant(value='h1')),
+                  keyword(
+                    arg='agent_id',
+                    value=Constant(value='a1')),
+                  keyword(
+                    arg='content',
+                    value=Constant(value='c1')),
+                  keyword(
+                    arg='confidence',
+                    value=Constant(value=0.1))]),
+              Call(
+                func=Name(id='Hypothesis', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='id',
+                    value=Constant(value='h2')),
+                  keyword(
+                    arg='agent_id',
+                    value=Constant(value='a1')),
+                  keyword(
+                    arg='content',
+                    value=Constant(value='c2')),
+                  keyword(
+                    arg='confidence',
+                    value=Constant(value=0.5))])],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='refined', ctx=Store())],
+          value=Call(
+            func=Name(id='refine_low_confidence', ctx=Load()),
+            args=[
+              Name(id='hs', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='threshold',
+                value=Constant(value=0.4))])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Subscript(
+                  value=Name(id='refined', ctx=Load()),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                attr='content',
+                ctx=Load()),
+              attr='startswith',
+              ctx=Load()),
+            args=[
+              Constant(value='[DISCARDED_CANDIDATE]')])),
+        Assert(
+          test=Compare(
+            left=Constant(value='needs further evidence'),
+            ops=[
+              In()],
+            comparators=[
+              Attribute(
+                value=Subscript(
+                  value=Name(id='refined', ctx=Load()),
+                  slice=Constant(value=1),
+                  ctx=Load()),
+                attr='content',
+                ctx=Load())]))])])

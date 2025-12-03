@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.36 - CRITICAL MASTER RESUME DATA SOURCE FIX\n\nv5.36 CHANGES FROM v5.35 - CRITICAL BUG FIXES:\n\u2713 FIXED: ClerkExtractor (HOP-1) now creates structured experience_sections from master resume\n  - Replaces flat bullet_pool with structured experience list\n  - Each section contains: company, title, location, dates, overview, bullets\n  - All job metadata now properly extracted from MASTER_RESUME_JSON\n\u2713 FIXED: FileRenderer (HOP-8) now dynamically sources all job metadata from master resume\n  - Eliminated hardcoded company names, titles, locations, dates\n  - Dynamically iterates through master resume experience list\n  - Both JSON and Markdown renderers now source from master data\n\u2713 FIXED: ArtistGenerator (HOP-3) methods now all use experience_sections structure\n  - Unified data access pattern across all experience section generators\n  - TraderSense (K.7.5A), EY (K.7A), Early Career (K.10A) now properly source bullets\n  - Eliminates fabrication/hallucination of bulle",
+  "full_hash": "1384ebb6747394bab87cfddb8e6a70c5b33adff47c84714b6dc3deffa2d97506",
+  "generated_at": 1764728297.7133694,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.37.py"
+}

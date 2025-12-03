@@ -1,0 +1,218 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Utilities for reversible masking of personally identifiable information.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Tuple')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='_PII_PATTERN', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='re', ctx=Load()),
+          attr='compile',
+          ctx=Load()),
+        args=[
+          Constant(value='(?P<email>[\\w.+-]+@[\\w.-]+)|(?P<phone>\\+?\\d[\\d -]{7,}\\d)')])),
+    ClassDef(
+      name='SanitizedInputs',
+      body=[
+        AnnAssign(
+          target=Name(id='prompt', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='company_id', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='str', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          simple=1),
+        AnnAssign(
+          target=Name(id='contact_id', ctx=Store()),
+          annotation=BinOp(
+            left=Name(id='str', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None)),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    Assign(
+      targets=[
+        Name(id='SanitizeResult', ctx=Store())],
+      value=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='SanitizedInputs', ctx=Load()),
+            Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_placeholder',
+      args=arguments(
+        args=[
+          arg(
+            arg='counter',
+            annotation=Name(id='int', ctx=Load()))]),
+      body=[
+        Return(
+          value=JoinedStr(
+            values=[
+              Constant(value='<PII_'),
+              FormattedValue(
+                value=Name(id='counter', ctx=Load()),
+                conversion=-1),
+              Constant(value='>')]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='sanitize_pii',
+      args=arguments(
+        args=[
+          arg(arg='inputs')]),
+      body=[
+        Expr(
+          value=Constant(value='Mask simple PII patterns while returning a reversible map.')),
+        Assign(
+          targets=[
+            Name(id='prompt', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='inputs', ctx=Load()),
+              Constant(value='prompt'),
+              Constant(value='')])),
+        Assign(
+          targets=[
+            Name(id='company_id', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='inputs', ctx=Load()),
+              Constant(value='company_id'),
+              Constant(value=None)])),
+        Assign(
+          targets=[
+            Name(id='contact_id', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='inputs', ctx=Load()),
+              Constant(value='contact_id'),
+              Constant(value=None)])),
+        AnnAssign(
+          target=Name(id='replacements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Dict(),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='counter', ctx=Store())],
+          value=Constant(value=1)),
+        FunctionDef(
+          name='_mask',
+          args=arguments(
+            args=[
+              arg(
+                arg='match',
+                annotation=Subscript(
+                  value=Attribute(
+                    value=Name(id='re', ctx=Load()),
+                    attr='Match',
+                    ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Nonlocal(
+              names=[
+                'counter']),
+            Assign(
+              targets=[
+                Name(id='value', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='match', ctx=Load()),
+                  attr='group',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0)])),
+            Assign(
+              targets=[
+                Name(id='token', ctx=Store())],
+              value=Call(
+                func=Name(id='_placeholder', ctx=Load()),
+                args=[
+                  Name(id='counter', ctx=Load())])),
+            AugAssign(
+              target=Name(id='counter', ctx=Store()),
+              op=Add(),
+              value=Constant(value=1)),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='replacements', ctx=Load()),
+                  slice=Name(id='token', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='value', ctx=Load())),
+            Return(
+              value=Name(id='token', ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='sanitized_prompt', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='_PII_PATTERN', ctx=Load()),
+              attr='sub',
+              ctx=Load()),
+            args=[
+              Name(id='_mask', ctx=Load()),
+              Name(id='prompt', ctx=Load())])),
+        Return(
+          value=Tuple(
+            elts=[
+              Call(
+                func=Name(id='SanitizedInputs', ctx=Load()),
+                args=[
+                  Name(id='sanitized_prompt', ctx=Load()),
+                  Name(id='company_id', ctx=Load()),
+                  Name(id='contact_id', ctx=Load())]),
+              Name(id='replacements', ctx=Load())],
+            ctx=Load()))],
+      returns=Name(id='SanitizeResult', ctx=Load()))])

@@ -1,0 +1,99 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Stress Tests for Parallel Agents.')),
+    ClassDef(
+      name='TestStressParallelAgents',
+      body=[
+        Expr(
+          value=Constant(value='Stress tests for parallel agent execution.')),
+        FunctionDef(
+          name='test_many_parallel_agents',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test many parallel agents.')),
+            Assign(
+              targets=[
+                Name(id='agent_count', ctx=Store())],
+              value=Constant(value=50)),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=ListComp(
+                elt=Dict(
+                  keys=[
+                    Constant(value='agent'),
+                    Constant(value='done')],
+                  values=[
+                    JoinedStr(
+                      values=[
+                        Constant(value='agent_'),
+                        FormattedValue(
+                          value=Name(id='i', ctx=Load()),
+                          conversion=-1)]),
+                    Constant(value=True)]),
+                generators=[
+                  comprehension(
+                    target=Name(id='i', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='range', ctx=Load()),
+                      args=[
+                        Name(id='agent_count', ctx=Load())]),
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=50)])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Subscript(
+                      value=Name(id='r', ctx=Load()),
+                      slice=Constant(value='done'),
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='r', ctx=Store()),
+                        iter=Name(id='results', ctx=Load()),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_parallel_agent_resource_usage',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test parallel agent resource usage.')),
+            Assign(
+              targets=[
+                Name(id='agents', ctx=Store())],
+              value=Constant(value=20)),
+            Assign(
+              targets=[
+                Name(id='memory_per_agent', ctx=Store())],
+              value=Constant(value=10)),
+            Assign(
+              targets=[
+                Name(id='total_memory', ctx=Store())],
+              value=BinOp(
+                left=Name(id='agents', ctx=Load()),
+                op=Mult(),
+                right=Name(id='memory_per_agent', ctx=Load()))),
+            Assert(
+              test=Compare(
+                left=Name(id='total_memory', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=200)]))])])])

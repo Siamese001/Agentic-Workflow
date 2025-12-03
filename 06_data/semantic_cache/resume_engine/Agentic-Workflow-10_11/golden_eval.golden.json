@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/golden_eval.py\n\"\"\"\nGolden State Evaluator (v10_10 \u00b7 Phase 3 \u2014 Batch D)\n===================================================\n\nThis module provides a deterministic evaluation harness for the v10_10\nagentic workflow.\n\nIt is deliberately *pure*:\n\n    \u2022 No LLM calls.\n    \u2022 No orchestration, execution, or planning.\n    \u2022 Only consumes already\u2011materialised runtime artefacts\n      (typically the final L4 state patch exported as JSON).\n\nThe main responsibilities are:\n\n    1. Define *golden* evaluation scenarios that exercise the\n       Phase\u20113 control knobs and capabilities (G1\u2013G37), in\n       particular:\n\n           \u2022 HYDE on vs HYDE off\n           \u2022 RRF strategy variants\n           \u2022 QA council size (1 vs N)\n           \u2022 Correction\u2011loop depth (0 \u2192 N)\n           \u2022 Telemetry\u2011aware routing modes\n           \u2022 Deterministic \"golden mode\" configuration\n\n    2. Provide deterministic, machine\u2011verifiable scoring of a\n       *single* workflow patch against a GoldenExpectation.\n\n    3. Expo",
+  "full_hash": "d51e1de7622a1f65d686529edd253e0dc558dcfc270ff59512730443a3b9bd7d",
+  "generated_at": 1764728227.9940038,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\golden_eval.py"
+}

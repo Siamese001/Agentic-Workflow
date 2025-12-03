@@ -1,0 +1,186 @@
+Module(
+  body=[
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='CostTracker')],
+      level=0),
+    FunctionDef(
+      name='test_cost_tracker_records_calls_and_sums',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='tracker', ctx=Store())],
+          value=Call(
+            func=Name(id='CostTracker', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracker', ctx=Load()),
+              attr='record_call',
+              ctx=Load()),
+            args=[
+              Constant(value='wf1'),
+              Constant(value='google'),
+              Constant(value='gemini-2.5-pro')],
+            keywords=[
+              keyword(
+                arg='input_tokens',
+                value=Constant(value=1000)),
+              keyword(
+                arg='output_tokens',
+                value=Constant(value=500))])),
+        Assign(
+          targets=[
+            Name(id='summary', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracker', ctx=Load()),
+              attr='get_cost_summary',
+              ctx=Load()),
+            args=[
+              Constant(value='wf1')])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='abs', ctx=Load()),
+              args=[
+                BinOp(
+                  left=Subscript(
+                    value=Name(id='summary', ctx=Load()),
+                    slice=Constant(value='total_workflow_cost'),
+                    ctx=Load()),
+                  op=Sub(),
+                  right=Constant(value=0.005))]),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=1e-09)])),
+        Assert(
+          test=Subscript(
+            value=Name(id='summary', ctx=Load()),
+            slice=Constant(value='calls'),
+            ctx=Load()))]),
+    FunctionDef(
+      name='test_unknown_provider_no_cost',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='tracker', ctx=Store())],
+          value=Call(
+            func=Name(id='CostTracker', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracker', ctx=Load()),
+              attr='record_call',
+              ctx=Load()),
+            args=[
+              Constant(value='wf2'),
+              Constant(value='unknown'),
+              Constant(value='mystery-model')],
+            keywords=[
+              keyword(
+                arg='input_tokens',
+                value=Constant(value=1000)),
+              keyword(
+                arg='output_tokens',
+                value=Constant(value=1000))])),
+        Assign(
+          targets=[
+            Name(id='summary', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracker', ctx=Load()),
+              attr='get_cost_summary',
+              ctx=Load()),
+            args=[
+              Constant(value='wf2')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='summary', ctx=Load()),
+              slice=Constant(value='total_workflow_cost'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=0)]))]),
+    FunctionDef(
+      name='test_multiple_calls_aggregated',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='tracker', ctx=Store())],
+          value=Call(
+            func=Name(id='CostTracker', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracker', ctx=Load()),
+              attr='record_call',
+              ctx=Load()),
+            args=[
+              Constant(value='wf3'),
+              Constant(value='google'),
+              Constant(value='gemini-2.5-flash')],
+            keywords=[
+              keyword(
+                arg='input_tokens',
+                value=Constant(value=500)),
+              keyword(
+                arg='output_tokens',
+                value=Constant(value=500))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracker', ctx=Load()),
+              attr='record_call',
+              ctx=Load()),
+            args=[
+              Constant(value='wf3'),
+              Constant(value='google'),
+              Constant(value='gemini-2.5-pro')],
+            keywords=[
+              keyword(
+                arg='input_tokens',
+                value=Constant(value=500)),
+              keyword(
+                arg='output_tokens',
+                value=Constant(value=500))])),
+        Assign(
+          targets=[
+            Name(id='summary', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='tracker', ctx=Load()),
+              attr='get_cost_summary',
+              ctx=Load()),
+            args=[
+              Constant(value='wf3')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='summary', ctx=Load()),
+              slice=Constant(value='total_workflow_cost'),
+              ctx=Load()),
+            ops=[
+              Gt()],
+            comparators=[
+              Constant(value=0)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Subscript(
+                  value=Name(id='summary', ctx=Load()),
+                  slice=Constant(value='calls'),
+                  ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=2)]))])])

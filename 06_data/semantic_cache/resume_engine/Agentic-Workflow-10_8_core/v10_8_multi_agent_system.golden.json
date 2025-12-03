@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nV10.8 Consolidated Module: Multi Agent System\nMerged from 5 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom multi_agent import AgentGraph, summarize_graph, COUNCIL_OF_QA\nfrom multi_agent import AgentMessage, route_to_specialist\nfrom multi_agent import AgentRole\nfrom multi_agent import delegation_metadata\nfrom multi_agent import deterministic_vote\nfrom typing import Dict, Any\nfrom typing import List, Dict, Any\nfrom utils_types import StatePatch\nimport copy\n\n\n# ============================================================\n# From v10_8_multi_agent.py\n# ============================================================\n\n@dataclass\nclass AgentMessage:\n    sender: AgentRole\n    recipient: AgentRole\n    content: Dict[str, Any]\n    metadata: Dict[str, Any]\n\n\ndef route_to_specialist(graph, message: AgentMessage):\n    \"\"\"\n    Deterministic routing:\n    - Finds first node whose role matches message.recipient.\n  ",
+  "full_hash": "252b4cb3d6df9a10c47538bd76e3b30970b7a55cf5b8d72d7e045d4059e48e80",
+  "generated_at": 1764728228.9105854,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_multi_agent_system.py"
+}

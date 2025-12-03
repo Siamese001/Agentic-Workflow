@@ -1,0 +1,93 @@
+Module(
+  body=[
+    ImportFrom(
+      module='l1.cms.schemas',
+      names=[
+        alias(name='PromptSchema')],
+      level=0),
+    ImportFrom(
+      module='l1.cms.compiler',
+      names=[
+        alias(name='compile_prompt')],
+      level=0),
+    FunctionDef(
+      name='test_compile_prompt_produces_string',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='schema', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptSchema', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Constant(value='test.prompt')),
+              keyword(
+                arg='role',
+                value=Constant(value='system')),
+              keyword(
+                arg='objective',
+                value=Constant(value='Test objective')),
+              keyword(
+                arg='instructions',
+                value=Constant(value='Do the thing.')),
+              keyword(
+                arg='examples',
+                value=List(
+                  elts=[
+                    Dict(
+                      keys=[
+                        Constant(value='input'),
+                        Constant(value='output')],
+                      values=[
+                        Constant(value='x'),
+                        Constant(value='y')])],
+                  ctx=Load())),
+              keyword(
+                arg='safety_tags',
+                value=List(
+                  elts=[
+                    Constant(value='safety')],
+                  ctx=Load())),
+              keyword(
+                arg='allowed_tools',
+                value=List(
+                  elts=[
+                    Constant(value='tool1')],
+                  ctx=Load())),
+              keyword(
+                arg='version',
+                value=Constant(value='1.0.0'))])),
+        Assign(
+          targets=[
+            Name(id='rendered', ctx=Store())],
+          value=Call(
+            func=Name(id='compile_prompt', ctx=Load()),
+            args=[
+              Name(id='schema', ctx=Load()),
+              Dict(
+                keys=[
+                  Constant(value='layer')],
+                values=[
+                  Constant(value='L2')])])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='rendered', ctx=Load()),
+              Name(id='str', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='OBJECTIVE'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='rendered', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Constant(value='INSTRUCTIONS'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='rendered', ctx=Load())]))])])

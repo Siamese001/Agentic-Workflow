@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 54,
+  "generated_at": 1764728342.969868,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\agg-phase\\update-schema-state\\general\\update-memory\\consolidate_schema_updates.py"
+}

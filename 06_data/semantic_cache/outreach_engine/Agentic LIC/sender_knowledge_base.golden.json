@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"company_name\": \"Unify Consulting\",\n  \"core_value_propositions\": [\n    \"We deploy agentic API frameworks using chain-of-thought prompting to automate complex workflows\",\n    \"Our context-engineering frameworks with retrieval-augmented pipelines improve generative AI accuracy\",\n    \"We architect LLM deployment pipelines with embedding stores and vector databases on cloud infrastructure\",\n    \"We build senior engineering teams focused on transformer models and low-latency inference optimization\",\n    \"We drive strategic alliances with AWS and leading cloud providers to co-develop generative AI solutions\",\n    \"We accelerate professional services onboarding with automated LLM-powered discovery and RAG pipelines\",\n    \"We enable measurable business outcomes by embedding AI-powered analytics into client engagements\"\n  ],\n  \"whitelisted_team_members\": [\n    {\n      \"name\": \"Amit Ayer\",\n      \"title\": \"Chief AI Officer\"\n    }\n  ],\n  \"whitelisted_products\": [\n    {\n      \"name\": \"Context-E",
+  "full_hash": "a11394bd2d69efc39accc7e943d364627d7868146c79a005d87767b84e81e2bc",
+  "generated_at": 1764728331.468135,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\sender_knowledge_base.json"
+}

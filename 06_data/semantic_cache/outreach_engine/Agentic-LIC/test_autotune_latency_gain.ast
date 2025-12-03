@@ -1,0 +1,95 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.telemetry',
+      names=[
+        alias(name='PolicyController')],
+      level=0),
+    FunctionDef(
+      name='test_autotune_reacts_to_latency_changes',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='controller', ctx=Store())],
+          value=Call(
+            func=Name(id='PolicyController', ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='register_tool',
+              ctx=Load()),
+            args=[
+              Constant(value='web_search_v1')],
+            keywords=[
+              keyword(
+                arg='quarantined',
+                value=Constant(value=False))])),
+        Assign(
+          targets=[
+            Name(id='before', ctx=Store())],
+          value=Attribute(
+            value=Name(id='controller', ctx=Load()),
+            attr='budget_multiplier',
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='update',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='latency_p95_ms',
+                value=Constant(value=4800)),
+              keyword(
+                arg='qa_pass_rate',
+                value=Constant(value=0.9))])),
+        Assign(
+          targets=[
+            Name(id='after_high_latency', ctx=Store())],
+          value=Attribute(
+            value=Name(id='controller', ctx=Load()),
+            attr='budget_multiplier',
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Name(id='after_high_latency', ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Name(id='before', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='update',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='latency_p95_ms',
+                value=Constant(value=2000)),
+              keyword(
+                arg='qa_pass_rate',
+                value=Constant(value=0.95))])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='budget_multiplier',
+              ctx=Load()),
+            ops=[
+              GtE()],
+            comparators=[
+              Name(id='after_high_latency', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='controller', ctx=Load()),
+              attr='tot_branches',
+              ctx=Load()),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=1)]))])])

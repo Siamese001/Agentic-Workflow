@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom pydantic import BaseModel, Field\n\n\nclass BudgetProfile(BaseModel):\n    \"\"\"High-level budget profile for cost/latency envelopes.\n\n    This duplicates some of the fields from ExecutionProfileSpec so that\n    future callers can reason about budget in a single nested object.\n    \"\"\"\n\n    max_cost_usd: float = Field(default=0.10, ge=0.0)\n    max_latency_ms: int = Field(default=3000, ge=0)\n\n\n\n",
+  "full_hash": "baa7934a1d3f3838bd99ba19645fad313e4b37cf52794e8d94920df1808b7be1",
+  "generated_at": 1764728223.76159,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\budget_profile.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\n\nfrom core_v10_7 import ConfigV10_7\n\n\ndef test_config_provides_nested_sections(config: ConfigV10_7) -> None:\n    assert config.logging_config.log_level == \"INFO\"\n    assert config.agent_stacks.enable_constitutional_review is True\n    assert config.agent_stacks.conductor_max_steps == 10\n\n\ndef test_config_missing_section_raises_attribute_error(config: ConfigV10_7) -> None:\n    with pytest.raises(AttributeError):\n        _ = config.this_section_does_not_exist\n",
+  "full_hash": "e40e6ef55c338ffe0855e55148bfa7b5b9af28176a5c39db8d7db17e909cfe20",
+  "generated_at": 1764728329.934659,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\system\\test_config_v10_7.py"
+}

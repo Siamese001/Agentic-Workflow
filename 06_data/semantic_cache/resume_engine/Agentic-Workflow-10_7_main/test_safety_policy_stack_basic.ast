@@ -1,0 +1,137 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='stacks_v10_8.safety_policy_stack',
+      names=[
+        alias(name='SafetyPolicyStack')],
+      level=0),
+    FunctionDef(
+      name='_make_stack',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='SafetyPolicyStack', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None)),
+              keyword(
+                arg='debug_mode',
+                value=Constant(value=False))]))]),
+    FunctionDef(
+      name='test_safe_text_is_safe',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_stack', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='report', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='stack', ctx=Load()),
+              attr='evaluate_text',
+              ctx=Load()),
+            args=[
+              Constant(value='This is a harmless, generic sentence.')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='report', ctx=Load()),
+              Constant(value='is_safe')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='report', ctx=Load()),
+              Constant(value='findings')])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='report', ctx=Load()),
+              attr='is_safe',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='report', ctx=Load()),
+                attr='findings',
+                ctx=Load()),
+              Name(id='list', ctx=Load())]))]),
+    FunctionDef(
+      name='test_pii_like_text_triggers_findings',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='_make_stack', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='report', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='stack', ctx=Load()),
+              attr='evaluate_text',
+              ctx=Load()),
+            args=[
+              Constant(value='My social security number is 123-45-6789.')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='report', ctx=Load()),
+              Constant(value='is_safe')])),
+        Assert(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='report', ctx=Load()),
+              Constant(value='findings')])),
+        Assert(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='report', ctx=Load()),
+                attr='findings',
+                ctx=Load()),
+              Name(id='list', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='report', ctx=Load()),
+                  attr='findings',
+                  ctx=Load())]),
+            ops=[
+              GtE()],
+            comparators=[
+              Constant(value=1)])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='report', ctx=Load()),
+              attr='is_safe',
+              ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)]))])])

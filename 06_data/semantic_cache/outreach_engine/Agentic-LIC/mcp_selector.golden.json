@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Selection logic for MCP-discovered tools.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, List, Sequence\n\nfrom ..mcp import MCPClient, ToolSpec\nfrom ..telemetry import PolicyController\n\n_TRUST_SCORE = {\"low\": 0.4, \"medium\": 0.7, \"high\": 1.0}\n\n\n@dataclass(frozen=True)\nclass SelectedTool:\n    \"\"\"Tool selection decision returned by :class:`MCPSelector`.\"\"\"\n\n    spec: ToolSpec\n    score: float\n    quarantined: bool\n    budget_multiplier: float\n\n\nclass MCPSelector:\n    \"\"\"Rank tools from the MCP registry using trust and policy signals.\"\"\"\n\n    def __init__(self, client: MCPClient, policy: PolicyController, *, allowlist: Iterable[str] | None = None) -> None:\n        self._client = client\n        self._policy = policy\n        self._allowlist = {item.lower() for item in (allowlist or [])}\n        self._promoted: Dict[str, bool] = {}\n\n    @property\n    def client(self) -> MCPClient:\n        return self._client\n\n    @property\n    def",
+  "full_hash": "01d90e92e2082503e29a1da88d5e154117582f81e749ef8419cb0da161217c74",
+  "generated_at": 1764728330.609144,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\rag\\mcp_selector.py"
+}

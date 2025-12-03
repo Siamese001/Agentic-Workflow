@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 167,
+  "generated_at": 1764728350.3354638,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\budget-manager-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\base_collector.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - implement_data_fallback\nImplements L1 Cognitive Planning Layer for implement data fallback operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ImplementDataFallbackOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ImplementDataFallbackOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ImplementDataFallbackOrchestratorResult:\n    \"\"\"L5 Result structure with ",
+  "full_hash": "3a747bf94a47bd731e84bf14f362035705f144f574ecdaac6f0aada8aa05f5e3",
+  "generated_at": 1764728349.7217298,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\orc-layer\\act-phase\\use-data-tools\\routing\\retry-task\\implement_data_fallback.py"
+}

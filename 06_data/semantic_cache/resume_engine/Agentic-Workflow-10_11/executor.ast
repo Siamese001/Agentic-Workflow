@@ -1,0 +1,519 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nDAG executor for résumé processing workflow orchestration.\n\nProvides minimal async execution engine for comprehensive résumé improvement operations.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='Optional'),
+        alias(name='Set'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='orchestration.agent_registry',
+      names=[
+        alias(name='AgentRegistry')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='Graph')],
+      level=1),
+    ClassDef(
+      name='DAGExecutor',
+      body=[
+        Expr(
+          value=Constant(value='\n    Executes directed acyclic graphs for résumé processing workflows.\n\n    Orchestrates node execution with proper dependency resolution for résumé enhancement.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='graph',
+                annotation=Name(id='Graph', ctx=Load())),
+              arg(
+                arg='agent_registry',
+                annotation=BinOp(
+                  left=Name(id='AgentRegistry', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_graph',
+                  ctx=Store())],
+              value=Name(id='graph', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_agent_registry',
+                  ctx=Store())],
+              value=Name(id='agent_registry', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_select_agent_for_node',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='node_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Selects optimal agent for résumé processing DAG nodes.\n\n        Ensures proper agent assignment based on capabilities for résumé improvement workflows.\n        ')),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_agent_registry',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Return(
+                  value=Constant(value=None))]),
+            Assign(
+              targets=[
+                Name(id='node', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_graph',
+                    ctx=Load()),
+                  attr='nodes',
+                  ctx=Load()),
+                slice=Name(id='node_id', ctx=Load()),
+                ctx=Load())),
+            AnnAssign(
+              target=Name(id='meta', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='node', ctx=Load()),
+                      Constant(value='metadata'),
+                      Dict()]),
+                  Dict()]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='preferred', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='meta', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='preferred_agent_ids'),
+                          List(ctx=Load())]),
+                      List(ctx=Load())])]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='agent_type', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Attribute(
+                  value=Name(id='meta', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='agent_type')]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='required_caps', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='meta', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='required_capabilities'),
+                          List(ctx=Load())]),
+                      List(ctx=Load())])]),
+              simple=1),
+            For(
+              target=Name(id='aid', ctx=Store()),
+              iter=Name(id='preferred', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='aid', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_agent_registry',
+                          ctx=Load()),
+                        attr='agents',
+                        ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Name(id='aid', ctx=Load()))])]),
+            If(
+              test=Name(id='agent_type', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='matches', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_agent_registry',
+                        ctx=Load()),
+                      attr='find_agents_by_type',
+                      ctx=Load()),
+                    args=[
+                      Name(id='agent_type', ctx=Load())])),
+                If(
+                  test=Name(id='matches', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Attribute(
+                        value=Subscript(
+                          value=Name(id='matches', ctx=Load()),
+                          slice=Constant(value=0),
+                          ctx=Load()),
+                        attr='agent_id',
+                        ctx=Load()))])]),
+            If(
+              test=Name(id='required_caps', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='cap', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='required_caps', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='matches', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_agent_registry',
+                        ctx=Load()),
+                      attr='find_agents_by_capability',
+                      ctx=Load()),
+                    args=[
+                      Name(id='cap', ctx=Load())])),
+                If(
+                  test=Name(id='matches', ctx=Load()),
+                  body=[
+                    Return(
+                      value=Attribute(
+                        value=Subscript(
+                          value=Name(id='matches', ctx=Load()),
+                          slice=Constant(value=0),
+                          ctx=Load()),
+                        attr='agent_id',
+                        ctx=Load()))])]),
+            Return(
+              value=Constant(value=None))],
+          returns=BinOp(
+            left=Name(id='str', ctx=Load()),
+            op=BitOr(),
+            right=Constant(value=None))),
+        AsyncFunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='start_nodes',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='ctx',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Executes résumé processing DAG with proper dependency resolution.\n\n        Ensures comprehensive workflow orchestration for résumé improvement operations.\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='ctx', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='ctx', ctx=Store())],
+                  value=Dict())]),
+            If(
+              test=Compare(
+                left=Name(id='start_nodes', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                AnnAssign(
+                  target=Name(id='remaining', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='Set', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  value=Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_graph',
+                              ctx=Load()),
+                            attr='nodes',
+                            ctx=Load()),
+                          attr='keys',
+                          ctx=Load()))]),
+                  simple=1)],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='remaining', ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Name(id='start_nodes', ctx=Load())]))]),
+            AnnAssign(
+              target=Name(id='completed', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load())),
+              simple=1),
+            While(
+              test=Name(id='remaining', ctx=Load()),
+              body=[
+                AnnAssign(
+                  target=Name(id='ready', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  value=List(ctx=Load()),
+                  simple=1),
+                For(
+                  target=Name(id='node_id', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Name(id='remaining', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='preds', ctx=Store())],
+                      value=SetComp(
+                        elt=Attribute(
+                          value=Name(id='e', ctx=Load()),
+                          attr='source',
+                          ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='e', ctx=Store()),
+                            iter=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='_graph',
+                                ctx=Load()),
+                              attr='edges',
+                              ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='e', ctx=Load()),
+                                  attr='target',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Name(id='node_id', ctx=Load())])],
+                            is_async=0)])),
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='preds', ctx=Load()),
+                          attr='issubset',
+                          ctx=Load()),
+                        args=[
+                          Name(id='completed', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='ready', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='node_id', ctx=Load())]))])]),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='ready', ctx=Load())),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='RuntimeError', ctx=Load()),
+                        args=[
+                          Constant(value='DAGExecutor detected a cycle or unresolved dependency')]))]),
+                For(
+                  target=Name(id='node_id', ctx=Store()),
+                  iter=Name(id='ready', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='node', ctx=Store())],
+                      value=Subscript(
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_graph',
+                            ctx=Load()),
+                          attr='nodes',
+                          ctx=Load()),
+                        slice=Name(id='node_id', ctx=Load()),
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='agent_id', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_select_agent_for_node',
+                          ctx=Load()),
+                        args=[
+                          Name(id='node_id', ctx=Load())])),
+                    If(
+                      test=Compare(
+                        left=Name(id='agent_id', ctx=Load()),
+                        ops=[
+                          IsNot()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='assignments', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='ctx', ctx=Load()),
+                              attr='setdefault',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='_agent_assignments'),
+                              Dict()])),
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Name(id='assignments', ctx=Load()),
+                              slice=Name(id='node_id', ctx=Load()),
+                              ctx=Store())],
+                          value=Name(id='agent_id', ctx=Load()))]),
+                    Assign(
+                      targets=[
+                        Name(id='ctx', ctx=Store())],
+                      value=Await(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='node', ctx=Load()),
+                            attr='fn',
+                            ctx=Load()),
+                          args=[
+                            Name(id='ctx', ctx=Load())]))),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='completed', ctx=Load()),
+                          attr='add',
+                          ctx=Load()),
+                        args=[
+                          Name(id='node_id', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='remaining', ctx=Load()),
+                          attr='remove',
+                          ctx=Load()),
+                        args=[
+                          Name(id='node_id', ctx=Load())]))])]),
+            Return(
+              value=Name(id='ctx', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))])])

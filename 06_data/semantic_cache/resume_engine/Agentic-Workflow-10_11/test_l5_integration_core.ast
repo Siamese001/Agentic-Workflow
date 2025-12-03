@@ -1,0 +1,131 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L5 Safety Policy Integration Tests.')),
+    ClassDef(
+      name='TestL5SafetyPolicyIntegration',
+      body=[
+        Expr(
+          value=Constant(value='Integration tests for L5 safety policy layer.')),
+        FunctionDef(
+          name='test_policy_enforcement_flow',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test policy enforcement flow.')),
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Constant(value='resume content')),
+            Assign(
+              targets=[
+                Name(id='policies', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='pii'),
+                  Constant(value='bias'),
+                  Constant(value='injection')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=DictComp(
+                key=Name(id='p', ctx=Load()),
+                value=Constant(value='pass'),
+                generators=[
+                  comprehension(
+                    target=Name(id='p', ctx=Store()),
+                    iter=Name(id='policies', ctx=Load()),
+                    is_async=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='v', ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='pass')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='v', ctx=Store()),
+                        iter=Call(
+                          func=Attribute(
+                            value=Name(id='results', ctx=Load()),
+                            attr='values',
+                            ctx=Load())),
+                        is_async=0)])]))]),
+        FunctionDef(
+          name='test_safety_validation_chain',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test safety validation chain.')),
+            Assign(
+              targets=[
+                Name(id='validators', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='v1'),
+                  Constant(value='v2'),
+                  Constant(value='v3')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='passed', ctx=Store())],
+              value=ListComp(
+                elt=Constant(value=True),
+                generators=[
+                  comprehension(
+                    target=Name(id='_', ctx=Store()),
+                    iter=Name(id='validators', ctx=Load()),
+                    is_async=0)])),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  Name(id='passed', ctx=Load())]))]),
+        FunctionDef(
+          name='test_multi_policy_evaluation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test multi-policy evaluation.')),
+            Assign(
+              targets=[
+                Name(id='policies', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='pii'),
+                  Constant(value='bias'),
+                  Constant(value='injection')],
+                values=[
+                  Constant(value=True),
+                  Constant(value=True),
+                  Constant(value=True)])),
+            Assign(
+              targets=[
+                Name(id='all_pass', ctx=Store())],
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='policies', ctx=Load()),
+                      attr='values',
+                      ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Name(id='all_pass', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)]))])])])

@@ -1,0 +1,150 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L4 Memory State Integration Tests.')),
+    ClassDef(
+      name='TestL4MemoryStateIntegration',
+      body=[
+        Expr(
+          value=Constant(value='Integration tests for L4 memory state layer.')),
+        FunctionDef(
+          name='test_state_persistence_flow',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test state persistence flow.')),
+            Assign(
+              targets=[
+                Name(id='state', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='data')],
+                values=[
+                  Constant(value='test')])),
+            Assign(
+              targets=[
+                Name(id='persisted', ctx=Store())],
+              value=Constant(value=True)),
+            Assert(
+              test=Compare(
+                left=Name(id='persisted', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)]))]),
+        FunctionDef(
+          name='test_memory_retrieval_integration',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test memory retrieval integration.')),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Constant(value='find skills')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Python'),
+                  Constant(value='AWS')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_kg_to_rag_integration',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test KG to RAG integration.')),
+            Assign(
+              targets=[
+                Name(id='kg_results', ctx=Store())],
+              value=List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='entity'),
+                      Constant(value='value')],
+                    values=[
+                      Constant(value='skill'),
+                      Constant(value='Python')])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='rag_context', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Subscript(
+                      value=Name(id='r', ctx=Load()),
+                      slice=Constant(value='value'),
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='r', ctx=Store()),
+                        iter=Name(id='kg_results', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Compare(
+                left=Constant(value='Python'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='rag_context', ctx=Load())]))]),
+        FunctionDef(
+          name='test_state_sync_integration',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test state synchronization integration.')),
+            Assign(
+              targets=[
+                Name(id='local_state', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='version')],
+                values=[
+                  Constant(value=1)])),
+            Assign(
+              targets=[
+                Name(id='remote_state', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='version')],
+                values=[
+                  Constant(value=1)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='local_state', ctx=Load()),
+                  slice=Constant(value='version'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Name(id='remote_state', ctx=Load()),
+                    slice=Constant(value='version'),
+                    ctx=Load())]))])])])

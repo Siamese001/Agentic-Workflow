@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: run_batch_v10_9.py\n\"\"\"\nBatch Runner \u2014 v10_9 Agentic Workflow (ENTERPRISE REFACTOR, META-ONLY)\n\nThis module is a META-layer utility ABOVE L1\u2013L5. It provides:\n\n    \u2022 High-throughput batch execution of v10_9 agentic workflows.\n    \u2022 Concurrency control (basic backpressure).\n    \u2022 Batch-level resilience (CircuitBreaker).\n    \u2022 Batch-level aggregations (summary, counts, failures).\n    \u2022 Optional meta-learning callback.\n    \u2022 Fully asynchronous execution path + sync wrapper.\n    \u2022 Strict agentic-layer separation and safety constraints.\n\nGuarantees:\n    \u2714 NO L1 logic (planning)\n    \u2714 NO L2 logic (tools/LLMs/retrieval/drafting/etc.)\n    \u2714 NO L3 orchestration logic (DAG execution is in main_v10_9)\n    \u2714 NO L4 state mutation (only passes initial_state)\n    \u2714 NO L5 policy/safety decisions (handled inside main_v10_9)\n    \u2714 Pure META-level orchestration\n\nThis file is the correct layer for:\n    \u2022 external service orchestration\n    \u2022 CLI batch jobs\n    \u2022 long-running background jobs\n    \u2022 ETL",
+  "full_hash": "b3f675cd3f51aaea82b693c6ca85a231e9322b39b647842ee73a5199d848255e",
+  "generated_at": 1764728228.815647,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\run_batch_v10_9.py"
+}

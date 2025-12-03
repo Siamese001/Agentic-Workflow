@@ -1,0 +1,96 @@
+Module(
+  body=[
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ExecutionProfile'),
+        alias(name='RetrievalConfig')],
+      level=0),
+    ImportFrom(
+      module='orchestration.model_routing',
+      names=[
+        alias(name='ModelChoice'),
+        alias(name='enforce_budget')],
+      level=0),
+    FunctionDef(
+      name='test_budget_enforcement_downgrades_cost_tier',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='choice', ctx=Store())],
+          value=Call(
+            func=Name(id='ModelChoice', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='provider',
+                value=Constant(value='openai')),
+              keyword(
+                arg='model_name',
+                value=Constant(value='gpt-5.1-codex')),
+              keyword(
+                arg='cost_tier',
+                value=Constant(value='high')),
+              keyword(
+                arg='estimated_cost',
+                value=Constant(value=0.004)),
+              keyword(
+                arg='latency_ms',
+                value=Constant(value=1200))])),
+        Assign(
+          targets=[
+            Name(id='profile', ctx=Store())],
+          value=Call(
+            func=Name(id='ExecutionProfile', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='test_profile')),
+              keyword(
+                arg='description',
+                value=Constant(value='test')),
+              keyword(
+                arg='retrieval',
+                value=Call(
+                  func=Name(id='RetrievalConfig', ctx=Load()))),
+              keyword(
+                arg='metadata',
+                value=Dict(
+                  keys=[
+                    Constant(value='max_cost_tier')],
+                  values=[
+                    Constant(value='medium')]))])),
+        Assign(
+          targets=[
+            Name(id='adjusted', ctx=Store())],
+          value=Call(
+            func=Name(id='enforce_budget', ctx=Load()),
+            args=[
+              Name(id='choice', ctx=Load()),
+              Name(id='profile', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='adjusted', ctx=Load()),
+              attr='cost_tier',
+              ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='low'),
+                  Constant(value='medium')])])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='adjusted', ctx=Load()),
+              attr='estimated_cost',
+              ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Attribute(
+                value=Name(id='choice', ctx=Load()),
+                attr='estimated_cost',
+                ctx=Load())]))])])

@@ -1,0 +1,45 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='manual_recipient_data')],
+        values=[
+          List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='source_type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='RECIPIENT_LINKEDIN_ABOUT'),
+                  Constant(value="Paste the recipient's LinkedIn 'About' summary here.")]),
+              Dict(
+                keys=[
+                  Constant(value='source_type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='RECIPIENT_RECENT_POST'),
+                  Constant(value='Paste a relevant recent LinkedIn post from the recipient here.')]),
+              Dict(
+                keys=[
+                  Constant(value='source_type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='RECIPIENT_LINKEDIN_ABOUT'),
+                  Constant(value='Optional: Add more LinkedIn profile sections (Experience, Education, etc.)')]),
+              Dict(
+                keys=[
+                  Constant(value='source_type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='COMPANY_BLOG_ANNOUNCEMENT'),
+                  Constant(value='Optional: Paste relevant company blog posts or announcements here.')]),
+              Dict(
+                keys=[
+                  Constant(value='source_type'),
+                  Constant(value='text')],
+                values=[
+                  Constant(value='COMPANY_PRESS_RELEASE'),
+                  Constant(value='Optional: Add company press releases or news coverage here.')])],
+            ctx=Load())]))])

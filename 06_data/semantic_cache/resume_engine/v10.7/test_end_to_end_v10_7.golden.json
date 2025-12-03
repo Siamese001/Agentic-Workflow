@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n@pytest.mark.integration\ndef test_full_resume_generation_pipeline():\n    ctx = {\"resume\": \"Jane Doe\", \"jd\": \"Chief AI Officer\"}\n    output = run_workflow(ctx)\n    assert output[\"status\"] == \"success\"\n    assert \"summary\" in output\n\n\n@pytest.mark.integration\ndef test_ambiguity_triggers_tot_branching():\n    ctx = {\"resume\": \"ambiguous input\"}\n    out = run_workflow(ctx)\n    assert \"ToT\" in out[\"events\"]\n\n\n@pytest.mark.integration\ndef test_low_confidence_triggers_retry():\n    ctx = {\"resume\": \"low_confidence_case\"}\n    out = run_workflow(ctx)\n    assert \"retry\" in out[\"events\"]\n\n\n@pytest.mark.xfail(reason=\"Add 17 more integration tests for all stacks\", strict=False)\ndef test_placeholder():\n    pytest.xfail(\"Add 17 more integration tests for all stacks\")\n",
+  "full_hash": "d0b2e3631607a830cae0175aadcf67d2b825be559af0427c44878cbca7e3126f",
+  "generated_at": 1764728329.9616883,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\system\\test_end_to_end_v10_7.py"
+}

@@ -1,0 +1,435 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='ast')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='PROJECT_ROOT', ctx=Store())],
+      value=Subscript(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parents',
+          ctx=Load()),
+        slice=Constant(value=2),
+        ctx=Load())),
+    FunctionDef(
+      name='_iter_core_files',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='core_root', ctx=Store())],
+          value=BinOp(
+            left=Name(id='PROJECT_ROOT', ctx=Load()),
+            op=Div(),
+            right=Constant(value='core'))),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='core_root', ctx=Load()),
+                attr='exists',
+                ctx=Load()))),
+          body=[
+            Return()]),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='core_root', ctx=Load()),
+              attr='rglob',
+              ctx=Load()),
+            args=[
+              Constant(value='*.py')]),
+          body=[
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='path', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='test_')]),
+              body=[
+                Continue()]),
+            Expr(
+              value=Yield(
+                value=Name(id='path', ctx=Load())))])]),
+    FunctionDef(
+      name='_parse_calls',
+      args=arguments(
+        args=[
+          arg(
+            arg='path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='source', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='read_text',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='encoding',
+                    value=Constant(value='utf-8'))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='OSError', ctx=Load()),
+              body=[
+                Return(
+                  value=List(ctx=Load()))])]),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='tree', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ast', ctx=Load()),
+                  attr='parse',
+                  ctx=Load()),
+                args=[
+                  Name(id='source', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='filename',
+                    value=Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        Name(id='path', ctx=Load())]))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='SyntaxError', ctx=Load()),
+              body=[
+                Return(
+                  value=List(ctx=Load()))])]),
+        AnnAssign(
+          target=Name(id='calls', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='node', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='ast', ctx=Load()),
+              attr='walk',
+              ctx=Load()),
+            args=[
+              Name(id='tree', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='node', ctx=Load()),
+                  Attribute(
+                    value=Name(id='ast', ctx=Load()),
+                    attr='Call',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='func', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='node', ctx=Load()),
+                    attr='func',
+                    ctx=Load())),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='func', ctx=Load()),
+                      Attribute(
+                        value=Name(id='ast', ctx=Load()),
+                        attr='Attribute',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='value', ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='func', ctx=Load()),
+                        attr='value',
+                        ctx=Load())),
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='value', ctx=Load()),
+                          Attribute(
+                            value=Name(id='ast', ctx=Load()),
+                            attr='Name',
+                            ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='calls', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='value', ctx=Load()),
+                                      attr='id',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='.'),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='func', ctx=Load()),
+                                      attr='attr',
+                                      ctx=Load()),
+                                    conversion=-1)])]))])],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='func', ctx=Load()),
+                          Attribute(
+                            value=Name(id='ast', ctx=Load()),
+                            attr='Name',
+                            ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='calls', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='func', ctx=Load()),
+                                attr='id',
+                                ctx=Load())]))])])])]),
+        Return(
+          value=Name(id='calls', ctx=Load()))]),
+    FunctionDef(
+      name='_parse_import_from_runtime_utils',
+      args=arguments(
+        args=[
+          arg(
+            arg='path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='source', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='path', ctx=Load()),
+                  attr='read_text',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='encoding',
+                    value=Constant(value='utf-8'))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='OSError', ctx=Load()),
+              body=[
+                Return(
+                  value=List(ctx=Load()))])]),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='tree', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='ast', ctx=Load()),
+                  attr='parse',
+                  ctx=Load()),
+                args=[
+                  Name(id='source', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='filename',
+                    value=Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        Name(id='path', ctx=Load())]))]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='SyntaxError', ctx=Load()),
+              body=[
+                Return(
+                  value=List(ctx=Load()))])]),
+        AnnAssign(
+          target=Name(id='imports', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='node', ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='ast', ctx=Load()),
+              attr='walk',
+              ctx=Load()),
+            args=[
+              Name(id='tree', ctx=Load())]),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='node', ctx=Load()),
+                      Attribute(
+                        value=Name(id='ast', ctx=Load()),
+                        attr='ImportFrom',
+                        ctx=Load())]),
+                  Compare(
+                    left=Attribute(
+                      value=Name(id='node', ctx=Load()),
+                      attr='module',
+                      ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Tuple(
+                        elts=[
+                          Constant(value='runtime_utils'),
+                          Constant(value='runtime.runtime_utils')],
+                        ctx=Load())])]),
+              body=[
+                For(
+                  target=Name(id='alias', ctx=Store()),
+                  iter=Attribute(
+                    value=Name(id='node', ctx=Load()),
+                    attr='names',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='imports', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='alias', ctx=Load()),
+                            attr='name',
+                            ctx=Load())]))])])]),
+        Return(
+          value=Name(id='imports', ctx=Load()))]),
+    FunctionDef(
+      name='test_core_does_not_call_runtime_utils_invoke_model',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='core/* must not call runtime_utils.invoke_model directly.')),
+        Assign(
+          targets=[
+            Name(id='forbidden', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='invoke_model'),
+              Constant(value='runtime_utils.invoke_model')])),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Name(id='_iter_core_files', ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='calls', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='_parse_calls', ctx=Load()),
+                    args=[
+                      Name(id='path', ctx=Load())])])),
+            Assert(
+              test=UnaryOp(
+                op=Not(),
+                operand=BinOp(
+                  left=Name(id='calls', ctx=Load()),
+                  op=BitAnd(),
+                  right=Name(id='forbidden', ctx=Load()))),
+              msg=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='path', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' calls forbidden runtime_utils.invoke_model: '),
+                  FormattedValue(
+                    value=BinOp(
+                      left=Name(id='calls', ctx=Load()),
+                      op=BitAnd(),
+                      right=Name(id='forbidden', ctx=Load())),
+                    conversion=-1)]))])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='test_core_does_not_from_import_invoke_model',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='core/* must not import invoke_model directly from runtime_utils.')),
+        For(
+          target=Name(id='path', ctx=Store()),
+          iter=Call(
+            func=Name(id='_iter_core_files', ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='imported', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='_parse_import_from_runtime_utils', ctx=Load()),
+                    args=[
+                      Name(id='path', ctx=Load())])])),
+            Assert(
+              test=Compare(
+                left=Constant(value='invoke_model'),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='imported', ctx=Load())]),
+              msg=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='path', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' imports invoke_model from runtime_utils')]))])],
+      returns=Constant(value=None))])

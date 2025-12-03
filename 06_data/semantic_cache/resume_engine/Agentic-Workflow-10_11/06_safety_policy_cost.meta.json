@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\06_safety_policy_cost.md",
+    "rel_path": "06_safety_policy_cost.md",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d",
+    "file_size": 809,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728228.1698189
+}

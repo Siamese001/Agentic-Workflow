@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Folder Structure Guide - Agentic Workflow 10_10\n\nThis guide explains the functional purpose of each folder in the Agentic Workflow 10_10 repository to help you understand where files are located and what they do.\n\n## \ud83c\udfd7\ufe0f Architecture Overview\n\nThis project uses a **5-layer agentic architecture** (L1-L5) plus capability-based organization. Think of it like a company with different departments and management levels.\n\n```text\nL1 (Planning)     \u2192 L2 (Execution) \u2192 L3 (Orchestration) \u2192 L4 (State) \u2192 L5 (Safety)\n     \u2191                    \u2191                \u2191                   \u2191            \u2191\n   Strategy           Tools           Workflow          Data        Policy\n   & Logic          & Actions        & Control        & Storage   & Rules\n```\n\n## \ud83d\udcc1 Core Folders Explained\n\n### **L1 - Planning Layer** (`l1/`)\n\n**Purpose**: Strategic thinking and decision-making\n\n- **What it does**: Creates plans, strategies, and analyzes what needs to be done\n- **Analogy**: The executive team that decides company s",
+  "full_hash": "eb16fb97c17a603f4e035034b114cd4bdfa22fc79812eaf28549c729e04eecc6",
+  "generated_at": 1764728226.131295,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\architecture\\FOLDER_STRUCTURE_GUIDE.md"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v1.0 - COMPLETE INTEGRATION\nIntegrated with Signal Calibration v2.1 system\n\nProduces 4 High-Signal Outputs:\n1. Complete Resume (all sections + skills)\n2. Word Count Table\n3. Signal Calibration Table (target vs actual + variance commentary)\n4. Relevant QA Tables (excluding NA comparisons)\n\nArchitecture: 9-HOP pipeline with embedded master resume, signal calibration,\nbaseline metrics validation, and comprehensive QA gates.\n\nAuthor: Resume Generation Team\nVersion: 1.0.0-COMPLETE\nDate: October 2025\n\"\"\"\n\nimport re\nimport json\nfrom typing import Dict, List, Tuple, Optional\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom enum import Enum\n\n__version__ = \"1.0.0-COMPLETE\"\n__all__ = [\n    'MasterResume',\n    'SaaSRoleProfiles',\n    'BaselineResumeMetrics',\n    'HyphenationRules',\n    'SignalCalibrationConfig',\n    'ResumeGenerationEngine',\n]\n\n\n# ============================================================================\n# SECTION 0: MASTER RESUME",
+  "full_hash": "c4220c297b1d23763ac6c4a9b813769bbb15c217e4f287558ca77e68f9fc07d6",
+  "generated_at": 1764728233.3510652,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v1.0_COMPLETE.py"
+}

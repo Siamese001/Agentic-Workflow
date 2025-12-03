@@ -1,0 +1,173 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema tool dispatching and orchestration.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ToolCategory',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema tool categories.')),
+        Assign(
+          targets=[
+            Name(id='VALIDATION', ctx=Store())],
+          value=Constant(value='validation')),
+        Assign(
+          targets=[
+            Name(id='TRANSFORMATION', ctx=Store())],
+          value=Constant(value='transformation')),
+        Assign(
+          targets=[
+            Name(id='ANALYSIS', ctx=Store())],
+          value=Constant(value='analysis')),
+        Assign(
+          targets=[
+            Name(id='GENERATION', ctx=Store())],
+          value=Constant(value='generation'))]),
+    ClassDef(
+      name='DispatchStrategy',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Tool dispatch strategies.')),
+        Assign(
+          targets=[
+            Name(id='ROUND_ROBIN', ctx=Store())],
+          value=Constant(value='round_robin')),
+        Assign(
+          targets=[
+            Name(id='LOAD_BALANCED', ctx=Store())],
+          value=Constant(value='load_balanced')),
+        Assign(
+          targets=[
+            Name(id='PRIORITY_BASED', ctx=Store())],
+          value=Constant(value='priority_based')),
+        Assign(
+          targets=[
+            Name(id='ADAPTIVE', ctx=Store())],
+          value=Constant(value='adaptive'))]),
+    ClassDef(
+      name='ToolDispatch',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual tool dispatch.')),
+        AnnAssign(
+          target=Name(id='dispatch_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tool_category', ctx=Store()),
+          annotation=Name(id='ToolCategory', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tool_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dispatch_strategy', ctx=Store()),
+          annotation=Name(id='DispatchStrategy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='parameters', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='priority', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ToolDispatchContext',
+      body=[
+        Expr(
+          value=Constant(value='Schema for tool dispatch context.')),
+        AnnAssign(
+          target=Name(id='context_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='target_schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dispatches', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ToolDispatch', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dispatch_environment', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dispatch_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ToolDispatchResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for tool dispatch results.')),
+        AnnAssign(
+          target=Name(id='result_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Name(id='ToolDispatchContext', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dispatch_successful', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dispatched_tools', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='dispatch_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

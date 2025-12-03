@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_10-01-2025_v2\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-10-01T22:00:00Z\",\n    \"sources\": \"v1 complete + Steve Benedetti chat comprehensive parameters + Kristy Amaro K.3-K.4 regeneration + JW v18.8 output patterns\",\n    \"notes\": \"Production version: Complete parameter tables by message type, enhanced regeneration, simplified reasoning output\",\n    \"sha256\": \"pending_calculation\",\n    \"changelog_v1_to_v2\": [\n      \"Added complete parameter tables for all K-nodes by message type from Steve Benedetti chat\",\n      \"Enhanced K.3 regeneration with specific word counts and structures per type\",\n      \"Added K.4 attachment logic variations by message type\",\n      \"Implemented JW v18.8 simplified reasoning output pattern when SHOW_DETAILED_REASONING=OFF\",\n      \"Added clean Section 5 deliverables following JW format\",\n      \"Refined temperature parameters: C_LEVEL K.3=0.90, EXECUTIVE K.3=0.70, etc.\",\n      \"Added ToT b",
+  "full_hash": "1589a9b70e68879c1f24f2ad141dd793990e278d1fc516d1d7d470674e7e91bf",
+  "generated_at": 1764728331.9270065,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-01-2025_v3.json"
+}

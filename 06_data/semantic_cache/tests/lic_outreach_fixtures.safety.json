@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 94,
+  "generated_at": 1764728354.8406107,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\retriever-microagent-layer\\validate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\lic_outreach_fixtures.py"
+}

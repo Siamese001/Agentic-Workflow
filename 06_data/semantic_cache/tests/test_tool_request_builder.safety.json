@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 48,
+  "generated_at": 1764728354.869062,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\router-microagent-layer\\inspect-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\test_tool_request_builder.py"
+}

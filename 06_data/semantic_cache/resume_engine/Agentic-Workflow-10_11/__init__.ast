@@ -1,0 +1,4 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nCommand line interface for comprehensive résumé processing workflows.\n\nProvides user-friendly CLI tools for résumé enhancement, job matching, and career optimization operations.\n'))])

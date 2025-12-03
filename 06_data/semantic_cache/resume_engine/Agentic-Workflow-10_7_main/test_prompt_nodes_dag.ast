@@ -1,0 +1,71 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='agent_orchestration_v10_7',
+      names=[
+        alias(name='get_graph_app')],
+      level=0),
+    FunctionDef(
+      name='test_prompt_nodes_available_when_enabled',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='workflow_context', ctx=Load()),
+              attr='enable_v10_8_prompts',
+              ctx=Store())],
+          value=Constant(value=True)),
+        Assign(
+          targets=[
+            Name(id='workflow', ctx=Store())],
+          value=Call(
+            func=Name(id='get_graph_app', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='checkpointer',
+                value=Constant(value=None)),
+              keyword(
+                arg='workflow_context',
+                value=Name(id='workflow_context', ctx=Load())),
+              keyword(
+                arg='enable_hil',
+                value=Constant(value=False))])),
+        Assign(
+          targets=[
+            Name(id='node_names', ctx=Store())],
+          value=Call(
+            func=Name(id='set', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='workflow', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load()),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Set(
+                elts=[
+                  Constant(value='run_prompt_builder'),
+                  Constant(value='run_prompt_renderer')]),
+              attr='issubset',
+              ctx=Load()),
+            args=[
+              Name(id='node_names', ctx=Load())]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='design',
+          ctx=Load())])])

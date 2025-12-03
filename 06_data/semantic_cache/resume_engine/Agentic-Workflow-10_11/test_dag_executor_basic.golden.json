@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nimport asyncio\nfrom typing import Any, Dict\n\nimport pytest\n\nfrom orchestration.dag_engine import Graph, Node, Edge, DAGExecutor\n\n\nasync def _id_node(ctx: Dict[str, Any]) -> Dict[str, Any]:\n    return dict(ctx)\n\n\ndef _make_cyclic_graph() -> Graph:\n    nodes = {\n        \"a\": Node(id=\"a\", fn=_id_node, metadata={}),\n        \"b\": Node(id=\"b\", fn=_id_node, metadata={}),\n    }\n    edges = [Edge(source=\"a\", target=\"b\"), Edge(source=\"b\", target=\"a\")]\n    return Graph(nodes=nodes, edges=edges)\n\n\ndef test_dag_executor_cycle_detection():\n    graph = _make_cyclic_graph()\n    executor = DAGExecutor(graph)\n\n    with pytest.raises(RuntimeError):\n        asyncio.run(executor.run())\n\n\n\n\n\n\n",
+  "full_hash": "557f852f4cfa140d2d78176684fc0c9b2a6317f024bd06d0e6d6069216f13ae5",
+  "generated_at": 1764728226.5314364,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\dag\\test_dag_executor_basic.py"
+}

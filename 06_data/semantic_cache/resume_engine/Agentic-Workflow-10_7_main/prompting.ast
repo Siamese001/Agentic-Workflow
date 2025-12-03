@@ -1,0 +1,891 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Prompt engineering stack.')),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Optional'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='BaseAgent'),
+        alias(name='GeneratedPrompts'),
+        alias(name='StrategyPlan'),
+        alias(name='ValidationError'),
+        alias(name='track_metrics'),
+        alias(name='_format_prompt_with_defaults')],
+      level=0),
+    ClassDef(
+      name='PromptEngineerAgent',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='LLM-driven prompt engineering that adapts to task complexity.')),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='strategy',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='complexity',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='state_ref', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='state', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Name(id='state', ctx=Load()),
+                orelse=Constant(value=None))),
+            Assign(
+              targets=[
+                Name(id='autonomy', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Constant(value='autonomy_engine'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='autonomy', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='autonomy', ctx=Load()),
+                      attr='enabled',
+                      ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='hints', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='autonomy', ctx=Load()),
+                      attr='decide',
+                      ctx=Load()),
+                    args=[
+                      Name(id='workflow_id', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_debug',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Autonomy hints: '),
+                          FormattedValue(
+                            value=Name(id='hints', ctx=Load()),
+                            conversion=-1)])])),
+                If(
+                  test=Compare(
+                    left=Name(id='state_ref', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='state_ref', ctx=Load()),
+                              attr='setdefault',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='autonomy_hints'),
+                              Dict()]),
+                          attr='update',
+                          ctx=Load()),
+                        args=[
+                          Name(id='hints', ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='adv', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='context',
+                    ctx=Load()),
+                  Constant(value='advanced_meta_learner'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='adv', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='adv', ctx=Load()),
+                      attr='enabled',
+                      ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='hints', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='adv', ctx=Load()),
+                      attr='analyze',
+                      ctx=Load()),
+                    args=[
+                      Name(id='workflow_id', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='target_state', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='state_ref', ctx=Load()),
+                      ops=[
+                        IsNot()],
+                      comparators=[
+                        Constant(value=None)]),
+                    body=Name(id='state_ref', ctx=Load()),
+                    orelse=Name(id='state', ctx=Load()))),
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='target_state', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='target_state', ctx=Load()),
+                              attr='setdefault',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='meta_hints'),
+                              Dict()]),
+                          attr='update',
+                          ctx=Load()),
+                        args=[
+                          Name(id='hints', ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='pcm', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='context',
+                  ctx=Load()),
+                attr='predictive_cache_manager',
+                ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='pcm', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='pcm', ctx=Load()),
+                      attr='enabled',
+                      ctx=Load()))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pcm', ctx=Load()),
+                      attr='schedule',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='coroutine')],
+                        values=[
+                          Lambda(
+                            args=arguments(
+                              args=[
+                                arg(arg='s_json'),
+                                arg(arg='c')],
+                              defaults=[
+                                Call(
+                                  func=Attribute(
+                                    value=Name(id='strategy', ctx=Load()),
+                                    attr='model_dump_json',
+                                    ctx=Load())),
+                                Name(id='complexity', ctx=Load())]),
+                            body=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Attribute(
+                                    value=Name(id='self', ctx=Load()),
+                                    attr='context',
+                                    ctx=Load()),
+                                  attr='precompute_engine',
+                                  ctx=Load()),
+                                attr='precompute_prompt_plan',
+                                ctx=Load()),
+                              args=[
+                                Name(id='s_json', ctx=Load()),
+                                Name(id='c', ctx=Load())]))])])),
+                Expr(
+                  value=Await(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='pcm', ctx=Load()),
+                        attr='run_scheduled',
+                        ctx=Load()))))]),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='base_result', ctx=Store()),
+                    Name(id='validated_output', ctx=Store())],
+                  ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_execute_prompt_engineer',
+                    ctx=Load()),
+                  args=[
+                    Name(id='strategy', ctx=Load()),
+                    Name(id='complexity', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_maybe_self_correct',
+                    ctx=Load()),
+                  args=[
+                    Name(id='strategy', ctx=Load()),
+                    Name(id='complexity', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load()),
+                    Name(id='base_result', ctx=Load()),
+                    Name(id='validated_output', ctx=Load())])))],
+          decorator_list=[
+            Call(
+              func=Name(id='track_metrics', ctx=Load()),
+              args=[
+                Constant(value='run_prompt_engineer')])],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_execute_prompt_engineer',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='strategy',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='complexity',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='self_heal_hint',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Engineering prompts (Complexity: '),
+                      FormattedValue(
+                        value=Name(id='complexity', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=')...')])])),
+            Assign(
+              targets=[
+                Name(id='hint', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='self_heal_hint', ctx=Load()),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='client', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='get_model_client',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prompt_engineer_model')])),
+            Assign(
+              targets=[
+                Name(id='meta_prompt_template', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='prompt_manager',
+                    ctx=Load()),
+                  attr='get_template',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prompt_engineer')])),
+            Assign(
+              targets=[
+                Name(id='style_guide', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='hint', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='style_guide'),
+                  Constant(value='Style: Generate clear, role-appropriate prompts.')])),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='hint', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='force_structured')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='style_guide', ctx=Store())],
+                  value=Constant(value='Style: Enforce numbered prompts with explicit QA coverage and guardrails.'))]),
+            Assign(
+              targets=[
+                Name(id='meta_prompt', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Name(id='_format_prompt_with_defaults', ctx=Load()),
+                  args=[
+                    Name(id='meta_prompt_template', ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='strategy'),
+                        Constant(value='complexity'),
+                        Constant(value='style_guide'),
+                        Constant(value='job_description')],
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='strategy', ctx=Load()),
+                            attr='model_dump_json',
+                            ctx=Load())),
+                        Name(id='complexity', ctx=Load()),
+                        Name(id='style_guide', ctx=Load()),
+                        Constant(value='N/A')]),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='budget_manager',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='goal_state',
+                      ctx=Load()),
+                    Attribute(
+                      value=Name(id='client', ctx=Load()),
+                      attr='top_failures',
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='base_temp', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='config',
+                      ctx=Load()),
+                    attr='model_config',
+                    ctx=Load()),
+                  attr='prompt_engineer_model',
+                  ctx=Load()),
+                attr='temperature',
+                ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='context',
+                      ctx=Load()),
+                    attr='policy_auto_tuner',
+                    ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='context',
+                          ctx=Load()),
+                        attr='policy_auto_tuner',
+                        ctx=Load()),
+                      attr='enabled',
+                      ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='base_temp', ctx=Store())],
+                  value=Attribute(
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='context',
+                        ctx=Load()),
+                      attr='tuning_profile',
+                      ctx=Load()),
+                    attr='temperature',
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='temperature', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='hint', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='temperature'),
+                  Call(
+                    func=Name(id='max', ctx=Load()),
+                    args=[
+                      Constant(value=0.0),
+                      Call(
+                        func=Name(id='min', ctx=Load()),
+                        args=[
+                          Constant(value=1.0),
+                          BinOp(
+                            left=Name(id='base_temp', ctx=Load()),
+                            op=Add(),
+                            right=Call(
+                              func=Attribute(
+                                value=Name(id='hint', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='temperature_offset'),
+                                Constant(value=0.0)]))])])])),
+            Assign(
+              targets=[
+                Name(id='response', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='client', ctx=Load()),
+                    attr='chat_completion_async',
+                    ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='messages',
+                      value=List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='role'),
+                              Constant(value='content')],
+                            values=[
+                              Constant(value='user'),
+                              Name(id='meta_prompt', ctx=Load())])],
+                        ctx=Load())),
+                    keyword(
+                      arg='temperature',
+                      value=Name(id='temperature', ctx=Load())),
+                    keyword(
+                      arg='response_format',
+                      value=Constant(value='json_object'))]))),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='validated_output', ctx=Store()),
+                    Name(id='error', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='validator',
+                    ctx=Load()),
+                  attr='validate',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='response', ctx=Load()),
+                    slice=Constant(value='content'),
+                    ctx=Load()),
+                  Name(id='GeneratedPrompts', ctx=Load())])),
+            If(
+              test=Name(id='error', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='log_error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='PromptEngineerAgent failed validation: '),
+                          FormattedValue(
+                            value=Name(id='error', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='. Returning baseline prompts.')])])),
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValidationError', ctx=Load()),
+                    args=[
+                      Name(id='error', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='log_feedback',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='prompt_engineering'),
+                  Constant(value='success'),
+                  Dict(
+                    keys=[
+                      Constant(value='prompt_count')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='validated_output', ctx=Load()),
+                            attr='prompts',
+                            ctx=Load())])])])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='prompts'),
+                  Constant(value='complexity')],
+                values=[
+                  Name(id='validated_output', ctx=Load()),
+                  Name(id='complexity', ctx=Load())])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='result', ctx=Load()),
+                  Name(id='validated_output', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                Name(id='GeneratedPrompts', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='_maybe_self_correct',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='strategy',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='complexity',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='base_result',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='validated_output',
+                annotation=Name(id='GeneratedPrompts', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='manager', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='self', ctx=Load()),
+                  Constant(value='self_correction_manager'),
+                  Constant(value=None)])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='manager', ctx=Load())),
+              body=[
+                Return(
+                  value=Name(id='base_result', ctx=Load()))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='manager', ctx=Load()),
+                    attr='can_retry',
+                    ctx=Load()),
+                  args=[
+                    Name(id='workflow_id', ctx=Load()),
+                    Constant(value='prompt')])),
+              body=[
+                Return(
+                  value=Name(id='base_result', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='issue', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_needs_retry',
+                  ctx=Load()),
+                args=[
+                  Name(id='validated_output', ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='issue', ctx=Load())),
+              body=[
+                Return(
+                  value=Name(id='base_result', ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='manager', ctx=Load()),
+                  attr='start_retry',
+                  ctx=Load()),
+                args=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Constant(value='prompt')],
+                keywords=[
+                  keyword(
+                    arg='issue',
+                    value=Name(id='issue', ctx=Load())),
+                  keyword(
+                    arg='action',
+                    value=Constant(value='stabilize_prompt_structure'))])),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='corrected_result', ctx=Store()),
+                    Name(id='corrected_output', ctx=Store())],
+                  ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_execute_prompt_engineer',
+                    ctx=Load()),
+                  args=[
+                    Name(id='strategy', ctx=Load()),
+                    Name(id='complexity', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())],
+                  keywords=[
+                    keyword(
+                      arg='self_heal_hint',
+                      value=Dict(
+                        keys=[
+                          Constant(value='temperature_offset'),
+                          Constant(value='force_structured')],
+                        values=[
+                          UnaryOp(
+                            op=USub(),
+                            operand=Constant(value=0.2)),
+                          Constant(value=True)]))]))),
+            Assign(
+              targets=[
+                Name(id='resolved', ctx=Store())],
+              value=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_needs_retry',
+                    ctx=Load()),
+                  args=[
+                    Name(id='corrected_output', ctx=Load())]))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='manager', ctx=Load()),
+                  attr='finalize_retry',
+                  ctx=Load()),
+                args=[
+                  Name(id='report', ctx=Load()),
+                  Name(id='resolved', ctx=Load())])),
+            If(
+              test=Name(id='resolved', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='corrected_result', ctx=Load()),
+                          attr='setdefault',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='self_correction'),
+                          Dict()]),
+                      slice=Constant(value='prompt'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='report', ctx=Load()),
+                      attr='model_dump',
+                      ctx=Load()))),
+                Return(
+                  value=Name(id='corrected_result', ctx=Load()))]),
+            Return(
+              value=Name(id='base_result', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_needs_retry',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompts',
+                annotation=Name(id='GeneratedPrompts', ctx=Load()))]),
+          body=[
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Attribute(
+                      value=Name(id='prompts', ctx=Load()),
+                      attr='qa_prompts',
+                      ctx=Load())),
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='prompts', ctx=Load()),
+                          attr='qa_prompts',
+                          ctx=Load())]),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      Constant(value=1)])]),
+              body=[
+                Return(
+                  value=Constant(value='missing_qa_prompts'))]),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='prompts', ctx=Load()),
+                          attr='bullet_generation_prompt',
+                          ctx=Load()),
+                        attr='strip',
+                        ctx=Load()))]),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=40)]),
+              body=[
+                Return(
+                  value=Constant(value='short_bullet_prompt'))]),
+            Return(
+              value=Constant(value=None))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))])])

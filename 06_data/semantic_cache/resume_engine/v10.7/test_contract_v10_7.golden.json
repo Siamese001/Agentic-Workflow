@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom schema import ResumeOutputSchema\nfrom workflow.runner import run_workflow\n\n\n@pytest.mark.contract\ndef test_resume_schema_compliance():\n    result = run_workflow({\"resume\": \"AI Exec\", \"jd\": \"AWS\"})\n    ResumeOutputSchema(**result[\"resume\"])\n\n\n@pytest.mark.contract\ndef test_latency_under_sla(benchmark):\n    ctx = {\"resume\": \"fast\", \"jd\": \"QuickTest\"}\n    out = benchmark(lambda: run_workflow(ctx))\n    assert out is not None\n\n\n@pytest.mark.contract\ndef test_idempotent_results():\n    ctx = {\"resume\": \"repeat\", \"jd\": \"same\"}\n    r1, r2 = run_workflow(ctx), run_workflow(ctx)\n    assert r1 == r2\n\n\n@pytest.mark.xfail(reason=\"Add 22 more contract and SLA enforcement tests\", strict=False)\ndef test_placeholder():\n    pytest.xfail(\"Add 22 more contract and SLA enforcement tests\")\n",
+  "full_hash": "53912f08a15d1f1c7a47f036d6215a5ed2e57eab299c82d7f54083077552d4b5",
+  "generated_at": 1764728329.8775284,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_contract_v10_7.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - parse_registry_settings\nImplements L1 Cognitive Planning Layer for parse registry settings operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ParseRegistrySettingsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ParseRegistrySettingsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ParseRegistrySettingsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    ",
+  "full_hash": "7e52de4ff712ce80683b109631e34d186cbc8668212e0d6de032b334e975ab30",
+  "generated_at": 1764728348.935818,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\plan-phase\\get-config-info\\general\\understand-request\\parse_registry_settings.py"
+}

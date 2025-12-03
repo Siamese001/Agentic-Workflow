@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\plan-phase\\get-resume-info\\utility\\prepare-information\\prepare_resume_orchestration.py",
+    "rel_path": "prepare_resume_orchestration.py",
+    "root_name": "apps",
+    "file_hash": "8c156c6db0f705f70c037f009523f5cbb7e8ff50b41daa3a5dc10b79d286e7bd",
+    "file_size": 7014,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 6
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728353.0464556
+}

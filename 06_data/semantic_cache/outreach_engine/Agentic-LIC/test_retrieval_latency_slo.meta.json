@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_retrieval_latency_slo.py",
+    "rel_path": "test_retrieval_latency_slo.py",
+    "root_name": "outreach_engine/Agentic-LIC",
+    "file_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
+    "file_size": 1217,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.0388222
+}

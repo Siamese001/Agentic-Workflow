@@ -1,0 +1,1044 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nUnified Self-Correction Surfaces (v10_9 REFACTORED) — META LAYER ONLY\n\nThis module defines the unified self-correction framework for the v10_9\nagentic architecture. It implements:\n\n    • Canonical self-correction surfaces (RAG_RETRY, QA_RECHECK, etc.)\n    • Deterministic error detection rules over state snapshots\n    • Enterprise-ordered surface selection (safety > QA > RAG > strategy > checkpoint)\n    • Structured correction directives (for L3 / meta-learning)\n    • Multi-surface analysis for diagnostics\n    • Utilities for telemetry and state patches (read-only)\n\n❗ STRICT GUARDRAILS (META-ONLY):\n    • NO L1 (planning)\n    • NO L2 (execution / LLM / retrieval)\n    • NO L3 (orchestration)\n    • NO L4 (state mutation)\n    • NO L5 (policy/safety decisions)\n\nAll functions operate ONLY on finalized state snapshots and produce\nrecommendations — they NEVER perform workflow actions.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='SelfCorrectionSurface'),
+        alias(name='SafetyIssue')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='SELF_CORRECTION_SURFACES', ctx=Store())],
+      value=Set(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='SelfCorrectionSurface', ctx=Load()),
+              attr='RAG_RETRY',
+              ctx=Load()),
+            attr='value',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='SelfCorrectionSurface', ctx=Load()),
+              attr='QA_RECHECK',
+              ctx=Load()),
+            attr='value',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='SelfCorrectionSurface', ctx=Load()),
+              attr='STRATEGY_REPLAN',
+              ctx=Load()),
+            attr='value',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='SelfCorrectionSurface', ctx=Load()),
+              attr='HIL_ESCALATION',
+              ctx=Load()),
+            attr='value',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='SelfCorrectionSurface', ctx=Load()),
+              attr='CHECKPOINT_RECOVERY',
+              ctx=Load()),
+            attr='value',
+            ctx=Load())])),
+    ClassDef(
+      name='CorrectionSignal',
+      body=[
+        Expr(
+          value=Constant(value='\n    Low-level signal that a correction may be needed.\n    ')),
+        AnnAssign(
+          target=Name(id='surface', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reason', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='surface'),
+                  Constant(value='reason'),
+                  Constant(value='metadata')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='surface',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='reason',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='CorrectionRecommendation',
+      body=[
+        Expr(
+          value=Constant(value='\n    Normalized recommendation for downstream layers.\n\n    Fields:\n        • needed:   whether a correction should be triggered\n        • surface:  one of SELF_CORRECTION_SURFACES\n        • rationale: human-readable explanation\n        • metadata: structured supporting info\n    ')),
+        AnnAssign(
+          target=Name(id='needed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='surface', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rationale', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='needed'),
+                  Constant(value='surface'),
+                  Constant(value='rationale'),
+                  Constant(value='metadata')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='needed',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='surface',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='rationale',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='metadata',
+                        ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='_detect_rag_errors',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Detect whether retrieval was insufficient.\n    ')),
+        Assign(
+          targets=[
+            Name(id='rag_block', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='rag_result')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='docs', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='rag_block', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='documents')]),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='docs', ctx=Load()),
+                Name(id='list', ctx=Load())])),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='docs', ctx=Load())]),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=0)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='RAG_RETRY',
+                        ctx=Load()),
+                      attr='value',
+                      ctx=Load())),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='No RAG evidence retrieved.')),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='retrieved_count')],
+                      values=[
+                        Constant(value=0)]))]))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='docs', ctx=Load())]),
+            ops=[
+              Lt()],
+            comparators=[
+              Constant(value=2)]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='RAG_RETRY',
+                        ctx=Load()),
+                      attr='value',
+                      ctx=Load())),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Insufficient RAG evidence depth.')),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='retrieved_count')],
+                      values=[
+                        Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='docs', ctx=Load())])]))]))]),
+        Return(
+          value=Constant(value=None))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_detect_qa_errors',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Detect failed QA checks.\n    ')),
+        Assign(
+          targets=[
+            Name(id='qa_block', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='qa_result')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='report', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='qa_block', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='report')]),
+              Name(id='qa_block', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='report', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='issues'),
+              List(ctx=Load())])),
+        If(
+          test=Name(id='issues', ctx=Load()),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='QA_RECHECK',
+                        ctx=Load()),
+                      attr='value',
+                      ctx=Load())),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='One or more QA checks failed.')),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='issues')],
+                      values=[
+                        Name(id='issues', ctx=Load())]))]))]),
+        Return(
+          value=Constant(value=None))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_detect_strategy_errors',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Detect that L1 strategy recommended revision.\n\n    NOTE:\n        In the refactored system, L2 StrategyExecutor emits:\n             payload.aggregated_decision\n             payload.aggregated_confidence\n             payload.aggregated_rationale\n        (Wrapped under state["strategy_result"]["payload"])\n    ')),
+        Assign(
+          targets=[
+            Name(id='strat_state', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='strategy_result')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='payload', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='strat_state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='payload')]),
+              Name(id='strat_state', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='decision', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='payload', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='aggregated_decision'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='decision', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='revise')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='STRATEGY_REPLAN',
+                        ctx=Load()),
+                      attr='value',
+                      ctx=Load())),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Strategy evaluation signaled a revision.')),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='aggregated_confidence'),
+                        Constant(value='aggregated_rationale')],
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='payload', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='aggregated_confidence')]),
+                        Call(
+                          func=Attribute(
+                            value=Name(id='payload', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='aggregated_rationale')])]))]))]),
+        Return(
+          value=Constant(value=None))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_detect_safety_halt',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Detect safety failures requiring human escalation.\n\n    New v10_9 safety format:\n        state["safety_result"] = SafetyExecutionPayload.to_dict()\n        → {"report": {"issues": [SafetyIssue dicts], ...}}\n    ')),
+        Assign(
+          targets=[
+            Name(id='safety', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='safety_result')]),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='report', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='safety', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='report')]),
+              Name(id='safety', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='issues', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='report', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='issues'),
+              List(ctx=Load())])),
+        For(
+          target=Name(id='issue', ctx=Store()),
+          iter=Name(id='issues', ctx=Load()),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='issue', ctx=Load()),
+                  Name(id='dict', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='cat', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='issue', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='category'),
+                              Constant(value='')])]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='msg', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='issue', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='message'),
+                              Constant(value='')])]),
+                      attr='lower',
+                      ctx=Load())))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='cat', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='issue', ctx=Load())]),
+                      attr='lower',
+                      ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='msg', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='issue', ctx=Load())]),
+                      attr='lower',
+                      ctx=Load())))]),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Constant(value='pii'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='cat', ctx=Load())]),
+                  Compare(
+                    left=Constant(value='pii'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='msg', ctx=Load())])]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='CorrectionSignal', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='surface',
+                        value=Attribute(
+                          value=Attribute(
+                            value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                            attr='HIL_ESCALATION',
+                            ctx=Load()),
+                          attr='value',
+                          ctx=Load())),
+                      keyword(
+                        arg='reason',
+                        value=Constant(value='Safety detected PII — escalate to human review.')),
+                      keyword(
+                        arg='metadata',
+                        value=Dict(
+                          keys=[
+                            Constant(value='issues')],
+                          values=[
+                            Name(id='issues', ctx=Load())]))]))])]),
+        Return(
+          value=Constant(value=None))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_detect_checkpoint_recovery',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Detect if the last checkpoint indicates workflow failure.\n    ')),
+        Assign(
+          targets=[
+            Name(id='checkpoints', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='checkpoints')]),
+              List(ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='checkpoints', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value=None))]),
+        Assign(
+          targets=[
+            Name(id='last', ctx=Store())],
+          value=Subscript(
+            value=Name(id='checkpoints', ctx=Load()),
+            slice=UnaryOp(
+              op=USub(),
+              operand=Constant(value=1)),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='phase', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='last', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='phase'),
+                      Constant(value='')])]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='phase', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Tuple(
+                elts=[
+                  Constant(value='failed'),
+                  Constant(value='error')],
+                ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='CorrectionSignal', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='surface',
+                    value=Attribute(
+                      value=Attribute(
+                        value=Name(id='SelfCorrectionSurface', ctx=Load()),
+                        attr='CHECKPOINT_RECOVERY',
+                        ctx=Load()),
+                      attr='value',
+                      ctx=Load())),
+                  keyword(
+                    arg='reason',
+                    value=Constant(value='Last checkpoint was recorded during failed/error state.')),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='last_checkpoint')],
+                      values=[
+                        Name(id='last', ctx=Load())]))]))]),
+        Return(
+          value=Constant(value=None))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='analyze_state_for_correction',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Priority-ordered correction analysis:\n\n        1. Safety → HIL escalation\n        2. QA recheck\n        3. RAG retry\n        4. Strategy replan\n        5. Checkpoint recovery\n\n    If no issues → needed=False\n    ')),
+        Assign(
+          targets=[
+            Name(id='detectors', ctx=Store())],
+          value=List(
+            elts=[
+              Name(id='_detect_safety_halt', ctx=Load()),
+              Name(id='_detect_qa_errors', ctx=Load()),
+              Name(id='_detect_rag_errors', ctx=Load()),
+              Name(id='_detect_strategy_errors', ctx=Load()),
+              Name(id='_detect_checkpoint_recovery', ctx=Load())],
+            ctx=Load())),
+        For(
+          target=Name(id='detect', ctx=Store()),
+          iter=Name(id='detectors', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='sig', ctx=Store())],
+              value=Call(
+                func=Name(id='detect', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            If(
+              test=Name(id='sig', ctx=Load()),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='CorrectionRecommendation', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='needed',
+                        value=Constant(value=True)),
+                      keyword(
+                        arg='surface',
+                        value=Attribute(
+                          value=Name(id='sig', ctx=Load()),
+                          attr='surface',
+                          ctx=Load())),
+                      keyword(
+                        arg='rationale',
+                        value=Attribute(
+                          value=Name(id='sig', ctx=Load()),
+                          attr='reason',
+                          ctx=Load())),
+                      keyword(
+                        arg='metadata',
+                        value=Attribute(
+                          value=Name(id='sig', ctx=Load()),
+                          attr='metadata',
+                          ctx=Load()))]))])]),
+        Return(
+          value=Call(
+            func=Name(id='CorrectionRecommendation', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='needed',
+                value=Constant(value=False))]))],
+      returns=Name(id='CorrectionRecommendation', ctx=Load())),
+    FunctionDef(
+      name='analyze_all_surfaces',
+      args=arguments(
+        args=[
+          arg(
+            arg='state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Return ALL applicable correction signals, sorted by enterprise priority.\n\n    Useful for:\n        • Meta-learning\n        • Telemetry\n        • Debugging\n        • State inspection\n    ')),
+        Assign(
+          targets=[
+            Name(id='detectors', ctx=Store())],
+          value=List(
+            elts=[
+              Name(id='_detect_safety_halt', ctx=Load()),
+              Name(id='_detect_qa_errors', ctx=Load()),
+              Name(id='_detect_rag_errors', ctx=Load()),
+              Name(id='_detect_strategy_errors', ctx=Load()),
+              Name(id='_detect_checkpoint_recovery', ctx=Load())],
+            ctx=Load())),
+        AnnAssign(
+          target=Name(id='signals', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='CorrectionSignal', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='detect', ctx=Store()),
+          iter=Name(id='detectors', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='sig', ctx=Store())],
+              value=Call(
+                func=Name(id='detect', ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            If(
+              test=Name(id='sig', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='signals', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='sig', ctx=Load())]))])]),
+        Return(
+          value=Name(id='signals', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='CorrectionSignal', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='to_patch_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='rec',
+            annotation=Name(id='CorrectionRecommendation', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convert CorrectionRecommendation to a dict suitable for\n    state insertion under key "self_correction" by L4.StateAdapter.\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='self_correction')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='rec', ctx=Load()),
+                  attr='to_dict',
+                  ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='to_metadata_block',
+      args=arguments(
+        args=[
+          arg(
+            arg='rec',
+            annotation=Name(id='CorrectionRecommendation', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convert CorrectionRecommendation into simplified metadata for\n    telemetry/meta-learning.\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='surface'),
+              Constant(value='needed'),
+              Constant(value='rationale'),
+              Constant(value='metadata')],
+            values=[
+              Attribute(
+                value=Name(id='rec', ctx=Load()),
+                attr='surface',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='rec', ctx=Load()),
+                attr='needed',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='rec', ctx=Load()),
+                attr='rationale',
+                ctx=Load()),
+              Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='rec', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nMany-Shot Examples for resume generation workflow guidance.\n\nProvides high-quality examples for L1 planners and executors\nto improve resume quality and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict, List\nfrom enum import Enum\n\n\nclass ExampleType(str, Enum):\n    \"\"\"\n    Type of example for resume generation workflow.\n\n    Defines example categories for improved resume quality guidance.\n    \"\"\"\n    \n    L1_STRATEGY_PLANNING = \"l1_strategy_planning\"\n    L1_RAG_PLANNING = \"l1_rag_planning\"\n    L1_QA_PLANNING = \"l1_qa_planning\"\n    L1_SAFETY_PLANNING = \"l1_safety_planning\"\n    L1_DRAFTING_PLANNING = \"l1_drafting_planning\"\n    \n    L2_STRATEGY_EXECUTION = \"l2_strategy_execution\"\n    L2_RAG_EXECUTION = \"l2_rag_execution\"\n    L2_DRAFTING_EXECUTION = \"l2_drafting_execution\"\n    L2_QA_EXECUTION = \"l2_qa_execution\"\n    L2_SAFETY_EXECUTION = \"l2_safety_execution\"\n    \n    L3_WORKFLOW_ORCHESTRATION = \"l3_workflow_or",
+  "full_hash": "5bc16e0c5d84543ba02ef6336d6ea6389b9b41d353c2e6621490d0a026f36a2a",
+  "generated_at": 1764728224.6105552,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\many_shot_examples(1).py"
+}

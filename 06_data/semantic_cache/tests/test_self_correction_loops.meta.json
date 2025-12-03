@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\executor-microagent-layer\\refine-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\test_self_correction_loops.py",
+    "rel_path": "test_self_correction_loops.py",
+    "root_name": "tests",
+    "file_hash": "6a34b9be0464d79d0df0ff8eca46d713c3a9ae0cfaa89788eb2952d5aa71193e",
+    "file_size": 9876,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728353.9840717
+}

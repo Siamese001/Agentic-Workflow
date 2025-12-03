@@ -1,0 +1,1969 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nGolden Datasets - Resume-Job Matching Scenarios\n\nDefines golden datasets with known expected outcomes for resume-job matching evaluation.\nThese datasets serve as ground truth for LM-as-judge scoring and system validation.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='golden',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='evaluation',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='ScenarioDifficulty',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Difficulty levels for golden scenarios.')),
+        Assign(
+          targets=[
+            Name(id='BASIC', ctx=Store())],
+          value=Constant(value='basic')),
+        Assign(
+          targets=[
+            Name(id='INTERMEDIATE', ctx=Store())],
+          value=Constant(value='intermediate')),
+        Assign(
+          targets=[
+            Name(id='ADVANCED', ctx=Store())],
+          value=Constant(value='advanced')),
+        Assign(
+          targets=[
+            Name(id='EXPERT', ctx=Store())],
+          value=Constant(value='expert'))]),
+    ClassDef(
+      name='ExpectedOutcome',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Expected outcome types for golden scenarios.')),
+        Assign(
+          targets=[
+            Name(id='HIGH_MATCH', ctx=Store())],
+          value=Constant(value='high_match')),
+        Assign(
+          targets=[
+            Name(id='MEDIUM_MATCH', ctx=Store())],
+          value=Constant(value='medium_match')),
+        Assign(
+          targets=[
+            Name(id='LOW_MATCH', ctx=Store())],
+          value=Constant(value='low_match')),
+        Assign(
+          targets=[
+            Name(id='REJECT', ctx=Store())],
+          value=Constant(value='reject'))]),
+    ClassDef(
+      name='GoldenScenario',
+      body=[
+        Expr(
+          value=Constant(value='Golden scenario for resume-job matching evaluation.')),
+        AnnAssign(
+          target=Name(id='scenario_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='difficulty', ctx=Store()),
+          annotation=Name(id='ScenarioDifficulty', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='job_description', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resume_content', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_outcome', ctx=Store()),
+          annotation=Name(id='ExpectedOutcome', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_match_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='key_requirements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='missing_skills', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_improvements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='safety_concerns', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='GoldenExpectation',
+      body=[
+        Expr(
+          value=Constant(value='Expected results for golden scenario evaluation.')),
+        AnnAssign(
+          target=Name(id='scenario_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_analysis', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_improvements', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='expected_risk_level', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='quality_thresholds', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='TestGoldenDatasets',
+      body=[
+        Expr(
+          value=Constant(value='Test golden dataset definitions and validation.')),
+        FunctionDef(
+          name='test_basic_match_scenario_definition',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test definition of basic resume-job matching scenario.')),
+            Assign(
+              targets=[
+                Name(id='scenario', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenScenario', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='basic_python_dev_001')),
+                  keyword(
+                    arg='difficulty',
+                    value=Attribute(
+                      value=Name(id='ScenarioDifficulty', ctx=Load()),
+                      attr='BASIC',
+                      ctx=Load())),
+                  keyword(
+                    arg='job_description',
+                    value=Constant(value='\n            Senior Python Developer\n            Company: TechCorp\n            Requirements: 5+ years Python experience, SQL knowledge, AWS experience\n            Responsibilities: Develop web applications, maintain databases, cloud deployment\n            ')),
+                  keyword(
+                    arg='resume_content',
+                    value=Constant(value='\n            John Doe\n            Software Developer with 6 years experience\n            Skills: Python, Django, SQL, AWS, Git\n            Experience: Senior Developer at WebCorp (2018-2024)\n            Education: BS Computer Science\n            ')),
+                  keyword(
+                    arg='expected_outcome',
+                    value=Attribute(
+                      value=Name(id='ExpectedOutcome', ctx=Load()),
+                      attr='HIGH_MATCH',
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_match_score',
+                    value=Constant(value=0.85)),
+                  keyword(
+                    arg='key_requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='Python'),
+                        Constant(value='5+ years'),
+                        Constant(value='SQL'),
+                        Constant(value='AWS')],
+                      ctx=Load())),
+                  keyword(
+                    arg='missing_skills',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='expected_improvements',
+                    value=List(
+                      elts=[
+                        Constant(value='Add specific project details'),
+                        Constant(value='Include cloud deployment examples')],
+                      ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='scenario_id',
+                    ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='basic_')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='scenario', ctx=Load()),
+                  attr='difficulty',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ScenarioDifficulty', ctx=Load()),
+                    attr='BASIC',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='Python'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='job_description',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value='6 years'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='resume_content',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='scenario', ctx=Load()),
+                  attr='expected_match_score',
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='scenario', ctx=Load()),
+                      attr='key_requirements',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=4)]))]),
+        FunctionDef(
+          name='test_intermediate_mismatch_scenario',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test definition of intermediate skill mismatch scenario.')),
+            Assign(
+              targets=[
+                Name(id='scenario', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenScenario', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='intermediate_skill_gap_002')),
+                  keyword(
+                    arg='difficulty',
+                    value=Attribute(
+                      value=Name(id='ScenarioDifficulty', ctx=Load()),
+                      attr='INTERMEDIATE',
+                      ctx=Load())),
+                  keyword(
+                    arg='job_description',
+                    value=Constant(value='\n            Data Scientist\n            Requirements: Python, Machine Learning, Statistics, PhD preferred\n            Skills needed: TensorFlow, PyTorch, NLP, Computer Vision\n            ')),
+                  keyword(
+                    arg='resume_content',
+                    value=Constant(value='\n            Jane Smith\n            Software Developer with 4 years experience\n            Skills: Python, Java, SQL, Web Development\n            Experience: Full-stack developer at DataSoft\n            Education: BS Computer Science\n            ')),
+                  keyword(
+                    arg='expected_outcome',
+                    value=Attribute(
+                      value=Name(id='ExpectedOutcome', ctx=Load()),
+                      attr='LOW_MATCH',
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_match_score',
+                    value=Constant(value=0.3)),
+                  keyword(
+                    arg='key_requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='Python'),
+                        Constant(value='Machine Learning'),
+                        Constant(value='Statistics')],
+                      ctx=Load())),
+                  keyword(
+                    arg='missing_skills',
+                    value=List(
+                      elts=[
+                        Constant(value='Machine Learning'),
+                        Constant(value='TensorFlow'),
+                        Constant(value='PhD'),
+                        Constant(value='Statistics')],
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_improvements',
+                    value=List(
+                      elts=[
+                        Constant(value='Add ML projects'),
+                        Constant(value='Consider advanced degree'),
+                        Constant(value='Highlight data analysis experience')],
+                      ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='scenario', ctx=Load()),
+                  attr='expected_outcome',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ExpectedOutcome', ctx=Load()),
+                    attr='LOW_MATCH',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='scenario', ctx=Load()),
+                  attr='expected_match_score',
+                  ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.5)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='scenario', ctx=Load()),
+                      attr='missing_skills',
+                      ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=3)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='Machine Learning'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='missing_skills',
+                    ctx=Load())]))]),
+        FunctionDef(
+          name='test_advanced_safety_scenario',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test definition of advanced scenario with safety considerations.')),
+            Assign(
+              targets=[
+                Name(id='scenario', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenScenario', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='advanced_safety_003')),
+                  keyword(
+                    arg='difficulty',
+                    value=Attribute(
+                      value=Name(id='ScenarioDifficulty', ctx=Load()),
+                      attr='ADVANCED',
+                      ctx=Load())),
+                  keyword(
+                    arg='job_description',
+                    value=Constant(value='\n            Security Engineer\n            Requirements: Security clearance, background check, ethical hacking experience\n            Note: Must comply with all security regulations\n            ')),
+                  keyword(
+                    arg='resume_content',
+                    value=Constant(value='\n            Resume content with potentially concerning elements:\n            - Experience with "penetration testing tools"\n            - References to "security vulnerability research"\n            - Claims about "bypassing security systems"\n            ')),
+                  keyword(
+                    arg='expected_outcome',
+                    value=Attribute(
+                      value=Name(id='ExpectedOutcome', ctx=Load()),
+                      attr='REJECT',
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_match_score',
+                    value=Constant(value=0.0)),
+                  keyword(
+                    arg='key_requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='Security clearance'),
+                        Constant(value='Background check')],
+                      ctx=Load())),
+                  keyword(
+                    arg='safety_concerns',
+                    value=List(
+                      elts=[
+                        Constant(value='Potential security violation language'),
+                        Constant(value='Unclear ethical boundaries')],
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_improvements',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='safety_review_required')],
+                      values=[
+                        Constant(value=True)]))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='scenario', ctx=Load()),
+                  attr='expected_outcome',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ExpectedOutcome', ctx=Load()),
+                    attr='REJECT',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='scenario', ctx=Load()),
+                      attr='safety_concerns',
+                      ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='safety_review_required'),
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)]))]),
+        FunctionDef(
+          name='test_expert_cross_domain_scenario',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test definition of expert cross-domain transition scenario.')),
+            Assign(
+              targets=[
+                Name(id='scenario', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenScenario', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='expert_career_change_004')),
+                  keyword(
+                    arg='difficulty',
+                    value=Attribute(
+                      value=Name(id='ScenarioDifficulty', ctx=Load()),
+                      attr='EXPERT',
+                      ctx=Load())),
+                  keyword(
+                    arg='job_description',
+                    value=Constant(value='\n            Product Manager\n            Requirements: MBA preferred, 5+ years product management, technical background\n            Skills: Roadmap planning, stakeholder management, data analysis, Agile/Scrum\n            ')),
+                  keyword(
+                    arg='resume_content',
+                    value=Constant(value='\n            Michael Chen\n            Senior Software Engineer transitioning to Product Management\n            Technical Experience: 8 years software development, team lead\n            Business Skills: MBA in progress, product strategy course, stakeholder communication\n            Projects: Led feature development, coordinated with product team, user research\n            ')),
+                  keyword(
+                    arg='expected_outcome',
+                    value=Attribute(
+                      value=Name(id='ExpectedOutcome', ctx=Load()),
+                      attr='MEDIUM_MATCH',
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_match_score',
+                    value=Constant(value=0.65)),
+                  keyword(
+                    arg='key_requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='Product management'),
+                        Constant(value='Technical background'),
+                        Constant(value='Stakeholder management')],
+                      ctx=Load())),
+                  keyword(
+                    arg='missing_skills',
+                    value=List(
+                      elts=[
+                        Constant(value='Formal PM experience'),
+                        Constant(value='Complete MBA')],
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_improvements',
+                    value=List(
+                      elts=[
+                        Constant(value='Highlight leadership experience'),
+                        Constant(value='Emphasize product-adjacent work'),
+                        Constant(value='Showcase business impact of technical projects')],
+                      ctx=Load()))])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='scenario', ctx=Load()),
+                  attr='difficulty',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='ScenarioDifficulty', ctx=Load()),
+                    attr='EXPERT',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0.5),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='expected_match_score',
+                    ctx=Load()),
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='transitioning'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='resume_content',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='scenario', ctx=Load()),
+                      attr='expected_improvements',
+                      ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=2)]))])]),
+    ClassDef(
+      name='TestGoldenExpectations',
+      body=[
+        Expr(
+          value=Constant(value='Test golden expectation definitions and scoring criteria.')),
+        FunctionDef(
+          name='test_high_match_expectations',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test expectations for high-match scenarios.')),
+            Assign(
+              targets=[
+                Name(id='expectation', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenExpectation', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='basic_python_dev_001')),
+                  keyword(
+                    arg='expected_analysis',
+                    value=Dict(
+                      keys=[
+                        Constant(value='match_score'),
+                        Constant(value='skill_coverage'),
+                        Constant(value='experience_match'),
+                        Constant(value='education_fit'),
+                        Constant(value='key_strengths'),
+                        Constant(value='improvement_areas')],
+                      values=[
+                        Constant(value=0.85),
+                        Constant(value=0.9),
+                        Constant(value=0.8),
+                        Constant(value=0.7),
+                        List(
+                          elts=[
+                            Constant(value='Relevant experience'),
+                            Constant(value='Required skills present')],
+                          ctx=Load()),
+                        List(
+                          elts=[
+                            Constant(value='Add specific metrics'),
+                            Constant(value='Include leadership examples')],
+                          ctx=Load())])),
+                  keyword(
+                    arg='expected_improvements',
+                    value=List(
+                      elts=[
+                        Constant(value='Quantify achievements with specific metrics'),
+                        Constant(value='Add leadership or project management examples'),
+                        Constant(value='Include recent technology certifications')],
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_risk_level',
+                    value=Constant(value='low')),
+                  keyword(
+                    arg='quality_thresholds',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_match_score'),
+                        Constant(value='min_skill_coverage'),
+                        Constant(value='max_safety_risk'),
+                        Constant(value='min_coherence_score')],
+                      values=[
+                        Constant(value=0.8),
+                        Constant(value=0.7),
+                        Constant(value=0.2),
+                        Constant(value=0.8)]))])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='expectation', ctx=Load()),
+                    attr='expected_analysis',
+                    ctx=Load()),
+                  slice=Constant(value='match_score'),
+                  ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='expectation', ctx=Load()),
+                  attr='expected_risk_level',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='low')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='expectation', ctx=Load()),
+                    attr='quality_thresholds',
+                    ctx=Load()),
+                  slice=Constant(value='min_match_score'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='expectation', ctx=Load()),
+                      attr='expected_improvements',
+                      ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Constant(value=2)]))]),
+        FunctionDef(
+          name='test_medium_match_expectations',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test expectations for medium-match scenarios.')),
+            Assign(
+              targets=[
+                Name(id='expectation', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenExpectation', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='expert_career_change_004')),
+                  keyword(
+                    arg='expected_analysis',
+                    value=Dict(
+                      keys=[
+                        Constant(value='match_score'),
+                        Constant(value='skill_coverage'),
+                        Constant(value='experience_relevance'),
+                        Constant(value='transition_potential'),
+                        Constant(value='key_strengths'),
+                        Constant(value='improvement_areas')],
+                      values=[
+                        Constant(value=0.65),
+                        Constant(value=0.6),
+                        Constant(value=0.7),
+                        Constant(value=0.8),
+                        List(
+                          elts=[
+                            Constant(value='Technical depth'),
+                            Constant(value='Leadership experience'),
+                            Constant(value='Business education')],
+                          ctx=Load()),
+                        List(
+                          elts=[
+                            Constant(value='Product-specific experience'),
+                            Constant(value='Stakeholder management examples')],
+                          ctx=Load())])),
+                  keyword(
+                    arg='expected_improvements',
+                    value=List(
+                      elts=[
+                        Constant(value='Frame technical experience in business context'),
+                        Constant(value='Add cross-functional collaboration examples'),
+                        Constant(value='Highlight product-impact metrics')],
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_risk_level',
+                    value=Constant(value='low')),
+                  keyword(
+                    arg='quality_thresholds',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_match_score'),
+                        Constant(value='min_skill_coverage'),
+                        Constant(value='max_safety_risk'),
+                        Constant(value='min_coherence_score')],
+                      values=[
+                        Constant(value=0.5),
+                        Constant(value=0.5),
+                        Constant(value=0.3),
+                        Constant(value=0.7)]))])),
+            Assert(
+              test=Compare(
+                left=Constant(value=0.5),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Subscript(
+                    value=Attribute(
+                      value=Name(id='expectation', ctx=Load()),
+                      attr='expected_analysis',
+                      ctx=Load()),
+                    slice=Constant(value='match_score'),
+                    ctx=Load()),
+                  Constant(value=0.8)])),
+            Assert(
+              test=Compare(
+                left=Constant(value='transition_potential'),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='expectation', ctx=Load()),
+                    attr='expected_analysis',
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='expectation', ctx=Load()),
+                    attr='quality_thresholds',
+                    ctx=Load()),
+                  slice=Constant(value='min_match_score'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.5)]))]),
+        FunctionDef(
+          name='test_safety_rejection_expectations',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test expectations for safety rejection scenarios.')),
+            Assign(
+              targets=[
+                Name(id='expectation', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenExpectation', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='advanced_safety_003')),
+                  keyword(
+                    arg='expected_analysis',
+                    value=Dict(
+                      keys=[
+                        Constant(value='match_score'),
+                        Constant(value='safety_violations'),
+                        Constant(value='rejection_reasons'),
+                        Constant(value='risk_level')],
+                      values=[
+                        Constant(value=0.0),
+                        List(
+                          elts=[
+                            Constant(value='Inappropriate security language'),
+                            Constant(value='Potential ethical concerns')],
+                          ctx=Load()),
+                        List(
+                          elts=[
+                            Constant(value='Content violates safety policies'),
+                            Constant(value='Requires human review')],
+                          ctx=Load()),
+                        Constant(value='high')])),
+                  keyword(
+                    arg='expected_improvements',
+                    value=List(ctx=Load())),
+                  keyword(
+                    arg='expected_risk_level',
+                    value=Constant(value='high')),
+                  keyword(
+                    arg='quality_thresholds',
+                    value=Dict(
+                      keys=[
+                        Constant(value='min_match_score'),
+                        Constant(value='max_safety_risk'),
+                        Constant(value='requires_human_review')],
+                      values=[
+                        Constant(value=0.0),
+                        Constant(value=0.1),
+                        Constant(value=True)]))])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='expectation', ctx=Load()),
+                    attr='expected_analysis',
+                    ctx=Load()),
+                  slice=Constant(value='match_score'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.0)])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='expectation', ctx=Load()),
+                  attr='expected_risk_level',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='high')])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='expectation', ctx=Load()),
+                        attr='expected_analysis',
+                        ctx=Load()),
+                      slice=Constant(value='safety_violations'),
+                      ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='expectation', ctx=Load()),
+                      attr='expected_improvements',
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))])]),
+    ClassDef(
+      name='TestDatasetValidation',
+      body=[
+        Expr(
+          value=Constant(value='Test validation of golden datasets and internal consistency.')),
+        FunctionDef(
+          name='test_scenario_score_consistency',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test consistency between expected outcomes and match scores.')),
+            Assign(
+              targets=[
+                Name(id='scenarios', ctx=Store())],
+              value=List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='outcome'),
+                      Constant(value='score'),
+                      Constant(value='should_be_valid')],
+                    values=[
+                      Attribute(
+                        value=Name(id='ExpectedOutcome', ctx=Load()),
+                        attr='HIGH_MATCH',
+                        ctx=Load()),
+                      Constant(value=0.85),
+                      Constant(value=True)]),
+                  Dict(
+                    keys=[
+                      Constant(value='outcome'),
+                      Constant(value='score'),
+                      Constant(value='should_be_valid')],
+                    values=[
+                      Attribute(
+                        value=Name(id='ExpectedOutcome', ctx=Load()),
+                        attr='MEDIUM_MATCH',
+                        ctx=Load()),
+                      Constant(value=0.3),
+                      Constant(value=False)]),
+                  Dict(
+                    keys=[
+                      Constant(value='outcome'),
+                      Constant(value='score'),
+                      Constant(value='should_be_valid')],
+                    values=[
+                      Attribute(
+                        value=Name(id='ExpectedOutcome', ctx=Load()),
+                        attr='LOW_MATCH',
+                        ctx=Load()),
+                      Constant(value=0.7),
+                      Constant(value=False)]),
+                  Dict(
+                    keys=[
+                      Constant(value='outcome'),
+                      Constant(value='score'),
+                      Constant(value='should_be_valid')],
+                    values=[
+                      Attribute(
+                        value=Name(id='ExpectedOutcome', ctx=Load()),
+                        attr='REJECT',
+                        ctx=Load()),
+                      Constant(value=0.1),
+                      Constant(value=False)])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='validation_results', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='scenario', ctx=Store()),
+              iter=Name(id='scenarios', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='outcome', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='scenario', ctx=Load()),
+                    slice=Constant(value='outcome'),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='score', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='scenario', ctx=Load()),
+                    slice=Constant(value='score'),
+                    ctx=Load())),
+                If(
+                  test=Compare(
+                    left=Name(id='outcome', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ExpectedOutcome', ctx=Load()),
+                        attr='HIGH_MATCH',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='is_valid', ctx=Store())],
+                      value=Compare(
+                        left=Name(id='score', ctx=Load()),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Constant(value=0.8)]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Name(id='outcome', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='ExpectedOutcome', ctx=Load()),
+                            attr='MEDIUM_MATCH',
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='is_valid', ctx=Store())],
+                          value=Compare(
+                            left=Constant(value=0.5),
+                            ops=[
+                              LtE(),
+                              LtE()],
+                            comparators=[
+                              Name(id='score', ctx=Load()),
+                              Constant(value=0.8)]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Name(id='outcome', ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='ExpectedOutcome', ctx=Load()),
+                                attr='LOW_MATCH',
+                                ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='is_valid', ctx=Store())],
+                              value=Compare(
+                                left=Name(id='score', ctx=Load()),
+                                ops=[
+                                  Lt()],
+                                comparators=[
+                                  Constant(value=0.5)]))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Name(id='outcome', ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='ExpectedOutcome', ctx=Load()),
+                                    attr='REJECT',
+                                    ctx=Load())]),
+                              body=[
+                                Assign(
+                                  targets=[
+                                    Name(id='is_valid', ctx=Store())],
+                                  value=Compare(
+                                    left=Name(id='score', ctx=Load()),
+                                    ops=[
+                                      Eq()],
+                                    comparators=[
+                                      Constant(value=0.0)]))],
+                              orelse=[
+                                Assign(
+                                  targets=[
+                                    Name(id='is_valid', ctx=Store())],
+                                  value=Constant(value=False))])])])]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='outcome'),
+                          Constant(value='score'),
+                          Constant(value='is_valid'),
+                          Constant(value='expected_valid')],
+                        values=[
+                          Name(id='outcome', ctx=Load()),
+                          Name(id='score', ctx=Load()),
+                          Name(id='is_valid', ctx=Load()),
+                          Subscript(
+                            value=Name(id='scenario', ctx=Load()),
+                            slice=Constant(value='should_be_valid'),
+                            ctx=Load())])]))]),
+            Assign(
+              targets=[
+                Name(id='invalid_scenarios', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='result', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='result', ctx=Store()),
+                    iter=Name(id='validation_results', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Subscript(
+                          value=Name(id='result', ctx=Load()),
+                          slice=Constant(value='is_valid'),
+                          ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Subscript(
+                            value=Name(id='result', ctx=Load()),
+                            slice=Constant(value='expected_valid'),
+                            ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='invalid_scenarios', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_requirement_coverage_validation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test validation of requirement coverage in scenarios.')),
+            Assign(
+              targets=[
+                Name(id='test_scenarios', ctx=Store())],
+              value=List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='job_requirements'),
+                      Constant(value='resume_skills'),
+                      Constant(value='expected_coverage')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='AWS'),
+                          Constant(value='5+ years')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Python'),
+                          Constant(value='SQL'),
+                          Constant(value='3 years')],
+                        ctx=Load()),
+                      Constant(value=0.33)]),
+                  Dict(
+                    keys=[
+                      Constant(value='job_requirements'),
+                      Constant(value='resume_skills'),
+                      Constant(value='expected_coverage')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='Java'),
+                          Constant(value='Spring'),
+                          Constant(value='SQL')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='Java'),
+                          Constant(value='Spring'),
+                          Constant(value='SQL'),
+                          Constant(value='Hibernate')],
+                        ctx=Load()),
+                      Constant(value=1.0)]),
+                  Dict(
+                    keys=[
+                      Constant(value='job_requirements'),
+                      Constant(value='resume_skills'),
+                      Constant(value='expected_coverage')],
+                    values=[
+                      List(
+                        elts=[
+                          Constant(value='React'),
+                          Constant(value='Node.js'),
+                          Constant(value='TypeScript')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='JavaScript'),
+                          Constant(value='HTML'),
+                          Constant(value='CSS')],
+                        ctx=Load()),
+                      Constant(value=0.0)])],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='coverage_results', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='scenario', ctx=Store()),
+              iter=Name(id='test_scenarios', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='job_reqs', ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='scenario', ctx=Load()),
+                        slice=Constant(value='job_requirements'),
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='resume_skills', ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='scenario', ctx=Load()),
+                        slice=Constant(value='resume_skills'),
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='covered_requirements', ctx=Store())],
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='job_reqs', ctx=Load()),
+                          attr='intersection',
+                          ctx=Load()),
+                        args=[
+                          Name(id='resume_skills', ctx=Load())])])),
+                Assign(
+                  targets=[
+                    Name(id='total_requirements', ctx=Store())],
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='job_reqs', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='actual_coverage', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='total_requirements', ctx=Load()),
+                      ops=[
+                        Gt()],
+                      comparators=[
+                        Constant(value=0)]),
+                    body=BinOp(
+                      left=Name(id='covered_requirements', ctx=Load()),
+                      op=Div(),
+                      right=Name(id='total_requirements', ctx=Load())),
+                    orelse=Constant(value=0.0))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='coverage_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='job_requirements'),
+                          Constant(value='resume_skills'),
+                          Constant(value='expected_coverage'),
+                          Constant(value='actual_coverage'),
+                          Constant(value='is_correct')],
+                        values=[
+                          Subscript(
+                            value=Name(id='scenario', ctx=Load()),
+                            slice=Constant(value='job_requirements'),
+                            ctx=Load()),
+                          Subscript(
+                            value=Name(id='scenario', ctx=Load()),
+                            slice=Constant(value='resume_skills'),
+                            ctx=Load()),
+                          Subscript(
+                            value=Name(id='scenario', ctx=Load()),
+                            slice=Constant(value='expected_coverage'),
+                            ctx=Load()),
+                          Name(id='actual_coverage', ctx=Load()),
+                          Compare(
+                            left=Call(
+                              func=Name(id='abs', ctx=Load()),
+                              args=[
+                                BinOp(
+                                  left=Name(id='actual_coverage', ctx=Load()),
+                                  op=Sub(),
+                                  right=Subscript(
+                                    value=Name(id='scenario', ctx=Load()),
+                                    slice=Constant(value='expected_coverage'),
+                                    ctx=Load()))]),
+                            ops=[
+                              Lt()],
+                            comparators=[
+                              Constant(value=0.01)])])]))]),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Subscript(
+                      value=Name(id='result', ctx=Load()),
+                      slice=Constant(value='is_correct'),
+                      ctx=Load()),
+                    generators=[
+                      comprehension(
+                        target=Name(id='result', ctx=Store()),
+                        iter=Name(id='coverage_results', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Name(id='coverage_results', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  slice=Constant(value='actual_coverage'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='pytest', ctx=Load()),
+                      attr='approx',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=0.33)],
+                    keywords=[
+                      keyword(
+                        arg='abs',
+                        value=Constant(value=0.01))])])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Name(id='coverage_results', ctx=Load()),
+                    slice=Constant(value=1),
+                    ctx=Load()),
+                  slice=Constant(value='actual_coverage'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1.0)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Name(id='coverage_results', ctx=Load()),
+                    slice=Constant(value=2),
+                    ctx=Load()),
+                  slice=Constant(value='actual_coverage'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0.0)]))]),
+        FunctionDef(
+          name='test_improvement_suggestion_quality',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test quality and relevance of improvement suggestions.')),
+            Assign(
+              targets=[
+                Name(id='scenario_with_improvements', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='missing_skills'),
+                  Constant(value='experience_gaps'),
+                  Constant(value='suggested_improvements')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='AWS'),
+                      Constant(value='Docker'),
+                      Constant(value='Kubernetes')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Cloud deployment'),
+                      Constant(value='DevOps practices')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Get AWS certification'),
+                      Constant(value='Add Docker projects to portfolio'),
+                      Constant(value='Highlight cloud deployment experience'),
+                      Constant(value='Learn Kubernetes orchestration')],
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='missing_skills', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='scenario_with_improvements', ctx=Load()),
+                    slice=Constant(value='missing_skills'),
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='improvements', ctx=Store())],
+              value=Subscript(
+                value=Name(id='scenario_with_improvements', ctx=Load()),
+                slice=Constant(value='suggested_improvements'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='skill_coverage', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='skill', ctx=Store()),
+              iter=Name(id='missing_skills', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='covered', ctx=Store())],
+                  value=Call(
+                    func=Name(id='any', ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=Compare(
+                          left=Call(
+                            func=Attribute(
+                              value=Name(id='skill', ctx=Load()),
+                              attr='lower',
+                              ctx=Load())),
+                          ops=[
+                            In()],
+                          comparators=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='improvement', ctx=Load()),
+                                attr='lower',
+                                ctx=Load()))]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='improvement', ctx=Store()),
+                            iter=Name(id='improvements', ctx=Load()),
+                            is_async=0)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='skill_coverage', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='covered', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='all_skills_addressed', ctx=Store())],
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  Name(id='skill_coverage', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='specific_suggestions', ctx=Store())],
+              value=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='imp', ctx=Load()),
+                              attr='split',
+                              ctx=Load()))]),
+                      ops=[
+                        GtE()],
+                      comparators=[
+                        Constant(value=3)]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='imp', ctx=Store()),
+                        iter=Name(id='improvements', ctx=Load()),
+                        is_async=0)])])),
+            Assert(
+              test=Compare(
+                left=Name(id='all_skills_addressed', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Name(id='specific_suggestions', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=True)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='improvements', ctx=Load())]),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Name(id='missing_skills', ctx=Load())])]))])]),
+    ClassDef(
+      name='TestDatasetMetadataAndVersioning',
+      body=[
+        Expr(
+          value=Constant(value='Test dataset metadata, versioning, and provenance.')),
+        FunctionDef(
+          name='test_scenario_metadata_completeness',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test completeness of scenario metadata.')),
+            Assign(
+              targets=[
+                Name(id='scenario', ctx=Store())],
+              value=Call(
+                func=Name(id='GoldenScenario', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='scenario_id',
+                    value=Constant(value='metadata_test_001')),
+                  keyword(
+                    arg='difficulty',
+                    value=Attribute(
+                      value=Name(id='ScenarioDifficulty', ctx=Load()),
+                      attr='INTERMEDIATE',
+                      ctx=Load())),
+                  keyword(
+                    arg='job_description',
+                    value=Constant(value='Test job description')),
+                  keyword(
+                    arg='resume_content',
+                    value=Constant(value='Test resume content')),
+                  keyword(
+                    arg='expected_outcome',
+                    value=Attribute(
+                      value=Name(id='ExpectedOutcome', ctx=Load()),
+                      attr='MEDIUM_MATCH',
+                      ctx=Load())),
+                  keyword(
+                    arg='expected_match_score',
+                    value=Constant(value=0.6)),
+                  keyword(
+                    arg='key_requirements',
+                    value=List(
+                      elts=[
+                        Constant(value='Test requirement')],
+                      ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Dict(
+                      keys=[
+                        Constant(value='created_by'),
+                        Constant(value='creation_date'),
+                        Constant(value='reviewed_by'),
+                        Constant(value='version'),
+                        Constant(value='domain'),
+                        Constant(value='difficulty_rationale'),
+                        Constant(value='quality_score')],
+                      values=[
+                        Constant(value='human_expert'),
+                        Constant(value='2025-01-25'),
+                        Constant(value='senior_analyst'),
+                        Constant(value='1.0'),
+                        Constant(value='software_engineering'),
+                        Constant(value='Requires skill gap analysis'),
+                        Constant(value=0.9)]))])),
+            Assign(
+              targets=[
+                Name(id='required_fields', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='created_by'),
+                  Constant(value='creation_date'),
+                  Constant(value='reviewed_by'),
+                  Constant(value='version'),
+                  Constant(value='domain'),
+                  Constant(value='difficulty_rationale')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='missing_fields', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='field', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='field', ctx=Store()),
+                    iter=Name(id='required_fields', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Name(id='field', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='scenario', ctx=Load()),
+                            attr='metadata',
+                            ctx=Load())])],
+                    is_async=0)])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='missing_fields', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='version'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='1.0')])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Attribute(
+                    value=Name(id='scenario', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='domain'),
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='software_engineering')]))]),
+        FunctionDef(
+          name='test_dataset_version_compatibility',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test version compatibility and dataset evolution.')),
+            Assign(
+              targets=[
+                Name(id='dataset_versions', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='v1.0'),
+                  Constant(value='v1.1'),
+                  Constant(value='v1.2')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='scenarios_count'),
+                      Constant(value='difficulty_levels'),
+                      Constant(value='evaluation_metrics')],
+                    values=[
+                      Constant(value=10),
+                      List(
+                        elts=[
+                          Constant(value='basic'),
+                          Constant(value='intermediate')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='match_score'),
+                          Constant(value='skill_coverage')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='scenarios_count'),
+                      Constant(value='difficulty_levels'),
+                      Constant(value='evaluation_metrics')],
+                    values=[
+                      Constant(value=15),
+                      List(
+                        elts=[
+                          Constant(value='basic'),
+                          Constant(value='intermediate'),
+                          Constant(value='advanced')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='match_score'),
+                          Constant(value='skill_coverage'),
+                          Constant(value='safety_risk')],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='scenarios_count'),
+                      Constant(value='difficulty_levels'),
+                      Constant(value='evaluation_metrics')],
+                    values=[
+                      Constant(value=20),
+                      List(
+                        elts=[
+                          Constant(value='basic'),
+                          Constant(value='intermediate'),
+                          Constant(value='advanced'),
+                          Constant(value='expert')],
+                        ctx=Load()),
+                      List(
+                        elts=[
+                          Constant(value='match_score'),
+                          Constant(value='skill_coverage'),
+                          Constant(value='safety_risk'),
+                          Constant(value='coherence_score')],
+                        ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='current_version', ctx=Store())],
+              value=Constant(value='v1.2')),
+            Assign(
+              targets=[
+                Name(id='current_metrics', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Subscript(
+                      value=Name(id='dataset_versions', ctx=Load()),
+                      slice=Name(id='current_version', ctx=Load()),
+                      ctx=Load()),
+                    slice=Constant(value='evaluation_metrics'),
+                    ctx=Load())])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='version', ctx=Store()),
+                  Name(id='data', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='dataset_versions', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='version', ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Name(id='current_version', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='older_metrics', ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='data', ctx=Load()),
+                            slice=Constant(value='evaluation_metrics'),
+                            ctx=Load())])),
+                    Assign(
+                      targets=[
+                        Name(id='is_compatible', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='older_metrics', ctx=Load()),
+                          attr='issubset',
+                          ctx=Load()),
+                        args=[
+                          Name(id='current_metrics', ctx=Load())])),
+                    Assert(
+                      test=Name(id='is_compatible', ctx=Load()),
+                      msg=JoinedStr(
+                        values=[
+                          Constant(value='Version '),
+                          FormattedValue(
+                            value=Name(id='current_version', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' not compatible with '),
+                          FormattedValue(
+                            value=Name(id='version', ctx=Load()),
+                            conversion=-1)]))])]),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Subscript(
+                    value=Name(id='dataset_versions', ctx=Load()),
+                    slice=Constant(value='v1.2'),
+                    ctx=Load()),
+                  slice=Constant(value='scenarios_count'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Subscript(
+                    value=Subscript(
+                      value=Name(id='dataset_versions', ctx=Load()),
+                      slice=Constant(value='v1.1'),
+                      ctx=Load()),
+                    slice=Constant(value='scenarios_count'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='dataset_versions', ctx=Load()),
+                        slice=Constant(value='v1.2'),
+                        ctx=Load()),
+                      slice=Constant(value='difficulty_levels'),
+                      ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Subscript(
+                          value=Name(id='dataset_versions', ctx=Load()),
+                          slice=Constant(value='v1.0'),
+                          ctx=Load()),
+                        slice=Constant(value='difficulty_levels'),
+                        ctx=Load())])]))])])])

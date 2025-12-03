@@ -1,0 +1,74 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L2 Execution Tool Pipelines Tests.')),
+    ClassDef(
+      name='TestL2ToolPipelines',
+      body=[
+        Expr(
+          value=Constant(value='Tests for L2 execution tool pipelines.')),
+        FunctionDef(
+          name='test_sequential_pipeline',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test sequential tool pipeline.')),
+            Assign(
+              targets=[
+                Name(id='pipeline', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='step1'),
+                  Constant(value='step2'),
+                  Constant(value='step3')],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='i', ctx=Store()),
+                  Name(id='step', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='pipeline', ctx=Load())]),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Name(id='step', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='step'),
+                          FormattedValue(
+                            value=BinOp(
+                              left=Name(id='i', ctx=Load()),
+                              op=Add(),
+                              right=Constant(value=1)),
+                            conversion=-1)])]))])]),
+        FunctionDef(
+          name='test_parallel_pipeline',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test parallel tool pipeline.')),
+            Assign(
+              targets=[
+                Name(id='parallel_results', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value=True),
+                  Constant(value=True),
+                  Constant(value=True)],
+                ctx=Load())),
+            Assert(
+              test=Call(
+                func=Name(id='all', ctx=Load()),
+                args=[
+                  Name(id='parallel_results', ctx=Load())]))])])])

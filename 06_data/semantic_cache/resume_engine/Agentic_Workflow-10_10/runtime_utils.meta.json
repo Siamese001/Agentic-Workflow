@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\runtime_utils.py",
+    "rel_path": "runtime_utils.py",
+    "root_name": "resume_engine/Agentic_Workflow-10_10",
+    "file_hash": "91f83ce023ebe110fc041480e84d38b75b7aea736a9d8a5079f24e8f2ef46864",
+    "file_size": 9313,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728228.4402611
+}

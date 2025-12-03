@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\failure_detector.py",
+    "rel_path": "failure_detector.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "a57f016c149da81224f7980bb5513273aeb77f6062142925f8ff17aab0b05ae4",
+    "file_size": 1523,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728224.031651
+}

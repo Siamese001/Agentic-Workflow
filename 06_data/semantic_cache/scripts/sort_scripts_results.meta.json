@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\refine-phase\\pick-best-result\\general\\understand-request\\sort_scripts_results.py",
+    "rel_path": "sort_scripts_results.py",
+    "root_name": "scripts",
+    "file_hash": "4110510f8328a32da881b825a4ba6343f6a4b334431a8d8b3f6e1eed8d0ca5b6",
+    "file_size": 6670,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.2732253
+}

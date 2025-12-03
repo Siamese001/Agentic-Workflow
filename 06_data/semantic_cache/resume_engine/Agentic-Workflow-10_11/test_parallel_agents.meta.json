@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\stress\\parallel_agents\\test_parallel_agents.py",
+    "rel_path": "test_parallel_agents.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "dbe589c4c9332d2706641b4b05ecd5079c88cb21f047e0c648e875622d9c811d",
+    "file_size": 365,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.6421497
+}

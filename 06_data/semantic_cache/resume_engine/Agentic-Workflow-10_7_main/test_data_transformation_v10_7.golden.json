@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n# --------------------------------------------------------------------\n# Helpers\n# --------------------------------------------------------------------\ndef _len_or_zero(x):\n    if x is None:\n        return 0\n    if isinstance(x, (list, dict, str)):\n        return len(x)\n    return 1\n\n\n# --------------------------------------------------------------------\n# 1. Summary must be meaningfully shorter than resume input\n# --------------------------------------------------------------------\n@pytest.mark.data\n@pytest.mark.parametrize(\"resume_text\", [\n    \"Amit Ayer is a senior leader in AI strategy and professional services delivery.\",\n    \"Jane Doe is an experienced machine learning architect focused on cloud-scale LLM systems.\",\n])\ndef test_summary_shorter_than_input(resume_text):\n    \"\"\"\n    Ensures the DraftingStack and Summarization agents are not identity functions.\n    A summary must be significantly shorter than the resume text.\n ",
+  "full_hash": "9c9f5a06827d8667cb040d45a781a2142cfa2f077df5eea8e56b7ef4270cd37d",
+  "generated_at": 1764728230.521681,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\data\\test_data_transformation_v10_7.py"
+}

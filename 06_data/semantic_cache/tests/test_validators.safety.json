@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 26,
+  "generated_at": 1764728354.0310242,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\l5_safety\\rules\\observer-microagent-layer\\expand-phase-group\\backoff-policy-ops\\test_validators.py"
+}

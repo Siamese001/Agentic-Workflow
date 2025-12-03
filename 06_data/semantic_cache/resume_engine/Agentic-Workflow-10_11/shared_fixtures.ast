@@ -1,0 +1,49 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Shared Test Fixtures.')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    FunctionDef(
+      name='mock_execution_context',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Shared fixture for mock execution context.')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='user_id'),
+              Constant(value='session_id'),
+              Constant(value='profile_name')],
+            values=[
+              Constant(value='test_user'),
+              Constant(value='test_session'),
+              Constant(value='default')]))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())]),
+    FunctionDef(
+      name='mock_config',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Shared fixture for mock configuration.')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='profile_id'),
+              Constant(value='enable_rag'),
+              Constant(value='enable_qa')],
+            values=[
+              Constant(value='test_profile'),
+              Constant(value=True),
+              Constant(value=True)]))],
+      decorator_list=[
+        Attribute(
+          value=Name(id='pytest', ctx=Load()),
+          attr='fixture',
+          ctx=Load())])])

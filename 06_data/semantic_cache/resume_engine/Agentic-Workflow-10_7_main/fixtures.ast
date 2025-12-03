@@ -1,0 +1,1871 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Callable'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='AsyncMock'),
+        alias(name='MagicMock')],
+      level=0),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='AdvancedMetaLearner'),
+        alias(name='ArbitrationEngine'),
+        alias(name='CacheManager'),
+        alias(name='ConfigV10_7'),
+        alias(name='ContextBudgetManager'),
+        alias(name='CostTracker'),
+        alias(name='FeedbackLogReader'),
+        alias(name='MetricsCollector'),
+        alias(name='PolicyAutoTuner'),
+        alias(name='PredictiveCacheManager'),
+        alias(name='PrecomputeEngine'),
+        alias(name='PromptTemplateManager'),
+        alias(name='ProposedRulesLoader'),
+        alias(name='ResponseValidator'),
+        alias(name='SemanticValidator'),
+        alias(name='TuningProfile'),
+        alias(name='WorkflowContext')],
+      level=0),
+    ImportFrom(
+      module='tests.shared.mock_clients',
+      names=[
+        alias(name='DeterministicEmbeddingFunction'),
+        alias(name='DummyEmbeddingFunction'),
+        alias(name='FakeChromaClient'),
+        alias(name='FakeCollection'),
+        alias(name='FakeRedisClient'),
+        alias(name='InMemoryRedis'),
+        alias(name='TraceRecorder')],
+      level=0),
+    FunctionDef(
+      name='config',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='ConfigV10_7', ctx=Load()),
+            args=[
+              Constant(value='master_config_v10_7.json')]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()),
+          keywords=[
+            keyword(
+              arg='scope',
+              value=Constant(value='session'))])],
+      returns=Name(id='ConfigV10_7', ctx=Load())),
+    FunctionDef(
+      name='cache_manager',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='collection', ctx=Store())],
+          value=Call(
+            func=Name(id='FakeCollection', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='chroma', ctx=Store())],
+          value=Call(
+            func=Name(id='FakeChromaClient', ctx=Load()),
+            args=[
+              Name(id='collection', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='redis_client', ctx=Store())],
+          value=Call(
+            func=Name(id='InMemoryRedis', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='embedding_fn', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyEmbeddingFunction', ctx=Load()))),
+        Return(
+          value=Call(
+            func=Name(id='CacheManager', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load()),
+              Name(id='redis_client', ctx=Load()),
+              Name(id='chroma', ctx=Load()),
+              Name(id='embedding_fn', ctx=Load())]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='CacheManager', ctx=Load())),
+    FunctionDef(
+      name='workflow_context',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='redis_client', ctx=Store())],
+          value=Call(
+            func=Name(id='InMemoryRedis', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='collection', ctx=Store())],
+          value=Call(
+            func=Name(id='FakeCollection', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='chroma', ctx=Store())],
+          value=Call(
+            func=Name(id='FakeChromaClient', ctx=Load()),
+            args=[
+              Name(id='collection', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='embedding_fn', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyEmbeddingFunction', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='cache_mgr', ctx=Store())],
+          value=Call(
+            func=Name(id='CacheManager', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load()),
+              Name(id='redis_client', ctx=Load()),
+              Name(id='chroma', ctx=Load()),
+              Name(id='embedding_fn', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='cost_tracker', ctx=Store())],
+          value=Call(
+            func=Name(id='CostTracker', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='feedback_reader', ctx=Store())],
+          value=Call(
+            func=Name(id='FeedbackLogReader', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='meta_loop_config',
+                  ctx=Load()),
+                attr='feedback_log_path',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='rules_loader', ctx=Store())],
+          value=Call(
+            func=Name(id='ProposedRulesLoader', ctx=Load()),
+            args=[
+              Attribute(
+                value=Attribute(
+                  value=Name(id='config', ctx=Load()),
+                  attr='meta_loop_config',
+                  ctx=Load()),
+                attr='proposed_rules_path',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='prompt_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptTemplateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='feedback_reader',
+                value=Name(id='feedback_reader', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='response_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='ResponseValidator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='metrics', ctx=Store())],
+          value=Call(
+            func=Name(id='MetricsCollector', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='tuning_profile', ctx=Store())],
+          value=Call(
+            func=Name(id='TuningProfile', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='policy_auto_tuner', ctx=Store())],
+          value=Call(
+            func=Name(id='PolicyAutoTuner', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load()),
+              Name(id='metrics', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='predictive_cache_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PredictiveCacheManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='cache_manager',
+                value=Name(id='cache_mgr', ctx=Load())),
+              keyword(
+                arg='metrics',
+                value=Name(id='metrics', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='precompute_engine', ctx=Store())],
+          value=Call(
+            func=Name(id='PrecomputeEngine', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None))])),
+        Assign(
+          targets=[
+            Name(id='semantic_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='SemanticValidator', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='metrics_collector',
+                value=Name(id='metrics', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='arbitration_engine', ctx=Store())],
+          value=Call(
+            func=Name(id='ArbitrationEngine', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='metrics',
+                value=Name(id='metrics', ctx=Load()))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='metrics', ctx=Load()),
+              attr='predictive_cache_manager',
+              ctx=Store())],
+          value=Name(id='predictive_cache_manager', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Call(
+            func=Name(id='WorkflowContext', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='redis_client',
+                value=Name(id='redis_client', ctx=Load())),
+              keyword(
+                arg='chromadb_client',
+                value=Name(id='chroma', ctx=Load())),
+              keyword(
+                arg='cache_manager',
+                value=Name(id='cache_mgr', ctx=Load())),
+              keyword(
+                arg='cost_tracker',
+                value=Name(id='cost_tracker', ctx=Load())),
+              keyword(
+                arg='feedback_reader',
+                value=Name(id='feedback_reader', ctx=Load())),
+              keyword(
+                arg='rules_loader',
+                value=Name(id='rules_loader', ctx=Load())),
+              keyword(
+                arg='prompt_manager',
+                value=Name(id='prompt_manager', ctx=Load())),
+              keyword(
+                arg='response_validator',
+                value=Name(id='response_validator', ctx=Load())),
+              keyword(
+                arg='metrics_collector',
+                value=Name(id='metrics', ctx=Load())),
+              keyword(
+                arg='semantic_validator',
+                value=Name(id='semantic_validator', ctx=Load())),
+              keyword(
+                arg='embedding_function',
+                value=Name(id='embedding_fn', ctx=Load())),
+              keyword(
+                arg='arbitration_engine',
+                value=Name(id='arbitration_engine', ctx=Load())),
+              keyword(
+                arg='predictive_cache_manager',
+                value=Name(id='predictive_cache_manager', ctx=Load())),
+              keyword(
+                arg='precompute_engine',
+                value=Name(id='precompute_engine', ctx=Load())),
+              keyword(
+                arg='tuning_profile',
+                value=Name(id='tuning_profile', ctx=Load())),
+              keyword(
+                arg='policy_auto_tuner',
+                value=Name(id='policy_auto_tuner', ctx=Load())),
+              keyword(
+                arg='advanced_meta_learner',
+                value=Call(
+                  func=Name(id='AdvancedMetaLearner', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='config',
+                      value=Name(id='config', ctx=Load())),
+                    keyword(
+                      arg='metrics',
+                      value=Name(id='metrics', ctx=Load()))]))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='ctx', ctx=Load()),
+              attr='context_budget_manager',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='ContextBudgetManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='model_client_getter',
+                value=Attribute(
+                  value=Name(id='ctx', ctx=Load()),
+                  attr='get_model_client',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='precompute_engine', ctx=Load()),
+              attr='context',
+              ctx=Store())],
+          value=Name(id='ctx', ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='ctx', ctx=Load()),
+              attr='reset_mcp_clients',
+              ctx=Load()))),
+        Return(
+          value=Name(id='ctx', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='WorkflowContext', ctx=Load())),
+    FunctionDef(
+      name='benchmark',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value="Lightweight stand-in for pytest-benchmark's fixture.")),
+        FunctionDef(
+          name='_runner',
+          args=arguments(
+            args=[
+              arg(arg='func')],
+            vararg=arg(arg='args'),
+            kwarg=arg(arg='kwargs')),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='func', ctx=Load()),
+                args=[
+                  Starred(
+                    value=Name(id='args', ctx=Load()),
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    value=Name(id='kwargs', ctx=Load()))]))]),
+        Return(
+          value=Name(id='_runner', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))]),
+    FunctionDef(
+      name='mock_llm_client',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='MagicMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='MockLLMClient'))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='_run_idempotency_check',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='AsyncMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='_run_idempotency_check'))])),
+        AsyncFunctionDef(
+          name='_chat_completion_async',
+          args=arguments(
+            vararg=arg(arg='args'),
+            kwarg=arg(arg='kwargs')),
+          body=[
+            Expr(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='client', ctx=Load()),
+                    attr='_run_idempotency_check',
+                    ctx=Load()),
+                  args=[
+                    Starred(
+                      value=Name(id='args', ctx=Load()),
+                      ctx=Load())],
+                  keywords=[
+                    keyword(
+                      value=Name(id='kwargs', ctx=Load()))]))),
+            Return(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='client', ctx=Load()),
+                  attr='chat_completion_async',
+                  ctx=Load()),
+                attr='return_value',
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='chat_completion_async',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='AsyncMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='chat_completion_async')),
+              keyword(
+                arg='side_effect',
+                value=Name(id='_chat_completion_async', ctx=Load()))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='goal_state',
+              ctx=Store())],
+          value=Constant(value='Deliver standout resume artifacts')),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='top_failures',
+              ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='BiasDetectorAgent::run_bias_detector')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='model_name',
+              ctx=Store())],
+          value=Constant(value='gemini-2.5-pro')),
+        Return(
+          value=Name(id='client', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='MagicMock', ctx=Load())),
+    FunctionDef(
+      name='mock_chromadb_client',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='collection', ctx=Store())],
+          value=Call(
+            func=Name(id='FakeCollection', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='client', ctx=Store())],
+          value=Call(
+            func=Name(id='MagicMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='MockChromaClient'))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='client', ctx=Load()),
+                attr='get_or_create_collection',
+                ctx=Load()),
+              attr='return_value',
+              ctx=Store())],
+          value=Name(id='collection', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='client', ctx=Load()),
+                attr='get_collection',
+                ctx=Load()),
+              attr='return_value',
+              ctx=Store())],
+          value=Name(id='collection', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='client', ctx=Load()),
+              attr='_collection',
+              ctx=Store())],
+          value=Name(id='collection', ctx=Load())),
+        Return(
+          value=Name(id='client', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='MagicMock', ctx=Load())),
+    FunctionDef(
+      name='feedback_log_path',
+      args=arguments(
+        args=[
+          arg(
+            arg='tmp_path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='path', ctx=Store())],
+          value=BinOp(
+            left=Name(id='tmp_path', ctx=Load()),
+            op=Div(),
+            right=Constant(value='feedback.log'))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='path', ctx=Load()),
+              attr='write_text',
+              ctx=Load()),
+            args=[
+              Constant(value='')])),
+        Return(
+          value=Name(id='path', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='Path', ctx=Load())),
+    FunctionDef(
+      name='proposed_rules_path',
+      args=arguments(
+        args=[
+          arg(
+            arg='tmp_path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='path', ctx=Store())],
+          value=BinOp(
+            left=Name(id='tmp_path', ctx=Load()),
+            op=Div(),
+            right=Constant(value='proposed_rules.log'))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='path', ctx=Load()),
+              attr='write_text',
+              ctx=Load()),
+            args=[
+              Constant(value='')])),
+        Return(
+          value=Name(id='path', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='Path', ctx=Load())),
+    FunctionDef(
+      name='workflow_harness',
+      args=arguments(
+        args=[
+          arg(
+            arg='mock_llm_client',
+            annotation=Name(id='MagicMock', ctx=Load())),
+          arg(
+            arg='mock_chromadb_client',
+            annotation=Name(id='MagicMock', ctx=Load())),
+          arg(
+            arg='feedback_log_path',
+            annotation=Name(id='Path', ctx=Load())),
+          arg(
+            arg='proposed_rules_path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='ConfigV10_7', ctx=Load()),
+            args=[
+              Constant(value='master_config_v10_7.json')])),
+        Assign(
+          targets=[
+            Name(id='redis_client', ctx=Store())],
+          value=Call(
+            func=Name(id='FakeRedisClient', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='embedding', ctx=Store())],
+          value=Call(
+            func=Name(id='DeterministicEmbeddingFunction', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='cache_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='CacheManager', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load()),
+              Name(id='redis_client', ctx=Load()),
+              Name(id='mock_chromadb_client', ctx=Load()),
+              Name(id='embedding', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='cost_tracker', ctx=Store())],
+          value=Call(
+            func=Name(id='CostTracker', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='feedback_reader', ctx=Store())],
+          value=Call(
+            func=Name(id='FeedbackLogReader', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='feedback_log_path', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='rules_loader', ctx=Store())],
+          value=Call(
+            func=Name(id='ProposedRulesLoader', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='proposed_rules_path', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='prompt_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptTemplateManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='feedback_reader',
+                value=Name(id='feedback_reader', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='response_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='ResponseValidator', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='metrics_collector', ctx=Store())],
+          value=Call(
+            func=Name(id='MetricsCollector', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='tuning_profile', ctx=Store())],
+          value=Call(
+            func=Name(id='TuningProfile', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='policy_auto_tuner', ctx=Store())],
+          value=Call(
+            func=Name(id='PolicyAutoTuner', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load()),
+              Name(id='metrics_collector', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='predictive_cache_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='PredictiveCacheManager', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='cache_manager',
+                value=Name(id='cache_manager', ctx=Load())),
+              keyword(
+                arg='metrics',
+                value=Name(id='metrics_collector', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='precompute_engine', ctx=Store())],
+          value=Call(
+            func=Name(id='PrecomputeEngine', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='context',
+                value=Constant(value=None))])),
+        Assign(
+          targets=[
+            Name(id='semantic_validator', ctx=Store())],
+          value=Call(
+            func=Name(id='SemanticValidator', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='metrics_collector',
+                value=Name(id='metrics_collector', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='arbitration_engine', ctx=Store())],
+          value=Call(
+            func=Name(id='ArbitrationEngine', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='metrics',
+                value=Name(id='metrics_collector', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='context_budget_manager', ctx=Store())],
+          value=Call(
+            func=Name(id='ContextBudgetManager', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='model_client_getter',
+                value=Lambda(
+                  args=arguments(
+                    vararg=arg(arg='_args'),
+                    kwarg=arg(arg='_kwargs')),
+                  body=Name(id='mock_llm_client', ctx=Load())))])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='hasattr', ctx=Load()),
+              args=[
+                Name(id='context_budget_manager', ctx=Load()),
+                Constant(value='register_workflow')])),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='context_budget_manager', ctx=Load()),
+                  attr='register_workflow',
+                  ctx=Store())],
+              value=Lambda(
+                args=arguments(
+                  vararg=arg(arg='_args'),
+                  kwarg=arg(arg='_kwargs')),
+                body=Constant(value=None)))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='context_budget_manager', ctx=Load()),
+              attr='register_workflow',
+              ctx=Load()),
+            args=[
+              Constant(value='test-workflow'),
+              Constant(value=1000)])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='metrics_collector', ctx=Load()),
+              attr='predictive_cache_manager',
+              ctx=Store())],
+          value=Name(id='predictive_cache_manager', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='workflow_context', ctx=Store())],
+          value=Call(
+            func=Name(id='WorkflowContext', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='redis_client',
+                value=Name(id='redis_client', ctx=Load())),
+              keyword(
+                arg='chromadb_client',
+                value=Name(id='mock_chromadb_client', ctx=Load())),
+              keyword(
+                arg='cache_manager',
+                value=Name(id='cache_manager', ctx=Load())),
+              keyword(
+                arg='cost_tracker',
+                value=Name(id='cost_tracker', ctx=Load())),
+              keyword(
+                arg='feedback_reader',
+                value=Name(id='feedback_reader', ctx=Load())),
+              keyword(
+                arg='rules_loader',
+                value=Name(id='rules_loader', ctx=Load())),
+              keyword(
+                arg='prompt_manager',
+                value=Name(id='prompt_manager', ctx=Load())),
+              keyword(
+                arg='response_validator',
+                value=Name(id='response_validator', ctx=Load())),
+              keyword(
+                arg='metrics_collector',
+                value=Name(id='metrics_collector', ctx=Load())),
+              keyword(
+                arg='semantic_validator',
+                value=Name(id='semantic_validator', ctx=Load())),
+              keyword(
+                arg='embedding_function',
+                value=Name(id='embedding', ctx=Load())),
+              keyword(
+                arg='arbitration_engine',
+                value=Name(id='arbitration_engine', ctx=Load())),
+              keyword(
+                arg='predictive_cache_manager',
+                value=Name(id='predictive_cache_manager', ctx=Load())),
+              keyword(
+                arg='precompute_engine',
+                value=Name(id='precompute_engine', ctx=Load())),
+              keyword(
+                arg='tuning_profile',
+                value=Name(id='tuning_profile', ctx=Load())),
+              keyword(
+                arg='policy_auto_tuner',
+                value=Name(id='policy_auto_tuner', ctx=Load()))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='workflow_context', ctx=Load()),
+              attr='context_budget_manager',
+              ctx=Store())],
+          value=Name(id='context_budget_manager', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='precompute_engine', ctx=Load()),
+              attr='context',
+              ctx=Store())],
+          value=Name(id='workflow_context', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='workflow_context', ctx=Load()),
+              attr='workflow_id',
+              ctx=Store())],
+          value=Constant(value='test-workflow')),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='workflow_context', ctx=Load()),
+              attr='get_model_client',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='MagicMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='return_value',
+                value=Name(id='mock_llm_client', ctx=Load()))])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='context_budget_manager', ctx=Load()),
+              attr='get_model_client',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='workflow_context', ctx=Load()),
+            attr='get_model_client',
+            ctx=Load())),
+        Return(
+          value=Name(id='workflow_context', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='WorkflowContext', ctx=Load())),
+    FunctionDef(
+      name='mock_workflow_context',
+      args=arguments(
+        args=[
+          arg(
+            arg='workflow_harness',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Name(id='workflow_harness', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='WorkflowContext', ctx=Load())),
+    FunctionDef(
+      name='prompt_manager',
+      args=arguments(
+        args=[
+          arg(
+            arg='workflow_harness',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Attribute(
+            value=Name(id='workflow_harness', ctx=Load()),
+            attr='prompt_manager',
+            ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='PromptTemplateManager', ctx=Load())),
+    FunctionDef(
+      name='metrics_collector',
+      args=arguments(
+        args=[
+          arg(
+            arg='workflow_harness',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Attribute(
+            value=Name(id='workflow_harness', ctx=Load()),
+            attr='metrics_collector',
+            ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='MetricsCollector', ctx=Load())),
+    FunctionDef(
+      name='redis_client',
+      args=arguments(
+        args=[
+          arg(
+            arg='workflow_harness',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Attribute(
+            value=Name(id='workflow_harness', ctx=Load()),
+            attr='redis_client',
+            ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='FakeRedisClient', ctx=Load())),
+    FunctionDef(
+      name='cost_tracker',
+      args=arguments(
+        args=[
+          arg(
+            arg='workflow_harness',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        Return(
+          value=Attribute(
+            value=Name(id='workflow_harness', ctx=Load()),
+            attr='cost_tracker',
+            ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='CostTracker', ctx=Load())),
+    FunctionDef(
+      name='base_state',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='strategy_plan', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='strategy_name'),
+              Constant(value='focus_areas'),
+              Constant(value='key_achievements_to_highlight'),
+              Constant(value='tone'),
+              Constant(value='planner_assessments'),
+              Constant(value='aggregated_decision'),
+              Constant(value='aggregated_confidence'),
+              Constant(value='aggregated_rationale'),
+              Constant(value='feedback_signals'),
+              Constant(value='scenario_simulations'),
+              Constant(value='coordinator_summary')],
+            values=[
+              Constant(value='AI Leadership'),
+              List(
+                elts=[
+                  Constant(value='innovation'),
+                  Constant(value='team building')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Scaled platform to millions of users')],
+                ctx=Load()),
+              Constant(value='executive'),
+              List(ctx=Load()),
+              Constant(value='approve'),
+              Constant(value=0.9),
+              Constant(value='Validated by coordinator'),
+              List(ctx=Load()),
+              List(ctx=Load()),
+              Constant(value='Ready for drafting')])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='metadata'),
+              Constant(value='job'),
+              Constant(value='resume'),
+              Constant(value='strategy'),
+              Constant(value='a2a')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='workflow_id'),
+                  Constant(value='complexity')],
+                values=[
+                  Constant(value='wf-test'),
+                  Constant(value='unknown')]),
+              Dict(
+                keys=[
+                  Constant(value='company'),
+                  Constant(value='job_title'),
+                  Constant(value='job_description')],
+                values=[
+                  Constant(value='OpenAI'),
+                  Constant(value='AI Executive'),
+                  Constant(value='Lead AI initiatives')]),
+              Dict(
+                keys=[
+                  Constant(value='candidate'),
+                  Constant(value='job_title'),
+                  Constant(value='summary'),
+                  Constant(value='highlights'),
+                  Constant(value='skills'),
+                  Constant(value='sections')],
+                values=[
+                  Constant(value='Test Candidate'),
+                  Constant(value='AI Executive'),
+                  Constant(value='Experienced AI leader'),
+                  List(
+                    elts=[
+                      Constant(value='Built AI products')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='Python'),
+                      Constant(value='ML')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='title'),
+                          Constant(value='entries')],
+                        values=[
+                          Constant(value='Experience'),
+                          List(
+                            elts=[
+                              Dict(
+                                keys=[
+                                  Constant(value='title'),
+                                  Constant(value='bullet_pool')],
+                                values=[
+                                  Constant(value='Senior Manager'),
+                                  List(
+                                    elts=[
+                                      Constant(value='Led cross-functional team to deliver ML platform'),
+                                      Constant(value='Increased model throughput by 30%')],
+                                    ctx=Load())])],
+                            ctx=Load())])],
+                    ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='strategy_plan')],
+                values=[
+                  Name(id='strategy_plan', ctx=Load())]),
+              Dict(
+                keys=[
+                  Constant(value='messages')],
+                values=[
+                  List(ctx=Load())])]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='mock_context_budget_manager',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='manager', ctx=Store())],
+          value=Call(
+            func=Name(id='MagicMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='name',
+                value=Constant(value='MockContextBudgetManager'))])),
+        AsyncFunctionDef(
+          name='_prune',
+          args=arguments(
+            args=[
+              arg(
+                arg='document',
+                annotation=Name(id='str', ctx=Load()))],
+            vararg=arg(arg='_args'),
+            kwarg=arg(arg='_kwargs')),
+          body=[
+            Return(
+              value=Name(id='document', ctx=Load()))]),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='manager', ctx=Load()),
+              attr='prune',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='AsyncMock', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='side_effect',
+                value=Name(id='_prune', ctx=Load()))])),
+        Return(
+          value=Name(id='manager', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))]),
+    FunctionDef(
+      name='mock_config',
+      args=arguments(
+        args=[
+          arg(
+            arg='tmp_path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='ConfigV10_7', ctx=Load()),
+            args=[
+              Constant(value='master_config_v10_7.json')])),
+        Assign(
+          targets=[
+            Name(id='feedback_log', ctx=Store())],
+          value=BinOp(
+            left=Name(id='tmp_path', ctx=Load()),
+            op=Div(),
+            right=Constant(value='feedback_log.jsonl'))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='feedback_log', ctx=Load()),
+              attr='touch',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='meta_loop_config',
+                ctx=Load()),
+              attr='feedback_log_path',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Name(id='feedback_log', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='proposed_rules', ctx=Store())],
+          value=BinOp(
+            left=Name(id='tmp_path', ctx=Load()),
+            op=Div(),
+            right=Constant(value='proposed_rules.jsonl'))),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='proposed_rules', ctx=Load()),
+              attr='touch',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='meta_loop_config',
+                ctx=Load()),
+              attr='proposed_rules_path',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Name(id='proposed_rules', ctx=Load())])),
+        Return(
+          value=Name(id='config', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='ConfigV10_7', ctx=Load())),
+    FunctionDef(
+      name='response_validator',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='ResponseValidator', ctx=Load())))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='ResponseValidator', ctx=Load())),
+    FunctionDef(
+      name='semantic_validator',
+      args=arguments(
+        args=[
+          arg(
+            arg='metrics_collector',
+            annotation=Name(id='MetricsCollector', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='SemanticValidator', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='metrics_collector',
+                value=Name(id='metrics_collector', ctx=Load()))]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='SemanticValidator', ctx=Load())),
+    FunctionDef(
+      name='workflow_state_factory',
+      args=arguments(
+        args=[
+          arg(
+            arg='base_state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        FunctionDef(
+          name='_factory',
+          args=arguments(
+            args=[
+              arg(
+                arg='overrides',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='merged', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='loads',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dumps',
+                      ctx=Load()),
+                    args=[
+                      Name(id='base_state', ctx=Load())])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='merged', ctx=Load()),
+                  attr='update',
+                  ctx=Load()),
+                args=[
+                  Name(id='overrides', ctx=Load())])),
+            Return(
+              value=Name(id='merged', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        Return(
+          value=Name(id='_factory', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Callable', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            List(
+              elts=[
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='dummy_cache_entry',
+      args=arguments(
+        args=[
+          arg(
+            arg='cache_manager',
+            annotation=Name(id='CacheManager', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='payload', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='bullets'),
+              Constant(value='summary')],
+            values=[
+              List(
+                elts=[
+                  Constant(value='Managed ML org')],
+                ctx=Load()),
+              Constant(value='Seasoned leader')])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='cache_manager', ctx=Load()),
+                  attr='set_llm_cache',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='provider',
+                    value=Constant(value='google')),
+                  keyword(
+                    arg='model',
+                    value=Constant(value='gemini-2.5-pro')),
+                  keyword(
+                    arg='prompt',
+                    value=Constant(value='summarize')),
+                  keyword(
+                    arg='temperature',
+                    value=Constant(value=0.2)),
+                  keyword(
+                    arg='response',
+                    value=Name(id='payload', ctx=Load()))])])),
+        Return(
+          value=Name(id='payload', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='trace_recorder',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='TraceRecorder', ctx=Load())))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Name(id='TraceRecorder', ctx=Load())),
+    FunctionDef(
+      name='feedback_log_entries',
+      args=arguments(
+        args=[
+          arg(
+            arg='feedback_log_path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='entries', ctx=Store())],
+          value=List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='timestamp'),
+                  Constant(value='workflow_id'),
+                  Constant(value='agent_name'),
+                  Constant(value='task'),
+                  Constant(value='feedback_type'),
+                  Constant(value='details')],
+                values=[
+                  Constant(value='2024-01-01T00:00:00Z'),
+                  Constant(value='wf-test'),
+                  Constant(value='DraftingGuildCoordinator'),
+                  Constant(value='draft'),
+                  Constant(value='success'),
+                  Dict(
+                    keys=[
+                      Constant(value='summary')],
+                    values=[
+                      Constant(value='Strong tone')])]),
+              Dict(
+                keys=[
+                  Constant(value='timestamp'),
+                  Constant(value='workflow_id'),
+                  Constant(value='agent_name'),
+                  Constant(value='task'),
+                  Constant(value='feedback_type'),
+                  Constant(value='details')],
+                values=[
+                  Constant(value='2024-01-01T00:05:00Z'),
+                  Constant(value='wf-test'),
+                  Constant(value='BiasDetectorAgent'),
+                  Constant(value='audit'),
+                  Constant(value='failure'),
+                  Dict(
+                    keys=[
+                      Constant(value='issue')],
+                    values=[
+                      Constant(value='gendered language')])])],
+            ctx=Load())),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='feedback_log_path', ctx=Load()),
+                  attr='open',
+                  ctx=Load()),
+                args=[
+                  Constant(value='w')],
+                keywords=[
+                  keyword(
+                    arg='encoding',
+                    value=Constant(value='utf-8'))]),
+              optional_vars=Name(id='handle', ctx=Store()))],
+          body=[
+            For(
+              target=Name(id='entry', ctx=Store()),
+              iter=Name(id='entries', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='handle', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='dumps',
+                            ctx=Load()),
+                          args=[
+                            Name(id='entry', ctx=Load())]),
+                        op=Add(),
+                        right=Constant(value='\n'))]))])]),
+        Return(
+          value=Name(id='entries', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='proposed_rules_entries',
+      args=arguments(
+        args=[
+          arg(
+            arg='proposed_rules_path',
+            annotation=Name(id='Path', ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='entries', ctx=Store())],
+          value=List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='timestamp'),
+                  Constant(value='status'),
+                  Constant(value='pattern')],
+                values=[
+                  Constant(value='2024-01-02T00:00:00Z'),
+                  Constant(value='APPROVED'),
+                  Dict(
+                    keys=[
+                      Constant(value='type'),
+                      Constant(value='description'),
+                      Constant(value='config_changes'),
+                      Constant(value='id')],
+                    values=[
+                      Constant(value='constitution'),
+                      Constant(value='Prevent bias'),
+                      Dict(
+                        keys=[
+                          Constant(value='minimum_score')],
+                        values=[
+                          Constant(value=0.8)]),
+                      Constant(value='rule-1')])]),
+              Dict(
+                keys=[
+                  Constant(value='timestamp'),
+                  Constant(value='status'),
+                  Constant(value='pattern')],
+                values=[
+                  Constant(value='2024-01-02T00:05:00Z'),
+                  Constant(value='PROPOSED'),
+                  Dict(
+                    keys=[
+                      Constant(value='type'),
+                      Constant(value='description'),
+                      Constant(value='config_changes'),
+                      Constant(value='id')],
+                    values=[
+                      Constant(value='moral_constitution'),
+                      Constant(value='Cite achievements'),
+                      Dict(
+                        keys=[
+                          Constant(value='max_sections')],
+                        values=[
+                          Constant(value=5)]),
+                      Constant(value='rule-2')])])],
+            ctx=Load())),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Name(id='proposed_rules_path', ctx=Load()),
+                  attr='open',
+                  ctx=Load()),
+                args=[
+                  Constant(value='w')],
+                keywords=[
+                  keyword(
+                    arg='encoding',
+                    value=Constant(value='utf-8'))]),
+              optional_vars=Name(id='handle', ctx=Store()))],
+          body=[
+            For(
+              target=Name(id='entry', ctx=Store()),
+              iter=Name(id='entries', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='handle', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='json', ctx=Load()),
+                            attr='dumps',
+                            ctx=Load()),
+                          args=[
+                            Name(id='entry', ctx=Load())]),
+                        op=Add(),
+                        right=Constant(value='\n'))]))])]),
+        Return(
+          value=Name(id='entries', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='workflow_context_factory',
+      args=arguments(
+        args=[
+          arg(
+            arg='workflow_harness',
+            annotation=Name(id='WorkflowContext', ctx=Load()))]),
+      body=[
+        FunctionDef(
+          name='_factory',
+          args=arguments(
+            args=[
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Name(id='workflow_harness', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='context', ctx=Load()),
+                  attr='workflow_id',
+                  ctx=Store())],
+              value=Name(id='workflow_id', ctx=Load())),
+            Return(
+              value=Name(id='context', ctx=Load()))],
+          returns=Name(id='WorkflowContext', ctx=Load())),
+        Return(
+          value=Name(id='_factory', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Callable', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            List(
+              elts=[
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            Name(id='WorkflowContext', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='strategy_plan_payload',
+      args=arguments(),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='strategy_name'),
+              Constant(value='focus_areas'),
+              Constant(value='key_achievements_to_highlight'),
+              Constant(value='tone')],
+            values=[
+              Constant(value='Impact'),
+              List(
+                elts=[
+                  Constant(value='delivery'),
+                  Constant(value='mentorship')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='Launched automation pipeline')],
+                ctx=Load()),
+              Constant(value='confident')]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='draft_sections',
+      args=arguments(),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='summary'),
+              Constant(value='experience')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='draft')],
+                values=[
+                  Constant(value='Delivered AI roadmap')]),
+              Dict(
+                keys=[
+                  Constant(value='records')],
+                values=[
+                  List(
+                    elts=[
+                      Dict(
+                        keys=[
+                          Constant(value='company'),
+                          Constant(value='impacts')],
+                        values=[
+                          Constant(value='OpenAI'),
+                          List(
+                            elts=[
+                              Constant(value='Scaled LLM infra')],
+                            ctx=Load())])],
+                    ctx=Load())])]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='fixture',
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

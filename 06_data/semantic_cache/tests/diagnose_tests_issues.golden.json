@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - diagnose_tests_issues\nImplements L1 Cognitive Planning Layer for diagnose tests issues operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass DiagnoseTestsIssuesExecutorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass DiagnoseTestsIssuesExecutorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass DiagnoseTestsIssuesExecutorResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n  ",
+  "full_hash": "0459dea7f9b52650698f2afbf0e83717dbba5345fabd8b58c4f1a2f97c75ced3",
+  "generated_at": 1764728353.8926144,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\exec-layer\\inspect-phase\\find-tests-problems\\general\\update-memory\\diagnose_tests_issues.py"
+}

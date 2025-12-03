@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"Concatenate repository code into consolidated text bundles.\n\nThe script walks tracked text files in the repository and writes them into a\nhandful of consolidated parts for easier upload to ChatGPT. Files are grouped\nsequentially based on their line counts so that the total set fits into at most\n``max_parts`` outputs.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport math\nimport os\nfrom pathlib import Path\nfrom typing import Iterable, List\n\nROOT = Path(__file__).resolve().parent.parent\n\n\ndef is_text_file(path: Path) -> bool:\n    \"\"\"Return True when the file appears to be text, False for binary files.\"\"\"\n    try:\n        with path.open(\"rb\") as fh:\n            chunk = fh.read(2048)\n            return b\"\\0\" not in chunk\n    except OSError:\n        return False\n\n\ndef iter_repo_files() -> Iterable[Path]:\n    \"\"\"Yield repo-tracked files under the root directory.\"\"\"\n    stream = os.popen(\"git ls-files\")\n    for line in stream:\n        rel = line.strip()",
+  "full_hash": "8408a2297b77080e613e03a8777f2402956e78d5d673f721233471017514045c",
+  "generated_at": 1764728231.6780198,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tools\\consolidate_repo.py"
+}

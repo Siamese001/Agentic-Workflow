@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\safety-guard-layer\\inspect-phase-group\\constraint-check-ops\\general-operations-ops\\utility-functions-ops\\gating.py",
+    "rel_path": "gating.py",
+    "root_name": "runtime",
+    "file_hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
+    "file_size": 1297,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.908044
+}

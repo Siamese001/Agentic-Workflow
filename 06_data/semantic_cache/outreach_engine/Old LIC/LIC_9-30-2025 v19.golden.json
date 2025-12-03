@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n  \"version\": \"LIC_9-30-2025_v17\",\n  \"metadata\": {\n    \"last_saved_utc\": \"2025-09-30T00:00:00Z\",\n    \"sources\": \"v16 COMPLETE with execution refinements from real-world usage (zero-loss overwrite)\",\n    \"notes\": \"Added: job application context handling, explicit K-node skip notifications, reasoning toggle prompt placement, RAG pre-processing visualization guidance, execution flow clarity. ALL v16 content preserved in full.\",\n    \"sha256\": \"pending_calculation\",\n    \"changelog_v16_to_v17\": [\n      \"Section 3: Added job_application_context collection gate after linkedin_input_collection\",\n      \"Section 3: Added reasoning_display_preference prompt placement specification\",\n      \"Section 4: Added explicit_skip_notifications template for skipped K-nodes\",\n      \"Section 4: Added rag_preprocessing_visualization guidance for ASCII trees\",\n      \"Section 4: Clarified mandatory_k_node_output_format applies only when K-node executes\",\n    ",
+  "full_hash": "33411875fe5547dd1a591968c6e898857fc18ad772259e7d03c5df449f467099",
+  "generated_at": 1764728337.6659496,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_9-30-2025 v19.json"
+}

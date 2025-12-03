@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 512,
+  "generated_at": 1764728347.9556012,
+  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\budget-manager-layer\\act-phase-group\\general-operations-ops\\utility-functions-ops\\helper-methods-ops\\output_governance.yaml"
+}

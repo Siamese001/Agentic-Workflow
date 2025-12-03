@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\orc-layer\\plan-phase\\get-tests-info\\general\\understand-request\\orchestrate_tests_planning.py",
+    "rel_path": "orchestrate_tests_planning.py",
+    "root_name": "tests",
+    "file_hash": "6e90707bf818e71a44b9b7822c0b26b9fdef8fdfe523489b91221f2c4b5397bf",
+    "file_size": 6966,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.3163664
+}

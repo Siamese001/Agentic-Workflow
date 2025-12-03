@@ -1,0 +1,201 @@
+Module(
+  body=[
+    ImportFrom(
+      module='types',
+      names=[
+        alias(name='SimpleNamespace')],
+      level=0),
+    ImportFrom(
+      module='agent_orchestration_v10_7',
+      names=[
+        alias(name='get_graph_app')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7.models',
+      names=[
+        alias(name='ArbitrationReport')],
+      level=0),
+    ClassDef(
+      name='DummyArbitrationEngine',
+      body=[
+        AsyncFunctionDef(
+          name='run_check',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='stage',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='state',
+                annotation=Name(id='dict', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='ArbitrationReport', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='stage',
+                    value=Name(id='stage', ctx=Load())),
+                  keyword(
+                    arg='decision',
+                    value=Constant(value='ACCEPT')),
+                  keyword(
+                    arg='reasons',
+                    value=List(
+                      elts=[
+                        Constant(value='stub')],
+                      ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Constant(value=1.0))]))],
+          returns=Name(id='ArbitrationReport', ctx=Load()))]),
+    ClassDef(
+      name='DummyWorkflowContext',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='agent_stacks', ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleNamespace', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enable_hil_stack',
+                    value=Constant(value=False)),
+                  keyword(
+                    arg='max_local_retries',
+                    value=Constant(value=1)),
+                  keyword(
+                    arg='enable_prompt_injection_detection',
+                    value=Constant(value=False))])),
+            Assign(
+              targets=[
+                Name(id='performance_config', ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleNamespace', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='workflow_node_timeout_seconds',
+                    value=Constant(value=1))])),
+            Assign(
+              targets=[
+                Name(id='hil_config', ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleNamespace', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='enabled',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='max_reentry_loops',
+                    value=Constant(value=2))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='config',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SimpleNamespace', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='agent_stacks',
+                    value=Name(id='agent_stacks', ctx=Load())),
+                  keyword(
+                    arg='performance_config',
+                    value=Name(id='performance_config', ctx=Load())),
+                  keyword(
+                    arg='hil_config',
+                    value=Name(id='hil_config', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='arbitration_engine',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='DummyArbitrationEngine', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='wrap_mcp_nodes',
+                  ctx=Store())],
+              value=Constant(value=True))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='reset_mcp_clients',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='wrap_mcp_nodes',
+                  ctx=Store())],
+              value=Constant(value=False))],
+          returns=Constant(value=None))]),
+    FunctionDef(
+      name='test_graph_app_contains_arbitration_nodes',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='context', ctx=Store())],
+          value=Call(
+            func=Name(id='DummyWorkflowContext', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='workflow', ctx=Store())],
+          value=Call(
+            func=Name(id='get_graph_app', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='checkpointer',
+                value=Constant(value=None)),
+              keyword(
+                arg='workflow_context',
+                value=Name(id='context', ctx=Load())),
+              keyword(
+                arg='enable_hil',
+                value=Constant(value=False))])),
+        Assign(
+          targets=[
+            Name(id='node_names', ctx=Store())],
+          value=Call(
+            func=Name(id='set', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='workflow', ctx=Load()),
+                    attr='nodes',
+                    ctx=Load()),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='expected', ctx=Store())],
+          value=Set(
+            elts=[
+              Constant(value='run_arbitration_after_strategy'),
+              Constant(value='run_arbitration_after_join'),
+              Constant(value='run_arbitration_after_bullets'),
+              Constant(value='run_arbitration_after_drafting'),
+              Constant(value='run_arbitration_after_qa')])),
+        Assert(
+          test=Call(
+            func=Attribute(
+              value=Name(id='expected', ctx=Load()),
+              attr='issubset',
+              ctx=Load()),
+            args=[
+              Name(id='node_names', ctx=Load())]))])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nSSoT \u2194 META Cross-Validation Engine for Agentic-Workflow\n\nImplements G10: SSoT <-> META cross-validation\n\nEnsures that META.domains == YAML.domains, META.layers == YAML.layers, \nMETA.phases == YAML.phases, META.intents == YAML.intents, META.axes == YAML.axes,\nMETA.verb_groups == YAML.verb_groups for functional enforcement of K25-K29.\n\"\"\"\n\nimport yaml\nimport json\nimport sys\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Set, Optional, Tuple\nfrom dataclasses import dataclass\nfrom enum import Enum\n\n\nclass ValidationStatus(Enum):\n    MATCH = \"MATCH\"\n    MISMATCH = \"MISMATCH\"\n    MISSING_IN_YAML = \"MISSING_IN_YAML\"\n    MISSING_IN_META = \"MISSING_IN_META\"\n    EXTRA_IN_YAML = \"EXTRA_IN_YAML\"\n    EXTRA_IN_META = \"EXTRA_IN_META\"\n\n\n@dataclass\nclass ValidationResult:\n    category: str\n    status: ValidationStatus\n    yaml_items: Set[str]\n    meta_items: Set[str]\n    details: str\n\n\nclass CrossValidator:\n    \"\"\"\n    SSoT \u2194 META cross-validation engine\n    \n ",
+  "full_hash": "56e8b37d3ae839bcbc0bc8f8ce8f5f046cd64a25205480d8d925520bd04db634",
+  "generated_at": 1764728345.481845,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\cross_validator.py"
+}

@@ -1,0 +1,1998 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Pure action implementation of the v10.8 bullet execution stack.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='BaseAgent'),
+        alias(name='BulletPlan'),
+        alias(name='StrategyPlan')],
+      level=0),
+    ImportFrom(
+      module='agent_stacks_v10_8.components.bullet',
+      names=[
+        alias(name='AsyncBulletCritiqueAgent'),
+        alias(name='AsyncBulletGeneratorAgent'),
+        alias(name='BulletCoordinatorAgent')],
+      level=0),
+    ClassDef(
+      name='BulletExecutionStack',
+      bases=[
+        Name(id='BaseAgent', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Generates deterministic bullets by applying a BulletPlan to resume data.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='context',
+                annotation=Name(id='Any', ctx=Load())),
+              arg(
+                arg='debug_mode',
+                annotation=Name(id='bool', ctx=Load()))],
+            defaults=[
+              Constant(value=False)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='super', ctx=Load())),
+                  attr='__init__',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='coordinator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='BulletCoordinatorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='generator',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='AsyncBulletGeneratorAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='critique_agent',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='AsyncBulletCritiqueAgent', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Name(id='debug_mode', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='bullets_per_experience',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=1),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='agent_stacks',
+                        ctx=Load()),
+                      Constant(value='bullets_per_experience'),
+                      Constant(value=2)])])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='safety_policy',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='safety_policy'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='policy_stack',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='policy_stack'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='constitutional_engine',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load()),
+                  Constant(value='constitutional_engine'),
+                  Constant(value=None)]))],
+          returns=Constant(value=None)),
+        AsyncFunctionDef(
+          name='generate_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Extract inputs from state and delegate to ``generate_async``.')),
+            Assign(
+              targets=[
+                Name(id='prompts_bucket', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prompts'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='final_prompt', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prompts_bucket', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='final_prompt')])),
+            Assign(
+              targets=[
+                Name(id='legacy_prompts', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='prompts_bucket', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='prompts_bucket', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='prompts'),
+                    Dict()]),
+                orelse=Dict())),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='final_prompt', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='legacy_prompts', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bullet_generation_prompt')])])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='prompt', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='prompt', ctx=Store())],
+                  value=IfExp(
+                    test=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='prompt_manager',
+                      ctx=Load()),
+                    body=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='prompt_manager',
+                          ctx=Load()),
+                        attr='get_template',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='bullet_generation_prompt')]),
+                    orelse=Constant(value='Generate bullets')))]),
+            Assign(
+              targets=[
+                Name(id='strategy_payload', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='strategy'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='strategy_plan')])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='strategy_payload', ctx=Load()),
+                  Name(id='StrategyPlan', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='strategy', ctx=Store())],
+                  value=Name(id='strategy_payload', ctx=Load()))],
+              orelse=[
+                If(
+                  test=Name(id='strategy_payload', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='strategy', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='StrategyPlan', ctx=Load()),
+                          attr='model_validate',
+                          ctx=Load()),
+                        args=[
+                          Name(id='strategy_payload', ctx=Load())]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='strategy', ctx=Store())],
+                      value=Call(
+                        func=Name(id='StrategyPlan', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='strategy_name',
+                            value=Constant(value='bullet_generation')),
+                          keyword(
+                            arg='focus_areas',
+                            value=List(
+                              elts=[
+                                Constant(value='impact')],
+                              ctx=Load())),
+                          keyword(
+                            arg='key_achievements_to_highlight',
+                            value=List(ctx=Load())),
+                          keyword(
+                            arg='tone',
+                            value=Constant(value='Confident'))]))])]),
+            Assign(
+              targets=[
+                Name(id='experiences', ctx=Store())],
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='state', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='resume'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='experience_bullets'),
+                      List(ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='experience_slice', ctx=Store())],
+              value=Subscript(
+                value=Name(id='experiences', ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=3)),
+                ctx=Load())),
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='generate_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='prompt', ctx=Load()),
+                    Name(id='experience_slice', ctx=Load()),
+                    Name(id='strategy', ctx=Load()),
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='state', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='metadata'),
+                                Dict()]),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='workflow_id'),
+                            Constant(value='')])])])))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='critique_from_state_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Extract bullets and critique prompt directly from shared state.')),
+            Assign(
+              targets=[
+                Name(id='prompts_bucket', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='prompts'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='final_prompt', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='prompts_bucket', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='final_prompt')])),
+            Assign(
+              targets=[
+                Name(id='legacy_prompts', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='prompts_bucket', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='prompts_bucket', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='prompts'),
+                    Dict()]),
+                orelse=Dict())),
+            Assign(
+              targets=[
+                Name(id='critique_prompt', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='final_prompt', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='legacy_prompts', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='critique_prompt')])])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='critique_prompt', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='critique_prompt', ctx=Store())],
+                  value=IfExp(
+                    test=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='prompt_manager',
+                      ctx=Load()),
+                    body=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='prompt_manager',
+                          ctx=Load()),
+                        attr='get_template',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='critique_prompt')]),
+                    orelse=Constant(value='Critique bullets')))]),
+            Assign(
+              targets=[
+                Name(id='bullets', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bullets'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='generated_bullets'),
+                  List(ctx=Load())])),
+            Return(
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='critique_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='bullets', ctx=Load()),
+                    Name(id='critique_prompt', ctx=Load()),
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Name(id='state', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='metadata'),
+                                Dict()]),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='workflow_id'),
+                            Constant(value='')])])])))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='generate_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='experiences',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='strategy',
+                annotation=Name(id='StrategyPlan', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Generate bullets by delegating to the async generator helper.')),
+            Assign(
+              targets=[
+                Name(id='task_context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='prompts'),
+                  Constant(value='experience')],
+                values=[
+                  List(
+                    elts=[
+                      Name(id='prompt', ctx=Load())],
+                    ctx=Load()),
+                  Name(id='experiences', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='generator',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='task_context', ctx=Load()),
+                    IfExp(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='strategy', ctx=Load()),
+                          Name(id='StrategyPlan', ctx=Load())]),
+                      body=Name(id='strategy', ctx=Load()),
+                      orelse=Call(
+                        func=Attribute(
+                          value=Name(id='StrategyPlan', ctx=Load()),
+                          attr='model_validate',
+                          ctx=Load()),
+                        args=[
+                          Name(id='strategy', ctx=Load())])),
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Constant(value='')])]))),
+            Assign(
+              targets=[
+                Name(id='bullets', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='bullets'),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='patch', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='bullets')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='generated_bullets')],
+                    values=[
+                      Name(id='bullets', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='safety_report', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety_report')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='policy_decision', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='policy_decision')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='constitutional_review', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='constitutional_review')]),
+                  Dict()])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='safety_report', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='safety_report', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Call(
+                                        func=Attribute(
+                                          value=Name(id='result', ctx=Load()),
+                                          attr='get',
+                                          ctx=Load()),
+                                        args=[
+                                          Constant(value='safety_report')]),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='policy_decision', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='policy_decision', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Call(
+                                        func=Attribute(
+                                          value=Name(id='result', ctx=Load()),
+                                          attr='get',
+                                          ctx=Load()),
+                                        args=[
+                                          Constant(value='policy_decision')]),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='constitutional_review', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='constitutional_review', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Call(
+                                        func=Attribute(
+                                          value=Name(id='result', ctx=Load()),
+                                          attr='get',
+                                          ctx=Load()),
+                                        args=[
+                                          Constant(value='constitutional_review')]),
+                                      Dict()])]))])])))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='safety_report'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='safety_report', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='policy_decision'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='policy_decision', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='constitutional_review'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='constitutional_review', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Return(
+              value=Name(id='patch', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='critique_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='bullets',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='critique_prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Critique generated bullets using the critique helper.')),
+            Assign(
+              targets=[
+                Name(id='critiqued', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='critique_agent',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='bullets', ctx=Load()),
+                    Name(id='critique_prompt', ctx=Load()),
+                    BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='workflow_id', ctx=Load()),
+                        Constant(value='')])]))),
+            Assign(
+              targets=[
+                Name(id='patch', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='bullets')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='critiqued_bullets')],
+                    values=[
+                      Name(id='critiqued', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='safety_report', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='critiqued', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='critiqued', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='safety_report')]),
+                orelse=Dict())),
+            Assign(
+              targets=[
+                Name(id='policy_decision', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='critiqued', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='critiqued', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='policy_decision')]),
+                orelse=Dict())),
+            Assign(
+              targets=[
+                Name(id='constitutional_review', ctx=Store())],
+              value=IfExp(
+                test=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='critiqued', ctx=Load()),
+                    Name(id='dict', ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='critiqued', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='constitutional_review')]),
+                orelse=Dict())),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='safety_report', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='safety_report', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='safety_report', ctx=Load()),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='policy_decision', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='policy_decision', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='policy_decision', ctx=Load()),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='constitutional_review', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='constitutional_review', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='constitutional_review', ctx=Load()),
+                                      Dict()])]))])])))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='safety_report'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='safety_report', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='policy_decision'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='policy_decision', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='constitutional_review'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='constitutional_review', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Return(
+              value=Name(id='patch', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        AsyncFunctionDef(
+          name='run_async',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='workflow_id', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='workflow_id', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='state', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='metadata'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='workflow_id'),
+                      Constant(value='')])])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_plan_from_state',
+                  ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='experiences', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_extract_experiences',
+                  ctx=Load()),
+                args=[
+                  Name(id='state', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='raw_bullets', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_generate_bullets',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan', ctx=Load()),
+                  Name(id='experiences', ctx=Load()),
+                  Name(id='workflow_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='resume_section', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='resume'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='master_resume'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='enriched', ctx=Store())],
+              value=Await(
+                value=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='coordinator',
+                      ctx=Load()),
+                    attr='run_async',
+                    ctx=Load()),
+                  args=[
+                    Name(id='raw_bullets', ctx=Load()),
+                    Name(id='resume_section', ctx=Load()),
+                    Name(id='workflow_id', ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='patch', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='bullets')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='plan'),
+                      Constant(value='generated_bullets'),
+                      Constant(value='instructions')],
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='model_dump',
+                          ctx=Load())),
+                      Name(id='enriched', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_plan_instructions',
+                          ctx=Load()),
+                        args=[
+                          Name(id='plan', ctx=Load())])])])),
+            Assign(
+              targets=[
+                Name(id='safety_report', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='safety_report')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='policy_decision', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='policy_decision')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='constitutional_review', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='constitutional_review')]),
+                  Dict()])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='safety_report', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='safety_report', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='safety_report', ctx=Load()),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='policy_decision', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='policy_decision', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='policy_decision', ctx=Load()),
+                                      Dict()])]))])])))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='constitutional_review', ctx=Load()),
+                    Constant(value='dict')])),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='constitutional_review', ctx=Store())],
+                  value=Call(
+                    func=Call(
+                      func=Name(id='type', ctx=Load()),
+                      args=[
+                        Constant(value='_Wrapper'),
+                        Tuple(ctx=Load()),
+                        Dict(
+                          keys=[
+                            Constant(value='dict')],
+                          values=[
+                            Lambda(
+                              args=arguments(
+                                args=[
+                                  arg(arg='self')]),
+                              body=Call(
+                                func=Name(id='dict', ctx=Load()),
+                                args=[
+                                  BoolOp(
+                                    op=Or(),
+                                    values=[
+                                      Name(id='constitutional_review', ctx=Load()),
+                                      Dict()])]))])])))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='safety_report'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='safety_report', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='policy_decision'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='policy_decision', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='constitutional_review'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='constitutional_review', ctx=Load()),
+                  attr='dict',
+                  ctx=Load()))),
+            Return(
+              value=Name(id='patch', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_plan_from_state',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='plan_payload', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bullets'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='plan')])),
+            If(
+              test=Compare(
+                left=Name(id='plan_payload', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      Constant(value="Bullet plan missing from state['bullets']['plan']")]))]),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='plan_payload', ctx=Load()),
+                  Name(id='BulletPlan', ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='plan_payload', ctx=Load()))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='BulletPlan', ctx=Load()),
+                  attr='model_validate',
+                  ctx=Load()),
+                args=[
+                  Name(id='plan_payload', ctx=Load())]))],
+          returns=Name(id='BulletPlan', ctx=Load())),
+        FunctionDef(
+          name='_extract_experiences',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='state',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='resume', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='resume'),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='master_resume', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='resume', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='master_resume')]),
+                  Dict()])),
+            Assign(
+              targets=[
+                Name(id='experiences', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='master_resume', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='professional_experience')]),
+                  List(ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Name(id='experiences', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_plan_instructions',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='BulletPlan', ctx=Load()))]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='target_sections'),
+                  Constant(value='highlight_order'),
+                  Constant(value='metrics_focus'),
+                  Constant(value='style_guidelines'),
+                  Constant(value='validation_checks')],
+                values=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='target_sections',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='highlight_order',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='metrics_focus',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='style_guidelines',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='validation_checks',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_generate_bullets',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='BulletPlan', ctx=Load())),
+              arg(
+                arg='experiences',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='workflow_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            AnnAssign(
+              target=Name(id='generated', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='guidelines', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value='; '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='style_guidelines',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='metrics_hint', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Constant(value=', '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='plan', ctx=Load()),
+                        attr='metrics_focus',
+                        ctx=Load())]),
+                  Constant(value='impact metrics')])),
+            Assign(
+              targets=[
+                Name(id='highlights', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='highlight_order',
+                    ctx=Load()),
+                  List(ctx=Load())])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='exp_index', ctx=Store()),
+                  Name(id='experience', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='enumerate', ctx=Load()),
+                args=[
+                  Name(id='experiences', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='company', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='experience', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company'),
+                      Constant(value='')])),
+                Assign(
+                  targets=[
+                    Name(id='title', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='experience', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='title'),
+                      Constant(value='')])),
+                Assign(
+                  targets=[
+                    Name(id='exp_label', ctx=Store())],
+                  value=IfExp(
+                    test=Name(id='highlights', ctx=Load()),
+                    body=Subscript(
+                      value=Name(id='highlights', ctx=Load()),
+                      slice=BinOp(
+                        left=Name(id='exp_index', ctx=Load()),
+                        op=Mod(),
+                        right=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='highlights', ctx=Load())])),
+                      ctx=Load()),
+                    orelse=Constant(value='Key win'))),
+                Assign(
+                  targets=[
+                    Name(id='summary', ctx=Store())],
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='experience', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='impact_summary')]),
+                      Subscript(
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='experience', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='bullet_pool'),
+                            List(
+                              elts=[
+                                Constant(value='')],
+                              ctx=Load())]),
+                        slice=Constant(value=0),
+                        ctx=Load())])),
+                For(
+                  target=Name(id='slot', ctx=Store()),
+                  iter=Call(
+                    func=Name(id='range', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='bullets_per_experience',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='bullet_id', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=BoolOp(
+                              op=Or(),
+                              values=[
+                                Name(id='workflow_id', ctx=Load()),
+                                Constant(value='wf')]),
+                            conversion=-1),
+                          Constant(value='-exp'),
+                          FormattedValue(
+                            value=Name(id='exp_index', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='-b'),
+                          FormattedValue(
+                            value=Name(id='slot', ctx=Load()),
+                            conversion=-1)])),
+                    Assign(
+                      targets=[
+                        Name(id='focus_metric', ctx=Store())],
+                      value=IfExp(
+                        test=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='metrics_focus',
+                          ctx=Load()),
+                        body=Subscript(
+                          value=Attribute(
+                            value=Name(id='plan', ctx=Load()),
+                            attr='metrics_focus',
+                            ctx=Load()),
+                          slice=BinOp(
+                            left=Name(id='slot', ctx=Load()),
+                            op=Mod(),
+                            right=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='plan', ctx=Load()),
+                                  attr='metrics_focus',
+                                  ctx=Load())])),
+                          ctx=Load()),
+                        orelse=Name(id='metrics_hint', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='bullet_text', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_compose_text',
+                          ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='title',
+                            value=Name(id='title', ctx=Load())),
+                          keyword(
+                            arg='company',
+                            value=Name(id='company', ctx=Load())),
+                          keyword(
+                            arg='exp_label',
+                            value=Name(id='exp_label', ctx=Load())),
+                          keyword(
+                            arg='focus_metric',
+                            value=Name(id='focus_metric', ctx=Load())),
+                          keyword(
+                            arg='summary',
+                            value=Name(id='summary', ctx=Load())),
+                          keyword(
+                            arg='guidelines',
+                            value=Name(id='guidelines', ctx=Load()))])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='generated', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Dict(
+                            keys=[
+                              Constant(value='id'),
+                              Constant(value='text'),
+                              Constant(value='experience')],
+                            values=[
+                              Name(id='bullet_id', ctx=Load()),
+                              Name(id='bullet_text', ctx=Load()),
+                              Name(id='experience', ctx=Load())])]))])]),
+            Return(
+              value=Name(id='generated', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_compose_text',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwonlyargs=[
+              arg(
+                arg='title',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='company',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='exp_label',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='focus_metric',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='summary',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='guidelines',
+                annotation=Name(id='str', ctx=Load()))],
+            kw_defaults=[
+              None,
+              None,
+              None,
+              None,
+              None,
+              None]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='parts', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='p', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='p', ctx=Store()),
+                    iter=List(
+                      elts=[
+                        Name(id='title', ctx=Load()),
+                        Name(id='company', ctx=Load())],
+                      ctx=Load()),
+                    ifs=[
+                      Name(id='p', ctx=Load())],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='header', ctx=Store())],
+              value=IfExp(
+                test=Name(id='parts', ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Constant(value=' at '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Name(id='parts', ctx=Load())]),
+                orelse=Name(id='exp_label', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='summary_fragment', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='summary', ctx=Load()),
+                  Name(id='exp_label', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='guideline_fragment', ctx=Store())],
+              value=IfExp(
+                test=Name(id='guidelines', ctx=Load()),
+                body=Subscript(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='guidelines', ctx=Load()),
+                      attr='split',
+                      ctx=Load()),
+                    args=[
+                      Constant(value=';')]),
+                  slice=Constant(value=0),
+                  ctx=Load()),
+                orelse=Constant(value='Impact-first phrasing'))),
+            Return(
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Name(id='header', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=': Delivered '),
+                  FormattedValue(
+                    value=Name(id='summary_fragment', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' while emphasizing '),
+                  FormattedValue(
+                    value=Name(id='focus_metric', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='. ['),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='guideline_fragment', ctx=Load()),
+                        attr='strip',
+                        ctx=Load())),
+                    conversion=-1),
+                  Constant(value=']')]))],
+          returns=Name(id='str', ctx=Load()))])])

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 15,
+  "generated_at": 1764728348.1765678,
+  "source_file": "C:\\Git\\Agentic-Workflow\\04_prompt_governance\\safety-guard-layer\\inspect-phase-group\\diagnostics-ops\\general-operations-ops\\utility-functions-ops\\policy_base.py"
+}

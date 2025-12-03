@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nShared constants and model\u2013name normalization utilities for core v10.7.\n\nThis module provides:\n\n  \u2022 provider-agnostic canonical names\n  \u2022 legacy \u2192 modern aliasing\n  \u2022 modern \u2192 legacy reverse aliasing\n  \u2022 normalization of hyphens/underscores\n  \u2022 consistent surface for cache keys, clients, and MCP routing\n\"\"\"\n\nfrom __future__ import annotations\n\n\n# -------------------------------------------------------------------------\n# 1. Legacy \u2192 canonical aliases (unified naming)\n# -------------------------------------------------------------------------\n\nLEGACY_MODEL_ALIASES = {\n    # --- Gemini ---\n    \"gemini-2.5-pro\": \"gemini-pro\",\n    \"gemini-2.5-flash\": \"gemini-flash\",\n    \"gemini-pro-1.0\": \"gemini-pro\",\n    \"gemini-pro-vision\": \"gemini-pro\",\n    \"gemini-flash-1.0\": \"gemini-flash\",\n\n    # --- Anthropic ---\n    \"claude-2.1\": \"claude-3-sonnet\",\n    \"claude-3-sonnet-20240229\": \"claude-3-sonnet\",\n    \"claude-1\": \"claude-3-haiku\",\n    \"claude-instant-1.2\": \"claude-3-haiku\",\n\n    # --- OpenAI -",
+  "full_hash": "c570c62b2e77f4e76f847eb84ae27218794ea3108a48f1172f2a57d12b76eaea",
+  "generated_at": 1764728229.5089936,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\constants.py"
+}

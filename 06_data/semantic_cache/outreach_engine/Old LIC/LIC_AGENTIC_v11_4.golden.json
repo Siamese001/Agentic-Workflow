@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.4\n====================================================\n\nCHANGELOG v11.4 (CRITICAL - Decision Tree from v10.24):\n--------------------------------------------------------\n\u2728 NEW: Proper Decision Tree Implementation from LIC v10.24\n- Added FOLLOW_UP route for continuing conversations\n- Added connection_status field (\"not_connected\" | \"connected\")\n- Added prior_message_count field for follow-up tracking\n- Implemented v10.24 routing logic:\n  1. IF not_connected AND senior_exec \u2192 INMAIL\n  2. ELSE IF recruiter \u2192 CONNECTION_REQ\n  3. ELSE IF connected AND prior_messages > 0 \u2192 FOLLOW_UP\n  4. ELSE \u2192 CONNECTION_REQ (default)\n- Enhanced input collection with connection status prompts\n- Added FOLLOW_UP route constraints (150-220 words, 1600 chars)\n\nCHANGELOG v11.3:\n---------------\nPriority 1: Constraint Failure Classification & Adaptive Temperature Retry\n- Added ConstraintFailureType enum (MECHANICAL, CREATIVE, SEMANTIC, CONFLICT)\n- Added Constra",
+  "full_hash": "934ea5d7ac32deee2029f289e5aab03192e13da22129e4c1d6ac8a9f5a08f250",
+  "generated_at": 1764728339.021804,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_4.py"
+}

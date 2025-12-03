@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\tests\\system\\test_mcp_context_v10_7.py",
+    "rel_path": "test_mcp_context_v10_7.py",
+    "root_name": "resume_engine/v10.7",
+    "file_hash": "f2a4a41ad91214fb97eecbeeef2579f697174136c4b6c025e4b3bd7c93c485c2",
+    "file_size": 1282,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728329.0600457
+}

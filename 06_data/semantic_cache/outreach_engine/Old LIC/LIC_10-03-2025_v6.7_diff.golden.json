@@ -1,0 +1,6 @@
+{
+  "golden_content": "--- LIC_10-03-2025_v6.6.json\n+++ LIC_10-03-2025_v6.7.json\n@@ -2,7 +2,7 @@\n   \"artifact\": \"LinkedIn Outreach Orchestrator (LIC)\",\n   \"version\": \"LIC_10-01-2025_v4\",\n   \"metadata\": {\n-    \"version\": \"LIC_10-03-2025_v6.6\",\n+    \"version\": \"LIC_10-03-2025_v6.7\",\n     \"patches\": [\n       \"C001\",\n       \"C002\",\n@@ -15,7 +15,9 @@\n       \"C009\",\n       \"C010\",\n       \"C011\",\n-      \"C012\"\n+      \"C012\",\n+      \"C013\",\n+      \"C014\"\n     ],\n     \"changelog\": \"external://CHANGELOG.md\",\n     \"sha256\": \"70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09\",\n@@ -779,6 +781,31 @@\n         \"on_update_command\": \"Overwrite global_sender_profile.profile with new values\",\n         \"on_session_start\": \"Auto-load from global_sender_profile.profile if exists\"\n       }\n+    },\n+    \"current_role_verification\": {\n+      \"trigger_point\": \"After linkedin_input_collection, before K.1 execution\",\n+      \"steps\": [\n+        {\n+          \"action\": \"web_search\",\n+          \"query_template\": \"{recipient_n",
+  "full_hash": "7d53169527f71010ef1b7059fc2e07047ef33ce079a287aad733225956aae6c5",
+  "generated_at": 1764728333.3786721,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_10-03-2025_v6.7_diff.txt"
+}

@@ -1,0 +1,2348 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nHop 5: Comprehensive Validation - HIGH-SIGNAL OVERWRITE\n\nThis advanced validator uses the HOP-0 RAG analysis as a\nground-truth "answer key" to validate the final generated content\nfrom the HOP-4 staging buffer.\n\nIt performs:\n1.  Semantic Alignment Validation (Vector-based)\n2.  Thematic & Keyword Coverage Checks\n3.  Narrative Inclusion Checks\n4.  Standard Linting & Placeholder Detection\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='argparse')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='List'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='Set')],
+      level=0),
+    Import(
+      names=[
+        alias(name='numpy', asname='np')]),
+    ImportFrom(
+      module='sklearn.metrics.pairwise',
+      names=[
+        alias(name='cosine_similarity')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='project_root', ctx=Store())],
+      value=Attribute(
+        value=Attribute(
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='__file__', ctx=Load())]),
+              attr='resolve',
+              ctx=Load())),
+          attr='parent',
+          ctx=Load()),
+        attr='parent',
+        ctx=Load())),
+    Expr(
+      value=Call(
+        func=Attribute(
+          value=Attribute(
+            value=Name(id='sys', ctx=Load()),
+            attr='path',
+            ctx=Load()),
+          attr='append',
+          ctx=Load()),
+        args=[
+          Call(
+            func=Name(id='str', ctx=Load()),
+            args=[
+              Name(id='project_root', ctx=Load())])])),
+    ImportFrom(
+      module='helpers',
+      names=[
+        alias(name='setup_workflow_logging'),
+        alias(name='HopExecutionError'),
+        alias(name='default_serializer'),
+        alias(name='ValidationResult'),
+        alias(name='ValidationSeverity'),
+        alias(name='ThematicAnalysis'),
+        alias(name='ImmutableStagingBuffer')],
+      level=0),
+    ClassDef(
+      name='EmbeddingClient',
+      body=[
+        Expr(
+          value=Constant(value='Mock EmbeddingClient to vectorize HOP-0 themes and HOP-4 content.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='config')],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Initialized MOCK EmbeddingClient for HOP-5')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='dimension',
+                  ctx=Store())],
+              value=Constant(value=768))]),
+        FunctionDef(
+          name='embed',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generates a mock, deterministic embedding.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='text', ctx=Load())),
+              body=[
+                Return(
+                  value=BinOp(
+                    left=List(
+                      elts=[
+                        Constant(value=0.0)],
+                      ctx=Load()),
+                    op=Mult(),
+                    right=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='dimension',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='hash_val', ctx=Store())],
+              value=Call(
+                func=Name(id='hash', ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='np', ctx=Load()),
+                    attr='random',
+                    ctx=Load()),
+                  attr='seed',
+                  ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Name(id='hash_val', ctx=Load()),
+                    op=Mod(),
+                    right=BinOp(
+                      left=BinOp(
+                        left=Constant(value=2),
+                        op=Pow(),
+                        right=Constant(value=32)),
+                      op=Sub(),
+                      right=Constant(value=1)))])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='np', ctx=Load()),
+                        attr='random',
+                        ctx=Load()),
+                      attr='rand',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='dimension',
+                        ctx=Load())]),
+                  attr='tolist',
+                  ctx=Load())))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='float', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='embed_batch',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='texts',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Generates mock embeddings for a batch of texts.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='np', ctx=Load()),
+                  attr='array',
+                  ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='embed',
+                        ctx=Load()),
+                      args=[
+                        Name(id='text', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='text', ctx=Store()),
+                        iter=Name(id='texts', ctx=Load()),
+                        is_async=0)])]))],
+          returns=Attribute(
+            value=Name(id='np', ctx=Load()),
+            attr='ndarray',
+            ctx=Load()))]),
+    ClassDef(
+      name='ValidationEngine',
+      body=[
+        Expr(
+          value=Constant(value='\n    High-Signal Validation Engine.\n    Validates generated content (HOP-4) against RAG analysis (HOP-0).\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='constraints',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='thematic_analysis',
+                annotation=Name(id='ThematicAnalysis', ctx=Load())),
+              arg(
+                arg='job_description',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='constraints',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='constraints', ctx=Load()),
+                  Dict()])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='thematic_analysis',
+                  ctx=Store())],
+              value=Name(id='thematic_analysis', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='job_description',
+                  ctx=Store())],
+              value=Name(id='job_description', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='embedding_client',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='EmbeddingClient', ctx=Load()))),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='target_theme_embeddings',
+                      ctx=Store()),
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='target_keywords',
+                      ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_get_target_vectors',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='_get_target_vectors',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Generates vector embeddings for the key themes from HOP-0.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Vectorizing HOP-0 thematic targets for validation...')])),
+            Assign(
+              targets=[
+                Name(id='targets', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='keywords', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            If(
+              test=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='thematic_analysis',
+                  ctx=Load()),
+                attr='primary_theme',
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='targets', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='thematic_analysis',
+                              ctx=Load()),
+                            attr='primary_theme',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='name'),
+                          Constant(value='')])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='targets', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='thematic_analysis',
+                              ctx=Load()),
+                            attr='primary_theme',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='keywords'),
+                          List(ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='keywords', ctx=Load()),
+                      attr='update',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='thematic_analysis',
+                              ctx=Load()),
+                            attr='primary_theme',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='keywords'),
+                          List(ctx=Load())])]))]),
+            If(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='thematic_analysis',
+                    ctx=Load()),
+                  Constant(value='secondary_themes')]),
+              body=[
+                For(
+                  target=Name(id='theme', ctx=Store()),
+                  iter=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='thematic_analysis',
+                      ctx=Load()),
+                    attr='secondary_themes',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='targets', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='theme', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='name'),
+                              Constant(value='')])])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='keywords', ctx=Load()),
+                          attr='update',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='theme', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='keywords'),
+                              List(ctx=Load())])]))])]),
+            Assign(
+              targets=[
+                Name(id='targets', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='t', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='t', ctx=Store()),
+                    iter=Name(id='targets', ctx=Load()),
+                    ifs=[
+                      Name(id='t', ctx=Load())],
+                    is_async=0)])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='targets', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='logger',
+                        ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='No thematic targets found in HOP-0. Semantic validation will be skipped.')])),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='np', ctx=Load()),
+                          attr='array',
+                          ctx=Load()),
+                        args=[
+                          List(ctx=Load())]),
+                      Call(
+                        func=Name(id='set', ctx=Load()))],
+                    ctx=Load()))]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='embedding_client',
+                        ctx=Load()),
+                      attr='embed_batch',
+                      ctx=Load()),
+                    args=[
+                      Name(id='targets', ctx=Load())]),
+                  Name(id='keywords', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Attribute(
+                  value=Name(id='np', ctx=Load()),
+                  attr='ndarray',
+                  ctx=Load()),
+                Subscript(
+                  value=Name(id='Set', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_extract_all_text',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Concatenates all generated text pieces into a single string.')),
+            Assign(
+              targets=[
+                Name(id='all_text', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='content', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='staging_buffer', ctx=Load()),
+                    attr='data',
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='content', ctx=Load()),
+                      Name(id='str', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='all_text', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='content', ctx=Load())]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='content', ctx=Load()),
+                          Name(id='list', ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='all_text', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              ListComp(
+                                elt=Call(
+                                  func=Name(id='str', ctx=Load()),
+                                  args=[
+                                    Name(id='item', ctx=Load())]),
+                                generators=[
+                                  comprehension(
+                                    target=Name(id='item', ctx=Store()),
+                                    iter=Name(id='content', ctx=Load()),
+                                    is_async=0)])]))])])]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='all_text', ctx=Load())]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='validate_all',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='staging_buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Runs all validation rules.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='--- Starting High-Signal Validation Engine ---')])),
+            Assign(
+              targets=[
+                Name(id='all_rules', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='getattr', ctx=Load()),
+                  args=[
+                    Name(id='self', ctx=Load()),
+                    Name(id='func', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='func', ctx=Store()),
+                    iter=Call(
+                      func=Name(id='dir', ctx=Load()),
+                      args=[
+                        Name(id='self', ctx=Load())]),
+                    ifs=[
+                      BoolOp(
+                        op=And(),
+                        values=[
+                          Call(
+                            func=Name(id='callable', ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='getattr', ctx=Load()),
+                                args=[
+                                  Name(id='self', ctx=Load()),
+                                  Name(id='func', ctx=Load())])]),
+                          Call(
+                            func=Attribute(
+                              value=Name(id='func', ctx=Load()),
+                              attr='startswith',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='check_')])])],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='all_generated_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_extract_all_text',
+                  ctx=Load()),
+                args=[
+                  Name(id='staging_buffer', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='rule', ctx=Store()),
+              iter=Name(id='all_rules', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='results', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='rule', ctx=Load()),
+                            args=[
+                              Name(id='staging_buffer', ctx=Load()),
+                              Name(id='all_generated_text', ctx=Load())])]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='logger',
+                                ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Validation rule '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='rule', ctx=Load()),
+                                      attr='__name__',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' failed to execute: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='results', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='ValidationResult', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='rule_id',
+                                    value=JoinedStr(
+                                      values=[
+                                        Constant(value='ENGINE_FAILURE_'),
+                                        FormattedValue(
+                                          value=Attribute(
+                                            value=Name(id='rule', ctx=Load()),
+                                            attr='__name__',
+                                            ctx=Load()),
+                                          conversion=-1)])),
+                                  keyword(
+                                    arg='passed',
+                                    value=Constant(value=False)),
+                                  keyword(
+                                    arg='severity',
+                                    value=Attribute(
+                                      value=Name(id='ValidationSeverity', ctx=Load()),
+                                      attr='CRITICAL',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='message',
+                                    value=JoinedStr(
+                                      values=[
+                                        Constant(value='Rule execution error: '),
+                                        FormattedValue(
+                                          value=Name(id='e', ctx=Load()),
+                                          conversion=-1)]))])]))])])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='--- Validation Complete: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='results', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' rules executed ---')])])),
+            Return(
+              value=Name(id='results', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='check_thematic_alignment',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='all_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        [HIGH-SIGNAL] Checks if the K.1 Summary is semantically\n        aligned with the HOP-0 primary theme.\n        ')),
+            Assign(
+              targets=[
+                Name(id='rule_id', ctx=Store())],
+              value=Constant(value='THEMATIC_ALIGNMENT_SUMMARY')),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='target_theme_embeddings',
+                    ctx=Load()),
+                  attr='size',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=0)]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Name(id='rule_id', ctx=Load()),
+                      Constant(value=True),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='INFO',
+                        ctx=Load()),
+                      Constant(value='Skipped (No HOP-0 themes)')]))]),
+            Assign(
+              targets=[
+                Name(id='summary_text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='buffer', ctx=Load()),
+                    attr='data',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='ResumeSection', ctx=Load()),
+                      attr='K1_EXECUTIVE_SUMMARY',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Constant(value='')])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='summary_text', ctx=Load())),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Name(id='rule_id', ctx=Load()),
+                      Constant(value=False),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='HIGH',
+                        ctx=Load()),
+                      Constant(value='K.1 Executive Summary is missing.')]))]),
+            Assign(
+              targets=[
+                Name(id='summary_embedding', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='embedding_client',
+                    ctx=Load()),
+                  attr='embed',
+                  ctx=Load()),
+                args=[
+                  Name(id='summary_text', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='similarity_matrix', ctx=Store())],
+              value=Call(
+                func=Name(id='cosine_similarity', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Name(id='summary_embedding', ctx=Load())],
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='target_theme_embeddings',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='max_similarity', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='similarity_matrix', ctx=Load()),
+                  attr='max',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='threshold', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='constraints',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='min_theme_similarity'),
+                  Constant(value=0.6)])),
+            Assign(
+              targets=[
+                Name(id='passed', ctx=Store())],
+              value=Compare(
+                left=Name(id='max_similarity', ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Name(id='threshold', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Name(id='rule_id', ctx=Load())),
+                  keyword(
+                    arg='passed',
+                    value=Name(id='passed', ctx=Load())),
+                  keyword(
+                    arg='severity',
+                    value=IfExp(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Name(id='passed', ctx=Load())),
+                      body=Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='HIGH',
+                        ctx=Load()),
+                      orelse=Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='INFO',
+                        ctx=Load()))),
+                  keyword(
+                    arg='message',
+                    value=JoinedStr(
+                      values=[
+                        Constant(value='Summary semantic alignment to HOP-0 themes: '),
+                        FormattedValue(
+                          value=Name(id='max_similarity', ctx=Load()),
+                          conversion=-1,
+                          format_spec=JoinedStr(
+                            values=[
+                              Constant(value='.2f')])),
+                        Constant(value=' (Threshold: '),
+                        FormattedValue(
+                          value=Name(id='threshold', ctx=Load()),
+                          conversion=-1),
+                        Constant(value=')')])),
+                  keyword(
+                    arg='details',
+                    value=Dict(
+                      keys=[
+                        Constant(value='actual_similarity'),
+                        Constant(value='threshold')],
+                      values=[
+                        Name(id='max_similarity', ctx=Load()),
+                        Name(id='threshold', ctx=Load())]))]))],
+          returns=Name(id='ValidationResult', ctx=Load())),
+        FunctionDef(
+          name='check_keyword_coverage',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='all_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        [HIGH-SIGNAL] Checks what percentage of HOP-0 keywords\n        are present in the final generated text.\n        ')),
+            Assign(
+              targets=[
+                Name(id='rule_id', ctx=Store())],
+              value=Constant(value='KEYWORD_COVERAGE')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='target_keywords',
+                  ctx=Load())),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Name(id='rule_id', ctx=Load()),
+                      Constant(value=True),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='INFO',
+                        ctx=Load()),
+                      Constant(value='Skipped (No HOP-0 keywords)')]))]),
+            Assign(
+              targets=[
+                Name(id='text_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='all_text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='found_keywords', ctx=Store())],
+              value=SetComp(
+                elt=Name(id='kw', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='kw', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='target_keywords',
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='kw', ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='text_lower', ctx=Load())])],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='coverage', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='found_keywords', ctx=Load())]),
+                op=Div(),
+                right=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='target_keywords',
+                      ctx=Load())]))),
+            Assign(
+              targets=[
+                Name(id='threshold', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='constraints',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='min_keyword_coverage'),
+                  Constant(value=0.75)])),
+            Assign(
+              targets=[
+                Name(id='passed', ctx=Store())],
+              value=Compare(
+                left=Name(id='coverage', ctx=Load()),
+                ops=[
+                  GtE()],
+                comparators=[
+                  Name(id='threshold', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Name(id='rule_id', ctx=Load())),
+                  keyword(
+                    arg='passed',
+                    value=Name(id='passed', ctx=Load())),
+                  keyword(
+                    arg='severity',
+                    value=IfExp(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Name(id='passed', ctx=Load())),
+                      body=Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='MEDIUM',
+                        ctx=Load()),
+                      orelse=Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='INFO',
+                        ctx=Load()))),
+                  keyword(
+                    arg='message',
+                    value=JoinedStr(
+                      values=[
+                        Constant(value='Found '),
+                        FormattedValue(
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Name(id='found_keywords', ctx=Load())]),
+                          conversion=-1),
+                        Constant(value='/'),
+                        FormattedValue(
+                          value=Call(
+                            func=Name(id='len', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='target_keywords',
+                                ctx=Load())]),
+                          conversion=-1),
+                        Constant(value=' target keywords. Coverage: '),
+                        FormattedValue(
+                          value=Name(id='coverage', ctx=Load()),
+                          conversion=-1,
+                          format_spec=JoinedStr(
+                            values=[
+                              Constant(value='.1%')]))])),
+                  keyword(
+                    arg='details',
+                    value=Dict(
+                      keys=[
+                        Constant(value='found'),
+                        Constant(value='missing')],
+                      values=[
+                        Call(
+                          func=Name(id='list', ctx=Load()),
+                          args=[
+                            Name(id='found_keywords', ctx=Load())]),
+                        Call(
+                          func=Name(id='list', ctx=Load()),
+                          args=[
+                            BinOp(
+                              left=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='target_keywords',
+                                ctx=Load()),
+                              op=Sub(),
+                              right=Name(id='found_keywords', ctx=Load()))])]))]))],
+          returns=Name(id='ValidationResult', ctx=Load())),
+        FunctionDef(
+          name='check_narrative_inclusion',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='all_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        [HIGH-SIGNAL] Checks if problem/solution narratives from HOP-0\n        are reflected in the text. (Simple keyword check)\n        ')),
+            Assign(
+              targets=[
+                Name(id='rule_id', ctx=Store())],
+              value=Constant(value='NARRATIVE_INCLUSION')),
+            Assign(
+              targets=[
+                Name(id='narratives', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='thematic_analysis',
+                    ctx=Load()),
+                  Constant(value='problem_solution_narratives'),
+                  List(ctx=Load())])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='narratives', ctx=Load())),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Name(id='rule_id', ctx=Load()),
+                      Constant(value=True),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='INFO',
+                        ctx=Load()),
+                      Constant(value='Skipped (No HOP-0 narratives)')]))]),
+            Assign(
+              targets=[
+                Name(id='narrative_keywords', ctx=Store())],
+              value=BinOp(
+                left=Call(
+                  func=Attribute(
+                    value=Subscript(
+                      value=Name(id='narratives', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='problem_keywords'),
+                    List(ctx=Load())]),
+                op=Add(),
+                right=Call(
+                  func=Attribute(
+                    value=Subscript(
+                      value=Name(id='narratives', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='solution_keywords'),
+                    List(ctx=Load())]))),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='narrative_keywords', ctx=Load())),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='ValidationResult', ctx=Load()),
+                    args=[
+                      Name(id='rule_id', ctx=Load()),
+                      Constant(value=True),
+                      Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='INFO',
+                        ctx=Load()),
+                      Constant(value='Skipped (Narrative has no keywords)')]))]),
+            Assign(
+              targets=[
+                Name(id='text_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='all_text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='found', ctx=Store())],
+              value=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Call(
+                        func=Attribute(
+                          value=Name(id='kw', ctx=Load()),
+                          attr='lower',
+                          ctx=Load())),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='text_lower', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='kw', ctx=Store()),
+                        iter=Name(id='narrative_keywords', ctx=Load()),
+                        is_async=0)])])),
+            Return(
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Name(id='rule_id', ctx=Load())),
+                  keyword(
+                    arg='passed',
+                    value=Name(id='found', ctx=Load())),
+                  keyword(
+                    arg='severity',
+                    value=Attribute(
+                      value=Name(id='ValidationSeverity', ctx=Load()),
+                      attr='MEDIUM',
+                      ctx=Load())),
+                  keyword(
+                    arg='message',
+                    value=IfExp(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Name(id='found', ctx=Load())),
+                      body=Constant(value='Generated text does not appear to reference the core problem/solution narrative.'),
+                      orelse=Constant(value='Generated text includes core narrative elements.')))]))],
+          returns=Name(id='ValidationResult', ctx=Load())),
+        FunctionDef(
+          name='check_input_signal_quality',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='all_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        [HIGH-SIGNAL] Logs the input signal quality from HOP-0 as an\n        informational check for the final QA report.\n        ')),
+            Assign(
+              targets=[
+                Name(id='score', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='thematic_analysis',
+                  ctx=Load()),
+                attr='signal_quality_score',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='severity', ctx=Store())],
+              value=Attribute(
+                value=Name(id='ValidationSeverity', ctx=Load()),
+                attr='INFO',
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Name(id='score', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Constant(value=0.5)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='severity', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='ValidationSeverity', ctx=Load()),
+                    attr='WARNING',
+                    ctx=Load()))]),
+            Return(
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Constant(value='INPUT_SIGNAL_QUALITY')),
+                  keyword(
+                    arg='passed',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='severity',
+                    value=Name(id='severity', ctx=Load())),
+                  keyword(
+                    arg='message',
+                    value=JoinedStr(
+                      values=[
+                        Constant(value='Source HOP-0 RAG signal quality was '),
+                        FormattedValue(
+                          value=Name(id='score', ctx=Load()),
+                          conversion=-1,
+                          format_spec=JoinedStr(
+                            values=[
+                              Constant(value='.2f')])),
+                        Constant(value='. Low signal may impact output quality.')])),
+                  keyword(
+                    arg='details',
+                    value=Dict(
+                      keys=[
+                        Constant(value='signal_quality')],
+                      values=[
+                        Name(id='score', ctx=Load())]))]))],
+          returns=Name(id='ValidationResult', ctx=Load())),
+        FunctionDef(
+          name='check_word_count',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='all_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='[STANDARD] Checks total document word count.')),
+            Assign(
+              targets=[
+                Name(id='rule_id', ctx=Store())],
+              value=Constant(value='WORD_COUNT_TOTAL')),
+            Assign(
+              targets=[
+                Name(id='count', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='all_text', ctx=Load()),
+                      attr='split',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='min_wc', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='constraints',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='min_word_count'),
+                  Constant(value=800)])),
+            Assign(
+              targets=[
+                Name(id='max_wc', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='constraints',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='max_word_count'),
+                  Constant(value=1100)])),
+            Assign(
+              targets=[
+                Name(id='passed', ctx=Store())],
+              value=Compare(
+                left=Name(id='min_wc', ctx=Load()),
+                ops=[
+                  LtE(),
+                  LtE()],
+                comparators=[
+                  Name(id='count', ctx=Load()),
+                  Name(id='max_wc', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Name(id='rule_id', ctx=Load())),
+                  keyword(
+                    arg='passed',
+                    value=Name(id='passed', ctx=Load())),
+                  keyword(
+                    arg='severity',
+                    value=Attribute(
+                      value=Name(id='ValidationSeverity', ctx=Load()),
+                      attr='HIGH',
+                      ctx=Load())),
+                  keyword(
+                    arg='message',
+                    value=JoinedStr(
+                      values=[
+                        Constant(value='Total word count: '),
+                        FormattedValue(
+                          value=Name(id='count', ctx=Load()),
+                          conversion=-1),
+                        Constant(value=' (Target: '),
+                        FormattedValue(
+                          value=Name(id='min_wc', ctx=Load()),
+                          conversion=-1),
+                        Constant(value='-'),
+                        FormattedValue(
+                          value=Name(id='max_wc', ctx=Load()),
+                          conversion=-1),
+                        Constant(value=')')])),
+                  keyword(
+                    arg='details',
+                    value=Dict(
+                      keys=[
+                        Constant(value='actual'),
+                        Constant(value='min'),
+                        Constant(value='max')],
+                      values=[
+                        Name(id='count', ctx=Load()),
+                        Name(id='min_wc', ctx=Load()),
+                        Name(id='max_wc', ctx=Load())]))]))],
+          returns=Name(id='ValidationResult', ctx=Load())),
+        FunctionDef(
+          name='check_placeholder_detection',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='buffer',
+                annotation=Name(id='ImmutableStagingBuffer', ctx=Load())),
+              arg(
+                arg='all_text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='[STANDARD] Scans for mock or placeholder text.')),
+            Assign(
+              targets=[
+                Name(id='rule_id', ctx=Store())],
+              value=Constant(value='PLACEHOLDER_DETECTED')),
+            Assign(
+              targets=[
+                Name(id='matches', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\[INSERT.*\\]|MOCK|ERROR:|Failed to generate'),
+                  Name(id='all_text', ctx=Load()),
+                  Attribute(
+                    value=Name(id='re', ctx=Load()),
+                    attr='IGNORECASE',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='passed', ctx=Store())],
+              value=UnaryOp(
+                op=Not(),
+                operand=Name(id='matches', ctx=Load()))),
+            Return(
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='rule_id',
+                    value=Name(id='rule_id', ctx=Load())),
+                  keyword(
+                    arg='passed',
+                    value=Name(id='passed', ctx=Load())),
+                  keyword(
+                    arg='severity',
+                    value=IfExp(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Name(id='passed', ctx=Load())),
+                      body=Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='CRITICAL',
+                        ctx=Load()),
+                      orelse=Attribute(
+                        value=Name(id='ValidationSeverity', ctx=Load()),
+                        attr='INFO',
+                        ctx=Load()))),
+                  keyword(
+                    arg='message',
+                    value=IfExp(
+                      test=UnaryOp(
+                        op=Not(),
+                        operand=Name(id='passed', ctx=Load())),
+                      body=JoinedStr(
+                        values=[
+                          Constant(value='Found '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Name(id='matches', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=' placeholder/error strings in final text.')]),
+                      orelse=Constant(value='No placeholders found.'))),
+                  keyword(
+                    arg='details',
+                    value=Dict(
+                      keys=[
+                        Constant(value='matches')],
+                      values=[
+                        Name(id='matches', ctx=Load())]))]))],
+          returns=Name(id='ValidationResult', ctx=Load()))]),
+    FunctionDef(
+      name='run_hop_5',
+      args=arguments(
+        args=[
+          arg(
+            arg='args',
+            annotation=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='Namespace',
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Executes the HOP-5 validation logic.')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='logger', ctx=Store()),
+                Name(id='_', ctx=Store())],
+              ctx=Store())],
+          value=Call(
+            func=Name(id='setup_workflow_logging', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='workflow_id',
+                ctx=Load())],
+            keywords=[
+              keyword(
+                arg='log_file_dir',
+                value=Attribute(
+                  value=Name(id='args', ctx=Load()),
+                  attr='run_dir',
+                  ctx=Load()))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              Constant(value='--- Starting HOP-5: Comprehensive Validation [v-HighSignal] ---')])),
+        Assign(
+          targets=[
+            Name(id='start_time', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='datetime', ctx=Load()),
+              attr='now',
+              ctx=Load()))),
+        Try(
+          body=[
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='input_path_staging_buffer',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='buffer_data', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                Assign(
+                  targets=[
+                    Name(id='staging_buffer', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='ImmutableStagingBuffer', ctx=Load()),
+                      attr='from_dict',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='buffer_data', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='staging_buffer_data'),
+                          Dict()])],
+                    keywords=[
+                      keyword(
+                        arg='locked',
+                        value=Constant(value=True))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Loaded staging buffer from '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='args', ctx=Load()),
+                              attr='input_path_staging_buffer',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='input_path_thematic_analysis',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='thematic_analysis', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='ThematicAnalysis', ctx=Load()),
+                          attr='from_dict',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='json', ctx=Load()),
+                              attr='load',
+                              ctx=Load()),
+                            args=[
+                              Name(id='f', ctx=Load())])]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Loaded thematic analysis from '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='args', ctx=Load()),
+                              attr='input_path_thematic_analysis',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Assign(
+                  targets=[
+                    Name(id='jd_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='input_path_jd',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='job_description', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='jd_path', ctx=Load()),
+                      attr='read_text',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Loaded job description from '),
+                          FormattedValue(
+                            value=Name(id='jd_path', ctx=Load()),
+                            conversion=-1)])])),
+                Assign(
+                  targets=[
+                    Name(id='constraints', ctx=Store())],
+                  value=Dict()),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Mocked validation constraints. (Load from config in prod)')]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load input files: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='validator', ctx=Store())],
+              value=Call(
+                func=Name(id='ValidationEngine', ctx=Load()),
+                args=[
+                  Name(id='constraints', ctx=Load()),
+                  Name(id='thematic_analysis', ctx=Load()),
+                  Name(id='job_description', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='validation_results', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='validator', ctx=Load()),
+                  attr='validate_all',
+                  ctx=Load()),
+                args=[
+                  Name(id='staging_buffer', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='total_checks', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='validation_results', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='failed_checks', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='vr', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='vr', ctx=Store()),
+                    iter=Name(id='validation_results', ctx=Load()),
+                    ifs=[
+                      UnaryOp(
+                        op=Not(),
+                        operand=Attribute(
+                          value=Name(id='vr', ctx=Load()),
+                          attr='passed',
+                          ctx=Load()))],
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='critical_failures', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='vr', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='vr', ctx=Store()),
+                    iter=Name(id='failed_checks', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='vr', ctx=Load()),
+                          attr='severity',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='ValidationSeverity', ctx=Load()),
+                            attr='CRITICAL',
+                            ctx=Load())])],
+                    is_async=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Validation complete. Total checks: '),
+                      FormattedValue(
+                        value=Name(id='total_checks', ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Failed checks: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='failed_checks', ctx=Load())]),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Critical failures: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='critical_failures', ctx=Load())]),
+                        conversion=-1)])])),
+            Assign(
+              targets=[
+                Name(id='output_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='validation_results'),
+                  Constant(value='summary')],
+                values=[
+                  ListComp(
+                    elt=Call(
+                      func=Name(id='default_serializer', ctx=Load()),
+                      args=[
+                        Name(id='vr', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='vr', ctx=Store()),
+                        iter=Name(id='validation_results', ctx=Load()),
+                        is_async=0)]),
+                  Dict(
+                    keys=[
+                      Constant(value='total_checks'),
+                      Constant(value='failed_checks'),
+                      Constant(value='critical_failures'),
+                      Constant(value='passed_checks')],
+                    values=[
+                      Name(id='total_checks', ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='failed_checks', ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='critical_failures', ctx=Load())]),
+                      BinOp(
+                        left=Name(id='total_checks', ctx=Load()),
+                        op=Sub(),
+                        right=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='failed_checks', ctx=Load())]))])])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=Call(
+                    func=Name(id='Path', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='output_path_validation_results',
+                        ctx=Load())])),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Name(id='output_path', ctx=Load()),
+                          Constant(value='w')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dump',
+                          ctx=Load()),
+                        args=[
+                          Name(id='output_data', ctx=Load()),
+                          Name(id='f', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='indent',
+                            value=Constant(value=2)),
+                          keyword(
+                            arg='default',
+                            value=Name(id='default_serializer', ctx=Load()))]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Successfully wrote validation results to '),
+                          FormattedValue(
+                            value=Name(id='output_path', ctx=Load()),
+                            conversion=-1)])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='HopExecutionError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to write output JSON: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]),
+                      cause=Name(id='e', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Name(id='duration', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())),
+                    op=Sub(),
+                    right=Name(id='start_time', ctx=Load())),
+                  attr='total_seconds',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='--- HOP-5 Finished Successfully ('),
+                      FormattedValue(
+                        value=Name(id='duration', ctx=Load()),
+                        conversion=-1,
+                        format_spec=JoinedStr(
+                          values=[
+                            Constant(value='.2f')])),
+                      Constant(value='s) ---')])])),
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='API Calls Made: 0')]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='HopExecutionError', ctx=Load()),
+              name='he',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='HOP-5 HALTED: '),
+                          FormattedValue(
+                            value=Name(id='he', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=False))])),
+                Assign(
+                  targets=[
+                    Name(id='duration', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        op=Sub(),
+                        right=Name(id='start_time', ctx=Load())),
+                      attr='total_seconds',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='--- HOP-5 Finished with HALT ('),
+                          FormattedValue(
+                            value=Name(id='duration', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value='s) ---')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='API Calls Made: 0')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='exit', ctx=Load()),
+                    args=[
+                      Constant(value=1)]))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='HOP-5 FAILED with unexpected error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=True))])),
+                Assign(
+                  targets=[
+                    Name(id='duration', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=BinOp(
+                        left=Call(
+                          func=Attribute(
+                            value=Name(id='datetime', ctx=Load()),
+                            attr='now',
+                            ctx=Load())),
+                        op=Sub(),
+                        right=Name(id='start_time', ctx=Load())),
+                      attr='total_seconds',
+                      ctx=Load()))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='info',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='--- HOP-5 Finished with FAILURE ('),
+                          FormattedValue(
+                            value=Name(id='duration', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value='s) ---')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      Constant(value='API Calls Made: 0')])),
+                Expr(
+                  value=Call(
+                    func=Name(id='exit', ctx=Load()),
+                    args=[
+                      Constant(value=1)]))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='HOP-5: Comprehensive Validation [v-HighSignal]'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--workflow-id')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Unique ID for the workflow run'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--run-dir')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Directory for the workflow run artifacts'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--config-path')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to the config file snapshot'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--input-path-staging-buffer')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to the staging buffer JSON'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--input-path-thematic-analysis')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to the thematic analysis JSON'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--input-path-jd')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to the job description text file'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--output-path-validation-results')],
+            keywords=[
+              keyword(
+                arg='required',
+                value=Constant(value=True)),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to write the validation results JSON'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Expr(
+          value=Call(
+            func=Name(id='run_hop_5', ctx=Load()),
+            args=[
+              Name(id='args', ctx=Load())]))])])

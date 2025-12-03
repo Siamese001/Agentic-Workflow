@@ -1,0 +1,573 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nModel routing policies for résumé processing workflows.\n\nProvides intelligent model selection and budget enforcement for optimal résumé improvement performance.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ExecutionProfile')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='ModelChoice'),
+        alias(name='RoutingContext')],
+      level=1),
+    FunctionDef(
+      name='_infer_provider_from_model',
+      args=arguments(
+        args=[
+          arg(
+            arg='model',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Infers provider from model name for résumé processing workflows.\n\n    Ensures proper provider identification for optimal résumé improvement routing.\n    ')),
+        Assign(
+          targets=[
+            Name(id='m', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='model', ctx=Load()),
+                  Constant(value='')]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=Compare(
+            left=Constant(value='claude'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='m', ctx=Load())]),
+          body=[
+            Return(
+              value=Constant(value='anthropic'))]),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Constant(value='gemini'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='m', ctx=Load())]),
+              Compare(
+                left=Constant(value='google'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='m', ctx=Load())])]),
+          body=[
+            Return(
+              value=Constant(value='google'))]),
+        Return(
+          value=Constant(value='openai'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='choose_provider_and_model',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='RoutingContext', ctx=Load())),
+          arg(
+            arg='requested_model',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Selects optimal provider and model for résumé processing tasks.\n\n    Balances cost, latency, and quality requirements for comprehensive résumé enhancement.\n    ')),
+        Assign(
+          targets=[
+            Name(id='model', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='requested_model', ctx=Load()),
+              Constant(value='gpt-4.1-mini')])),
+        Assign(
+          targets=[
+            Name(id='provider', ctx=Store())],
+          value=Call(
+            func=Name(id='_infer_provider_from_model', ctx=Load()),
+            args=[
+              Name(id='model', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='cost_tier', ctx=Store())],
+          value=Constant(value='medium')),
+        Assign(
+          targets=[
+            Name(id='latency_ms', ctx=Store())],
+          value=Constant(value=800)),
+        Assign(
+          targets=[
+            Name(id='task', ctx=Store())],
+          value=Attribute(
+            value=Name(id='ctx', ctx=Load()),
+            attr='task_type',
+            ctx=Load())),
+        If(
+          test=Compare(
+            left=Name(id='task', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='retrieval'),
+                  Constant(value='qa'),
+                  Constant(value='safety')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cost_tier', ctx=Store())],
+              value=Constant(value='medium')),
+            Assign(
+              targets=[
+                Name(id='latency_ms', ctx=Store())],
+              value=Constant(value=700))]),
+        If(
+          test=Compare(
+            left=Name(id='task', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='drafting'),
+                  Constant(value='deep_reasoning')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cost_tier', ctx=Store())],
+              value=Constant(value='high')),
+            Assign(
+              targets=[
+                Name(id='latency_ms', ctx=Store())],
+              value=Constant(value=1200))]),
+        If(
+          test=Compare(
+            left=Name(id='task', ctx=Load()),
+            ops=[
+              In()],
+            comparators=[
+              Set(
+                elts=[
+                  Constant(value='metadata'),
+                  Constant(value='classifier')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cost_tier', ctx=Store())],
+              value=Constant(value='low')),
+            Assign(
+              targets=[
+                Name(id='latency_ms', ctx=Store())],
+              value=Constant(value=400))]),
+        Assign(
+          targets=[
+            Name(id='estimated_cost', ctx=Store())],
+          value=Subscript(
+            value=Dict(
+              keys=[
+                Constant(value='low'),
+                Constant(value='medium'),
+                Constant(value='high')],
+              values=[
+                Constant(value=0.001),
+                Constant(value=0.002),
+                Constant(value=0.004)]),
+            slice=Name(id='cost_tier', ctx=Load()),
+            ctx=Load())),
+        Return(
+          value=Call(
+            func=Name(id='ModelChoice', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='provider',
+                value=Name(id='provider', ctx=Load())),
+              keyword(
+                arg='model_name',
+                value=Name(id='model', ctx=Load())),
+              keyword(
+                arg='cost_tier',
+                value=Name(id='cost_tier', ctx=Load())),
+              keyword(
+                arg='estimated_cost',
+                value=Name(id='estimated_cost', ctx=Load())),
+              keyword(
+                arg='latency_ms',
+                value=Name(id='latency_ms', ctx=Load()))]))],
+      returns=Name(id='ModelChoice', ctx=Load())),
+    FunctionDef(
+      name='enforce_budget',
+      args=arguments(
+        args=[
+          arg(
+            arg='choice',
+            annotation=Name(id='ModelChoice', ctx=Load())),
+          arg(
+            arg='profile',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='ExecutionProfile', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Enforces cost budget constraints for résumé processing model selection.\n\n    Ensures optimal model choice within budget limits for résumé improvement workflows.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='profile', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return(
+              value=Name(id='choice', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='max_tier', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Name(id='profile', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  Dict()]),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='max_cost_tier')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='max_tier', ctx=Load())),
+          body=[
+            Return(
+              value=Name(id='choice', ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='order', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='low'),
+              Constant(value='medium'),
+              Constant(value='high')],
+            values=[
+              Constant(value=0),
+              Constant(value=1),
+              Constant(value=2)])),
+        Assign(
+          targets=[
+            Name(id='current', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='order', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='choice', ctx=Load()),
+                attr='cost_tier',
+                ctx=Load()),
+              Constant(value=1)])),
+        Assign(
+          targets=[
+            Name(id='allowed', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='order', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='max_tier', ctx=Load()),
+              Name(id='current', ctx=Load())])),
+        If(
+          test=Compare(
+            left=Name(id='current', ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Name(id='allowed', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='choice', ctx=Load()))]),
+        If(
+          test=Compare(
+            left=Name(id='allowed', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Subscript(
+                value=Name(id='order', ctx=Load()),
+                slice=Constant(value='low'),
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cost_tier', ctx=Store())],
+              value=Constant(value='low')),
+            Assign(
+              targets=[
+                Name(id='estimated_cost', ctx=Store())],
+              value=Constant(value=0.001)),
+            Assign(
+              targets=[
+                Name(id='latency_ms', ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=200),
+                  Call(
+                    func=Name(id='int', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Attribute(
+                          value=Name(id='choice', ctx=Load()),
+                          attr='latency_ms',
+                          ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.6))])]))],
+          orelse=[
+            Assign(
+              targets=[
+                Name(id='cost_tier', ctx=Store())],
+              value=Constant(value='medium')),
+            Assign(
+              targets=[
+                Name(id='estimated_cost', ctx=Store())],
+              value=Constant(value=0.002)),
+            Assign(
+              targets=[
+                Name(id='latency_ms', ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=400),
+                  Call(
+                    func=Name(id='int', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Attribute(
+                          value=Name(id='choice', ctx=Load()),
+                          attr='latency_ms',
+                          ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.8))])]))]),
+        Return(
+          value=Call(
+            func=Name(id='ModelChoice', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='provider',
+                value=Attribute(
+                  value=Name(id='choice', ctx=Load()),
+                  attr='provider',
+                  ctx=Load())),
+              keyword(
+                arg='model_name',
+                value=Attribute(
+                  value=Name(id='choice', ctx=Load()),
+                  attr='model_name',
+                  ctx=Load())),
+              keyword(
+                arg='cost_tier',
+                value=Name(id='cost_tier', ctx=Load())),
+              keyword(
+                arg='estimated_cost',
+                value=Name(id='estimated_cost', ctx=Load())),
+              keyword(
+                arg='latency_ms',
+                value=Name(id='latency_ms', ctx=Load()))]))],
+      returns=Name(id='ModelChoice', ctx=Load())),
+    FunctionDef(
+      name='fallback_chain',
+      args=arguments(
+        args=[
+          arg(
+            arg='choice',
+            annotation=Name(id='ModelChoice', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Creates fallback model chain for résumé processing reliability.\n\n    Ensures robust model selection with backup options for comprehensive résumé enhancement.\n    ')),
+        AnnAssign(
+          target=Name(id='fallbacks', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Name(id='ModelChoice', ctx=Load()),
+            ctx=Load()),
+          value=List(
+            elts=[
+              Name(id='choice', ctx=Load())],
+            ctx=Load()),
+          simple=1),
+        If(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='choice', ctx=Load()),
+              attr='provider',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='openai')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='fallbacks', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='ModelChoice', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='provider',
+                        value=Constant(value='anthropic')),
+                      keyword(
+                        arg='model_name',
+                        value=Attribute(
+                          value=Name(id='choice', ctx=Load()),
+                          attr='model_name',
+                          ctx=Load())),
+                      keyword(
+                        arg='cost_tier',
+                        value=Attribute(
+                          value=Name(id='choice', ctx=Load()),
+                          attr='cost_tier',
+                          ctx=Load())),
+                      keyword(
+                        arg='estimated_cost',
+                        value=Attribute(
+                          value=Name(id='choice', ctx=Load()),
+                          attr='estimated_cost',
+                          ctx=Load())),
+                      keyword(
+                        arg='latency_ms',
+                        value=BinOp(
+                          left=Attribute(
+                            value=Name(id='choice', ctx=Load()),
+                            attr='latency_ms',
+                            ctx=Load()),
+                          op=Add(),
+                          right=Constant(value=200)))])]))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='choice', ctx=Load()),
+                  attr='provider',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='anthropic')]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='fallbacks', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ModelChoice', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='provider',
+                            value=Constant(value='openai')),
+                          keyword(
+                            arg='model_name',
+                            value=Attribute(
+                              value=Name(id='choice', ctx=Load()),
+                              attr='model_name',
+                              ctx=Load())),
+                          keyword(
+                            arg='cost_tier',
+                            value=Attribute(
+                              value=Name(id='choice', ctx=Load()),
+                              attr='cost_tier',
+                              ctx=Load())),
+                          keyword(
+                            arg='estimated_cost',
+                            value=Attribute(
+                              value=Name(id='choice', ctx=Load()),
+                              attr='estimated_cost',
+                              ctx=Load())),
+                          keyword(
+                            arg='latency_ms',
+                            value=BinOp(
+                              left=Attribute(
+                                value=Name(id='choice', ctx=Load()),
+                                attr='latency_ms',
+                                ctx=Load()),
+                              op=Add(),
+                              right=Constant(value=200)))])]))])]),
+        Return(
+          value=Name(id='fallbacks', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='list', ctx=Load()),
+        slice=Name(id='ModelChoice', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='choose_model',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='RoutingContext', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Selects optimal model for résumé processing workflows.\n\n    Provides intelligent model choice based on routing context for résumé improvement.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='choose_provider_and_model', ctx=Load()),
+            args=[
+              Name(id='ctx', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='requested_model',
+                value=Constant(value=None))]))],
+      returns=Name(id='ModelChoice', ctx=Load())),
+    FunctionDef(
+      name='enforce_cost_budget',
+      args=arguments(
+        args=[
+          arg(
+            arg='choice',
+            annotation=Name(id='ModelChoice', ctx=Load())),
+          arg(
+            arg='profile',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='ExecutionProfile', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Enforces cost budget constraints for résumé processing model selection.\n\n    Ensures optimal model choice within budget limits for résumé improvement workflows.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='enforce_budget', ctx=Load()),
+            args=[
+              Name(id='choice', ctx=Load()),
+              Name(id='profile', ctx=Load())]))],
+      returns=Name(id='ModelChoice', ctx=Load()))])

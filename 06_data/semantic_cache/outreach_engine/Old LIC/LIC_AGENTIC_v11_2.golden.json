@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nLIC-AGENTIC-v11.2: LinkedIn InMail Cold Outreach - Enhanced Quality Framework\n==============================================================================\n\nVersion: 11.2\nBase Version: 11.1\nArchitecture: Event-Driven Microservices with Agentic Research & Generation Loops\nStatus: PRODUCTION_READY\n\nKey Upgrades from v11.1:\n-------------------------\n1. QA Report Generation Framework: Comprehensive structured reports with production readiness indicators\n2. Multi-Hop Checkpoint Architecture: Cryptographic checksums and metadata tracking at each workflow stage\n3. Ground Truth Recalculation: Independent verification of staging buffer metrics (no LLM metadata trust)\n4. Progressive Temperature Framework: Section-specific temperatures with adaptive optimization\n\nNew Capabilities:\n-----------------\n- HOP-based workflow tracking with cryptographic verification\n- QA reports with 5 sections: Production Readiness, Critical Failures, Content Summary, Structural Summary, Outputs\n- Deterministic st",
+  "full_hash": "8b87bbc30149c58e2f210e50369d8d372efbb5ae3d1827b21fd2e57d9079d87b",
+  "generated_at": 1764728338.8481984,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_2.py"
+}

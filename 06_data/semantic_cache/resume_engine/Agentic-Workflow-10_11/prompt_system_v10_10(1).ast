@@ -1,0 +1,1200 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nPrompt Registry & Governance for resume generation system.\n\nSingle source of truth for all prompts to ensure consistent\nresume improvement and job alignment.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='pydantic',
+      names=[
+        alias(name='BaseModel')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='PromptDefinition'),
+        alias(name='PromptVersion')],
+      level=0),
+    ClassDef(
+      name='PromptActorRole',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Logical actors that interact with the prompt registry.\n\n    Defines roles for resume generation prompt governance and access control.\n    ')),
+        Assign(
+          targets=[
+            Name(id='ENGINE', ctx=Store())],
+          value=Constant(value='engine')),
+        Assign(
+          targets=[
+            Name(id='ADMIN', ctx=Store())],
+          value=Constant(value='admin')),
+        Assign(
+          targets=[
+            Name(id='EDITOR', ctx=Store())],
+          value=Constant(value='editor')),
+        Assign(
+          targets=[
+            Name(id='VIEWER', ctx=Store())],
+          value=Constant(value='viewer'))]),
+    ClassDef(
+      name='PromptACL',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='\n    Role-based ACL for prompt access control in resume generation.\n\n    Ensures proper governance for consistent resume improvement prompts.\n    ')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='engine_can_use', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='admins_can_edit', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='editors_can_edit', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='viewers_can_read', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1)]),
+    AnnAssign(
+      target=Name(id='PROMPT_REGISTRY', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='PromptDefinition', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Dict(),
+      simple=1),
+    AnnAssign(
+      target=Name(id='PROMPT_ACLS', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='PromptACL', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Dict(),
+      simple=1),
+    FunctionDef(
+      name='_check_acl',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='actor_role',
+            annotation=Name(id='PromptActorRole', ctx=Load())),
+          arg(
+            arg='use_case',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Enforce PromptACL for the given role and use_case.\n\n    use_case:\n        - "read"  → viewing the definition\n        - "edit"  → modifying / registering the definition\n        - "use"   → using in ENGINE (runtime)\n    ')),
+        Assign(
+          targets=[
+            Name(id='acl', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='PROMPT_ACLS', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load())])),
+        If(
+          test=Compare(
+            left=Name(id='acl', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Return()]),
+        If(
+          test=Compare(
+            left=Name(id='use_case', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='read')]),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='actor_role', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='VIEWER',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='acl', ctx=Load()),
+                    attr='viewers_can_read',
+                    ctx=Load())]),
+              body=[
+                Return()]),
+            If(
+              test=Compare(
+                left=Name(id='actor_role', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='ENGINE',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='ADMIN',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='EDITOR',
+                        ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Return()]),
+            Raise(
+              exc=Call(
+                func=Name(id='PermissionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Role '),
+                      FormattedValue(
+                        value=Name(id='actor_role', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' cannot read prompt '),
+                      FormattedValue(
+                        value=Name(id='prompt_id', ctx=Load()),
+                        conversion=-1)])]))]),
+        If(
+          test=Compare(
+            left=Name(id='use_case', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='edit')]),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='actor_role', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='ADMIN',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='acl', ctx=Load()),
+                    attr='admins_can_edit',
+                    ctx=Load())]),
+              body=[
+                Return()]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='actor_role', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='EDITOR',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='acl', ctx=Load()),
+                    attr='editors_can_edit',
+                    ctx=Load())]),
+              body=[
+                Return()]),
+            Raise(
+              exc=Call(
+                func=Name(id='PermissionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Role '),
+                      FormattedValue(
+                        value=Name(id='actor_role', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' cannot edit prompt '),
+                      FormattedValue(
+                        value=Name(id='prompt_id', ctx=Load()),
+                        conversion=-1)])]))]),
+        If(
+          test=Compare(
+            left=Name(id='use_case', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='use')]),
+          body=[
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='actor_role', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='ENGINE',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='acl', ctx=Load()),
+                    attr='engine_can_use',
+                    ctx=Load())]),
+              body=[
+                Return()]),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='actor_role', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='PromptActorRole', ctx=Load()),
+                        attr='ADMIN',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='acl', ctx=Load()),
+                    attr='admins_can_edit',
+                    ctx=Load())]),
+              body=[
+                Return()]),
+            Raise(
+              exc=Call(
+                func=Name(id='PermissionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Role '),
+                      FormattedValue(
+                        value=Name(id='actor_role', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' cannot use prompt '),
+                      FormattedValue(
+                        value=Name(id='prompt_id', ctx=Load()),
+                        conversion=-1)])]))]),
+        Raise(
+          exc=Call(
+            func=Name(id='ValueError', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Unknown use_case: '),
+                  FormattedValue(
+                    value=Name(id='use_case', ctx=Load()),
+                    conversion=-1)])]))],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='register_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='defn',
+            annotation=Name(id='PromptDefinition', ctx=Load())),
+          arg(
+            arg='acl',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='PromptACL', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Register or update a prompt definition in the global registry.\n\n    Side-effects:\n        • PROMPT_REGISTRY[defn.id] is updated.\n        • PROMPT_ACLS[defn.id] is set if acl given or not present.\n    ')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='PROMPT_REGISTRY', ctx=Load()),
+              slice=Attribute(
+                value=Name(id='defn', ctx=Load()),
+                attr='id',
+                ctx=Load()),
+              ctx=Store())],
+          value=Name(id='defn', ctx=Load())),
+        If(
+          test=Compare(
+            left=Name(id='acl', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Name(id='PROMPT_ACLS', ctx=Load()),
+                  slice=Attribute(
+                    value=Name(id='defn', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='acl', ctx=Load()))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='defn', ctx=Load()),
+                  attr='id',
+                  ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='PROMPT_ACLS', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='PROMPT_ACLS', ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='defn', ctx=Load()),
+                        attr='id',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='PromptACL', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Attribute(
+                          value=Name(id='defn', ctx=Load()),
+                          attr='id',
+                          ctx=Load()))]))])])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='get_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='actor_role',
+            annotation=Name(id='PromptActorRole', ctx=Load())),
+          arg(
+            arg='use_case',
+            annotation=Name(id='str', ctx=Load()))],
+        defaults=[
+          Attribute(
+            value=Name(id='PromptActorRole', ctx=Load()),
+            attr='ENGINE',
+            ctx=Load()),
+          Constant(value='use')]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Retrieve a PromptDefinition by id with ACL enforcement.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='prompt_id', ctx=Load()),
+            ops=[
+              NotIn()],
+            comparators=[
+              Name(id='PROMPT_REGISTRY', ctx=Load())]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='KeyError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Unknown prompt id: '),
+                      FormattedValue(
+                        value=Name(id='prompt_id', ctx=Load()),
+                        conversion=-1)])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='_check_acl', ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load()),
+              Name(id='actor_role', ctx=Load()),
+              Name(id='use_case', ctx=Load())])),
+        Return(
+          value=Subscript(
+            value=Name(id='PROMPT_REGISTRY', ctx=Load()),
+            slice=Name(id='prompt_id', ctx=Load()),
+            ctx=Load()))],
+      returns=Name(id='PromptDefinition', ctx=Load())),
+    FunctionDef(
+      name='get_prompt_acl',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt_id',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Retrieve the PromptACL for a given prompt id, or None if not set.\n    ')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='PROMPT_ACLS', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='prompt_id', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Optional', ctx=Load()),
+        slice=Name(id='PromptACL', ctx=Load()),
+        ctx=Load())),
+    ClassDef(
+      name='PromptDiff',
+      bases=[
+        Name(id='BaseModel', ctx=Load())],
+      body=[
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='from_version', ctx=Store()),
+          annotation=Name(id='PromptVersion', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='to_version', ctx=Store()),
+          annotation=Name(id='PromptVersion', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text_changed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata_changed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1)]),
+    FunctionDef(
+      name='diff_prompts',
+      args=arguments(
+        args=[
+          arg(
+            arg='old',
+            annotation=Name(id='PromptDefinition', ctx=Load())),
+          arg(
+            arg='new',
+            annotation=Name(id='PromptDefinition', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Compute a simple diff between two PromptDefinitions for the same id.\n    ')),
+        If(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='old', ctx=Load()),
+              attr='id',
+              ctx=Load()),
+            ops=[
+              NotEq()],
+            comparators=[
+              Attribute(
+                value=Name(id='new', ctx=Load()),
+                attr='id',
+                ctx=Load())]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ValueError', ctx=Load()),
+                args=[
+                  Constant(value='Cannot diff prompts with different IDs')]))]),
+        Return(
+          value=Call(
+            func=Name(id='PromptDiff', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Attribute(
+                  value=Name(id='old', ctx=Load()),
+                  attr='id',
+                  ctx=Load())),
+              keyword(
+                arg='from_version',
+                value=Attribute(
+                  value=Name(id='old', ctx=Load()),
+                  attr='version',
+                  ctx=Load())),
+              keyword(
+                arg='to_version',
+                value=Attribute(
+                  value=Name(id='new', ctx=Load()),
+                  attr='version',
+                  ctx=Load())),
+              keyword(
+                arg='text_changed',
+                value=Compare(
+                  left=Attribute(
+                    value=Name(id='old', ctx=Load()),
+                    attr='text',
+                    ctx=Load()),
+                  ops=[
+                    NotEq()],
+                  comparators=[
+                    Attribute(
+                      value=Name(id='new', ctx=Load()),
+                      attr='text',
+                      ctx=Load())])),
+              keyword(
+                arg='metadata_changed',
+                value=Compare(
+                  left=Attribute(
+                    value=Name(id='old', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  ops=[
+                    NotEq()],
+                  comparators=[
+                    Attribute(
+                      value=Name(id='new', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load())]))]))],
+      returns=Name(id='PromptDiff', ctx=Load())),
+    FunctionDef(
+      name='validate_prompt_definition',
+      args=arguments(
+        args=[
+          arg(
+            arg='defn',
+            annotation=Name(id='PromptDefinition', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Basic validation for a single PromptDefinition.\n\n    Raises ValueError on structural issues (used by tests / CI).\n    ')),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Attribute(
+              value=Name(id='defn', ctx=Load()),
+              attr='id',
+              ctx=Load())),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ValueError', ctx=Load()),
+                args=[
+                  Constant(value='PromptDefinition.id must be non-empty')]))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='defn', ctx=Load()),
+                  attr='version',
+                  ctx=Load()),
+                Name(id='PromptVersion', ctx=Load())])),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ValueError', ctx=Load()),
+                args=[
+                  Constant(value='PromptDefinition.version must be a PromptVersion')]))])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='list_prompt_ids',
+      args=arguments(),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='sorted', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='PROMPT_REGISTRY', ctx=Load()),
+                  attr='keys',
+                  ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_acl_meta',
+      args=arguments(
+        args=[
+          arg(
+            arg='layers',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='agents',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='tiers',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='acl')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='layers'),
+                  Constant(value='agents'),
+                  Constant(value='model_tiers')],
+                values=[
+                  Name(id='layers', ctx=Load()),
+                  Name(id='agents', ctx=Load()),
+                  Name(id='tiers', ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_seed_core_prompts',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Seed minimal core prompts for the v10_10 stack.\n\n    All templates follow the simple pattern:\n\n        "## CONTEXT\\n\\n## INSTRUCTIONS\\n\\n## OUTPUT_FORMAT\\n"\n\n    The richer envelope sections (Framing, Reasoning, Safety) are added\n    by prompt_builder at runtime.\n    ')),
+        Assign(
+          targets=[
+            Name(id='base_version', ctx=Store())],
+          value=Call(
+            func=Name(id='PromptVersion', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='major',
+                value=Constant(value=1)),
+              keyword(
+                arg='minor',
+                value=Constant(value=0)),
+              keyword(
+                arg='patch',
+                value=Constant(value=0))])),
+        FunctionDef(
+          name='_pd',
+          args=arguments(
+            args=[
+              arg(
+                arg='pid',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='description',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='layers',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='agents',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='tiers',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Constant(value='## CONTEXT\n\n## INSTRUCTIONS\n\n## OUTPUT_FORMAT\n')),
+            Assign(
+              targets=[
+                Name(id='metadata', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='description'),
+                  Constant(value='default_model_tier'),
+                  Constant(value='role'),
+                  None],
+                values=[
+                  Name(id='description', ctx=Load()),
+                  Constant(value='balanced'),
+                  Constant(value='system'),
+                  Call(
+                    func=Name(id='_acl_meta', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='layers',
+                        value=Name(id='layers', ctx=Load())),
+                      keyword(
+                        arg='agents',
+                        value=Name(id='agents', ctx=Load())),
+                      keyword(
+                        arg='tiers',
+                        value=Name(id='tiers', ctx=Load()))])])),
+            Return(
+              value=Call(
+                func=Name(id='PromptDefinition', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='id',
+                    value=Name(id='pid', ctx=Load())),
+                  keyword(
+                    arg='text',
+                    value=Name(id='text', ctx=Load())),
+                  keyword(
+                    arg='version',
+                    value=Name(id='base_version', ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Name(id='metadata', ctx=Load()))]))],
+          returns=Name(id='PromptDefinition', ctx=Load())),
+        AnnAssign(
+          target=Name(id='core_prompts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='PromptDefinition', ctx=Load()),
+            ctx=Load()),
+          value=List(
+            elts=[
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='system.resume.planner')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='System prompt for L1/L2 strategy planning over job + resume.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='strategy')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='cheap'),
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='system.resume.drafter')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='System prompt for L2 drafting of resume sections.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='rag'),
+                        Constant(value='drafting')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='system.qa.agent')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='System prompt for L3 QA review of drafted content.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L3')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='qa')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='cheap'),
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='system.safety.agent')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='System prompt for L5 safety / policy review.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L5')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='safety')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='system.rag.hyde_query')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='System prompt for L2 HYDE query expansion: generate an ideal answer to use as a retrieval proxy.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='rag')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='system.qa.council_member')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='System prompt for a single QA council member evaluating drafted content and retrieved evidence.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='qa_council')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='cheap'),
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='strategy_generate_branch')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='L2 strategy branch generation prompt.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='strategy')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='cheap'),
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='strategy_select_branch')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='L2 strategy branch selection prompt.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='strategy')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='cheap'),
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='drafting_structure')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='L2 drafting structure prompt for resume sections.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='drafting')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='drafting_narrative')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='L2 drafting narrative prompt for resume sections.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='drafting')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='drafting_compliance')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='L2 drafting compliance / style prompt.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='drafting')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='qa_semantic_check')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='L2 QA semantic check prompt for drafted content.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='qa')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='cheap'),
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='_pd', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='pid',
+                    value=Constant(value='safety_check')),
+                  keyword(
+                    arg='description',
+                    value=Constant(value='L2 safety check prompt for drafted content.')),
+                  keyword(
+                    arg='layers',
+                    value=List(
+                      elts=[
+                        Constant(value='L2')],
+                      ctx=Load())),
+                  keyword(
+                    arg='agents',
+                    value=List(
+                      elts=[
+                        Constant(value='safety')],
+                      ctx=Load())),
+                  keyword(
+                    arg='tiers',
+                    value=List(
+                      elts=[
+                        Constant(value='balanced'),
+                        Constant(value='premium')],
+                      ctx=Load()))])],
+            ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='pd', ctx=Store()),
+          iter=Name(id='core_prompts', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='validate_prompt_definition', ctx=Load()),
+                args=[
+                  Name(id='pd', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Name(id='register_prompt', ctx=Load()),
+                args=[
+                  Name(id='pd', ctx=Load())]))])],
+      returns=Constant(value=None)),
+    Expr(
+      value=Call(
+        func=Name(id='_seed_core_prompts', ctx=Load())))])

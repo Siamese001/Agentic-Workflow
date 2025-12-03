@@ -1,0 +1,60 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    FunctionDef(
+      name='test_latency_smoke',
+      args=arguments(
+        args=[
+          arg(arg='benchmark'),
+          arg(arg='case')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='out', ctx=Store())],
+          value=Call(
+            func=Name(id='benchmark', ctx=Load()),
+            args=[
+              Lambda(
+                args=arguments(),
+                body=Call(
+                  func=Name(id='run_workflow', ctx=Load()),
+                  args=[
+                    Dict(
+                      keys=[
+                        Constant(value='resume'),
+                        Constant(value='jd')],
+                      values=[
+                        Name(id='case', ctx=Load()),
+                        Constant(value='perf')])]))])),
+        Assert(
+          test=Compare(
+            left=Name(id='out', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]))],
+      decorator_list=[
+        Call(
+          func=Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='parametrize',
+            ctx=Load()),
+          args=[
+            Constant(value='case'),
+            List(
+              elts=[
+                Constant(value='fast'),
+                Constant(value='e2e'),
+                Constant(value='rag-heavy'),
+                Constant(value='qa-heavy')],
+              ctx=Load())])])])

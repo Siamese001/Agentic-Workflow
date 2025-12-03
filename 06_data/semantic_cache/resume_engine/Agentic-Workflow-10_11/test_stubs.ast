@@ -1,0 +1,77 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Shared Test Stubs.')),
+    ClassDef(
+      name='StubSafetyEngine',
+      body=[
+        Expr(
+          value=Constant(value='Stub safety engine for testing.')),
+        FunctionDef(
+          name='evaluate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='context')]),
+          body=[
+            Expr(
+              value=Constant(value='Stub evaluate method.')),
+            Return(
+              value=Call(
+                func=Name(id='StubPolicyResult', ctx=Load())))])]),
+    ClassDef(
+      name='StubPolicyResult',
+      body=[
+        Expr(
+          value=Constant(value='Stub policy result for testing.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='blocking_findings',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='warnings',
+                  ctx=Store())],
+              value=List(ctx=Load()))])]),
+    FunctionDef(
+      name='test_stub_safety_engine',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Test StubSafetyEngine.')),
+        Assign(
+          targets=[
+            Name(id='engine', ctx=Store())],
+          value=Call(
+            func=Name(id='StubSafetyEngine', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='engine', ctx=Load()),
+              attr='evaluate',
+              ctx=Load()),
+            args=[
+              Dict()])),
+        Assert(
+          test=Compare(
+            left=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='blocking_findings',
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(ctx=Load())]))])])

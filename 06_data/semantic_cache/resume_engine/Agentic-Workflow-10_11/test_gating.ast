@@ -1,0 +1,103 @@
+Module(
+  body=[
+    ImportFrom(
+      module='eval.golden_state.gating',
+      names=[
+        alias(name='gate_experiment')],
+      level=0),
+    FunctionDef(
+      name='test_gate_experiment_allows_without_baseline',
+      args=arguments(),
+      body=[
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='gate_experiment', ctx=Load()),
+              args=[
+                Dict(
+                  keys=[
+                    Constant(value='avg_score')],
+                  values=[
+                    Constant(value=0.5)]),
+                Dict()]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)]))]),
+    FunctionDef(
+      name='test_gate_experiment_enforces_avg_and_pass_count',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='baseline', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='avg_score'),
+              Constant(value='pass_count')],
+            values=[
+              Constant(value=0.8),
+              Constant(value=2)])),
+        Assign(
+          targets=[
+            Name(id='better', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='avg_score'),
+              Constant(value='pass_count')],
+            values=[
+              Constant(value=0.9),
+              Constant(value=2)])),
+        Assign(
+          targets=[
+            Name(id='worse_avg', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='avg_score'),
+              Constant(value='pass_count')],
+            values=[
+              Constant(value=0.7),
+              Constant(value=3)])),
+        Assign(
+          targets=[
+            Name(id='worse_pass', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='avg_score'),
+              Constant(value='pass_count')],
+            values=[
+              Constant(value=0.9),
+              Constant(value=1)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='gate_experiment', ctx=Load()),
+              args=[
+                Name(id='better', ctx=Load()),
+                Name(id='baseline', ctx=Load())]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=True)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='gate_experiment', ctx=Load()),
+              args=[
+                Name(id='worse_avg', ctx=Load()),
+                Name(id='baseline', ctx=Load())]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='gate_experiment', ctx=Load()),
+              args=[
+                Name(id='worse_pass', ctx=Load()),
+                Name(id='baseline', ctx=Load())]),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=False)]))])])

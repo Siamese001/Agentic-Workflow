@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\master_config_v10_7.json",
+    "rel_path": "master_config_v10_7.json",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "e1337143340cfc06836c064a8b668b2e8ffb65610c95726676abff9a0de42e05",
+    "file_size": 11226,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728229.7982605
+}

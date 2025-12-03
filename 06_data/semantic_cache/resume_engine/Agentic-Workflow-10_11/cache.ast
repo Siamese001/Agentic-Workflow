@@ -1,0 +1,133 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nModel routing cache for résumé processing workflows.\n\nProvides efficient model choice caching to optimize résumé improvement performance.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='models',
+      names=[
+        alias(name='ModelChoice'),
+        alias(name='RoutingContext')],
+      level=1),
+    AnnAssign(
+      target=Name(id='_CACHE', ctx=Store()),
+      annotation=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            Name(id='ModelChoice', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()),
+      value=Dict(),
+      simple=1),
+    FunctionDef(
+      name='_key',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='RoutingContext', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Generates cache key for résumé processing model routing.\n\n    Ensures consistent cache indexing for optimal résumé improvement performance.\n    ')),
+        Assign(
+          targets=[
+            Name(id='profile_name', ctx=Store())],
+          value=IfExp(
+            test=Attribute(
+              value=Name(id='ctx', ctx=Load()),
+              attr='execution_profile',
+              ctx=Load()),
+            body=Attribute(
+              value=Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='execution_profile',
+                ctx=Load()),
+              attr='name',
+              ctx=Load()),
+            orelse=Constant(value='default'))),
+        Return(
+          value=Tuple(
+            elts=[
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='agent_id',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='ctx', ctx=Load()),
+                attr='task_type',
+                ctx=Load()),
+              Name(id='profile_name', ctx=Load())],
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='Tuple', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='str', ctx=Load()),
+            Name(id='str', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='get_cached_choice',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='RoutingContext', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Retrieves cached model choice for résumé processing workflows.\n\n    Optimizes performance by avoiding redundant routing decisions for résumé improvement.\n    ')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_CACHE', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='_key', ctx=Load()),
+                args=[
+                  Name(id='ctx', ctx=Load())])]))],
+      returns=BinOp(
+        left=Name(id='ModelChoice', ctx=Load()),
+        op=BitOr(),
+        right=Constant(value=None))),
+    FunctionDef(
+      name='set_cached_choice',
+      args=arguments(
+        args=[
+          arg(
+            arg='ctx',
+            annotation=Name(id='RoutingContext', ctx=Load())),
+          arg(
+            arg='choice',
+            annotation=Name(id='ModelChoice', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Caches model choice for résumé processing workflows.\n\n    Ensures efficient routing for subsequent résumé improvement operations.\n    ')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='_CACHE', ctx=Load()),
+              slice=Call(
+                func=Name(id='_key', ctx=Load()),
+                args=[
+                  Name(id='ctx', ctx=Load())]),
+              ctx=Store())],
+          value=Name(id='choice', ctx=Load()))],
+      returns=Constant(value=None))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nV10.8 Consolidated Module: Observability Telemetry\nMerged from 3 source files\n\"\"\"\n\n# Consolidated imports\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom dataclasses import dataclass, field\nfrom typing import Any, Dict\nfrom typing import Any, Dict, List\nimport time\n\n\n# ============================================================\n# From v10_8_observability.py\n# ============================================================\n\n@dataclass\nclass CostTracker:\n    spans: Dict[str, Dict[str, float]] = field(default_factory=dict)\n\n    def start_span(self, name: str) -> None:\n        self.spans[name] = {\"start\": time.perf_counter(), \"end\": None}\n\n    def end_span(self, name: str) -> None:\n        if name in self.spans and self.spans[name][\"end\"] is None:\n            self.spans[name][\"end\"] = time.perf_counter()\n\n    def snapshot(self) -> Dict[str, Any]:\n        snapshot_spans: List[Dict[str, float]] = []\n        for span_name in sorted(self.spans.keys()):\n            s",
+  "full_hash": "012262ddfe47b7ea06542f771a76d6696469169ce7f5f3a5e08e51243e7b0791",
+  "generated_at": 1764728228.92024,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_observability_telemetry.py"
+}

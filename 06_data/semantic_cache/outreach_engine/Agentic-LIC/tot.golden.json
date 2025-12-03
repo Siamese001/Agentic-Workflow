@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Simplified tree-of-thought reasoning utilities.\"\"\"\nfrom __future__ import annotations\n\nfrom typing import List\n\n\ndef branch(prompt: str, branches: int = 2) -> List[str]:\n    return [f\"Branch {idx+1}: considering {prompt}\" for idx in range(max(1, branches))]\n",
+  "full_hash": "b4bcbe88f723f1071b07bcbb83f6ec3409aabaa76f00a4ac7982f6b3b1653f36",
+  "generated_at": 1764728330.673778,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\src\\lic_agentic\\reasoning\\tot.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\nfrom workflow.runner import run_workflow\n\n\n@pytest.mark.integration\ndef test_parallel_branch_merge():\n    ctx = {\"resume\": \"multi_branch_case\", \"jd\": \"AI Director\"}\n    result = run_workflow(ctx)\n    assert \"merged_output\" in result\n\n\n@pytest.mark.integration\ndef test_hil_trigger_on_ambiguity():\n    ctx = {\"resume\": \"confused output\"}\n    out = run_workflow(ctx)\n    assert \"HIL\" in out[\"events\"]\n\n\n@pytest.mark.xfail(\n    reason=\"Add 18 integration flow tests for cache, async merges, and redis persistence\",\n    strict=False,\n)\ndef test_placeholder():\n    pytest.xfail(\n        \"Add 18 integration flow tests for cache, async merges, and redis persistence\"\n    )\n",
+  "full_hash": "68ac997d98b2ddf5a57bc14920b2147e8afbde790464fed49fd635131be8b744",
+  "generated_at": 1764728329.9687116,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\system\\test_integration_v10_7.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.70 - TRIPLE HARDENING PATCH\n\nv5.70 CHANGES - TRIPLE HARDENING (3 Critical Patches):\n\u2705 PATCH 1/3: WORD COUNT VALIDATION (HARDENED)\n   - _get_actual_word_counts() now iterates over staging_buffer keys (not SectionRegistry)\n   - Ensures ALL actually generated content is counted toward total\n   - Robust handling of new/unexpected sections in buffer\n   - _validate_word_counts() modified to iterate over dictionary of actual counts\n\n\u2705 PATCH 2/3: 12 SKILLS GENERATION (HARDENED)\n   - _generate_k2_skills() includes robust parser for LLM formatting failures\n   - Splits by newlines AND commas, flattens list, validates 1-3 word length\n   - Gracefully handles comma-separated lists vs newline-separated output\n   - FileRenderer._render_skills() double-checks list and word count\n\n\u2705 PATCH 3/3: QA REPORT FORMATTING (HARDENED)\n   - _format_plain_text_table() new helper for dynamic column widths\n   - REMOVES all \"=\" separators to prevent alignment breaking\n   - Sections 4-7 ",
+  "full_hash": "a4c939edf596671248ee7a6e5b80a8029a30fb3c1f984021e9a0564bcfe212f7",
+  "generated_at": 1764728309.4770281,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_70.py"
+}

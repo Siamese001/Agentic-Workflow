@@ -1,0 +1,6 @@
+{
+  "golden_content": "# =====================================================================\n\n# WINDSURF_RULE_LOADER_ACTIVATE\n\n# =====================================================================\n\n# WORKFLOW:\n\n#    Agentic-Workflow \u2014 PHASE 0.5 (Semantic Lineage Cache Rebuild v3-LITE)\n#\n\n# GLOBAL OBJECTIVE (ZERO-LOSS):\n\n#    Build a COMPLETE semantic cache for:\n#\n\n#    (A) HISTORICAL ENGINES ONLY\n\n#         1. Resume Engine Archive (RG)\n\n#         2. Outreach Engine Archive (LIC)\n#\n\n#    (B) SEMANTIC BUCKETS FOR ALL 10 CANONICAL LIVE REPO FOLDERS:\n\n#         01_agentic_core          \u2192 agentic_core\n\n#         02_schemas               \u2192 schemas\n\n#         03_runtime               \u2192 runtime\n\n#         04_prompt_governance     \u2192 prompt_governance\n\n#         05_config                \u2192 config\n\n#         06_data                  \u2192 data_source (SOURCE CODE ONLY)\n\n#         07_observability         \u2192 observability\n\n#         08_scripts               \u2192 scripts\n\n#         09_apps                  \u2192 apps\n\n#         ",
+  "full_hash": "f41098ec5f741c9246ae4ffc2b25bd8b20e2c4fa910672945835a47c0ccd74b4",
+  "generated_at": 1764728346.4624438,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\Phase 0.5.md"
+}

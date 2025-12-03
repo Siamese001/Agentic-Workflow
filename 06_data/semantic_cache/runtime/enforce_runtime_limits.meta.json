@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\orc-layer\\safety-phase\\manage-runtime-costs\\general\\update-memory\\enforce_runtime_limits.py",
+    "rel_path": "enforce_runtime_limits.py",
+    "root_name": "runtime",
+    "file_hash": "d18a2c3f17716600c6f6f017afc85db86d114c94a957b5624001872a03dd7fb8",
+    "file_size": 11348,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728347.2679834
+}

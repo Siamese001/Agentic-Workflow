@@ -1,0 +1,174 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema retry implementation and management.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='RetryStrategy',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Retry implementation strategies.')),
+        Assign(
+          targets=[
+            Name(id='FIXED_INTERVAL', ctx=Store())],
+          value=Constant(value='fixed_interval')),
+        Assign(
+          targets=[
+            Name(id='EXPONENTIAL_BACKOFF', ctx=Store())],
+          value=Constant(value='exponential_backoff')),
+        Assign(
+          targets=[
+            Name(id='LINEAR_BACKOFF', ctx=Store())],
+          value=Constant(value='linear_backoff')),
+        Assign(
+          targets=[
+            Name(id='CUSTOM', ctx=Store())],
+          value=Constant(value='custom'))]),
+    ClassDef(
+      name='RetryTrigger',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Retry trigger conditions.')),
+        Assign(
+          targets=[
+            Name(id='NETWORK_ERROR', ctx=Store())],
+          value=Constant(value='network_error')),
+        Assign(
+          targets=[
+            Name(id='TIMEOUT', ctx=Store())],
+          value=Constant(value='timeout')),
+        Assign(
+          targets=[
+            Name(id='SERVER_ERROR', ctx=Store())],
+          value=Constant(value='server_error')),
+        Assign(
+          targets=[
+            Name(id='RATE_LIMIT', ctx=Store())],
+          value=Constant(value='rate_limit'))]),
+    ClassDef(
+      name='RetryConfiguration',
+      body=[
+        Expr(
+          value=Constant(value='Schema for retry configuration.')),
+        AnnAssign(
+          target=Name(id='strategy', ctx=Store()),
+          annotation=Name(id='RetryStrategy', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='base_delay_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_delay_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retry_on_triggers', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RetryTrigger', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RetryAttempt',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual retry attempt.')),
+        AnnAssign(
+          target=Name(id='attempt_number', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='trigger_reason', ctx=Store()),
+          annotation=Name(id='RetryTrigger', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='delay_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='attempt_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='result', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RetryResult',
+      body=[
+        AnnAssign(
+          target=Name(id='retry_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='original_request_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='attempts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RetryAttempt', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='final_status', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='successful_attempt', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='int', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        Expr(
+          value=Constant(value='Schema for retry operation results.'))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

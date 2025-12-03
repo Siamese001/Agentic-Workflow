@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\strategy_stack.py",
+    "rel_path": "strategy_stack.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "b02f855a4074864baa1b0157285e1c1716513be994a46cc84523305611987fb7",
+    "file_size": 1230,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728230.3236363
+}

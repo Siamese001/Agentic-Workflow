@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nLinkedIn Outreach Orchestrator (LIC) - AGENTIC v11.8\n====================================================\n\nCHANGELOG v11.8 (FEATURE - Sender Grounding & Context-Aware CTAs):\n---------------------------------------------------------\n\u2728 NEW: S2_ExtractSenderGrounding - Extract whitelisted team members, products, case studies from RAG (SPEC 1)\n\u2728 NEW: S4_GenerateSenderGroundingConstraints - Inject \"my team\" \u2192 names mapping as generation rules (SPEC 2)\n\u2728 NEW: S4_GenerateContextAwareCTA - Route-specific CTAs (CONNECTION_REQ no CTA, SENIOR_TA direct/deferential) (SPEC 3)\n\u2728 NEW: S5_UseArchetypeSpecificPrompts - C_LEVEL uses thought-leadership, RECRUITER uses job-focus (SPEC 4)\n\u2728 NEW: S6_ValidateSenderClaims - Enhanced with grounding whitelist checks (team/products/case studies) (SPEC 5)\n\nCHANGELOG v11.7 (CRITICAL - Complete QA Gaps Implementation):\n---------------------------------------------------------\n\u2728 NEW: S5_Implement_SelfConsistency (FEATURE 2.3) - C_LEVEL generation now uses N-cand",
+  "full_hash": "ae68d9e48fb6c50bfa09cecd6ab1ffff2255184503bc35c588e2cee887101a8e",
+  "generated_at": 1764728339.266852,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Old LIC\\LIC_AGENTIC_v11_8.py"
+}

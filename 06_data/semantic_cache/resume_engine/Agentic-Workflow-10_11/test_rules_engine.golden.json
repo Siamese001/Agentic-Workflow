@@ -1,0 +1,6 @@
+{
+  "golden_content": "from orchestration.control_plane import SafetyContext, PolicyRule, evaluate_rules\n\n\ndef test_rules_engine_detects_pii_email():\n    ctx = SafetyContext(input_text=\"Contact me at user@example.com\")\n    rules = [\n        PolicyRule(\n            id=\"custom_email\",\n            description=\"Email PII\",\n            category=\"pii\",\n            severity=\"medium\",\n            pattern=r\"@example\\.com\",\n            is_pii_rule=True,\n        )\n    ]\n\n    result = evaluate_rules(ctx, rules)\n\n    assert result.matches\n    assert result.max_severity == \"medium\"\n    assert result.has_pii is True\n\n\n\n\n\n\n",
+  "full_hash": "90b55c52afe24ac32a876f400a0c37f408965595dc17efa3a2bab5978ac1f018",
+  "generated_at": 1764728226.507433,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\control_plane\\test_rules_engine.py"
+}

@@ -1,0 +1,2137 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum'),
+        alias(name='auto')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='ClassVar'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Set')],
+      level=0),
+    Import(
+      names=[
+        alias(name='copy')]),
+    ClassDef(
+      name='HopExecutionError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when a hop fails to execute successfully.')),
+        Pass()]),
+    ClassDef(
+      name='StagingBufferError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when staging buffer encounters data integrity issues.')),
+        Pass()]),
+    ClassDef(
+      name='CircuitBreakerOpenError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when circuit breaker is open and rejects requests.')),
+        Pass()]),
+    ClassDef(
+      name='PhaseTimeoutError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised when a RAG phase execution exceeds timeout.')),
+        Pass()]),
+    ClassDef(
+      name='FactualFailureException',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Raised by Validator when a high-signal factual or strategic check fails, triggering a Slow Loop.')),
+        Pass()]),
+    ImportFrom(
+      module='exceptions',
+      names=[
+        alias(name='HopExecutionError'),
+        alias(name='StagingBufferError'),
+        alias(name='CircuitBreakerOpenError'),
+        alias(name='PhaseTimeoutError'),
+        alias(name='FactualFailureException'),
+        alias(name='ValidationError'),
+        alias(name='ConfigurationError'),
+        alias(name='APIError')],
+      level=0),
+    ClassDef(
+      name='GateDecision',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Decision outcomes for gate validation.')),
+        Assign(
+          targets=[
+            Name(id='PROCEED', ctx=Store())],
+          value=Constant(value='PROCEED')),
+        Assign(
+          targets=[
+            Name(id='HALT', ctx=Store())],
+          value=Constant(value='HALT'))]),
+    ClassDef(
+      name='ValidationSeverity',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Severity levels for validation results.')),
+        Assign(
+          targets=[
+            Name(id='INFO', ctx=Store())],
+          value=Call(
+            func=Name(id='auto', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='LOW', ctx=Store())],
+          value=Call(
+            func=Name(id='auto', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='LOW', ctx=Store())],
+          value=Call(
+            func=Name(id='auto', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='MEDIUM', ctx=Store())],
+          value=Call(
+            func=Name(id='auto', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='HIGH', ctx=Store())],
+          value=Call(
+            func=Name(id='auto', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='CRITICAL', ctx=Store())],
+          value=Call(
+            func=Name(id='auto', ctx=Load())))]),
+    ClassDef(
+      name='ResumeSection',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Enumeration of all resume sections.')),
+        Assign(
+          targets=[
+            Name(id='K0_NAME', ctx=Store())],
+          value=Constant(value='K.0_Name')),
+        Assign(
+          targets=[
+            Name(id='K0_HEADLINE', ctx=Store())],
+          value=Constant(value='K.0_Headline')),
+        Assign(
+          targets=[
+            Name(id='K0_CONTACT', ctx=Store())],
+          value=Constant(value='K.0_Contact')),
+        Assign(
+          targets=[
+            Name(id='K0_EXECUTIVE_SUMMARY_HEADER', ctx=Store())],
+          value=Constant(value='K.0_Executive_Summary_Header')),
+        Assign(
+          targets=[
+            Name(id='K0_EXPERIENCE_HEADER', ctx=Store())],
+          value=Constant(value='K.0_Experience_Header')),
+        Assign(
+          targets=[
+            Name(id='K0_EDUCATION_HEADER', ctx=Store())],
+          value=Constant(value='K.0_Education_Header')),
+        Assign(
+          targets=[
+            Name(id='K0_CERTIFICATIONS_HEADER', ctx=Store())],
+          value=Constant(value='K.0_Certifications_Header')),
+        Assign(
+          targets=[
+            Name(id='K0_COMPETENCIES_HEADER', ctx=Store())],
+          value=Constant(value='K.0_Competencies_Header')),
+        Assign(
+          targets=[
+            Name(id='K1_EXECUTIVE_SUMMARY', ctx=Store())],
+          value=Constant(value='K.1_Executive_Summary')),
+        Assign(
+          targets=[
+            Name(id='K2_UNIFY_OVERVIEW', ctx=Store())],
+          value=Constant(value='K.2_Unify_Overview')),
+        Assign(
+          targets=[
+            Name(id='K2_UNIFY_BULLETS', ctx=Store())],
+          value=Constant(value='K.2_Unify_Bullets')),
+        Assign(
+          targets=[
+            Name(id='K3_IBM_OVERVIEW', ctx=Store())],
+          value=Constant(value='K.3_IBM_Overview')),
+        Assign(
+          targets=[
+            Name(id='K3_IBM_BULLETS', ctx=Store())],
+          value=Constant(value='K.3_IBM_Bullets')),
+        Assign(
+          targets=[
+            Name(id='K4_TRADERSENSE_NARRATIVE', ctx=Store())],
+          value=Constant(value='K.4_TraderSense_Narrative')),
+        Assign(
+          targets=[
+            Name(id='K5_EY_NARRATIVE', ctx=Store())],
+          value=Constant(value='K.5_EY_Narrative')),
+        Assign(
+          targets=[
+            Name(id='K6_EARLY_CAREER_NARRATIVE', ctx=Store())],
+          value=Constant(value='K.6_Early_Career_Narrative')),
+        Assign(
+          targets=[
+            Name(id='K7_EDUCATION', ctx=Store())],
+          value=Constant(value='K.7_Education')),
+        Assign(
+          targets=[
+            Name(id='K8_CERTIFICATIONS', ctx=Store())],
+          value=Constant(value='K.8_Certifications')),
+        Assign(
+          targets=[
+            Name(id='K9_COMPETENCIES', ctx=Store())],
+          value=Constant(value='K.9_Competencies')),
+        Assign(
+          targets=[
+            Name(id='K10_SKILLS', ctx=Store())],
+          value=Constant(value='K.10_Skills')),
+        Assign(
+          targets=[
+            Name(id='K11_COVER_LETTER', ctx=Store())],
+          value=Constant(value='K.11_Cover_Letter'))]),
+    ClassDef(
+      name='JDEnforcementRule',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Rules for JD enforcement validation.')),
+        Assign(
+          targets=[
+            Name(id='E1_JD_MIN_LENGTH', ctx=Store())],
+          value=Constant(value='JD must be non-empty (min 100 characters)')),
+        Assign(
+          targets=[
+            Name(id='E2_JD_NON_NULL', ctx=Store())],
+          value=Constant(value='JD must be provided to workflow (not None/empty)')),
+        Assign(
+          targets=[
+            Name(id='E3_JD_PARSING_SUCCESS', ctx=Store())],
+          value=Constant(value='JD must parse successfully')),
+        Assign(
+          targets=[
+            Name(id='E4_THEMES_EXTRACTED', ctx=Store())],
+          value=Constant(value='JD-derived themes must be extracted')),
+        Assign(
+          targets=[
+            Name(id='E5_SKILLS_EXTRACTED', ctx=Store())],
+          value=Constant(value='JD-derived skills must be extracted (min 5)')),
+        Assign(
+          targets=[
+            Name(id='E6_JD_TO_THEMATIC', ctx=Store())],
+          value=Constant(value='JD data must flow to ThematicAnalysis')),
+        Assign(
+          targets=[
+            Name(id='E7_THEMATIC_USES_JD', ctx=Store())],
+          value=Constant(value='ThematicAnalysis must use JD data (not mock)')),
+        Assign(
+          targets=[
+            Name(id='E8_ARTIST_RECEIVES_JD', ctx=Store())],
+          value=Constant(value='Artist must receive JD-derived thematic_analysis')),
+        Assign(
+          targets=[
+            Name(id='E9_CONTENT_HAS_JD_KW', ctx=Store())],
+          value=Constant(value='Generated content must contain JD keywords')),
+        Assign(
+          targets=[
+            Name(id='E10_ENRICHMENT_USES_JD', ctx=Store())],
+          value=Constant(value='Enrichment must use JD-derived data')),
+        Assign(
+          targets=[
+            Name(id='E11_VALIDATION_CHECKS_JD', ctx=Store())],
+          value=Constant(value='Validation must check JD keyword presence')),
+        Assign(
+          targets=[
+            Name(id='E12_FILES_CONTAIN_JD', ctx=Store())],
+          value=Constant(value='Output files must contain JD-derived content')),
+        Assign(
+          targets=[
+            Name(id='E13_QA_VERIFIES_JD', ctx=Store())],
+          value=Constant(value='QA report must verify JD usage')),
+        Assign(
+          targets=[
+            Name(id='E14_NO_MOCK_DATA', ctx=Store())],
+          value=Constant(value='No fallback/mock/default data allowed anywhere')),
+        Assign(
+          targets=[
+            Name(id='E15_COMPLETE_AUDIT', ctx=Store())],
+          value=Constant(value='Complete audit trail of JD data flow required'))]),
+    ClassDef(
+      name='BulletProvenance',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Provenance types for resume bullets.')),
+        Assign(
+          targets=[
+            Name(id='Verbatim', ctx=Store())],
+          value=Constant(value='Verbatim')),
+        Assign(
+          targets=[
+            Name(id='Customized', ctx=Store())],
+          value=Constant(value='Customized')),
+        Assign(
+          targets=[
+            Name(id='Synthetic', ctx=Store())],
+          value=Constant(value='Synthetic'))]),
+    ClassDef(
+      name='CircuitState',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Circuit breaker states.')),
+        Assign(
+          targets=[
+            Name(id='CLOSED', ctx=Store())],
+          value=Constant(value='closed')),
+        Assign(
+          targets=[
+            Name(id='OPEN', ctx=Store())],
+          value=Constant(value='open')),
+        Assign(
+          targets=[
+            Name(id='HALF_OPEN', ctx=Store())],
+          value=Constant(value='half_open'))]),
+    ClassDef(
+      name='HopStatus',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Status outcomes for workflow hops.')),
+        Assign(
+          targets=[
+            Name(id='PASS', ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Name(id='FAIL', ctx=Store())],
+          value=Constant(value='FAIL')),
+        Assign(
+          targets=[
+            Name(id='WARNING', ctx=Store())],
+          value=Constant(value='WARNING'))]),
+    ClassDef(
+      name='ReasoningConfig',
+      body=[
+        Expr(
+          value=Constant(value='Configuration for reasoning strategies (CoT, ToT, Reflexion, Self-Consistency).')),
+        AnnAssign(
+          target=Name(id='cot_min_paths', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tot_branches', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='min_tot_depth', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reflexion', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_reflexion_loops', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='self_consistency', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=1),
+          simple=1),
+        AnnAssign(
+          target=Name(id='DEFAULT', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='ClassVar', ctx=Load()),
+            slice=Constant(value='ReasoningConfig'),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='EXECUTIVE_SUMMARY', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='ClassVar', ctx=Load()),
+            slice=Constant(value='ReasoningConfig'),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='HEADLINE', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='ClassVar', ctx=Load()),
+            slice=Constant(value='ReasoningConfig'),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='BULLETS', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='ClassVar', ctx=Load()),
+            slice=Constant(value='ReasoningConfig'),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='NARRATIVE', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='ClassVar', ctx=Load()),
+            slice=Constant(value='ReasoningConfig'),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ValidationResult',
+      body=[
+        Expr(
+          value=Constant(value='Result of a single validation rule.')),
+        AnnAssign(
+          target=Name(id='rule_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='passed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='ValidationSeverity', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='message', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ThematicAnalysis',
+      body=[
+        Expr(
+          value=Constant(value='Thematic analysis derived from job description.')),
+        AnnAssign(
+          target=Name(id='primary_theme', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='secondary_themes', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='role_classification', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='positioning_directives', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='authenticity_patterns', ctx=Store()),
+          annotation=Name(id='Dict', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='competitive_intelligence', ctx=Store()),
+          annotation=Name(id='Any', ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='problem_solution_narratives', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='signal_quality_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_method', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='UNKNOWN'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='retrieval_sources', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Any', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='weighting_formula', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='evidence_log', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='JDEnforcementResult',
+      body=[
+        Expr(
+          value=Constant(value='Result of a JD enforcement rule check.')),
+        AnnAssign(
+          target=Name(id='rule', ctx=Store()),
+          annotation=Name(id='JDEnforcementRule', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='passed', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='gate_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load()))))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='CompetitiveAnalysisConfig',
+      body=[
+        Expr(
+          value=Constant(value='Configuration for competitive analysis.')),
+        AnnAssign(
+          target=Name(id='enabled', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='min_peer_jds', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=3),
+          simple=1),
+        AnnAssign(
+          target=Name(id='search_pattern', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='"{role_title}" at "{peer_company}"'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='selection_criteria', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=List(
+                    elts=[
+                      Constant(value='same_industry'),
+                      Constant(value='similar_company_size'),
+                      Constant(value='recent_posting_date')],
+                    ctx=Load())))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='table_stakes_threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.8),
+          simple=1),
+        AnnAssign(
+          target=Name(id='differentiator_threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.2),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RAGMission',
+      body=[
+        Expr(
+          value=Constant(value='Mission definition for RAG retrieval.')),
+        AnnAssign(
+          target=Name(id='target_company_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='precise_role_title', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='key_technologies', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='core_responsibilities', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='signal_gap_keywords', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='signal_overlap_keywords', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SkillRequirement',
+      body=[
+        Expr(
+          value=Constant(value='A single skill requirement.')),
+        AnnAssign(
+          target=Name(id='skill', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='requirement_type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='related_skills', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SkillCluster',
+      body=[
+        Expr(
+          value=Constant(value='A cluster of related skills.')),
+        AnnAssign(
+          target=Name(id='cluster_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='skills', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='representative_skill', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='MasterResumeIndex',
+      body=[
+        Expr(
+          value=Constant(value='Index of master resume content for RAG.')),
+        AnnAssign(
+          target=Name(id='skill_to_experiences', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Dict', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='achievement_catalog', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='domain_vocabularies', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='recency_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='skill_vectors', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RAGEvidence',
+      body=[
+        Expr(
+          value=Constant(value='Evidence from a single RAG iteration.')),
+        AnnAssign(
+          target=Name(id='iteration', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='action', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query_or_action', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='findings_summary', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sources_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_contribution', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load()))))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RAGCritique',
+      body=[
+        Expr(
+          value=Constant(value='Critique of RAG results.')),
+        AnnAssign(
+          target=Name(id='confidence_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='gaps_identified', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='refinement_tasks', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='reasoning', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='is_sufficient', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RAGState',
+      body=[
+        Expr(
+          value=Constant(value='State tracking for iterative RAG process.')),
+        AnnAssign(
+          target=Name(id='phase_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='iteration', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='evidence_log', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RAGEvidence', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cumulative_result', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_api_calls', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='critiques', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RAGCritique', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='add_evidence',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='evidence',
+                annotation=Name(id='RAGEvidence', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Add evidence to the log.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='evidence_log',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='evidence', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='add_critique',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='critique',
+                annotation=Name(id='RAGCritique', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Add a critique.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='critiques',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='critique', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='get_latest_critique',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Get the most recent critique.')),
+            Return(
+              value=IfExp(
+                test=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='critiques',
+                  ctx=Load()),
+                body=Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='critiques',
+                    ctx=Load()),
+                  slice=UnaryOp(
+                    op=USub(),
+                    operand=Constant(value=1)),
+                  ctx=Load()),
+                orelse=Constant(value=None)))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='RAGCritique', ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='CompetitiveIntelligence',
+      body=[
+        Expr(
+          value=Constant(value='Competitive intelligence data.')),
+        AnnAssign(
+          target=Name(id='peer_jds_analyzed_count', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='differentiator_keywords', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='differentiator_keywords_raw', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='differentiator_keywords_weighted', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Dict', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='get_top_differentiators',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='count',
+                annotation=Name(id='int', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get top N differentiator keywords.')),
+            Return(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='differentiator_keywords',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Name(id='count', ctx=Load())),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RetrievalSource',
+      body=[
+        Expr(
+          value=Constant(value='A source used in retrieval.')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='type', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='status', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='UNKNOWN'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='specific_source', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PartialRAGResult',
+      body=[
+        Expr(
+          value=Constant(value='Partial results from multi-phase RAG process.')),
+        AnnAssign(
+          target=Name(id='phase1_result', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase2_result', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase3_result', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase4_result', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase1_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase2_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase3_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase4_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='failure_reasons', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        FunctionDef(
+          name='__post_init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='failure_reasons',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='failure_reasons',
+                      ctx=Store())],
+                  value=List(ctx=Load()))])]),
+        FunctionDef(
+          name='any_success',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Check if any phase succeeded.')),
+            Return(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase1_success',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase2_success',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase3_success',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase4_success',
+                    ctx=Load())]))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='full_success',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Check if all phases succeeded.')),
+            Return(
+              value=BoolOp(
+                op=And(),
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase1_success',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase2_success',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase3_success',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phase4_success',
+                    ctx=Load())]))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='success_rate',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Calculate success rate across all phases.')),
+            Assign(
+              targets=[
+                Name(id='successes', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  List(
+                    elts=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='phase1_success',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='phase2_success',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='phase3_success',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='phase4_success',
+                        ctx=Load())],
+                    ctx=Load())])),
+            Return(
+              value=BinOp(
+                left=Name(id='successes', ctx=Load()),
+                op=Div(),
+                right=Constant(value=4.0)))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='float', ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RAGTelemetry',
+      body=[
+        Expr(
+          value=Constant(value='Telemetry data for RAG operations.')),
+        AnnAssign(
+          target=Name(id='timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load()))))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='full_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='partial_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='success_rate', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase1_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase1_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase1_duration_seconds', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase2_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase2_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase2_duration_seconds', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase3_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase3_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase3_duration_seconds', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase4_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase4_success', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='phase4_duration_seconds', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_api_calls', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='failed_api_calls', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_search_calls', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='errors', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='circuit_breaker_triggered', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=False),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_duration_seconds', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Convert telemetry to dictionary format.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='timestamp'),
+                  Constant(value='success'),
+                  Constant(value='phases'),
+                  Constant(value='api'),
+                  Constant(value='errors'),
+                  Constant(value='circuit_breaker'),
+                  Constant(value='total_duration')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='timestamp',
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='full'),
+                      Constant(value='partial'),
+                      Constant(value='rate')],
+                    values=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='full_success',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='partial_success',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='success_rate',
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='phase1'),
+                      Constant(value='phase2'),
+                      Constant(value='phase3'),
+                      Constant(value='phase4')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='attempts'),
+                          Constant(value='success'),
+                          Constant(value='duration')],
+                        values=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase1_attempts',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase1_success',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase1_duration_seconds',
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='attempts'),
+                          Constant(value='success'),
+                          Constant(value='duration')],
+                        values=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase2_attempts',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase2_success',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase2_duration_seconds',
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='attempts'),
+                          Constant(value='success'),
+                          Constant(value='duration')],
+                        values=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase3_attempts',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase3_success',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase3_duration_seconds',
+                            ctx=Load())]),
+                      Dict(
+                        keys=[
+                          Constant(value='attempts'),
+                          Constant(value='success'),
+                          Constant(value='duration')],
+                        values=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase4_attempts',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase4_success',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='phase4_duration_seconds',
+                            ctx=Load())])]),
+                  Dict(
+                    keys=[
+                      Constant(value='total_calls'),
+                      Constant(value='failed_calls'),
+                      Constant(value='search_calls')],
+                    values=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='total_api_calls',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='failed_api_calls',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='total_search_calls',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='errors',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='circuit_breaker_triggered',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='total_duration_seconds',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='HopCheckpoint',
+      body=[
+        Expr(
+          value=Constant(value='Checkpoint data for a single workflow hop.')),
+        AnnAssign(
+          target=Name(id='hop_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='hop_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='status', ctx=Store()),
+          annotation=Name(id='HopStatus', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp_start', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='timestamp_end', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='output_hash', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='validation_results', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationResult', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='error_message', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ImmutableStagingBuffer',
+      body=[
+        Expr(
+          value=Constant(value='\n    A write-once, read-many buffer that can be locked.\n    This class is now correctly centralized in models.py.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_data',
+                  ctx=Store())],
+              value=Dict()),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_locked',
+                  ctx=Store())],
+              value=Constant(value=False)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_lock_timestamp',
+                  ctx=Store())],
+              value=Constant(value=None))]),
+        FunctionDef(
+          name='set',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='Any', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Sets a key-value pair, raising an error if locked.')),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_locked',
+                ctx=Load()),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='StagingBufferError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value="Cannot set '"),
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="': buffer is locked")])]))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_data',
+                    ctx=Load()),
+                  slice=Name(id='key', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='value', ctx=Load()))]),
+        FunctionDef(
+          name='get',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='default',
+                annotation=Name(id='Any', ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Gets a value by key, returning a deep copy to maintain immutability.')),
+            Assign(
+              targets=[
+                Name(id='value', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_data',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load()),
+                  Name(id='default', ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Compare(
+                    left=Name(id='value', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Constant(value=None)]),
+                  Compare(
+                    left=Name(id='value', ctx=Load()),
+                    ops=[
+                      IsNot()],
+                    comparators=[
+                      Name(id='default', ctx=Load())])]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='copy', ctx=Load()),
+                      attr='deepcopy',
+                      ctx=Load()),
+                    args=[
+                      Name(id='value', ctx=Load())]))]),
+            Return(
+              value=Name(id='value', ctx=Load()))],
+          returns=Name(id='Any', ctx=Load())),
+        FunctionDef(
+          name='lock',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Locks the buffer, preventing further writes.')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_locked',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_locked',
+                      ctx=Store())],
+                  value=Constant(value=True)),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_lock_timestamp',
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load())))])]),
+        FunctionDef(
+          name='is_locked',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Checks if the buffer is locked.')),
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_locked',
+                ctx=Load()))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='unlock',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Unlocks the buffer to allow modifications in the next phase.')),
+            If(
+              test=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_locked',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_locked',
+                      ctx=Store())],
+                  value=Constant(value=False)),
+                Assign(
+                  targets=[
+                    Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_lock_timestamp',
+                      ctx=Store())],
+                  value=Constant(value=None))])]),
+        FunctionDef(
+          name='data',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value="Returns a deep copy of the buffer's data.")),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='copy', ctx=Load()),
+                  attr='deepcopy',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_data',
+                    ctx=Load())]))],
+          decorator_list=[
+            Name(id='property', ctx=Load())],
+          returns=Name(id='Dict', ctx=Load()))]),
+    Assign(
+      targets=[
+        Attribute(
+          value=Name(id='ReasoningConfig', ctx=Load()),
+          attr='DEFAULT',
+          ctx=Store())],
+      value=Call(
+        func=Name(id='ReasoningConfig', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='cot_min_paths',
+            value=Constant(value=0)),
+          keyword(
+            arg='tot_branches',
+            value=Constant(value=1)),
+          keyword(
+            arg='min_tot_depth',
+            value=Constant(value=1)),
+          keyword(
+            arg='reflexion',
+            value=Constant(value=False)),
+          keyword(
+            arg='max_reflexion_loops',
+            value=Constant(value=0)),
+          keyword(
+            arg='self_consistency',
+            value=Constant(value=1))])),
+    Assign(
+      targets=[
+        Attribute(
+          value=Name(id='ReasoningConfig', ctx=Load()),
+          attr='EXECUTIVE_SUMMARY',
+          ctx=Store())],
+      value=Call(
+        func=Name(id='ReasoningConfig', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='cot_min_paths',
+            value=Constant(value=3)),
+          keyword(
+            arg='tot_branches',
+            value=Constant(value=3)),
+          keyword(
+            arg='min_tot_depth',
+            value=Constant(value=2)),
+          keyword(
+            arg='reflexion',
+            value=Constant(value=True)),
+          keyword(
+            arg='max_reflexion_loops',
+            value=Constant(value=2)),
+          keyword(
+            arg='self_consistency',
+            value=Constant(value=3))])),
+    Assign(
+      targets=[
+        Attribute(
+          value=Name(id='ReasoningConfig', ctx=Load()),
+          attr='HEADLINE',
+          ctx=Store())],
+      value=Call(
+        func=Name(id='ReasoningConfig', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='cot_min_paths',
+            value=Constant(value=2)),
+          keyword(
+            arg='tot_branches',
+            value=Constant(value=2)),
+          keyword(
+            arg='min_tot_depth',
+            value=Constant(value=2)),
+          keyword(
+            arg='reflexion',
+            value=Constant(value=False)),
+          keyword(
+            arg='max_reflexion_loops',
+            value=Constant(value=0)),
+          keyword(
+            arg='self_consistency',
+            value=Constant(value=2))])),
+    Assign(
+      targets=[
+        Attribute(
+          value=Name(id='ReasoningConfig', ctx=Load()),
+          attr='BULLETS',
+          ctx=Store())],
+      value=Call(
+        func=Name(id='ReasoningConfig', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='cot_min_paths',
+            value=Constant(value=2)),
+          keyword(
+            arg='tot_branches',
+            value=Constant(value=2)),
+          keyword(
+            arg='min_tot_depth',
+            value=Constant(value=1)),
+          keyword(
+            arg='reflexion',
+            value=Constant(value=False)),
+          keyword(
+            arg='max_reflexion_loops',
+            value=Constant(value=0)),
+          keyword(
+            arg='self_consistency',
+            value=Constant(value=2))])),
+    Assign(
+      targets=[
+        Attribute(
+          value=Name(id='ReasoningConfig', ctx=Load()),
+          attr='NARRATIVE',
+          ctx=Store())],
+      value=Call(
+        func=Name(id='ReasoningConfig', ctx=Load()),
+        keywords=[
+          keyword(
+            arg='cot_min_paths',
+            value=Constant(value=2)),
+          keyword(
+            arg='tot_branches',
+            value=Constant(value=2)),
+          keyword(
+            arg='min_tot_depth',
+            value=Constant(value=2)),
+          keyword(
+            arg='reflexion',
+            value=Constant(value=True)),
+          keyword(
+            arg='max_reflexion_loops',
+            value=Constant(value=1)),
+          keyword(
+            arg='self_consistency',
+            value=Constant(value=2))]))])

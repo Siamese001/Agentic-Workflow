@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\02_schemas\\k_validation_report.json",
+    "rel_path": "k_validation_report.json",
+    "root_name": "schemas",
+    "file_hash": "16be8723c25de8ab03fa6c1b2fceb43de308c6eac80bd265249d1f48ab1287ea",
+    "file_size": 9344,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728345.6039696
+}

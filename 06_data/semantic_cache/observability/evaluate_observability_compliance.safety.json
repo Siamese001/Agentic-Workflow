@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": true,
+  "line_count": 307,
+  "generated_at": 1764728351.5183895,
+  "source_file": "C:\\Git\\Agentic-Workflow\\07_observability\\safe-layer\\safety-phase\\check-observability-rules\\semantic\\adjust-scores\\evaluate_observability_compliance.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "import pytest\n\nfrom agent_stacks_v10_8.hil_stack import HILStackV10_8\n\n\n@pytest.mark.asyncio\nasync def test_route_from_state_async_returns_normalized_patch(monkeypatch, workflow_context):\n    stack = HILStackV10_8(workflow_context)\n    state = {\"metadata\": {\"workflow_id\": \"wf-hil\"}, \"hil\": {\"raw_feedback\": \"Inject edit\"}}\n\n    async def fake_route(feedback, workflow_id, state_snapshot):\n        assert feedback == \"Inject edit\"\n        assert state_snapshot is state\n        assert workflow_id == \"wf-hil\"\n        return {\n            \"next_step\": \"INJECT_EDIT\",\n            \"payload\": \"payload\",\n            \"intent_clusters\": [\"tone\"],\n            \"delegated_specialists\": [\"qa\"],\n            \"persona_consensus\": {\"decision\": \"approve\"},\n            \"reconciliation\": {\"integrated_text\": \"ok\"},\n        }\n\n    monkeypatch.setattr(stack, \"route_feedback_async\", fake_route)\n    patch = await stack.route_from_state_async(state, \"wf-hil\")\n\n    hil_payload = patch[\"hil\"]\n    assert hil_payload[\"n",
+  "full_hash": "11ba326162dedeeb7e3b3c418af610ea985a0528a28a817cf96bc3604254f10c",
+  "generated_at": 1764728230.7452462,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\stacks\\test_hil_injection_v10_7.py"
+}

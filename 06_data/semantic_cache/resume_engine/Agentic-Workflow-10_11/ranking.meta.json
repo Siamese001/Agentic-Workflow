@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\ranking.py",
+    "rel_path": "ranking.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
+    "file_size": 18604,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728225.640923
+}

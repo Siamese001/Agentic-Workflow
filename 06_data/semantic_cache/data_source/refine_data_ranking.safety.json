@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764728350.0605533,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\refine_data_ranking.py"
+}

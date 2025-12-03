@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\retrieve-phase\\get-schema-info\\general\\understand-request\\query_schema_store.py",
+    "rel_path": "query_schema_store.py",
+    "root_name": "schemas",
+    "file_hash": "eb53cdd834e6a6c4b634b82bfb63946c5c52c18bcd030876db4399b0dc8ae46a",
+    "file_size": 1298,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.245967
+}

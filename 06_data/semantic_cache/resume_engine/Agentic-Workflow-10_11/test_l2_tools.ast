@@ -1,0 +1,66 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L2 Execution Tools Tests.')),
+    ClassDef(
+      name='TestL2Tools',
+      body=[
+        Expr(
+          value=Constant(value='Tests for L2 execution tools.')),
+        FunctionDef(
+          name='test_search_tool',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test search tool functionality.')),
+            Assign(
+              targets=[
+                Name(id='query', ctx=Store())],
+              value=Constant(value='python developer')),
+            Assign(
+              targets=[
+                Name(id='results', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='result1'),
+                  Constant(value='result2')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='results', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))]),
+        FunctionDef(
+          name='test_extraction_tool',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test extraction tool functionality.')),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Constant(value='Skills: Python, AWS')),
+            Assign(
+              targets=[
+                Name(id='extracted', ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='Python'),
+                  Constant(value='AWS')],
+                ctx=Load())),
+            Assert(
+              test=Compare(
+                left=Constant(value='Python'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='extracted', ctx=Load())]))])])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - track_tests_usage\nImplements L5 Safety/Policy Layer for track tests usage operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass TrackTestsUsageSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass TrackTestsUsageSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass TrackTestsUsageSafetyResult:\n    \"\"\"L5 Safety result with full type safety\"\"",
+  "full_hash": "442ad916711bb52dcc4f9a736ccf202c077c6db2a4e8d8ac8fef5dd7a6774cac",
+  "generated_at": 1764728354.4022646,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\orc-layer\\safety-phase\\manage-tests-costs\\general\\update-memory\\track_tests_usage.py"
+}

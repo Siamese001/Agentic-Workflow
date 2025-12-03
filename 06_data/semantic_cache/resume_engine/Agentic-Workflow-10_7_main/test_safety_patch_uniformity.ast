@@ -1,0 +1,70 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='ast')]),
+    Import(
+      names=[
+        alias(name='pathlib')]),
+    Assign(
+      targets=[
+        Name(id='TARGET_FILES', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='rag_execution_stack.py'),
+          Constant(value='bullet_execution_stack.py'),
+          Constant(value='drafting_execution_stack.py'),
+          Constant(value='rag_orchestration.py'),
+          Constant(value='draft_orchestration.py')],
+        ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='KEYS', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='safety_report'),
+          Constant(value='policy_decision'),
+          Constant(value='constitutional_review')],
+        ctx=Load())),
+    FunctionDef(
+      name='test_uniform_keys_present',
+      args=arguments(),
+      body=[
+        For(
+          target=Name(id='fname', ctx=Store()),
+          iter=Name(id='TARGET_FILES', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='code', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='pathlib', ctx=Load()),
+                      attr='Path',
+                      ctx=Load()),
+                    args=[
+                      Name(id='fname', ctx=Load())]),
+                  attr='read_text',
+                  ctx=Load()))),
+            For(
+              target=Name(id='key', ctx=Store()),
+              iter=Name(id='KEYS', ctx=Load()),
+              body=[
+                Assert(
+                  test=Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='code', ctx=Load())]),
+                  msg=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='key', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' missing in '),
+                      FormattedValue(
+                        value=Name(id='fname', ctx=Load()),
+                        conversion=-1)]))])])])])

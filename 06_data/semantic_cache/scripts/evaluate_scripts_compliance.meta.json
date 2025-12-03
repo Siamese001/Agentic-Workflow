@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\semantic\\adjust-scores\\evaluate_scripts_compliance.py",
+    "rel_path": "evaluate_scripts_compliance.py",
+    "root_name": "scripts",
+    "file_hash": "6d39311c2b89493d04c5041a273c2d26587ea8b87087c1c51ea956f5261d14c9",
+    "file_size": 11476,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.4943972
+}

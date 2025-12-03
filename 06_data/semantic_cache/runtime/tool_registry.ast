@@ -1,0 +1,786 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Tool registry and built-in retrieval tools.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List'),
+        alias(name='Sequence')],
+      level=0),
+    ImportFrom(
+      module='content_store',
+      names=[
+        alias(name='make_key')],
+      level=1),
+    ClassDef(
+      name='ToolResult',
+      body=[
+        Expr(
+          value=Constant(value='Response payload returned from tool invocations.')),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='sources', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='latency_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='BaseTool',
+      body=[
+        Expr(
+          value=Constant(value='Base class for retrieval tools.')),
+        AnnAssign(
+          target=Name(id='name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='base'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='cost', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Raise(
+              exc=Name(id='NotImplementedError', ctx=Load()))],
+          returns=Name(id='ToolResult', ctx=Load())),
+        FunctionDef(
+          name='estimate_cost',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='cost',
+                ctx=Load()))],
+          returns=Name(id='float', ctx=Load()))]),
+    ClassDef(
+      name='WebSearchTool',
+      bases=[
+        Name(id='BaseTool', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='name', ctx=Store())],
+          value=Constant(value='web_search')),
+        Assign(
+          targets=[
+            Name(id='cost', ctx=Store())],
+          value=Constant(value=0.5)),
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='latency', ctx=Store())],
+              value=Call(
+                func=Name(id='_deterministic_latency', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  Name(id='query', ctx=Load()),
+                  Name(id='context', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='base',
+                    value=Constant(value=140)),
+                  keyword(
+                    arg='spread',
+                    value=Constant(value=60))])),
+            Assign(
+              targets=[
+                Name(id='snippet', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='Latest web coverage for '),
+                  FormattedValue(
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='context', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='company_id')]),
+                        Constant(value='prospect')]),
+                    conversion=-1),
+                  Constant(value=': '),
+                  FormattedValue(
+                    value=Name(id='query', ctx=Load()),
+                    conversion=-1)])),
+            Return(
+              value=Call(
+                func=Name(id='ToolResult', ctx=Load()),
+                args=[
+                  Name(id='snippet', ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='https://example.com/web')],
+                    ctx=Load()),
+                  Name(id='latency', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='confidence',
+                    value=Constant(value=0.6))]))],
+          returns=Name(id='ToolResult', ctx=Load()))]),
+    ClassDef(
+      name='ProfileLookupTool',
+      bases=[
+        Name(id='BaseTool', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='name', ctx=Store())],
+          value=Constant(value='profile_lookup')),
+        Assign(
+          targets=[
+            Name(id='cost', ctx=Store())],
+          value=Constant(value=0.25)),
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='latency', ctx=Store())],
+              value=Call(
+                func=Name(id='_deterministic_latency', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  Name(id='query', ctx=Load()),
+                  Name(id='context', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='base',
+                    value=Constant(value=95)),
+                  keyword(
+                    arg='spread',
+                    value=Constant(value=40))])),
+            Assign(
+              targets=[
+                Name(id='snippet', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='Profile insight about '),
+                  FormattedValue(
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='context', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='contact_id')]),
+                        Constant(value='contact')]),
+                    conversion=-1),
+                  Constant(value=': '),
+                  FormattedValue(
+                    value=Name(id='query', ctx=Load()),
+                    conversion=-1)])),
+            Return(
+              value=Call(
+                func=Name(id='ToolResult', ctx=Load()),
+                args=[
+                  Name(id='snippet', ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='https://example.com/profile')],
+                    ctx=Load()),
+                  Name(id='latency', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='confidence',
+                    value=Constant(value=0.7))]))],
+          returns=Name(id='ToolResult', ctx=Load()))]),
+    ClassDef(
+      name='NewsTool',
+      bases=[
+        Name(id='BaseTool', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='name', ctx=Store())],
+          value=Constant(value='news')),
+        Assign(
+          targets=[
+            Name(id='cost', ctx=Store())],
+          value=Constant(value=0.4)),
+        FunctionDef(
+          name='run',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='latency', ctx=Store())],
+              value=Call(
+                func=Name(id='_deterministic_latency', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  Name(id='query', ctx=Load()),
+                  Name(id='context', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='base',
+                    value=Constant(value=120)),
+                  keyword(
+                    arg='spread',
+                    value=Constant(value=50))])),
+            Assign(
+              targets=[
+                Name(id='snippet', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='News mention tying '),
+                  FormattedValue(
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='context', ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='company_id')]),
+                        Constant(value='company')]),
+                    conversion=-1),
+                  Constant(value=' to '),
+                  FormattedValue(
+                    value=Name(id='query', ctx=Load()),
+                    conversion=-1)])),
+            Return(
+              value=Call(
+                func=Name(id='ToolResult', ctx=Load()),
+                args=[
+                  Name(id='snippet', ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='https://example.com/news')],
+                    ctx=Load()),
+                  Name(id='latency', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='confidence',
+                    value=Constant(value=0.65))]))],
+          returns=Name(id='ToolResult', ctx=Load()))]),
+    ClassDef(
+      name='ToolRegistry',
+      body=[
+        Expr(
+          value=Constant(value='Registry for discovery and execution of retrieval tools.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tools',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Iterable', ctx=Load()),
+                    slice=Name(id='BaseTool', ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_tools',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='BaseTool', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            If(
+              test=Name(id='tools', ctx=Load()),
+              body=[
+                For(
+                  target=Name(id='tool', ctx=Store()),
+                  iter=Name(id='tools', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='register',
+                          ctx=Load()),
+                        args=[
+                          Name(id='tool', ctx=Load())]))])])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='register',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool',
+                annotation=Name(id='BaseTool', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_tools',
+                    ctx=Load()),
+                  slice=Attribute(
+                    value=Name(id='tool', ctx=Load()),
+                    attr='name',
+                    ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='tool', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='resolve',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='name',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='name', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_tools',
+                    ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='KeyError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value="Tool '"),
+                          FormattedValue(
+                            value=Name(id='name', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="' is not registered")])]))]),
+            Return(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_tools',
+                  ctx=Load()),
+                slice=Name(id='name', ctx=Load()),
+                ctx=Load()))],
+          returns=Name(id='BaseTool', ctx=Load())),
+        FunctionDef(
+          name='available',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='tuple', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='sorted', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_tools',
+                            ctx=Load()),
+                          attr='keys',
+                          ctx=Load()))])]))],
+          returns=Subscript(
+            value=Name(id='Sequence', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='make_key',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='job',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='components', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='tool'),
+                  Constant(value='query'),
+                  Constant(value='company_id'),
+                  Constant(value='contact_id'),
+                  Constant(value='scope'),
+                  Constant(value='window')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='tool')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='query')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company_id')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='contact_id')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='scope'),
+                      Constant(value='outreach')]),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='window'),
+                      Constant(value='rolling_90d')])])),
+            Return(
+              value=Call(
+                func=Name(id='make_key', ctx=Load()),
+                keywords=[
+                  keyword(
+                    value=Name(id='components', ctx=Load()))]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='default_with_builtins',
+          args=arguments(
+            args=[
+              arg(arg='cls')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='registry', ctx=Store())],
+              value=Call(
+                func=Name(id='cls', ctx=Load()))),
+            For(
+              target=Name(id='tool', ctx=Store()),
+              iter=Tuple(
+                elts=[
+                  Call(
+                    func=Name(id='WebSearchTool', ctx=Load())),
+                  Call(
+                    func=Name(id='ProfileLookupTool', ctx=Load())),
+                  Call(
+                    func=Name(id='NewsTool', ctx=Load()))],
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='registry', ctx=Load()),
+                      attr='register',
+                      ctx=Load()),
+                    args=[
+                      Name(id='tool', ctx=Load())]))]),
+            Return(
+              value=Name(id='registry', ctx=Load()))],
+          decorator_list=[
+            Name(id='classmethod', ctx=Load())],
+          returns=Constant(value='ToolRegistry'))]),
+    FunctionDef(
+      name='default_registry',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return a registry pre-populated with built-in tools.')),
+        Return(
+          value=Call(
+            func=Name(id='ToolRegistry', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='tools',
+                value=Tuple(
+                  elts=[
+                    Call(
+                      func=Name(id='WebSearchTool', ctx=Load())),
+                    Call(
+                      func=Name(id='ProfileLookupTool', ctx=Load())),
+                    Call(
+                      func=Name(id='NewsTool', ctx=Load()))],
+                  ctx=Load()))]))],
+      returns=Name(id='ToolRegistry', ctx=Load())),
+    FunctionDef(
+      name='_deterministic_latency',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='base',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='spread',
+            annotation=Name(id='int', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None]),
+      body=[
+        Expr(
+          value=Constant(value='Return a reproducible pseudo-latency based on the query context.')),
+        Assign(
+          targets=[
+            Name(id='seed_components', ctx=Store())],
+          value=List(
+            elts=[
+              Name(id='name', ctx=Load()),
+              Name(id='query', ctx=Load()),
+              BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company_id')]),
+                  Constant(value='')]),
+              BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='context', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='contact_id')]),
+                  Constant(value='')])],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='seed', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='|'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Name(id='seed_components', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='digest', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='hashlib', ctx=Load()),
+                  attr='sha256',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='seed', ctx=Load()),
+                      attr='encode',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='utf-8')])]),
+              attr='hexdigest',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='offset', ctx=Store())],
+          value=BinOp(
+            left=Call(
+              func=Name(id='int', ctx=Load()),
+              args=[
+                Subscript(
+                  value=Name(id='digest', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=6)),
+                  ctx=Load()),
+                Constant(value=16)]),
+            op=Mod(),
+            right=Call(
+              func=Name(id='max', ctx=Load()),
+              args=[
+                Constant(value=1),
+                Name(id='spread', ctx=Load())]))),
+        Return(
+          value=BinOp(
+            left=Name(id='base', ctx=Load()),
+            op=Add(),
+            right=Name(id='offset', ctx=Load())))],
+      returns=Name(id='int', ctx=Load()))])

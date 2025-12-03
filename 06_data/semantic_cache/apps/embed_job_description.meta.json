@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\expand-phase\\vectorize-resume\\embedding\\compare-meaning\\embed_job_description.py",
+    "rel_path": "embed_job_description.py",
+    "root_name": "apps",
+    "file_hash": "5c366016535fe3b09a557a9b5a3d2c0590d9b09e729667f1e057ea8bb41a718b",
+    "file_size": 6694,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 6
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728353.2444382
+}

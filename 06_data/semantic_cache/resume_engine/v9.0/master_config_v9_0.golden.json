@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"schema_version\": \"v9.0-agentic-loops\",\n  \"redis_config\": {\n    \"host\": \"localhost\",\n    \"port\": 6379,\n    \"db\": 0\n  },\n  \"tracing_config\": {\n    \"langsmith_enabled\": true,\n    \"langsmith_api_key\": \"YOUR_LANGSMITH_API_KEY_HERE\"\n  },\n  \"meta_loop_config\": {\n    \"enable_meta_learning\": true,\n    \"feedback_log_path\": \"feedback_log.jsonl\",\n    \"approved_rules_registry_json\": \"rules_registry.json\",\n    \"proposed_rules_path\": \"proposed_rules.jsonl\",\n    \"preference_log_path\": \"preference_log.jsonl\",\n    \"pattern_confidence_threshold\": 0.75,\n    \"min_samples_for_learning\": 10\n  },\n  \"hil_config\": {\n    \"enable_content_approval\": true,\n    \"enable_preference_learning\": true\n  },\n  \"batch_config\": {\n    \"max_parallel_workers\": 8,\n    \"enable_online_learning\": true,\n    \"online_learning_failure_threshold\": 2\n  },\n  \"orchestration_config\": {\n    \"orchestration_mode\": \"dynamic_goal_driven\",\n    \"default_goal\": \"Produce a final_draft that passes all ValidationEngine checks\",\n    \"default_policy",
+  "full_hash": "587c5acd9fc92272807137e9e3f378ba0be0a2e9e32bf87aa26d6b49056d2afa",
+  "generated_at": 1764728328.1467097,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v9.0\\master_config_v9_0.json"
+}

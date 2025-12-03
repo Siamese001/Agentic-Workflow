@@ -1,0 +1,1095 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRetrieval Utilities (v10_9) — PURE META-LAYER RAG INFRA (META-AWARE, REFINED)\n\nThis module provides higher-level retrieval utilities for the v10_9\nagentic architecture. It is a *pure infrastructure* layer, sitting\nbelow L2 executors and above low-level primitives in runtime_utils.\n\nResponsibilities:\n    • Normalize raw retrieval hits into canonical structures.\n    • Apply ranking strategies (bm25, dense, hybrid) over retrieval results.\n    • Fuse multiple retrieval sources into a single ranked list.\n    • Enforce simple item limits (max_items).\n    • Provide small, typed helpers that L2 executors (e.g., RAGExecutor)\n      and external RAG clients can use.\n    • Adapt behavior based on meta_profile biases (routing/planning/QA/safety)\n      without violating L1–L5 boundaries.\n\nNon-responsibilities (Agentic Guardrails):\n    • NO L1 cognition (no planning).\n    • NO L2 tool/LLM execution.\n    • NO L3 orchestration.\n    • NO L4 state management (no StateAdapter usage).\n    • NO L5 safety decisions.\n    • NO provider/DB/SDK calls.\n\nMETA-awareness (from meta_profile):\n    • routing_bias.prefer_fast             → fewer items, lighter ranking.\n    • routing_bias.prefer_robust_retrieval → hybrid ranking, more items.\n    • planning_bias.conservative           → increase coverage (more items).\n    • qa_bias.recent_failures              → increase coverage (more items).\n    • safety_bias.heightened_caution       → filter out obviously risky items.\n\nAll behavior here is deterministic and side-effect-free.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='runtime_utils',
+      names=[
+        alias(name='Retrieval', asname='_Retrieval')],
+      level=0),
+    ImportFrom(
+      module='runtime_utils',
+      names=[
+        alias(name='Ranking', asname='_Ranking')],
+      level=0),
+    ImportFrom(
+      module='runtime_utils',
+      names=[
+        alias(name='RAGUtils', asname='_RAGUtils')],
+      level=0),
+    ImportFrom(
+      module='meta_profile',
+      names=[
+        alias(name='get_routing_bias'),
+        alias(name='get_planning_bias'),
+        alias(name='get_qa_bias'),
+        alias(name='get_safety_bias')],
+      level=0),
+    ClassDef(
+      name='RetrievalConfig',
+      body=[
+        Expr(
+          value=Constant(value='\n    Configuration for retrieval post-processing.\n\n    Fields:\n        • ranking_strategy: "bm25" | "dense" | "hybrid".\n        • max_items: maximum number of items to retain after fusion.\n        • metadata: optional additional hints (e.g., source identifiers).\n    ')),
+        AnnAssign(
+          target=Name(id='ranking_strategy', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='hybrid'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_items', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=50),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RetrievalItem',
+      body=[
+        Expr(
+          value=Constant(value='\n    Canonical retrieval item.\n\n    Fields:\n        • query: the query string used to retrieve this item.\n        • evidence: the text snippet or document content.\n        • rank: integer rank (1 = best).\n        • metadata: arbitrary metadata (scores, ids, etc.).\n    ')),
+        AnnAssign(
+          target=Name(id='query', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='evidence', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='rank', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='RetrievalResult',
+      body=[
+        Expr(
+          value=Constant(value='\n    Aggregated retrieval result for a set of queries.\n\n    Fields:\n        • items: list of RetrievalItem objects.\n        • config: RetrievalConfig used for post-processing.\n    ')),
+        AnnAssign(
+          target=Name(id='items', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RetrievalItem', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='config', ctx=Store()),
+          annotation=Name(id='RetrievalConfig', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='RetrievalConfig', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='items'),
+                  Constant(value='config')],
+                values=[
+                  ListComp(
+                    elt=Dict(
+                      keys=[
+                        Constant(value='query'),
+                        Constant(value='evidence'),
+                        Constant(value='rank'),
+                        Constant(value='metadata')],
+                      values=[
+                        Attribute(
+                          value=Name(id='it', ctx=Load()),
+                          attr='query',
+                          ctx=Load()),
+                        Attribute(
+                          value=Name(id='it', ctx=Load()),
+                          attr='evidence',
+                          ctx=Load()),
+                        Attribute(
+                          value=Name(id='it', ctx=Load()),
+                          attr='rank',
+                          ctx=Load()),
+                        Call(
+                          func=Name(id='dict', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='it', ctx=Load()),
+                              attr='metadata',
+                              ctx=Load())])]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='it', ctx=Store()),
+                        iter=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='items',
+                          ctx=Load()),
+                        is_async=0)]),
+                  Dict(
+                    keys=[
+                      Constant(value='ranking_strategy'),
+                      Constant(value='max_items'),
+                      Constant(value='metadata')],
+                    values=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='ranking_strategy',
+                        ctx=Load()),
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='config',
+                          ctx=Load()),
+                        attr='max_items',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='dict', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='config',
+                              ctx=Load()),
+                            attr='metadata',
+                            ctx=Load())])])]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    FunctionDef(
+      name='_apply_ranking_strategy',
+      args=arguments(
+        args=[
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='strategy',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Apply the requested ranking strategy to a list of retrieval dicts.\n\n    Strategy:\n        • "bm25"   → length-based BM25-like ranking.\n        • "dense"  → hash-based dense score ranking.\n        • "hybrid" → combined BM25 + dense ranking.\n        • default  → hybrid.\n    ')),
+        Assign(
+          targets=[
+            Name(id='s', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='strategy', ctx=Load()),
+                  Constant(value='hybrid')]),
+              attr='lower',
+              ctx=Load()))),
+        If(
+          test=Compare(
+            left=Name(id='s', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='bm25')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='_Ranking', ctx=Load()),
+                  attr='bm25_rank',
+                  ctx=Load()),
+                args=[
+                  Name(id='items', ctx=Load())]))]),
+        If(
+          test=Compare(
+            left=Name(id='s', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='dense')]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='_Ranking', ctx=Load()),
+                  attr='dense_rank',
+                  ctx=Load()),
+                args=[
+                  Name(id='items', ctx=Load())]))]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='_Ranking', ctx=Load()),
+              attr='hybrid_rank',
+              ctx=Load()),
+            args=[
+              Name(id='items', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_limit_items',
+      args=arguments(
+        args=[
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='max_items',
+            annotation=Name(id='int', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Limit the list of items to max_items, preserving order.\n    ')),
+        If(
+          test=Compare(
+            left=Name(id='max_items', ctx=Load()),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=0)]),
+          body=[
+            Return(
+              value=Name(id='items', ctx=Load()))]),
+        If(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Name(id='items', ctx=Load())]),
+            ops=[
+              LtE()],
+            comparators=[
+              Name(id='max_items', ctx=Load())]),
+          body=[
+            Return(
+              value=Name(id='items', ctx=Load()))]),
+        Return(
+          value=Subscript(
+            value=Name(id='items', ctx=Load()),
+            slice=Slice(
+              upper=Name(id='max_items', ctx=Load())),
+            ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_apply_meta_biases_to_config',
+      args=arguments(
+        args=[
+          arg(
+            arg='cfg',
+            annotation=Name(id='RetrievalConfig', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Return a new RetrievalConfig adjusted by meta_profile biases.\n\n    Meta influences:\n\n        • routing_bias.prefer_fast:\n            - reduce max_items (e.g., by half)\n        • routing_bias.prefer_robust_retrieval:\n            - enforce hybrid ranking, slightly more items\n        • planning_bias.conservative:\n            - increase max_items (more coverage)\n        • qa_bias.recent_failures:\n            - increase max_items (more evidence)\n        • safety_bias.heightened_caution:\n            - add flag in metadata for optional downstream filtering\n\n    All behavior is deterministic and side-effect-free; original cfg is\n    not mutated.\n    ')),
+        Assign(
+          targets=[
+            Name(id='routing', ctx=Store())],
+          value=Call(
+            func=Name(id='get_routing_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='planning', ctx=Store())],
+          value=Call(
+            func=Name(id='get_planning_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='qa', ctx=Store())],
+          value=Call(
+            func=Name(id='get_qa_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='safety', ctx=Store())],
+          value=Call(
+            func=Name(id='get_safety_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='new_cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='RetrievalConfig', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='ranking_strategy',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='ranking_strategy',
+                  ctx=Load())),
+              keyword(
+                arg='max_items',
+                value=Attribute(
+                  value=Name(id='cfg', ctx=Load()),
+                  attr='max_items',
+                  ctx=Load())),
+              keyword(
+                arg='metadata',
+                value=Call(
+                  func=Name(id='dict', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='cfg', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load())]))])),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='routing', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='prefer_fast')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='new_cfg', ctx=Load()),
+                  attr='max_items',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=10),
+                  BinOp(
+                    left=Attribute(
+                      value=Name(id='cfg', ctx=Load()),
+                      attr='max_items',
+                      ctx=Load()),
+                    op=FloorDiv(),
+                    right=Constant(value=2))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='new_cfg', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='meta_prefer_fast'),
+                  ctx=Store())],
+              value=Constant(value=True))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='routing', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='prefer_robust_retrieval')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='new_cfg', ctx=Load()),
+                  attr='ranking_strategy',
+                  ctx=Store())],
+              value=Constant(value='hybrid')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='new_cfg', ctx=Load()),
+                  attr='max_items',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='cfg', ctx=Load()),
+                    attr='max_items',
+                    ctx=Load()),
+                  Constant(value=60)])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='new_cfg', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='meta_prefer_robust_retrieval'),
+                  ctx=Store())],
+              value=Constant(value=True))]),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='planning', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='conservative')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='qa', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='recent_failures')])]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='new_cfg', ctx=Load()),
+                  attr='max_items',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='new_cfg', ctx=Load()),
+                    attr='max_items',
+                    ctx=Load()),
+                  BinOp(
+                    left=Attribute(
+                      value=Name(id='cfg', ctx=Load()),
+                      attr='max_items',
+                      ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=20))])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='new_cfg', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='meta_conservative_or_qa_failures'),
+                  ctx=Store())],
+              value=Constant(value=True))]),
+        If(
+          test=Call(
+            func=Attribute(
+              value=Name(id='safety', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='heightened_caution')]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='new_cfg', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='meta_high_safety'),
+                  ctx=Store())],
+              value=Constant(value=True))]),
+        Return(
+          value=Name(id='new_cfg', ctx=Load()))],
+      returns=Name(id='RetrievalConfig', ctx=Load())),
+    FunctionDef(
+      name='_filter_for_safety',
+      args=arguments(
+        args=[
+          arg(
+            arg='items',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='safety_bias',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value="\n    Apply very light deterministic filtering for obviously risky items.\n\n    For now, this is deliberately simple and hard-coded. It is meant to\n    support heightened_caution flows by removing items that contain\n    highly suspicious markers in 'evidence'.\n    ")),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='safety_bias', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='heightened_caution')])),
+          body=[
+            Return(
+              value=Name(id='items', ctx=Load()))]),
+        AnnAssign(
+          target=Name(id='filtered', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        Assign(
+          targets=[
+            Name(id='risky_markers', ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='password'),
+              Constant(value='ssn'),
+              Constant(value='social security number')],
+            ctx=Load())),
+        For(
+          target=Name(id='it', ctx=Store()),
+          iter=Name(id='items', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ev', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='it', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='evidence'),
+                          Constant(value='')])]),
+                  attr='lower',
+                  ctx=Load()))),
+            If(
+              test=Call(
+                func=Name(id='any', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Compare(
+                      left=Name(id='m', ctx=Load()),
+                      ops=[
+                        In()],
+                      comparators=[
+                        Name(id='ev', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='m', ctx=Store()),
+                        iter=Name(id='risky_markers', ctx=Load()),
+                        is_async=0)])]),
+              body=[
+                Continue()]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='filtered', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='it', ctx=Load())]))]),
+        Return(
+          value=Name(id='filtered', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='normalize_raw_results',
+      args=arguments(
+        args=[
+          arg(
+            arg='raw_results',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='config',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='RetrievalConfig', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Normalize raw retrieval results into a canonical RetrievalResult.\n\n    Steps:\n        0. Apply meta_profile biases to RetrievalConfig.\n        1. Normalize raw dicts into {query, evidence, rank}.\n        2. Deduplicate identical (query, evidence) pairs.\n        3. Apply ranking strategy (bm25/dense/hybrid).\n        4. Rerank & fuse results (single-source).\n        5. Limit items to config.max_items.\n        6. Optionally filter for basic safety when heightened_caution.\n        7. Normalize to RAG-style items with metadata.\n        8. Return RetrievalResult with RetrievalItem objects.\n\n    This function does NOT call any external services; it operates on\n    already-fetched raw results (e.g., from a DB, vector store, or LLM).\n    ')),
+        Assign(
+          targets=[
+            Name(id='base_cfg', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='config', ctx=Load()),
+              Call(
+                func=Name(id='RetrievalConfig', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='_apply_meta_biases_to_config', ctx=Load()),
+            args=[
+              Name(id='base_cfg', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='norm', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='_Retrieval', ctx=Load()),
+              attr='normalize_documents',
+              ctx=Load()),
+            args=[
+              Name(id='raw_results', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='norm', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='_Retrieval', ctx=Load()),
+              attr='dedupe_results',
+              ctx=Load()),
+            args=[
+              Name(id='norm', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='ranked', ctx=Store())],
+          value=Call(
+            func=Name(id='_apply_ranking_strategy', ctx=Load()),
+            args=[
+              Name(id='norm', ctx=Load()),
+              Attribute(
+                value=Name(id='cfg', ctx=Load()),
+                attr='ranking_strategy',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='reranked', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='_Retrieval', ctx=Load()),
+              attr='rerank_results',
+              ctx=Load()),
+            args=[
+              Name(id='ranked', ctx=Load()),
+              Attribute(
+                value=Name(id='cfg', ctx=Load()),
+                attr='ranking_strategy',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='fused', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='_Retrieval', ctx=Load()),
+              attr='fuse_results',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Name(id='reranked', ctx=Load())],
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='fused', ctx=Store())],
+          value=Call(
+            func=Name(id='_limit_items', ctx=Load()),
+            args=[
+              Name(id='fused', ctx=Load()),
+              Attribute(
+                value=Name(id='cfg', ctx=Load()),
+                attr='max_items',
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='safety_bias', ctx=Store())],
+          value=Call(
+            func=Name(id='get_safety_bias', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='fused', ctx=Store())],
+          value=Call(
+            func=Name(id='_filter_for_safety', ctx=Load()),
+            args=[
+              Name(id='fused', ctx=Load()),
+              Name(id='safety_bias', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='rag_items', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='_RAGUtils', ctx=Load()),
+              attr='normalize_rag_results',
+              ctx=Load()),
+            args=[
+              Name(id='fused', ctx=Load())])),
+        AnnAssign(
+          target=Name(id='items', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='RetrievalItem', ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='d', ctx=Store()),
+          iter=Name(id='rag_items', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='items', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='RetrievalItem', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='query',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='d', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='query'),
+                                Constant(value='')])])),
+                      keyword(
+                        arg='evidence',
+                        value=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='d', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='evidence'),
+                                Constant(value='')])])),
+                      keyword(
+                        arg='rank',
+                        value=Call(
+                          func=Name(id='int', ctx=Load()),
+                          args=[
+                            BoolOp(
+                              op=Or(),
+                              values=[
+                                Call(
+                                  func=Attribute(
+                                    value=Name(id='d', ctx=Load()),
+                                    attr='get',
+                                    ctx=Load()),
+                                  args=[
+                                    Constant(value='rank'),
+                                    Constant(value=0)]),
+                                Constant(value=0)])])),
+                      keyword(
+                        arg='metadata',
+                        value=Call(
+                          func=Name(id='dict', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='d', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='metadata'),
+                                Dict()])]))])]))]),
+        Return(
+          value=Call(
+            func=Name(id='RetrievalResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='items',
+                value=Name(id='items', ctx=Load())),
+              keyword(
+                arg='config',
+                value=Name(id='cfg', ctx=Load()))]))],
+      returns=Name(id='RetrievalResult', ctx=Load())),
+    FunctionDef(
+      name='fuse_multiple_sources',
+      args=arguments(
+        args=[
+          arg(
+            arg='sources',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='config',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='RetrievalConfig', ctx=Load()),
+              ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Fuse retrieval results from multiple sources into a single ranked list.\n\n    Inputs:\n        • sources:\n            A list of lists, where each inner list is a set of raw retrieval\n            dicts from a given source (e.g., vector DB, keyword DB, LLM-HYDE).\n\n        • config:\n            Optional RetrievalConfig controlling ranking and max_items.\n\n    Behavior:\n        0. Apply meta_profile biases to RetrievalConfig.\n        1. Flatten all sources into one list.\n        2. Normalize and dedupe results.\n        3. Apply ranking strategy (bm25/dense/hybrid).\n        4. Limit items to config.max_items.\n        5. Optional meta-aware safety filtering.\n        6. Normalize to canonical RetrievalResult.\n    ')),
+        Assign(
+          targets=[
+            Name(id='base_cfg', ctx=Store())],
+          value=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='config', ctx=Load()),
+              Call(
+                func=Name(id='RetrievalConfig', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='cfg', ctx=Store())],
+          value=Call(
+            func=Name(id='_apply_meta_biases_to_config', ctx=Load()),
+            args=[
+              Name(id='base_cfg', ctx=Load())])),
+        AnnAssign(
+          target=Name(id='merged', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=List(ctx=Load()),
+          simple=1),
+        For(
+          target=Name(id='source_list', ctx=Store()),
+          iter=BoolOp(
+            op=Or(),
+            values=[
+              Name(id='sources', ctx=Load()),
+              List(ctx=Load())]),
+          body=[
+            For(
+              target=Name(id='item', ctx=Store()),
+              iter=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='source_list', ctx=Load()),
+                  List(ctx=Load())]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='merged', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='dict', ctx=Load()),
+                        args=[
+                          Name(id='item', ctx=Load())])]))])]),
+        Return(
+          value=Call(
+            func=Name(id='normalize_raw_results', ctx=Load()),
+            args=[
+              Name(id='merged', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='cfg', ctx=Load()))]))],
+      returns=Name(id='RetrievalResult', ctx=Load())),
+    FunctionDef(
+      name='to_simple_dict_list',
+      args=arguments(
+        args=[
+          arg(
+            arg='result',
+            annotation=Name(id='RetrievalResult', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Convenience helper: return a plain list[dict] for use in JSON or\n    logging. Each item is:\n\n        {\n            "query": str,\n            "evidence": str,\n            "rank": int,\n            "metadata": {...}\n        }\n    ')),
+        Return(
+          value=ListComp(
+            elt=Dict(
+              keys=[
+                Constant(value='query'),
+                Constant(value='evidence'),
+                Constant(value='rank'),
+                Constant(value='metadata')],
+              values=[
+                Attribute(
+                  value=Name(id='it', ctx=Load()),
+                  attr='query',
+                  ctx=Load()),
+                Attribute(
+                  value=Name(id='it', ctx=Load()),
+                  attr='evidence',
+                  ctx=Load()),
+                Attribute(
+                  value=Name(id='it', ctx=Load()),
+                  attr='rank',
+                  ctx=Load()),
+                Call(
+                  func=Name(id='dict', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='it', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load())])]),
+            generators=[
+              comprehension(
+                target=Name(id='it', ctx=Store()),
+                iter=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='items',
+                  ctx=Load()),
+                is_async=0)]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Subscript(
+          value=Name(id='Dict', ctx=Load()),
+          slice=Tuple(
+            elts=[
+              Name(id='str', ctx=Load()),
+              Name(id='Any', ctx=Load())],
+            ctx=Load()),
+          ctx=Load()),
+        ctx=Load()))])

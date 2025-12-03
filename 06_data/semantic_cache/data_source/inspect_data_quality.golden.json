@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - inspect_data_quality\nImplements L1 Cognitive Planning Layer for inspect data quality operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass InspectDataQualityExecutorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass InspectDataQualityExecutorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass InspectDataQualityExecutorResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    suc",
+  "full_hash": "be02ffea2681099c6ef2f3382a8d355d393762724f97418c8db8e9b87b4c8d35",
+  "generated_at": 1764728349.5641499,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\exec-layer\\inspect-phase\\find-data-problems\\general\\update-memory\\inspect_data_quality.py"
+}

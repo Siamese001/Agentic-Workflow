@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_8\\state_v10_8\\test_memory_population.py",
+    "rel_path": "test_memory_population.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_7_main",
+    "file_hash": "f192a17464331d81fc3b18a97d8b846ed5edfba3b558e4bf93097286bd1cd016",
+    "file_size": 980,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728231.637998
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\retrieval_clients.py",
+    "rel_path": "retrieval_clients.py",
+    "root_name": "outreach_engine/Agentic LIC",
+    "file_hash": "4595a8febbd9c0f5fc17de76ca97d3dd5e974ec5361fa76c0c08c49c48fee927",
+    "file_size": 1757,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.4620976
+}

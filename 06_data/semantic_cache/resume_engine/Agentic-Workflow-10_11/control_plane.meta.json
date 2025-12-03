@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\control_plane.py",
+    "rel_path": "control_plane.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "cba8ab70b80c8add98a55e12ba2b86e359a6b74da968fa2d948098bab1bf96b5",
+    "file_size": 2395,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728224.130358
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "# Resume Generation Engine v8.0 - Agentic Upgrade\n\n## Quick Start\n\n**TL;DR:** All 7 Python/config files upgraded from v7.5 \u2192 v8.0. RAG/Drafting/QA stacks now score \u226595. Bullet generation uses 2/3/2 (Unify) and 2/2/2 (IBM) provenance plans with full LLM pipeline.\n\n## What's New in v8.0\n\n### \ud83c\udfaf Requirements Met\n1. **\u2705 Agentic Scores \u226595:**\n   - RAGStack: 96/100 (was 62) - Full ReAct agent with critique loop\n   - DraftingStack: 98/100 (was 91) - Dynamic MoE conductor\n   - QAStack: 96/100 (was 81) - Dynamic MoE conductor\n\n2. **\u2705 Bullet Provenance (Req #2):**\n   - Unify: 2 verbatim + 3 customized + 2 synthetic\n   - IBM: 2 verbatim + 2 customized + 2 synthetic\n   - All customized/synthetic bullets use LLM generation\n\n### \ud83d\udce6 Files Delivered (10 total)\n\n**Core Files (7):**\n1. `core_v8_0.py` - Foundation with 33 prompt constants\n2. `agent_swarm_v8_0.py` - Agents with ReAct, MoE, provenance routing\n3. `master_config_v8_0.json` - Config with v8.0 prompts & scores\n4. `agentic_capability_assessment_v",
+  "full_hash": "7b4f73dce45515459570ab45978f1e60503181894d505f7abb3d8204464684fd",
+  "generated_at": 1764728327.9917023,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v8.0\\Testing\\README_V8_0.md"
+}

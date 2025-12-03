@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\safe-layer\\safety-phase\\check-observability-rules\\policy\\check-safety\\apply_observability_safety.py",
+    "rel_path": "apply_observability_safety.py",
+    "root_name": "observability",
+    "file_hash": "9cddd09007b6ac3922ea4b7f1f13e2005f6efd4922fd3c1bd03991f3cae56a9d",
+    "file_size": 11452,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728351.4509788
+}

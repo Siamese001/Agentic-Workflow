@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v5.10 - WORD COUNT TABLE + APP TRACKER\n================================================================================\nPATCH NOTES v5.10 (October 2025):\n\u2713 Output 4: Word count comparison table (replaces CoC Ledger)\n\u2713 Output 5: Application tracker (restored from v5.8)\n\u2713 Shows baseline vs current word counts per section with tolerance bands\n\u2713 5-output structure: Resume, Cover Letter, QA Report, Word Table, App Tracker\n\nPATCH NOTES v5.8 (October 2025):\n\u2713 Output 5: Application tracker with all 56 App_Schema_v4 fields populated\n\u2713 Auto-populated: Company, Job Title, Application Date, Base/Versioned Resume\n\u2713 All remaining fields ready for user input\n\u2713 Validation: Log-only mode (no output blocking)\nNOTE: v5.9 replaces App Tracker + CoC Ledger with single Word Table (4 outputs total)\n\nPATCH NOTES v5.7 (October 2025):\n\u2713 Section length constraints: TraderSense, EY, Early Career \u00b110% of master resume words\n\u2713 Word distribution rules: (Unify + IBM words) = 35-45% of tot",
+  "full_hash": "acacd801279d76150127d4fce22737b027996fab7d946e27023e9f560fda1bf8",
+  "generated_at": 1764728300.1090918,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_10_full.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nCanonical SSoT MERGE Implementation for Agentic-Workflow\n\nImplements G5: COMBINED_SSoT = MERGE(SSoT_YAML, SSoT_META)\n\nThis module provides the canonical merge function that combines the main\nunified_structure_subatomic.yaml with unified_structure_subatomic_meta.yaml\nto produce the authoritative Single Source of Truth structure.\n\"\"\"\n\nimport yaml\nimport json\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Optional\nfrom copy import deepcopy\n\n\nclass SSoTMerger:\n    \"\"\"\n    Canonical SSoT MERGE implementation\n    \n    Combines main YAML structure with meta YAML according to binding rules:\n    - Main YAML provides the file system structure\n    - Meta YAML provides vocab constraints and protected paths\n    - MERGE produces canonical SSoT for all phases\n    \"\"\"\n    \n    def __init__(self, workspace_root: Path):\n        self.workspace_root = Path(workspace_root)\n        self.main_yaml_path = self.workspace_root / \"unified_structure_subatomic.yaml\"\n       ",
+  "full_hash": "f9f948d38a8ae4330b42ce06fe79527eea97e95ba8d43761dacfb9ce2115d70f",
+  "generated_at": 1764728346.640629,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\ssot_merger.py"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Focused regression tests for the v10.7 core components.\"\"\"\n\nimport asyncio\nimport json\nfrom functools import partial\nfrom pathlib import Path\nimport sys\nimport textwrap\nimport types\nfrom typing import Any, Callable, Dict, List\n\nimport pytest\n\nfrom core_v10_7 import (\n    BaseTool,\n    CacheManager,\n    CircuitBreaker,\n    CircuitBreakerOpenError,\n    ConfigV10_7,\n    ContextBudgetManager,\n    CostTracker,\n    FeedbackLogReader,\n    MCPClientStub,\n    MetricsCollector,\n    ModelAPIError,\n    MCPClientInitializationError,\n    PlannerAssessment,\n    ProposedRulesLoader,\n    PromptTemplateManager,\n    ResponseValidator,\n    ScenarioSimulationResult,\n    SemanticValidator,\n    StrategyPlan,\n    WorkflowContext,\n    exponential_backoff_retry,\n    _instantiate_mcp_client,\n    _parse_mcp_client_specs,\n    MCPClientSpec,\n    wrap_mcp,\n)\nfrom agent_tools_v10_7 import resolve_mcp_client\nfrom strategy_ensemble_v10_7 import (\n    DomainPlannerAgent,\n    FeasibilityAnalystAgent,\n    RiskAssessorA",
+  "full_hash": "21da1f3fcc77701d48bd13bb1fa6995821a617fed00977d4a7eafe7af0a81c17",
+  "generated_at": 1764728331.283236,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\test_system_v10_7.py"
+}

@@ -1,0 +1,87 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L2 Execution Layer Mocks.')),
+    ClassDef(
+      name='MockToolExecutor',
+      body=[
+        Expr(
+          value=Constant(value='Mock tool executor for testing.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='calls',
+                  ctx=Store())],
+              value=List(ctx=Load()))]),
+        FunctionDef(
+          name='execute',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='tool_name'),
+              arg(arg='params')]),
+          body=[
+            Expr(
+              value=Constant(value='Mock execute method.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='calls',
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Tuple(
+                    elts=[
+                      Name(id='tool_name', ctx=Load()),
+                      Name(id='params', ctx=Load())],
+                    ctx=Load())])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='status'),
+                  Constant(value='result')],
+                values=[
+                  Constant(value='success'),
+                  Constant(value='mock_result')]))])]),
+    ClassDef(
+      name='MockExecutionContext',
+      body=[
+        Expr(
+          value=Constant(value='Mock execution context for testing.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='user_id',
+                  ctx=Store())],
+              value=Constant(value='test_user')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='session_id',
+                  ctx=Store())],
+              value=Constant(value='test_session')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='profile_name',
+                  ctx=Store())],
+              value=Constant(value='test_profile'))])])])

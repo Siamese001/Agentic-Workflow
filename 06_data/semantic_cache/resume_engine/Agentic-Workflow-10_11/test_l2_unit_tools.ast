@@ -1,0 +1,71 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L2 Execution Unit Tools Tests.')),
+    ClassDef(
+      name='TestL2UnitTools',
+      body=[
+        Expr(
+          value=Constant(value='Unit tests for L2 execution tools.')),
+        FunctionDef(
+          name='test_tool_registration',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test tool registration mechanism.')),
+            Assign(
+              targets=[
+                Name(id='registry', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='tools')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='search'),
+                      Constant(value='extract'),
+                      Constant(value='validate')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Subscript(
+                      value=Name(id='registry', ctx=Load()),
+                      slice=Constant(value='tools'),
+                      ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=3)]))]),
+        FunctionDef(
+          name='test_tool_parameter_validation',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test tool parameter validation.')),
+            Assign(
+              targets=[
+                Name(id='params', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='query'),
+                  Constant(value='limit')],
+                values=[
+                  Constant(value='test'),
+                  Constant(value=10)])),
+            Assert(
+              test=Compare(
+                left=Subscript(
+                  value=Name(id='params', ctx=Load()),
+                  slice=Constant(value='limit'),
+                  ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0)]))])])])

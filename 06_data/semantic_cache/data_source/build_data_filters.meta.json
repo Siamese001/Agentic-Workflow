@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\plan-phase\\get-data-info\\utility\\prepare-information\\build_data_filters.py",
+    "rel_path": "build_data_filters.py",
+    "root_name": "data_source",
+    "file_hash": "df2ebe4adcf7ffe3a6667e82a8b56e8363b0bf4b44f31f6cea5310b4abdf2873",
+    "file_size": 6622,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.9851096
+}

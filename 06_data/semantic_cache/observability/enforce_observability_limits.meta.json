@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\07_observability\\orc-layer\\safety-phase\\manage-observability-costs\\general\\update-memory\\enforce_observability_limits.py",
+    "rel_path": "enforce_observability_limits.py",
+    "root_name": "observability",
+    "file_hash": "d440e48230e4fd4addfc368d8189322dba470058d8cb1c18a9a5221c86cb39d8",
+    "file_size": 11500,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728350.950472
+}

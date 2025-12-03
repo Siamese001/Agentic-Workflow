@@ -1,0 +1,347 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nRedis client provider for caching operations.\n\nIsolates Redis SDK dependencies to the providers layer\nand provides a clean interface for cache operations.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional')],
+      level=0),
+    Try(
+      body=[
+        Import(
+          names=[
+            alias(name='redis')])],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          name='exc',
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ImportError', ctx=Load()),
+                args=[
+                  Constant(value='redis package not installed. Install with: pip install redis')]),
+              cause=Name(id='exc', ctx=Load()))])]),
+    ClassDef(
+      name='RedisClient',
+      body=[
+        Expr(
+          value=Constant(value='Provider client for Redis operations.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='host',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='port',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='db',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='password',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='decode_responses',
+                annotation=Name(id='bool', ctx=Load()))],
+            kwarg=arg(arg='kwargs'),
+            defaults=[
+              Constant(value='localhost'),
+              Constant(value=6379),
+              Constant(value=0),
+              Constant(value=None),
+              Constant(value=True)]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize Redis client with connection parameters.')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='client',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='redis', ctx=Load()),
+                  attr='Redis',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='host',
+                    value=Name(id='host', ctx=Load())),
+                  keyword(
+                    arg='port',
+                    value=Name(id='port', ctx=Load())),
+                  keyword(
+                    arg='db',
+                    value=Name(id='db', ctx=Load())),
+                  keyword(
+                    arg='password',
+                    value=Name(id='password', ctx=Load())),
+                  keyword(
+                    arg='decode_responses',
+                    value=Name(id='decode_responses', ctx=Load())),
+                  keyword(
+                    value=Name(id='kwargs', ctx=Load()))]))]),
+        FunctionDef(
+          name='get',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Get value from Redis.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='set',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='ex',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='int', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Set value in Redis with optional expiration.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='set',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load()),
+                  Name(id='value', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='ex',
+                    value=Name(id='ex', ctx=Load()))]))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='delete',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Delete key from Redis.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='delete',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())]))],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='exists',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Check if key exists in Redis.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='exists',
+                  ctx=Load()),
+                args=[
+                  Name(id='key', ctx=Load())]))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='ping',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Ping Redis server to check connectivity.')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='ping',
+                  ctx=Load())))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='close',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Close Redis connection.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='client',
+                    ctx=Load()),
+                  attr='close',
+                  ctx=Load())))],
+          returns=Constant(value=None))]),
+    FunctionDef(
+      name='init_redis_client',
+      args=arguments(
+        args=[
+          arg(
+            arg='url',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='timeout_s',
+            annotation=Name(id='float', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=1.0)],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Initialize a Redis client from URL or default parameters.')),
+        If(
+          test=Name(id='url', ctx=Load()),
+          body=[
+            Import(
+              names=[
+                alias(name='urllib.parse')]),
+            Assign(
+              targets=[
+                Name(id='parsed', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='urllib', ctx=Load()),
+                    attr='parse',
+                    ctx=Load()),
+                  attr='urlparse',
+                  ctx=Load()),
+                args=[
+                  Name(id='url', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='RedisClient', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='host',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Attribute(
+                          value=Name(id='parsed', ctx=Load()),
+                          attr='hostname',
+                          ctx=Load()),
+                        Constant(value='localhost')])),
+                  keyword(
+                    arg='port',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Attribute(
+                          value=Name(id='parsed', ctx=Load()),
+                          attr='port',
+                          ctx=Load()),
+                        Constant(value=6379)])),
+                  keyword(
+                    arg='db',
+                    value=IfExp(
+                      test=Attribute(
+                        value=Name(id='parsed', ctx=Load()),
+                        attr='path',
+                        ctx=Load()),
+                      body=Call(
+                        func=Name(id='int', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='parsed', ctx=Load()),
+                                attr='path',
+                                ctx=Load()),
+                              attr='lstrip',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='/')])]),
+                      orelse=Constant(value=0))),
+                  keyword(
+                    arg='password',
+                    value=Attribute(
+                      value=Name(id='parsed', ctx=Load()),
+                      attr='password',
+                      ctx=Load())),
+                  keyword(
+                    arg='socket_timeout',
+                    value=Name(id='timeout_s', ctx=Load()))]))],
+          orelse=[
+            Return(
+              value=Call(
+                func=Name(id='RedisClient', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='socket_timeout',
+                    value=Name(id='timeout_s', ctx=Load()))]))])],
+      returns=Name(id='RedisClient', ctx=Load()))])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\semantic\\adjust-scores\\assess_scripts_risk.py",
+    "rel_path": "assess_scripts_risk.py",
+    "root_name": "scripts",
+    "file_hash": "1433924b0a3e4ea3e9a5ef456cd49ea4d6c8ead2b738b956373c9059d2702393",
+    "file_size": 11284,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.4661996
+}

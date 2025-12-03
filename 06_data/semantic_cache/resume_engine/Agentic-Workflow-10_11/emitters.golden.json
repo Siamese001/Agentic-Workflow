@@ -1,0 +1,6 @@
+{
+  "golden_content": "from __future__ import annotations\n\nfrom typing import Any, Dict, List, Optional\n\nfrom core.models.models import (\n    TelemetryEvent,\n    RetrievalAttemptEvent,\n    RetrievalSuccessEvent,\n    RetrievalFailureEvent,\n    RankingEvent,\n    CostSnapshot,\n)\nfrom runtime.observability.collectors import append_event\nfrom runtime.observability.spans import _now_ms\n\n\ndef emit_node_event(node: str, status: str, details: Optional[str] = None) -> None:\n    \"\"\"Node-level events for L3 orchestration visibility.\"\"\"\n\n    append_event(\n        TelemetryEvent(\n            name=node,\n            ts_ms=_now_ms(),\n            attributes={\n                \"event_type\": \"node\",\n                \"status\": status,\n                \"details\": details,\n            },\n        )\n    )\n\n\ndef emit_telemetry_event(name: str, attributes: Dict[str, Any]) -> None:\n    \"\"\"General-purpose event emission for arbitrary telemetry use cases.\"\"\"\n\n    append_event(\n        TelemetryEvent(\n            name=name,\n            ts_ms",
+  "full_hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
+  "generated_at": 1764728226.4154744,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\emitters.py"
+}

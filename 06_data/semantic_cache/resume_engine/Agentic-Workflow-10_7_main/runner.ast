@@ -1,0 +1,1610 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Test-friendly entrypoints for running the v10.7 workflow.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='asyncio')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='hashlib',
+      names=[
+        alias(name='sha1')],
+      level=0),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='core_v10_7',
+      names=[
+        alias(name='ConfigV10_7'),
+        alias(name='MainGraphState'),
+        alias(name='WorkflowPhase')],
+      level=0),
+    ImportFrom(
+      module='main_v10_7',
+      names=[
+        alias(name='run_workflow_async'),
+        alias(name='setup_logging')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='_DEFAULT_CONFIG', ctx=Store())],
+      value=Call(
+        func=Name(id='Path', ctx=Load()),
+        args=[
+          Constant(value='master_config_v10_7.json')])),
+    Assign(
+      targets=[
+        Name(id='_DEFAULT_JOB_INPUT', ctx=Store())],
+      value=Call(
+        func=Name(id='Path', ctx=Load()),
+        args=[
+          Constant(value='job_input.json')])),
+    Assign(
+      targets=[
+        Name(id='_DEFAULT_MASTER_RESUME', ctx=Store())],
+      value=Call(
+        func=Name(id='Path', ctx=Load()),
+        args=[
+          Constant(value='master_resume.json')])),
+    ClassDef(
+      name='_SyntheticResult',
+      body=[
+        Expr(
+          value=Constant(value='Container for deterministic synthetic workflow outputs.')),
+        AnnAssign(
+          target=Name(id='status', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='workflow_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='summary', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='events', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Iterable', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resume', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='merged_output', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='state', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='as_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='status'),
+                  Constant(value='workflow_id'),
+                  Constant(value='summary'),
+                  Constant(value='events'),
+                  Constant(value='resume'),
+                  Constant(value='merged_output'),
+                  Constant(value='state')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='status',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='workflow_id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='summary',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='events',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='resume',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='merged_output',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='state',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    FunctionDef(
+      name='_ensure_runtime_paths',
+      args=arguments(
+        args=[
+          arg(
+            arg='config',
+            annotation=Name(id='ConfigV10_7', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Create directories referenced by the configuration if they are missing.')),
+        Assign(
+          targets=[
+            Name(id='paths', ctx=Store())],
+          value=List(
+            elts=[
+              Attribute(
+                value=Call(
+                  func=Name(id='Path', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='logging_config',
+                        ctx=Load()),
+                      attr='log_file',
+                      ctx=Load())]),
+                attr='parent',
+                ctx=Load()),
+              Attribute(
+                value=Call(
+                  func=Name(id='Path', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='logging_config',
+                        ctx=Load()),
+                      attr='metrics_log_path',
+                      ctx=Load())]),
+                attr='parent',
+                ctx=Load()),
+              Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='storage_config',
+                        ctx=Load()),
+                      Constant(value='durable_root'),
+                      Constant(value='runtime_state')])]),
+              Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='storage_config',
+                        ctx=Load()),
+                      Constant(value='ephemeral_root'),
+                      Constant(value='tmp')])]),
+              Attribute(
+                value=Call(
+                  func=Name(id='Path', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='meta_loop_config',
+                        ctx=Load()),
+                      attr='feedback_log_path',
+                      ctx=Load())]),
+                attr='parent',
+                ctx=Load()),
+              Attribute(
+                value=Call(
+                  func=Name(id='Path', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='meta_loop_config',
+                        ctx=Load()),
+                      attr='preference_log_path',
+                      ctx=Load())]),
+                attr='parent',
+                ctx=Load()),
+              Attribute(
+                value=Call(
+                  func=Name(id='Path', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Attribute(
+                        value=Name(id='config', ctx=Load()),
+                        attr='meta_loop_config',
+                        ctx=Load()),
+                      attr='proposed_rules_path',
+                      ctx=Load())]),
+                attr='parent',
+                ctx=Load()),
+              Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='config', ctx=Load()),
+                      attr='meta_loop_config',
+                      ctx=Load()),
+                    attr='generated_tools_path',
+                    ctx=Load())]),
+              Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='config', ctx=Load()),
+                      attr='chromadb_config',
+                      ctx=Load()),
+                    attr='persistent_path',
+                    ctx=Load())])],
+            ctx=Load())),
+        For(
+          target=Name(id='directory', ctx=Store()),
+          iter=Name(id='paths', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='directory', ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='parents',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='exist_ok',
+                    value=Constant(value=True))]))])],
+      returns=Constant(value=None)),
+    FunctionDef(
+      name='_synthesise_events',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Derive predictable events for contract and integration tests.')),
+        Assign(
+          targets=[
+            Name(id='resume_text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='sort_keys',
+                    value=Constant(value=True))]),
+              attr='lower',
+              ctx=Load()))),
+        AnnAssign(
+          target=Name(id='events', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='list', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=List(
+            elts=[
+              Constant(value='ingest')],
+            ctx=Load()),
+          simple=1),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Constant(value='confused'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='resume_text', ctx=Load())]),
+              Compare(
+                left=Constant(value='ambigu'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='resume_text', ctx=Load())])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='events', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='HIL')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='events', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='ToT')]))]),
+        If(
+          test=BoolOp(
+            op=Or(),
+            values=[
+              Compare(
+                left=Constant(value='low_confidence'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='resume_text', ctx=Load())]),
+              Compare(
+                left=Constant(value='retry'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='resume_text', ctx=Load())])]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='events', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='retry')]))]),
+        If(
+          test=Compare(
+            left=Constant(value='cache'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='resume_text', ctx=Load())]),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='events', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='cache_hit')]))]),
+        Return(
+          value=Name(id='events', ctx=Load()))],
+      returns=Subscript(
+        value=Name(id='list', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_synthetic_resume',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Return a structured resume payload used by schema validation tests.')),
+        Assign(
+          targets=[
+            Name(id='resume_name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='context', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='resume'),
+              Constant(value='Candidate')])),
+        Assign(
+          targets=[
+            Name(id='job_title', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='context', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='jd'),
+              Call(
+                func=Attribute(
+                  value=Name(id='context', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job_title'),
+                  Constant(value='Role')])])),
+        Assign(
+          targets=[
+            Name(id='base_summary', ctx=Store())],
+          value=JoinedStr(
+            values=[
+              Constant(value='Generated resume for '),
+              FormattedValue(
+                value=Name(id='resume_name', ctx=Load()),
+                conversion=-1),
+              Constant(value=' targeting '),
+              FormattedValue(
+                value=Name(id='job_title', ctx=Load()),
+                conversion=-1),
+              Constant(value='.')])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='candidate'),
+              Constant(value='job_title'),
+              Constant(value='summary'),
+              Constant(value='highlights'),
+              Constant(value='skills'),
+              Constant(value='sections')],
+            values=[
+              Name(id='resume_name', ctx=Load()),
+              Name(id='job_title', ctx=Load()),
+              Name(id='base_summary', ctx=Load()),
+              List(
+                elts=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Led initiatives relevant to '),
+                      FormattedValue(
+                        value=Name(id='job_title', ctx=Load()),
+                        conversion=-1)]),
+                  Constant(value='Drove measurable impact across AI systems')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='AI Strategy'),
+                  Constant(value='Prompt Engineering'),
+                  Constant(value='LangGraph')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='title'),
+                      Constant(value='entries')],
+                    values=[
+                      Constant(value='Experience'),
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='heading'),
+                              Constant(value='bullet_points')],
+                            values=[
+                              Constant(value='Principal AI Architect'),
+                              List(
+                                elts=[
+                                  Constant(value='Built multi-agent orchestration pipelines.'),
+                                  Constant(value='Implemented safety and compliance guardrails.')],
+                                ctx=Load())])],
+                        ctx=Load())]),
+                  Dict(
+                    keys=[
+                      Constant(value='title'),
+                      Constant(value='entries')],
+                    values=[
+                      Constant(value='Education'),
+                      List(
+                        elts=[
+                          Dict(
+                            keys=[
+                              Constant(value='heading'),
+                              Constant(value='bullet_points')],
+                            values=[
+                              Constant(value='M.S. Computer Science'),
+                              List(
+                                elts=[
+                                  Constant(value='Focus on machine learning and distributed systems.')],
+                                ctx=Load())])],
+                        ctx=Load())])],
+                ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_legacy_resume_view',
+      args=arguments(
+        args=[
+          arg(
+            arg='full_state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='resume', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='full_state', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='full_state', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='resume'),
+                Dict()]),
+            orelse=Dict())),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='candidate'),
+              Constant(value='job_title'),
+              Constant(value='summary'),
+              Constant(value='highlights'),
+              Constant(value='skills'),
+              Constant(value='sections')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='candidate')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job_title')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='summary')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='highlights'),
+                  List(ctx=Load())]),
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='skills'),
+                  List(ctx=Load())]),
+              Call(
+                func=Attribute(
+                  value=Name(id='resume', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='sections'),
+                  List(ctx=Load())])]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_build_synthetic_state',
+      args=arguments(
+        args=[
+          arg(
+            arg='resume_payload',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='events',
+            annotation=Subscript(
+              value=Name(id='Iterable', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Call(
+            func=Name(id='MainGraphState', ctx=Load()))),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='state', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              attr='master_resume',
+              ctx=Store())],
+          value=Name(id='resume_payload', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='state', ctx=Load()),
+                attr='resume',
+                ctx=Load()),
+              attr='generated_resume',
+              ctx=Store())],
+          value=Name(id='resume_payload', ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='memory',
+                  ctx=Load()),
+                attr='episodic',
+                ctx=Load()),
+              attr='conversation',
+              ctx=Store())],
+          value=List(
+            elts=[
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='content')],
+                values=[
+                  Constant(value='user'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='resume_payload', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='candidate'),
+                      Constant(value='')])]),
+              Dict(
+                keys=[
+                  Constant(value='role'),
+                  Constant(value='content')],
+                values=[
+                  Constant(value='system'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='resume_payload', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='summary'),
+                      Constant(value='')])])],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='state', ctx=Load()),
+                  attr='memory',
+                  ctx=Load()),
+                attr='semantic',
+                ctx=Load()),
+              attr='vector_store_ids',
+              ctx=Store())],
+          value=List(
+            elts=[
+              Constant(value='vsynth-1'),
+              Constant(value='vsynth-2')],
+            ctx=Load())),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='state', ctx=Load()),
+                attr='ephemeral',
+                ctx=Load()),
+              attr='events',
+              ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Name(id='events', ctx=Load())])),
+        Assign(
+          targets=[
+            Attribute(
+              value=Attribute(
+                value=Name(id='state', ctx=Load()),
+                attr='ephemeral',
+                ctx=Load()),
+              attr='last_node',
+              ctx=Store())],
+          value=Constant(value='complete')),
+        Assign(
+          targets=[
+            Attribute(
+              value=Name(id='state', ctx=Load()),
+              attr='phase',
+              ctx=Store())],
+          value=Attribute(
+            value=Name(id='WorkflowPhase', ctx=Load()),
+            attr='COMPLETE',
+            ctx=Load())),
+        Return(
+          value=Name(id='state', ctx=Load()))],
+      returns=Name(id='MainGraphState', ctx=Load())),
+    FunctionDef(
+      name='_full_resume_view',
+      args=arguments(
+        args=[
+          arg(
+            arg='full_state',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Return(
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='full_state', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='full_state', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='resume'),
+                Dict()]),
+            orelse=Dict()))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_run_synthetic',
+      args=arguments(
+        args=[
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='compat_mode',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Generate deterministic results for tests that provide context dictionaries.')),
+        Assign(
+          targets=[
+            Name(id='normalized', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='json', ctx=Load()),
+              attr='loads',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='context', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='sort_keys',
+                    value=Constant(value=True))])])),
+        Assign(
+          targets=[
+            Name(id='digest', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='sha1', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='json', ctx=Load()),
+                          attr='dumps',
+                          ctx=Load()),
+                        args=[
+                          Name(id='normalized', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='sort_keys',
+                            value=Constant(value=True))]),
+                      attr='encode',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='utf-8')])]),
+              attr='hexdigest',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='workflow_id', ctx=Store())],
+          value=JoinedStr(
+            values=[
+              Constant(value='synthetic-'),
+              FormattedValue(
+                value=Subscript(
+                  value=Name(id='digest', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=12)),
+                  ctx=Load()),
+                conversion=-1)])),
+        Assign(
+          targets=[
+            Name(id='events', ctx=Store())],
+          value=Call(
+            func=Name(id='_synthesise_events', ctx=Load()),
+            args=[
+              Name(id='normalized', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='resume_payload', ctx=Store())],
+          value=Call(
+            func=Name(id='_synthetic_resume', ctx=Load()),
+            args=[
+              Name(id='normalized', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Call(
+            func=Name(id='_build_synthetic_state', ctx=Load()),
+            args=[
+              Name(id='resume_payload', ctx=Load()),
+              Name(id='events', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='state_dict', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='state', ctx=Load()),
+              attr='to_dict',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='resume_view', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='compat_mode', ctx=Load()),
+              ops=[
+                Eq()],
+              comparators=[
+                Constant(value='v10_7')]),
+            body=Call(
+              func=Name(id='_legacy_resume_view', ctx=Load()),
+              args=[
+                Name(id='state_dict', ctx=Load())]),
+            orelse=Call(
+              func=Name(id='_full_resume_view', ctx=Load()),
+              args=[
+                Name(id='state_dict', ctx=Load())]))),
+        Assign(
+          targets=[
+            Name(id='merged_output', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='document'),
+              Constant(value='artifacts')],
+            values=[
+              JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='resume_payload', ctx=Load()),
+                      slice=Constant(value='candidate'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='::'),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Name(id='resume_payload', ctx=Load()),
+                      slice=Constant(value='job_title'),
+                      ctx=Load()),
+                    conversion=-1)]),
+              List(
+                elts=[
+                  Dict(
+                    keys=[
+                      Constant(value='type'),
+                      Constant(value='content')],
+                    values=[
+                      Constant(value='summary'),
+                      Subscript(
+                        value=Name(id='resume_payload', ctx=Load()),
+                        slice=Constant(value='summary'),
+                        ctx=Load())])],
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='_SyntheticResult', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='status',
+                value=Constant(value='success')),
+              keyword(
+                arg='workflow_id',
+                value=Name(id='workflow_id', ctx=Load())),
+              keyword(
+                arg='summary',
+                value=Subscript(
+                  value=Name(id='resume_payload', ctx=Load()),
+                  slice=Constant(value='summary'),
+                  ctx=Load())),
+              keyword(
+                arg='events',
+                value=Name(id='events', ctx=Load())),
+              keyword(
+                arg='resume',
+                value=Name(id='resume_view', ctx=Load())),
+              keyword(
+                arg='merged_output',
+                value=Name(id='merged_output', ctx=Load())),
+              keyword(
+                arg='state',
+                value=Name(id='state_dict', ctx=Load()))])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='result', ctx=Load()),
+              attr='as_dict',
+              ctx=Load())))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_run_workflow_legacy',
+      args=arguments(
+        args=[
+          arg(
+            arg='context_or_job_input',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Name(id='str', ctx=Load())),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='job_input_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='master_resume_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='config_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='enable_hil',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='enable_mcp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='bool', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='debug_mode',
+            annotation=Name(id='bool', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          None,
+          None,
+          None]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='cfg_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='config_path', ctx=Load()),
+                  Name(id='_DEFAULT_CONFIG', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='ConfigV10_7', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='cfg_path', ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Name(id='_ensure_runtime_paths', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='setup_logging', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='debug_mode',
+                value=Name(id='debug_mode', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='job_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='job_input_path', ctx=Load()),
+                  Name(id='context_or_job_input', ctx=Load()),
+                  Name(id='_DEFAULT_JOB_INPUT', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='resume_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='master_resume_path', ctx=Load()),
+                  Name(id='_DEFAULT_MASTER_RESUME', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='coro', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow_async', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='job_input_path',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='job_path', ctx=Load())])),
+              keyword(
+                arg='master_resume_path',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='resume_path', ctx=Load())])),
+              keyword(
+                arg='debug_mode',
+                value=Name(id='debug_mode', ctx=Load())),
+              keyword(
+                arg='enable_hil',
+                value=Name(id='enable_hil', ctx=Load())),
+              keyword(
+                arg='enable_mcp',
+                value=Name(id='enable_mcp', ctx=Load())),
+              keyword(
+                arg='compat_mode',
+                value=Constant(value='v10_7'))])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Name(id='coro', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_run_workflow_v10_8',
+      args=arguments(
+        args=[
+          arg(
+            arg='context_or_job_input',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Name(id='str', ctx=Load())),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='job_input_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='master_resume_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='config_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='enable_hil',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='enable_mcp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='bool', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='debug_mode',
+            annotation=Name(id='bool', ctx=Load()))],
+        kw_defaults=[
+          None,
+          None,
+          None,
+          None,
+          None,
+          None]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='cfg_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='config_path', ctx=Load()),
+                  Name(id='_DEFAULT_CONFIG', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Call(
+            func=Name(id='ConfigV10_7', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='cfg_path', ctx=Load())])])),
+        Expr(
+          value=Call(
+            func=Name(id='_ensure_runtime_paths', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())])),
+        Expr(
+          value=Call(
+            func=Name(id='setup_logging', ctx=Load()),
+            args=[
+              Name(id='config', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='debug_mode',
+                value=Name(id='debug_mode', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='job_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='job_input_path', ctx=Load()),
+                  Name(id='context_or_job_input', ctx=Load()),
+                  Name(id='_DEFAULT_JOB_INPUT', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='resume_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='master_resume_path', ctx=Load()),
+                  Name(id='_DEFAULT_MASTER_RESUME', ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='coro', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow_async', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='config',
+                value=Name(id='config', ctx=Load())),
+              keyword(
+                arg='job_input_path',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='job_path', ctx=Load())])),
+              keyword(
+                arg='master_resume_path',
+                value=Call(
+                  func=Name(id='str', ctx=Load()),
+                  args=[
+                    Name(id='resume_path', ctx=Load())])),
+              keyword(
+                arg='debug_mode',
+                value=Name(id='debug_mode', ctx=Load())),
+              keyword(
+                arg='enable_hil',
+                value=Name(id='enable_hil', ctx=Load())),
+              keyword(
+                arg='enable_mcp',
+                value=Name(id='enable_mcp', ctx=Load())),
+              keyword(
+                arg='compat_mode',
+                value=Constant(value='v10_8'))])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='asyncio', ctx=Load()),
+              attr='run',
+              ctx=Load()),
+            args=[
+              Name(id='coro', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='run_workflow',
+      args=arguments(
+        args=[
+          arg(
+            arg='context_or_job_input',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=BinOp(
+                  left=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Name(id='str', ctx=Load())),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load()))],
+        kwonlyargs=[
+          arg(
+            arg='job_input_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='master_resume_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='config_path',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=BinOp(
+                left=Name(id='str', ctx=Load()),
+                op=BitOr(),
+                right=Name(id='Path', ctx=Load())),
+              ctx=Load())),
+          arg(
+            arg='compat_mode',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='enable_hil',
+            annotation=Name(id='bool', ctx=Load())),
+          arg(
+            arg='enable_mcp',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='bool', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='debug_mode',
+            annotation=Name(id='bool', ctx=Load()))],
+        kw_defaults=[
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value='v10_7'),
+          Constant(value=True),
+          Constant(value=None),
+          Constant(value=False)],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Entry point used by tests to execute the workflow.')),
+        If(
+          test=Call(
+            func=Name(id='isinstance', ctx=Load()),
+            args=[
+              Name(id='context_or_job_input', ctx=Load()),
+              Name(id='dict', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='request', ctx=Store())],
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='context_or_job_input', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='compat_mode', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='request', ctx=Load()),
+                  attr='pop',
+                  ctx=Load()),
+                args=[
+                  Constant(value='compat_mode'),
+                  Name(id='compat_mode', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Name(id='_run_synthetic', ctx=Load()),
+                args=[
+                  Name(id='request', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='compat_mode',
+                    value=Name(id='compat_mode', ctx=Load()))]))]),
+        Assign(
+          targets=[
+            Name(id='runner', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='compat_mode', ctx=Load()),
+              ops=[
+                Eq()],
+              comparators=[
+                Constant(value='v10_7')]),
+            body=Name(id='_run_workflow_legacy', ctx=Load()),
+            orelse=Name(id='_run_workflow_v10_8', ctx=Load()))),
+        Return(
+          value=Call(
+            func=Name(id='runner', ctx=Load()),
+            args=[
+              Name(id='context_or_job_input', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='job_input_path',
+                value=Name(id='job_input_path', ctx=Load())),
+              keyword(
+                arg='master_resume_path',
+                value=Name(id='master_resume_path', ctx=Load())),
+              keyword(
+                arg='config_path',
+                value=Name(id='config_path', ctx=Load())),
+              keyword(
+                arg='enable_hil',
+                value=Name(id='enable_hil', ctx=Load())),
+              keyword(
+                arg='enable_mcp',
+                value=Name(id='enable_mcp', ctx=Load())),
+              keyword(
+                arg='debug_mode',
+                value=Name(id='debug_mode', ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='run_workflow')],
+        ctx=Load()))])

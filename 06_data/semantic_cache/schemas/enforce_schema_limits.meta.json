@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\plan-layer\\safety-phase\\manage-schema-costs\\general\\update-memory\\enforce_schema_limits.py",
+    "rel_path": "enforce_schema_limits.py",
+    "root_name": "schemas",
+    "file_hash": "dd6bdbc0d7df770d5a0d8cb18735e5244fc82279d466e7067ef99bb282d2d4e4",
+    "file_size": 1351,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728343.2860436
+}

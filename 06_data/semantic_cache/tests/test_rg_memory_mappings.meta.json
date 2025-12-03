@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\router-microagent-layer\\retry-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\test_rg_memory_mappings.py",
+    "rel_path": "test_rg_memory_mappings.py",
+    "root_name": "tests",
+    "file_hash": "826a33281a560714279b06118d7e2e69c972e90aac2fb463eac5b8450e15e4a0",
+    "file_size": 11584,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.9061167
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nResume Generation Engine v4.7.0 - WITH 9-HOP PIPELINE\n=====================================================\nMAJOR UPGRADE: Complete 9-HOP execution pipeline integrated\n- HOP-0: Input Validation\n- HOP-1: JD Parsing & Keyword Extraction  \n- HOP-2: Map to Master Resume\n- HOP-3: Recontextualize Bullets\n- HOP-4: Generate K.1 Executive Summary\n- HOP-5: Calculate Signals\n- HOP-6: Validation Gates\n- HOP-7/8/9: Format Outputs\n\nWORD LIMITS FROM v4.5.2 (NOT v2.1):\n- Executive Summary: 150 words (not 118-135)\n- Unify bullets: 265 words\n- IBM bullets: 195 words\n- Total: 1,032 words\n\nVersion: 4.7.0\nDate: October 2025\n\"\"\"\n\nimport json\nimport re\nfrom typing import Dict, List, Tuple, Optional, Any, Set\nfrom enum import Enum\nimport random\nfrom datetime import datetime\nfrom dataclasses import dataclass\nimport hashlib\n\n__version__ = \"4.7.0\"\n\n# ============================================================================\n# TEMPERATURE MODE ENUM\n# =========================================================",
+  "full_hash": "7aa6b0993279fe7790eb2b41f249045aa3ca77bba71d6db89f1f83fba0f68848",
+  "generated_at": 1764728297.238249,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_7_0_9HOP.py"
+}

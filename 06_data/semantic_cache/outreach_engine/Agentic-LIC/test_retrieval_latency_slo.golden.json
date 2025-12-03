@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Regression test enforcing retrieval latency SLO.\"\"\"\nfrom __future__ import annotations\n\nimport math\n\nfrom src.lic_agentic.agents.k3_message_architect import MessageArchitect\nfrom src.lic_agentic.reasoning.toggles import ReasoningToggles\n\n\ndef percentile(values: list[int], pct: float) -> float:\n    if not values:\n        raise ValueError(\"values must not be empty\")\n    ordered = sorted(values)\n    k = (len(ordered) - 1) * pct\n    f = math.floor(k)\n    c = math.ceil(k)\n    if f == c:\n        return float(ordered[int(k)])\n    d0 = ordered[f] * (c - k)\n    d1 = ordered[c] * (k - f)\n    return float(d0 + d1)\n\n\ndef test_retrieval_p95_below_budget():\n    toggles = ReasoningToggles()\n    architect = MessageArchitect(toggles)\n    sanitized = type(\n        \"Inputs\",\n        (),\n        {\"prompt\": \"Share recent milestones\", \"company_id\": \"ACME\", \"contact_id\": \"C1\"},\n    )()\n    plan = architect._build_plan([\"ACME latest milestones\", \"ACME recent news\"], sanitized)\n    plan.dedupe()\n    plan.bu",
+  "full_hash": "791ada7583688f2f011508e66b0c73ebc084c1acaaaf5f19361b7a7b5ec99917",
+  "generated_at": 1764728331.0365398,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\regression\\test_retrieval_latency_slo.py"
+}

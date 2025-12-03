@@ -1,0 +1,8 @@
+Module(
+  body=[
+    ClassDef(
+      name='GraphRecursionError',
+      bases=[
+        Name(id='Exception', ctx=Load())],
+      body=[
+        Pass()])])

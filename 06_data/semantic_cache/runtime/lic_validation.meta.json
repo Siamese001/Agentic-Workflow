@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\budget-manager-layer\\aggregate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\lic_validation.py",
+    "rel_path": "lic_validation.py",
+    "root_name": "runtime",
+    "file_hash": "3f2f91c467b6fba48113e34d5c825b806df3a2a4ec09cb31d115b285445b5a7f",
+    "file_size": 22805,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.6709554
+}

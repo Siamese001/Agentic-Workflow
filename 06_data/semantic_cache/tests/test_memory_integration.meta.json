@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\observer-microagent-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\test_memory_integration.py",
+    "rel_path": "test_memory_integration.py",
+    "root_name": "tests",
+    "file_hash": "65ee989ccaf374020c9d8f2f19e9c07ebe50a4e653a57095ed16113e416e727a",
+    "file_size": 379,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.1650672
+}

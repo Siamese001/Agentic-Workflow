@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\refactoring\\REORGANIZATION_COMPLETE.md",
+    "rel_path": "REORGANIZATION_COMPLETE.md",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "267432c96259e63042b27c5d657805c261f4e07feadfb72d6adc98b5d72540be",
+    "file_size": 7472,
+    "is_eligible": true,
+    "file_type": ".md",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728226.2981205
+}

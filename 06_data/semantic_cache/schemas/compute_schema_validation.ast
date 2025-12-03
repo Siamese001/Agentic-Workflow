@@ -1,0 +1,189 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema validation computation and scoring.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ValidationMetric',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Schema validation metrics.')),
+        Assign(
+          targets=[
+            Name(id='ACCURACY', ctx=Store())],
+          value=Constant(value='accuracy')),
+        Assign(
+          targets=[
+            Name(id='PRECISION', ctx=Store())],
+          value=Constant(value='precision')),
+        Assign(
+          targets=[
+            Name(id='RECALL', ctx=Store())],
+          value=Constant(value='recall')),
+        Assign(
+          targets=[
+            Name(id='F1_SCORE', ctx=Store())],
+          value=Constant(value='f1_score')),
+        Assign(
+          targets=[
+            Name(id='COVERAGE', ctx=Store())],
+          value=Constant(value='coverage'))]),
+    ClassDef(
+      name='ComputationMethod',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Validation computation methods.')),
+        Assign(
+          targets=[
+            Name(id='STATISTICAL', ctx=Store())],
+          value=Constant(value='statistical')),
+        Assign(
+          targets=[
+            Name(id='HEURISTIC', ctx=Store())],
+          value=Constant(value='heuristic')),
+        Assign(
+          targets=[
+            Name(id='MACHINE_LEARNING', ctx=Store())],
+          value=Constant(value='machine_learning')),
+        Assign(
+          targets=[
+            Name(id='RULE_BASED', ctx=Store())],
+          value=Constant(value='rule_based'))]),
+    ClassDef(
+      name='ValidationComputationConfig',
+      body=[
+        Expr(
+          value=Constant(value='Schema for validation computation configuration.')),
+        AnnAssign(
+          target=Name(id='method', ctx=Store()),
+          annotation=Name(id='ComputationMethod', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metrics', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationMetric', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='weight_scheme', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='ValidationMetric', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_threshold', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.8),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ValidationScore',
+      body=[
+        Expr(
+          value=Constant(value='Schema for individual validation score.')),
+        AnnAssign(
+          target=Name(id='metric', ctx=Store()),
+          annotation=Name(id='ValidationMetric', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence_interval', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='float', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='supporting_data', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ValidationComputationResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for validation computation results.')),
+        AnnAssign(
+          target=Name(id='validation_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='schema_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='overall_score', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metric_scores', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationScore', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='computation_metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='computation_timestamp', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

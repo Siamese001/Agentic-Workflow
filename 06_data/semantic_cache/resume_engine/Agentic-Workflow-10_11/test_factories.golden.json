@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Shared Test Factories.\"\"\"\n\nclass JobInputFactory:\n    \"\"\"Factory for creating JobInput test objects.\"\"\"\n    \n    @staticmethod\n    def create(title=\"Software Engineer\", requirements=None):\n        \"\"\"Create a JobInput dict.\"\"\"\n        return {\n            \"title\": title,\n            \"requirements\": requirements or [\"Python\", \"AWS\"],\n        }\n\nclass ResumeInputFactory:\n    \"\"\"Factory for creating ResumeInput test objects.\"\"\"\n    \n    @staticmethod\n    def create(summary=\"Experienced developer\", skills=None):\n        \"\"\"Create a ResumeInput dict.\"\"\"\n        return {\n            \"summary\": summary,\n            \"skills\": skills or [\"Python\", \"JavaScript\"],\n            \"experience_sections\": [],\n            \"projects\": [],\n        }\n\ndef test_job_input_factory():\n    \"\"\"Test JobInputFactory.\"\"\"\n    job = JobInputFactory.create()\n    assert job[\"title\"] == \"Software Engineer\"\n\ndef test_resume_input_factory():\n    \"\"\"Test ResumeInputFactory.\"\"\"\n    resume = ResumeInputFactory.create()\n   ",
+  "full_hash": "0694f12d5d7e5e99cd9a895157246c162395b50c78f7516bd9b1b90fe6a7c1d8",
+  "generated_at": 1764728227.527477,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\shared\\factories\\test_factories.py"
+}

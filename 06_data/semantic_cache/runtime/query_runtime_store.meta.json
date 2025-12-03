@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\03_runtime\\mem-layer\\retrieve-phase\\get-runtime-info\\general\\understand-request\\query_runtime_store.py",
+    "rel_path": "query_runtime_store.py",
+    "root_name": "runtime",
+    "file_hash": "935b643b39a4d88d8bddc2c0239dfde24ad2619553c695afb25edfd5b654af8b",
+    "file_size": 6677,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728346.951375
+}

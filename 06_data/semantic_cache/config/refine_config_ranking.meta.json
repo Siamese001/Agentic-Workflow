@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\refine-phase\\pick-best-result\\refinement\\adjust-scores\\refine_config_ranking.py",
+    "rel_path": "refine_config_ranking.py",
+    "root_name": "config",
+    "file_hash": "39ca1170af33689b3b45547ced9927598750d7bc47507503867605acd656099f",
+    "file_size": 6694,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728349.0212452
+}

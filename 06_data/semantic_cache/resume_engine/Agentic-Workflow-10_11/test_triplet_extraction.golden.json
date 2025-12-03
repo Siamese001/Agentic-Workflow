@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nTest Triplet Extraction\n\nTests triplet extraction functionality extracted from working legacy tests.\n\"\"\"\n\nimport pytest\n\n# L2 Components\nfrom l2.triplet_extraction_executor import (\n    TripletExtractionExecutor,\n    create_extraction_plan,\n)\n\n# Mark all tests as L2 execution tests\npytestmark = [pytest.mark.unit, pytest.mark.l2, pytest.mark.execution]\n\n\nclass TestTripletExtraction:\n    \"\"\"Test L2 Triplet Extraction Executor.\"\"\"\n    \n    def test_extract_skills(self):\n        \"\"\"Test skill extraction from text.\"\"\"\n        executor = TripletExtractionExecutor()\n        \n        plan = create_extraction_plan(\n            source_text=\"Experienced Python developer with expertise in AWS and Docker\",\n            source_id=\"doc_001\",\n            user_id=\"user_123\",\n        )\n        \n        result = executor.execute(plan)\n        \n        assert result.total_extracted > 0\n        # Should extract Python, AWS, Docker as skills\n        skills = [t.object for t in result.triplets if t.predic",
+  "full_hash": "860c4ea93914109de2c6f739615e0e50f36d9ea6063cdd942e06ea249842d4c1",
+  "generated_at": 1764728226.9943388,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L2_execution\\unit\\test_triplet_extraction.py"
+}

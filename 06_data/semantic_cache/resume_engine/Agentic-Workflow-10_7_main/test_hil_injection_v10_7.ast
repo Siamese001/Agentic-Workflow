@@ -1,0 +1,429 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='agent_stacks_v10_8.hil_stack',
+      names=[
+        alias(name='HILStackV10_8')],
+      level=0),
+    AsyncFunctionDef(
+      name='test_route_from_state_async_returns_normalized_patch',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch'),
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='HILStackV10_8', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='metadata'),
+              Constant(value='hil')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='workflow_id')],
+                values=[
+                  Constant(value='wf-hil')]),
+              Dict(
+                keys=[
+                  Constant(value='raw_feedback')],
+                values=[
+                  Constant(value='Inject edit')])])),
+        AsyncFunctionDef(
+          name='fake_route',
+          args=arguments(
+            args=[
+              arg(arg='feedback'),
+              arg(arg='workflow_id'),
+              arg(arg='state_snapshot')]),
+          body=[
+            Assert(
+              test=Compare(
+                left=Name(id='feedback', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='Inject edit')])),
+            Assert(
+              test=Compare(
+                left=Name(id='state_snapshot', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Name(id='state', ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='workflow_id', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='wf-hil')])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='next_step'),
+                  Constant(value='payload'),
+                  Constant(value='intent_clusters'),
+                  Constant(value='delegated_specialists'),
+                  Constant(value='persona_consensus'),
+                  Constant(value='reconciliation')],
+                values=[
+                  Constant(value='INJECT_EDIT'),
+                  Constant(value='payload'),
+                  List(
+                    elts=[
+                      Constant(value='tone')],
+                    ctx=Load()),
+                  List(
+                    elts=[
+                      Constant(value='qa')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='decision')],
+                    values=[
+                      Constant(value='approve')]),
+                  Dict(
+                    keys=[
+                      Constant(value='integrated_text')],
+                    values=[
+                      Constant(value='ok')])]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='stack', ctx=Load()),
+              Constant(value='route_feedback_async'),
+              Name(id='fake_route', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='stack', ctx=Load()),
+                attr='route_from_state_async',
+                ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load()),
+                Constant(value='wf-hil')]))),
+        Assign(
+          targets=[
+            Name(id='hil_payload', ctx=Store())],
+          value=Subscript(
+            value=Name(id='patch', ctx=Load()),
+            slice=Constant(value='hil'),
+            ctx=Load())),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='hil_payload', ctx=Load()),
+              slice=Constant(value='next_step'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='INJECT_EDIT')])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='hil_payload', ctx=Load()),
+              slice=Constant(value='intent_clusters'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              List(
+                elts=[
+                  Constant(value='tone')],
+                ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Name(id='hil_payload', ctx=Load()),
+                slice=Constant(value='reconciliation'),
+                ctx=Load()),
+              slice=Constant(value='integrated_text'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='ok')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_reconcile_from_state_async_parses_persona',
+      args=arguments(
+        args=[
+          arg(arg='monkeypatch'),
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='HILStackV10_8', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='metadata'),
+              Constant(value='hil'),
+              Constant(value='draft')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='workflow_id')],
+                values=[
+                  Constant(value='wf-hil')]),
+              Dict(
+                keys=[
+                  Constant(value='specialist_feedback'),
+                  Constant(value='persona_consensus')],
+                values=[
+                  List(
+                    elts=[
+                      Constant(value='insight')],
+                    ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='approved'),
+                      Constant(value='rationale'),
+                      Constant(value='negotiated_actions'),
+                      Constant(value='persona_votes')],
+                    values=[
+                      Constant(value=True),
+                      Constant(value='Consensus reached'),
+                      List(ctx=Load()),
+                      List(ctx=Load())])]),
+              Dict(
+                keys=[
+                  Constant(value='sections')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='summary')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='draft')],
+                        values=[
+                          Constant(value='base')])])])])),
+        ClassDef(
+          name='DummyResult',
+          body=[
+            FunctionDef(
+              name='model_dump',
+              args=arguments(
+                args=[
+                  arg(arg='self')]),
+              body=[
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='status')],
+                    values=[
+                      Constant(value='complete')]))])]),
+        AsyncFunctionDef(
+          name='fake_reconcile',
+          args=arguments(
+            args=[
+              arg(arg='draft_sections'),
+              arg(arg='specialist_feedback'),
+              arg(arg='persona_consensus'),
+              arg(arg='workflow_id')]),
+          body=[
+            Assert(
+              test=Compare(
+                left=Name(id='draft_sections', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Subscript(
+                    value=Subscript(
+                      value=Name(id='state', ctx=Load()),
+                      slice=Constant(value='draft'),
+                      ctx=Load()),
+                    slice=Constant(value='sections'),
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='specialist_feedback', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='insight')],
+                    ctx=Load())])),
+            Assert(
+              test=Compare(
+                left=Name(id='persona_consensus', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)])),
+            Assert(
+              test=Compare(
+                left=Name(id='workflow_id', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='wf-hil')])),
+            Return(
+              value=Call(
+                func=Name(id='DummyResult', ctx=Load())))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='monkeypatch', ctx=Load()),
+              attr='setattr',
+              ctx=Load()),
+            args=[
+              Name(id='stack', ctx=Load()),
+              Constant(value='reconcile_feedback_async'),
+              Name(id='fake_reconcile', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='stack', ctx=Load()),
+                attr='reconcile_from_state_async',
+                ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load()),
+                Constant(value='wf-hil')]))),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Subscript(
+                  value=Name(id='patch', ctx=Load()),
+                  slice=Constant(value='hil'),
+                  ctx=Load()),
+                slice=Constant(value='reconciliation'),
+                ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='complete')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())]),
+    AsyncFunctionDef(
+      name='test_inject_edit_from_state_async_prefers_reconciliation',
+      args=arguments(
+        args=[
+          arg(arg='workflow_context')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='stack', ctx=Store())],
+          value=Call(
+            func=Name(id='HILStackV10_8', ctx=Load()),
+            args=[
+              Name(id='workflow_context', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='state', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='hil'),
+              Constant(value='draft')],
+            values=[
+              Dict(
+                keys=[
+                  Constant(value='payload'),
+                  Constant(value='reconciliation')],
+                values=[
+                  Constant(value='Human edit'),
+                  Dict(
+                    keys=[
+                      Constant(value='integrated_text')],
+                    values=[
+                      Constant(value='Reconciled text')])]),
+              Dict(
+                keys=[
+                  Constant(value='sections')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='summary')],
+                    values=[
+                      Dict(
+                        keys=[
+                          Constant(value='draft')],
+                        values=[
+                          Constant(value='original')])])])])),
+        Assign(
+          targets=[
+            Name(id='patch', ctx=Store())],
+          value=Await(
+            value=Call(
+              func=Attribute(
+                value=Name(id='stack', ctx=Load()),
+                attr='inject_edit_from_state_async',
+                ctx=Load()),
+              args=[
+                Name(id='state', ctx=Load()),
+                Constant(value='wf-hil')]))),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Subscript(
+                  value=Subscript(
+                    value=Name(id='patch', ctx=Load()),
+                    slice=Constant(value='draft'),
+                    ctx=Load()),
+                  slice=Constant(value='sections'),
+                  ctx=Load()),
+                slice=Constant(value='summary'),
+                ctx=Load()),
+              slice=Constant(value='draft'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='Reconciled text')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='asyncio',
+          ctx=Load())])])

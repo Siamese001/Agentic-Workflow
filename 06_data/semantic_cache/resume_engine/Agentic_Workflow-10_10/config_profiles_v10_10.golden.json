@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: 10_10/config_profiles_v10_10.py\n\"\"\"\nExecution Profiles (v10_10 \u00b7 Phase 3)\n=====================================\n\nThis module defines the **deterministic, hard execution profiles**\nused by the v10_10 stack.\n\nProfiles drive:\n\n    \u2022 Reasoning strategy (CoT, ToT, ReAct)\n    \u2022 RAG retrieval strategy (BM25, Hybrid, Dense) + HYDE + RRF\n    \u2022 Safety tier (strict, standard, debug)\n    \u2022 Context budgets\n    \u2022 Model tier selection (cheap / balanced / premium)\n    \u2022 Drafting depth / QA depth\n    \u2022 Async / DAG mode\n    \u2022 Phase-3 controls:\n        \u2013 qa_council_size\n        \u2013 enable_correction_loop, max_corrections\n        \u2013 rag_allow_hyde / hyde_model_tier\n        \u2013 routing_telemetry_mode\n\nDesign notes:\n    \u2022 ExecutionProfileSpec is the *authoritative* profile schema.\n    \u2022 L1 consumes ExecutionProfileSpec and maps it into the simpler\n      ExecutionProfile model (in models.py) for planning.\n    \u2022 RetrievalConfig is Phase-3 aware (HYDE, RRF, council).\n\"\"\"\n\nfrom __future__ import annotations\n",
+  "full_hash": "88faf1632cec521b73598b1051d2c8c0d102242477029002d5ccb001c603e2ba",
+  "generated_at": 1764728228.2078938,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\config_profiles_v10_10.py"
+}

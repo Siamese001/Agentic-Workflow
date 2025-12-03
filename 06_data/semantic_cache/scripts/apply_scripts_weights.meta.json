@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\plan-layer\\expand-phase\\convert-scripts-content\\semantic\\adjust-scores\\apply_scripts_weights.py",
+    "rel_path": "apply_scripts_weights.py",
+    "root_name": "scripts",
+    "file_hash": "4584b2024fc6994bbd40c887a256de7b740c7a59c2dd8e5825242741095f7824",
+    "file_size": 6694,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.122498
+}

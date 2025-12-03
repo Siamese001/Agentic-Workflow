@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - calculate_tests_similarity\nImplements L1 Cognitive Planning Layer for calculate tests similarity operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass CalculateTestsSimilarityPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass CalculateTestsSimilarityPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass CalculateTestsSimilarityPlanResult:\n    \"\"\"L5 Result structure with full type",
+  "full_hash": "a7b94ac09ca34dc7252d8a6591c02f78cddadc038fa1f7f2c8ac36650754ad17",
+  "generated_at": 1764728354.422844,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\plan-layer\\expand-phase\\convert-tests-content\\embedding\\compare-meaning\\calculate_tests_similarity.py"
+}

@@ -1,0 +1,1402 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Compose outreach drafts using reasoning toggles and retrieval evidence.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Iterable'),
+        alias(name='List'),
+        alias(name='Sequence'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='rag',
+      names=[
+        alias(name='ContentStore'),
+        alias(name='EvidenceRegistry'),
+        alias(name='RetrievalPlan')],
+      level=2),
+    ImportFrom(
+      module='rag.tool_registry',
+      names=[
+        alias(name='ToolRegistry'),
+        alias(name='ToolResult')],
+      level=2),
+    ImportFrom(
+      module='reasoning',
+      names=[
+        alias(name='cot'),
+        alias(name='reflexion'),
+        alias(name='tot')],
+      level=2),
+    ImportFrom(
+      module='reasoning.toggles',
+      names=[
+        alias(name='ReasoningToggles')],
+      level=2),
+    Assign(
+      targets=[
+        Name(id='_ANCHOR_WINDOW_S', ctx=Store())],
+      value=BinOp(
+        left=BinOp(
+          left=BinOp(
+            left=Constant(value=60),
+            op=Mult(),
+            right=Constant(value=60)),
+          op=Mult(),
+          right=Constant(value=24)),
+        op=Mult(),
+        right=Constant(value=90))),
+    ClassDef(
+      name='Draft',
+      body=[
+        AnnAssign(
+          target=Name(id='subject', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='body', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        FunctionDef(
+          name='render',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Subject: '),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='subject',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n\n'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='body',
+                      ctx=Load()),
+                    conversion=-1)]))],
+          returns=Name(id='str', ctx=Load()))],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='DraftPackage',
+      body=[
+        Expr(
+          value=Constant(value='Container describing the composed draft and supporting evidence.')),
+        AnnAssign(
+          target=Name(id='draft', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='artifacts', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='str', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_latency_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        FunctionDef(
+          name='with_draft',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='new_draft',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='DraftPackage', ctx=Load()),
+                args=[
+                  Name(id='new_draft', ctx=Load()),
+                  Call(
+                    func=Name(id='dict', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='artifacts',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='total_latency_ms',
+                    ctx=Load())]))],
+          returns=Constant(value='DraftPackage'))],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    FunctionDef(
+      name='score_quality',
+      args=arguments(
+        args=[
+          arg(
+            arg='draft',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='reflexion',
+            annotation=Name(id='bool', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Return a simple heuristic quality score.')),
+        Assign(
+          targets=[
+            Name(id='base', ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Constant(value='value'),
+              ops=[
+                In()],
+              comparators=[
+                Call(
+                  func=Attribute(
+                    value=Name(id='draft', ctx=Load()),
+                    attr='lower',
+                    ctx=Load()))]),
+            body=Constant(value=5),
+            orelse=Constant(value=3))),
+        Return(
+          value=BinOp(
+            left=Name(id='base', ctx=Load()),
+            op=Add(),
+            right=IfExp(
+              test=Name(id='reflexion', ctx=Load()),
+              body=Constant(value=2),
+              orelse=Constant(value=0))))],
+      returns=Name(id='int', ctx=Load())),
+    ClassDef(
+      name='MessageArchitect',
+      body=[
+        Expr(
+          value=Constant(value='Construct outreach drafts with retrieval-backed evidence.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='toggles',
+                annotation=Name(id='ReasoningToggles', ctx=Load()))],
+            kwonlyargs=[
+              arg(
+                arg='tool_registry',
+                annotation=BinOp(
+                  left=Name(id='ToolRegistry', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None))),
+              arg(
+                arg='content_store',
+                annotation=BinOp(
+                  left=Name(id='ContentStore', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None))),
+              arg(
+                arg='evidence_registry',
+                annotation=BinOp(
+                  left=Name(id='EvidenceRegistry', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            kw_defaults=[
+              Constant(value=None),
+              Constant(value=None),
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='toggles',
+                  ctx=Store())],
+              value=Name(id='toggles', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='tool_registry',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='tool_registry', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='ToolRegistry', ctx=Load()),
+                      attr='default_with_builtins',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='content_store',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='content_store', ctx=Load()),
+                  Call(
+                    func=Name(id='ContentStore', ctx=Load()))])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='evidence_registry',
+                  ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='evidence_registry', ctx=Load()),
+                  Call(
+                    func=Name(id='EvidenceRegistry', ctx=Load()))]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='update_toggles',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='toggles',
+                annotation=Name(id='ReasoningToggles', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='toggles',
+                  ctx=Store())],
+              value=Name(id='toggles', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='compose',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='sanitized_inputs'),
+              arg(arg='route_decision')],
+            kwonlyargs=[
+              arg(
+                arg='max_calls',
+                annotation=BinOp(
+                  left=Name(id='int', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            kw_defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='sanitized_inputs', ctx=Load()),
+                  Constant(value='prompt'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='wants', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_derive_wants',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load()),
+                  Name(id='sanitized_inputs', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_build_plan',
+                  ctx=Load()),
+                args=[
+                  Name(id='wants', ctx=Load()),
+                  Name(id='sanitized_inputs', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='dedupe',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='budget',
+                  ctx=Load()),
+                args=[
+                  BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='max_calls', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_default_budget',
+                          ctx=Load()))])])),
+            Assign(
+              targets=[
+                Name(id='retrievals', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='execute',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='tool_registry',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='content_store',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='evidence', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_record_evidence',
+                  ctx=Load()),
+                args=[
+                  Name(id='retrievals', ctx=Load()),
+                  Name(id='sanitized_inputs', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='body_lines', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_compose_body',
+                  ctx=Load()),
+                args=[
+                  Name(id='prompt', ctx=Load()),
+                  Name(id='evidence', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='subject', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_subject_line',
+                  ctx=Load()),
+                args=[
+                  Name(id='sanitized_inputs', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='draft', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Name(id='Draft', ctx=Load()),
+                    args=[
+                      Name(id='subject', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Constant(value='\n'),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='body_lines', ctx=Load())])]),
+                  attr='render',
+                  ctx=Load()))),
+            If(
+              test=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='toggles',
+                  ctx=Load()),
+                attr='reflexion',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='draft', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='reflexion', ctx=Load()),
+                      attr='apply_feedback',
+                      ctx=Load()),
+                    args=[
+                      Name(id='draft', ctx=Load()),
+                      Constant(value='Highlight mutual benefit')]))]),
+            Assign(
+              targets=[
+                Name(id='artifacts', ctx=Store())],
+              value=DictComp(
+                key=Name(id='artifact_id', ctx=Load()),
+                value=Name(id='summary', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='artifact_id', ctx=Store()),
+                        Name(id='summary', ctx=Store()),
+                        Name(id='_', ctx=Store())],
+                      ctx=Store()),
+                    iter=Name(id='evidence', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='total_latency', ctx=Store())],
+              value=Call(
+                func=Name(id='sum', ctx=Load()),
+                args=[
+                  GeneratorExp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='meta', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='latency_ms'),
+                        Constant(value=0)]),
+                    generators=[
+                      comprehension(
+                        target=Tuple(
+                          elts=[
+                            Name(id='_aid', ctx=Store()),
+                            Name(id='_summary', ctx=Store()),
+                            Name(id='meta', ctx=Store())],
+                          ctx=Store()),
+                        iter=Name(id='evidence', ctx=Load()),
+                        is_async=0)])])),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='evidence', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='artifacts', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='baseline')],
+                    values=[
+                      Constant(value='Value proposition here.')]))]),
+            Return(
+              value=Call(
+                func=Name(id='DraftPackage', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='draft',
+                    value=Name(id='draft', ctx=Load())),
+                  keyword(
+                    arg='artifacts',
+                    value=Name(id='artifacts', ctx=Load())),
+                  keyword(
+                    arg='total_latency_ms',
+                    value=Name(id='total_latency', ctx=Load()))]))],
+          returns=Name(id='DraftPackage', ctx=Load())),
+        FunctionDef(
+          name='_derive_wants',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(arg='inputs')]),
+          body=[
+            AnnAssign(
+              target=Name(id='wants', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='normalized_prompt', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=BoolOp(
+                    op=Or(),
+                    values=[
+                      Name(id='prompt', ctx=Load()),
+                      Constant(value='')]),
+                  attr='strip',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='company_id', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='inputs', ctx=Load()),
+                  Constant(value='company_id'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Name(id='contact_id', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='inputs', ctx=Load()),
+                  Constant(value='contact_id'),
+                  Constant(value=None)])),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='normalized_prompt', ctx=Load()),
+                  UnaryOp(
+                    op=Not(),
+                    operand=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='company_id', ctx=Load()),
+                        Name(id='contact_id', ctx=Load())]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='wants', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Context for: '),
+                          FormattedValue(
+                            value=Name(id='normalized_prompt', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=Name(id='company_id', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='wants', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='company_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' latest milestones')])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='wants', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='company_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' recent news')])]))]),
+            If(
+              test=Name(id='contact_id', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='wants', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='contact_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' profile highlights')])]))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='wants', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='wants', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='Context for: prospect overview')]))]),
+            Return(
+              value=Name(id='wants', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_build_plan',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='wants',
+                annotation=Subscript(
+                  value=Name(id='Sequence', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())),
+              arg(arg='inputs')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='context', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='company_id'),
+                  Constant(value='contact_id'),
+                  Constant(value='ttl_s')],
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='inputs', ctx=Load()),
+                      Constant(value='company_id'),
+                      Constant(value=None)]),
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='inputs', ctx=Load()),
+                      Constant(value='contact_id'),
+                      Constant(value=None)]),
+                  Name(id='_ANCHOR_WINDOW_S', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='plan', ctx=Store())],
+              value=Call(
+                func=Name(id='RetrievalPlan', ctx=Load()),
+                args=[
+                  Name(id='wants', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            For(
+              target=Name(id='want', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='wants', ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=6)),
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Dict(
+                        keys=[
+                          Constant(value='tool'),
+                          Constant(value='query')],
+                        values=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_select_tool_for_want',
+                              ctx=Load()),
+                            args=[
+                              Name(id='want', ctx=Load())]),
+                          Name(id='want', ctx=Load())])]))]),
+            Return(
+              value=Name(id='plan', ctx=Load()))],
+          returns=Name(id='RetrievalPlan', ctx=Load())),
+        FunctionDef(
+          name='_select_tool_for_want',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='want',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='lowered', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='want', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Constant(value='profile'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='lowered', ctx=Load())]),
+                  Compare(
+                    left=Constant(value='contact'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='lowered', ctx=Load())])]),
+              body=[
+                Return(
+                  value=Constant(value='profile_lookup'))]),
+            If(
+              test=Compare(
+                left=Constant(value='news'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='lowered', ctx=Load())]),
+              body=[
+                Return(
+                  value=Constant(value='news'))]),
+            Return(
+              value=Constant(value='web_search'))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_default_budget',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Constant(value=2),
+                  Call(
+                    func=Name(id='min', ctx=Load()),
+                    args=[
+                      Constant(value=6),
+                      BinOp(
+                        left=Call(
+                          func=Name(id='int', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='toggles',
+                                ctx=Load()),
+                              attr='tot_branches',
+                              ctx=Load())]),
+                        op=Add(),
+                        right=Constant(value=2))])]))],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='_record_evidence',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='retrievals'),
+              arg(arg='inputs')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='company_id', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='inputs', ctx=Load()),
+                  Constant(value='company_id'),
+                  Constant(value=None)])),
+            Assign(
+              targets=[
+                Name(id='scope', ctx=Store())],
+              value=Constant(value='outreach')),
+            AnnAssign(
+              target=Name(id='evidence', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='str', ctx=Load()),
+                      Subscript(
+                        value=Name(id='Dict', ctx=Load()),
+                        slice=Tuple(
+                          elts=[
+                            Name(id='str', ctx=Load()),
+                            Name(id='object', ctx=Load())],
+                          ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='source', ctx=Store()),
+                  Name(id='job', ctx=Store()),
+                  Name(id='payload', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='retrievals', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='summary', ctx=Store()),
+                        Name(id='metadata', ctx=Store())],
+                      ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_summarize_payload',
+                      ctx=Load()),
+                    args=[
+                      Name(id='payload', ctx=Load()),
+                      Name(id='source', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='artifact_id', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='evidence_registry',
+                        ctx=Load()),
+                      attr='upsert',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='scope',
+                        value=IfExp(
+                          test=Call(
+                            func=Name(id='hasattr', ctx=Load()),
+                            args=[
+                              Name(id='job', ctx=Load()),
+                              Constant(value='scope')]),
+                          body=Attribute(
+                            value=Name(id='job', ctx=Load()),
+                            attr='scope',
+                            ctx=Load()),
+                          orelse=Name(id='scope', ctx=Load()))),
+                      keyword(
+                        arg='company_id',
+                        value=Name(id='company_id', ctx=Load())),
+                      keyword(
+                        arg='source_url',
+                        value=Subscript(
+                          value=Name(id='metadata', ctx=Load()),
+                          slice=Constant(value='source'),
+                          ctx=Load())),
+                      keyword(
+                        arg='summary',
+                        value=Name(id='summary', ctx=Load())),
+                      keyword(
+                        arg='anchor_date',
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Attribute(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Name(id='datetime', ctx=Load()),
+                                    attr='utcnow',
+                                    ctx=Load())),
+                                attr='date',
+                                ctx=Load())),
+                            attr='isoformat',
+                            ctx=Load()))),
+                      keyword(
+                        arg='confidence',
+                        value=Call(
+                          func=Name(id='float', ctx=Load()),
+                          args=[
+                            Call(
+                              func=Attribute(
+                                value=Name(id='metadata', ctx=Load()),
+                                attr='get',
+                                ctx=Load()),
+                              args=[
+                                Constant(value='confidence'),
+                                Constant(value=0.6)])])),
+                      keyword(
+                        arg='used_in_section',
+                        value=IfExp(
+                          test=Call(
+                            func=Name(id='hasattr', ctx=Load()),
+                            args=[
+                              Name(id='job', ctx=Load()),
+                              Constant(value='section')]),
+                          body=Attribute(
+                            value=Name(id='job', ctx=Load()),
+                            attr='section',
+                            ctx=Load()),
+                          orelse=Constant(value='value_wedge'))),
+                      keyword(
+                        arg='artifact_id',
+                        value=Call(
+                          func=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_stable_artifact_id',
+                            ctx=Load()),
+                          args=[
+                            Name(id='job', ctx=Load()),
+                            Name(id='company_id', ctx=Load())]))])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='metadata', ctx=Load()),
+                      slice=Constant(value='latency_ms'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='int', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='metadata', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='latency_ms'),
+                          Constant(value=0)])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='evidence', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Tuple(
+                        elts=[
+                          Name(id='artifact_id', ctx=Load()),
+                          Name(id='summary', ctx=Load()),
+                          Name(id='metadata', ctx=Load())],
+                        ctx=Load())]))]),
+            Return(
+              value=Name(id='evidence', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='str', ctx=Load()),
+                  Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='object', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_summarize_payload',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='payload'),
+              arg(
+                arg='source_label',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='payload', ctx=Load()),
+                  Name(id='ToolResult', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='summary', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='payload', ctx=Load()),
+                    attr='content',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='source_url', ctx=Store())],
+                  value=IfExp(
+                    test=Attribute(
+                      value=Name(id='payload', ctx=Load()),
+                      attr='sources',
+                      ctx=Load()),
+                    body=Subscript(
+                      value=Attribute(
+                        value=Name(id='payload', ctx=Load()),
+                        attr='sources',
+                        ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    orelse=Name(id='source_label', ctx=Load()))),
+                Assign(
+                  targets=[
+                    Name(id='metadata', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='source'),
+                      Constant(value='confidence'),
+                      Constant(value='latency_ms')],
+                    values=[
+                      Name(id='source_url', ctx=Load()),
+                      Attribute(
+                        value=Name(id='payload', ctx=Load()),
+                        attr='confidence',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='payload', ctx=Load()),
+                        attr='latency_ms',
+                        ctx=Load())])),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Name(id='summary', ctx=Load()),
+                      Name(id='metadata', ctx=Load())],
+                    ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='summary', ctx=Store())],
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='payload', ctx=Load())])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='summary', ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='source'),
+                      Constant(value='confidence'),
+                      Constant(value='latency_ms')],
+                    values=[
+                      Name(id='source_label', ctx=Load()),
+                      Constant(value=0.5),
+                      Constant(value=0)])],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='object', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_compose_body',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='evidence',
+                annotation=Subscript(
+                  value=Name(id='Iterable', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Tuple', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='str', ctx=Load()),
+                        Subscript(
+                          value=Name(id='Dict', ctx=Load()),
+                          slice=Tuple(
+                            elts=[
+                              Name(id='str', ctx=Load()),
+                              Name(id='object', ctx=Load())],
+                            ctx=Load()),
+                          ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            AnnAssign(
+              target=Name(id='body_lines', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='intro', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Name(id='prompt', ctx=Load()),
+                  Constant(value='Thanks for connecting!')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='body_lines', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Name(id='intro', ctx=Load())])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='artifact_id', ctx=Store()),
+                  Name(id='summary', ctx=Store()),
+                  Name(id='_', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='evidence', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='body_lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='[artifact_id:'),
+                          FormattedValue(
+                            value=Name(id='artifact_id', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='] '),
+                          FormattedValue(
+                            value=Name(id='summary', ctx=Load()),
+                            conversion=-1)])]))]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='evidence', ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='body_lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='[artifact_id:baseline] Value proposition here.')]))]),
+            If(
+              test=Attribute(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='toggles',
+                  ctx=Load()),
+                attr='cot',
+                ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='body_lines', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='cot', ctx=Load()),
+                          attr='expand',
+                          ctx=Load()),
+                        args=[
+                          Name(id='intro', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            arg='steps',
+                            value=Attribute(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='toggles',
+                                ctx=Load()),
+                              attr='min_tot_depth',
+                              ctx=Load()))])]))]),
+            Assign(
+              targets=[
+                Name(id='branches', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='tot', ctx=Load()),
+                  attr='branch',
+                  ctx=Load()),
+                args=[
+                  Name(id='intro', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='branches',
+                    value=Call(
+                      func=Name(id='int', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='toggles',
+                            ctx=Load()),
+                          attr='tot_branches',
+                          ctx=Load())]))])),
+            If(
+              test=Name(id='branches', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='body_lines', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Subscript(
+                        value=Name(id='branches', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load())]))]),
+            Return(
+              value=Name(id='body_lines', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_subject_line',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='inputs')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='company_id', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Call(
+                    func=Name(id='getattr', ctx=Load()),
+                    args=[
+                      Name(id='inputs', ctx=Load()),
+                      Constant(value='company_id'),
+                      Constant(value=None)]),
+                  Constant(value='prospect')])),
+            Return(
+              value=JoinedStr(
+                values=[
+                  Constant(value='Quick note for '),
+                  FormattedValue(
+                    value=Name(id='company_id', ctx=Load()),
+                    conversion=-1)]))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='_stable_artifact_id',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(arg='job'),
+              arg(
+                arg='company_id',
+                annotation=BinOp(
+                  left=Name(id='str', ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='seed', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='company_id', ctx=Load()),
+                        Constant(value='na')]),
+                    conversion=-1),
+                  Constant(value='|'),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='getattr', ctx=Load()),
+                      args=[
+                        Name(id='job', ctx=Load()),
+                        Constant(value='tool'),
+                        Constant(value='tool')]),
+                    conversion=-1),
+                  Constant(value='|'),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='getattr', ctx=Load()),
+                      args=[
+                        Name(id='job', ctx=Load()),
+                        Constant(value='query'),
+                        Constant(value='query')]),
+                    conversion=-1),
+                  Constant(value='|'),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='getattr', ctx=Load()),
+                      args=[
+                        Name(id='job', ctx=Load()),
+                        Constant(value='section'),
+                        Constant(value='section')]),
+                    conversion=-1)])),
+            Return(
+              value=Subscript(
+                value=Call(
+                  func=Attribute(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='hashlib', ctx=Load()),
+                        attr='sha256',
+                        ctx=Load()),
+                      args=[
+                        Call(
+                          func=Attribute(
+                            value=Name(id='seed', ctx=Load()),
+                            attr='encode',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='utf-8')])]),
+                    attr='hexdigest',
+                    ctx=Load())),
+                slice=Slice(
+                  upper=Constant(value=12)),
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load()))])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Exception hierarchy for the core v10.7 workflow runtime.\"\"\"\nfrom __future__ import annotations\n\nfrom asyncio import TimeoutError as AsyncTimeoutError\n\n\nclass WorkflowError(Exception):\n    \"\"\"Base exception for workflow failures.\"\"\"\n\n\nclass ModelAPIError(WorkflowError):\n    \"\"\"Raised when an LLM provider call fails.\"\"\"\n\n\nclass JSONParsingError(WorkflowError):\n    \"\"\"Raised when JSON parsing fails.\"\"\"\n\n\nclass ValidationError(WorkflowError):\n    \"\"\"Raised when workflow validation fails.\"\"\"\n\n\nclass FileIOError(WorkflowError):\n    \"\"\"Raised when file IO fails.\"\"\"\n\n\nclass CostCeilingExceededError(WorkflowError):\n    \"\"\"Raised when a workflow exceeds the configured cost ceiling.\"\"\"\n\n\nclass CircuitBreakerOpenError(WorkflowError):\n    \"\"\"Raised when the circuit breaker remains open.\"\"\"\n\n\nclass PydanticSchemaError(ValidationError):\n    \"\"\"Raised when Pydantic validation fails.\"\"\"\n\n\nclass WorkflowTimeoutError(WorkflowError, AsyncTimeoutError):\n    \"\"\"Raised when async workflow execution exceed",
+  "full_hash": "d03a25a00157dac8cc251e75868eb00864660bd151100a18ebc46bbec6039d66",
+  "generated_at": 1764728229.7404275,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\exceptions.py"
+}

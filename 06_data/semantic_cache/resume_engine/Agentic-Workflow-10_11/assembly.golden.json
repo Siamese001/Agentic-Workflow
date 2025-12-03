@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nContext assembly and pruning for r\u00e9sum\u00e9 processing workflows.\n\nOrchestrates relevant information into structured text blocks for optimal r\u00e9sum\u00e9 improvement prompts.\n\"\"\"\n\nfrom typing import List\n\nfrom .pinned import PinnedItem, filter_pinned\nfrom .relevance import ContextItem, score_relevance\nfrom .slots import ContextSlot, assign_to_slot\n\n\ndef assemble_context(\n    query: str,\n    pinned: List[PinnedItem],\n    candidates: List[ContextItem],\n    slots: List[ContextSlot],\n) -> List[str]:\n    \"\"\"\n    Assembles context strings for r\u00e9sum\u00e9 improvement prompt generation.\n\n    Prioritizes relevant information to ensure comprehensive r\u00e9sum\u00e9 enhancement processing.\n    \"\"\"\n\n    result: List[str] = []\n\n    # Step 1: pinned items (shared across slots for now).\n    pinned_selected = filter_pinned(pinned, max_items=sum(s.max_items for s in slots))\n\n    # Step 2: relevance scoring.\n    scored = score_relevance(query, candidates)\n    ranked_candidates = [item for item, _ in scored]\n\n    pinned_tex",
+  "full_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+  "generated_at": 1764728224.0938084,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\assembly.py"
+}

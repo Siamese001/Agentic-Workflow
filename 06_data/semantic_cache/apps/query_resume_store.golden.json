@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - query_resume_store\nImplements L1 Cognitive Planning Layer for query resume store operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass QueryResumeStoreMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass QueryResumeStoreMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass QueryResumeStoreMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n    d",
+  "full_hash": "d989bb11d184e6428bd25957d23b7c3f4992cfa2ea352196aafa8f92171b0c78",
+  "generated_at": 1764728352.9043653,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\mem-layer\\retrieve-phase\\get-resume-info\\general\\understand-request\\query_resume_store.py"
+}

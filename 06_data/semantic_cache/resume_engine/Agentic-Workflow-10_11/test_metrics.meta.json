@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\simulation\\test_metrics.py",
+    "rel_path": "test_metrics.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "371b05ac0c47aa2d24fe997453d0a5378b4c2ef7c3b07d9d5a966e80ba81917b",
+    "file_size": 659,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.5995712
+}

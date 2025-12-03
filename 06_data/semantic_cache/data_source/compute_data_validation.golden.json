@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - compute_data_validation\nImplements L1 Cognitive Planning Layer for compute data validation operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ComputeDataValidationPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ComputeDataValidationPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ComputeDataValidationPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    ",
+  "full_hash": "2d1a1b79d9465c8e99eb34b99d580a24564f88f909559d1a12dc8820e4941659",
+  "generated_at": 1764728350.1107929,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\plan-layer\\validate-phase\\check-data-structure\\semantic\\adjust-scores\\compute_data_validation.py"
+}

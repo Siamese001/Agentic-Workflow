@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"Transforms low-level observability events into a simple format so health checks can spot patterns that might harm resume quality or reliability.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Dict, List\n\nfrom observability import get_all_events\n\n\ndef collect_error_events() -> List[Dict[str, Any]]:\n    \"\"\"Collects error-like events from the global stream so health detectors can flag recurring issues before they impact resume runs.\"\"\"\n\n    events: List[Dict[str, Any]] = []\n    for evt in get_all_events():\n        attrs = getattr(evt, \"attributes\", {}) or {}\n        if attrs.get(\"event_type\") != \"error\":\n            continue\n        events.append(\n            {\n                \"event_type\": \"error\",\n                \"error_code\": attrs.get(\"error_code\"),\n                \"message\": attrs.get(\"message\"),\n            }\n        )\n    return events\n\n\n\n",
+  "full_hash": "f99ef646a770b75dc4a35ada1cb3689be19250cb637d3837948beb4914b0d71d",
+  "generated_at": 1764728224.022474,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\adapter.py"
+}

@@ -1,0 +1,4727 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Tuple'),
+        alias(name='Optional'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='collections',
+      names=[
+        alias(name='defaultdict')],
+      level=0),
+    ImportFrom(
+      module='config_RES_v2',
+      names=[
+        alias(name='CONFIG')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='TYPE_CHECKING')],
+      level=0),
+    If(
+      test=Name(id='TYPE_CHECKING', ctx=Load()),
+      body=[
+        ImportFrom(
+          module='models_RES',
+          names=[
+            alias(name='RAGMission'),
+            alias(name='MasterResumeIndex'),
+            alias(name='ThematicAnalysis'),
+            alias(name='ValidationResult')],
+          level=0),
+        ImportFrom(
+          module='config_RES_v2',
+          names=[
+            alias(name='ContentConstraintsConfig'),
+            alias(name='CompetitiveAnalysisConfig')],
+          level=0)]),
+    Try(
+      body=[
+        Assign(
+          targets=[
+            Name(id='PROMPT_TEMPLATES', ctx=Store())],
+          value=Attribute(
+            value=Attribute(
+              value=Name(id='CONFIG', ctx=Load()),
+              attr='prompts',
+              ctx=Load()),
+            attr='prompts',
+            ctx=Load())),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='PROMPT_TEMPLATES', ctx=Load())),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ValueError', ctx=Load()),
+                args=[
+                  Constant(value='PROMPT_TEMPLATES dictionary from CONFIG is empty.')]))]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='✓ Successfully loaded prompts from CONFIG.prompts.prompts')])]))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='Exception', ctx=Load()),
+          name='e',
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='critical',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='FATAL: Could not load prompts from CONFIG: '),
+                      FormattedValue(
+                        value=Name(id='e', ctx=Load()),
+                        conversion=-1)])])),
+            Assign(
+              targets=[
+                Name(id='PROMPT_TEMPLATES', ctx=Store())],
+              value=Dict())])]),
+    FunctionDef(
+      name='_get_prompt_template',
+      args=arguments(
+        args=[
+          arg(
+            arg='key',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Helper to safely get a prompt template.')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='PROMPT_TEMPLATES', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='key', ctx=Load())])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='template', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='error',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Prompt template key '"),
+                      FormattedValue(
+                        value=Name(id='key', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' not found in prompts.json!")])])),
+            Raise(
+              exc=Call(
+                func=Name(id='KeyError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Prompt template key '"),
+                      FormattedValue(
+                        value=Name(id='key', ctx=Load()),
+                        conversion=-1),
+                      Constant(value="' not found in prompts.json!")])]))]),
+        Return(
+          value=Name(id='template', ctx=Load()))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_crl_context_for_section',
+      args=arguments(
+        args=[
+          arg(
+            arg='section_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='enriched_scaffold',
+            annotation=Name(id='Dict', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='\n    V2 INTEGRATION: Builds context dictionary for ContextRelayLayer.\n    \n    This function centralizes context building logic that the CRL can call.\n    Returns a dictionary of context variables ready for prompt formatting.\n    \n    Args:\n        section_name: Section identifier (e.g., "K0_HEADLINE")\n        thematic_analysis: ThematicAnalysis object\n        enriched_scaffold: Enriched data scaffold\n        **kwargs: Additional context (company_name, job_description, etc.)\n        \n    Returns:\n        Dictionary of context variables\n    ')),
+        If(
+          test=Compare(
+            left=Constant(value='HEADLINE'),
+            ops=[
+              In()],
+            comparators=[
+              Name(id='section_name', ctx=Load())]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='_build_headline_context_dict', ctx=Load()),
+                args=[
+                  Name(id='thematic_analysis', ctx=Load()),
+                  Name(id='enriched_scaffold', ctx=Load())],
+                keywords=[
+                  keyword(
+                    value=Name(id='kwargs', ctx=Load()))]))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Constant(value='EXECUTIVE_SUMMARY'),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='section_name', ctx=Load())]),
+              body=[
+                Return(
+                  value=Call(
+                    func=Name(id='_build_executive_summary_context_dict', ctx=Load()),
+                    args=[
+                      Name(id='thematic_analysis', ctx=Load()),
+                      Name(id='enriched_scaffold', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        value=Name(id='kwargs', ctx=Load()))]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Constant(value='COVER_LETTER'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='section_name', ctx=Load())]),
+                  body=[
+                    Return(
+                      value=Call(
+                        func=Name(id='_build_cover_letter_context_dict', ctx=Load()),
+                        args=[
+                          Name(id='thematic_analysis', ctx=Load()),
+                          Name(id='enriched_scaffold', ctx=Load())],
+                        keywords=[
+                          keyword(
+                            value=Name(id='kwargs', ctx=Load()))]))],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Constant(value='BULLETS'),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='section_name', ctx=Load())]),
+                      body=[
+                        Return(
+                          value=Call(
+                            func=Name(id='_build_bullets_context_dict', ctx=Load()),
+                            args=[
+                              Name(id='thematic_analysis', ctx=Load()),
+                              Name(id='enriched_scaffold', ctx=Load()),
+                              Name(id='section_name', ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Constant(value='NARRATIVE'),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='section_name', ctx=Load())]),
+                          body=[
+                            Return(
+                              value=Call(
+                                func=Name(id='_build_narrative_context_dict', ctx=Load()),
+                                args=[
+                                  Name(id='thematic_analysis', ctx=Load()),
+                                  Name(id='enriched_scaffold', ctx=Load()),
+                                  Name(id='section_name', ctx=Load())]))],
+                          orelse=[
+                            If(
+                              test=Compare(
+                                left=Constant(value='COMPETENCIES'),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='section_name', ctx=Load())]),
+                              body=[
+                                Return(
+                                  value=Call(
+                                    func=Name(id='_build_competencies_context_dict', ctx=Load()),
+                                    args=[
+                                      Name(id='thematic_analysis', ctx=Load()),
+                                      Name(id='enriched_scaffold', ctx=Load())]))],
+                              orelse=[
+                                If(
+                                  test=Compare(
+                                    left=Constant(value='SKILLS'),
+                                    ops=[
+                                      In()],
+                                    comparators=[
+                                      Name(id='section_name', ctx=Load())]),
+                                  body=[
+                                    Return(
+                                      value=Call(
+                                        func=Name(id='_build_skills_context_dict', ctx=Load()),
+                                        args=[
+                                          Name(id='thematic_analysis', ctx=Load()),
+                                          Name(id='enriched_scaffold', ctx=Load())],
+                                        keywords=[
+                                          keyword(
+                                            value=Name(id='kwargs', ctx=Load()))]))],
+                                  orelse=[
+                                    Return(
+                                      value=Dict(
+                                        keys=[
+                                          Constant(value='section_name')],
+                                        values=[
+                                          Name(id='section_name', ctx=Load())]))])])])])])])])],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='_build_headline_context_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Build context dictionary for headline generation.')),
+        Assign(
+          targets=[
+            Name(id='constraints', ctx=Store())],
+          value=Attribute(
+            value=Name(id='CONFIG', ctx=Load()),
+            attr='constraints',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='positioning', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='positioning_directives'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='resume_keywords', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='positioning', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='positioning', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='resume_keywords'),
+                List(ctx=Load())]),
+            orelse=List(ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='keywords_str', ctx=Store())],
+          value=IfExp(
+            test=Name(id='resume_keywords', ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value=', '),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Subscript(
+                  value=Name(id='resume_keywords', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=8)),
+                  ctx=Load())]),
+            orelse=Constant(value='strategic leadership, innovation, growth'))),
+        Assign(
+          targets=[
+            Name(id='comp_intel', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='competitive_intelligence'),
+              Constant(value=None)])),
+        Assign(
+          targets=[
+            Name(id='differentiators', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='comp_intel', ctx=Load()),
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='comp_intel', ctx=Load()),
+                  Constant(value='differentiator_keywords')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='differentiators', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='comp_intel', ctx=Load()),
+                  attr='differentiator_keywords',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=5)),
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='primary_theme', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='primary_theme'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='primary_theme_name', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='primary_theme', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='primary_theme', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='name'),
+                Constant(value='Key Expertise')]),
+            orelse=Constant(value='Key Expertise'))),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='company_name'),
+              Constant(value='primary_theme'),
+              Constant(value='differentiators_str'),
+              Constant(value='keywords_str'),
+              Constant(value='min_wc'),
+              Constant(value='max_wc'),
+              Constant(value='comp_min_wc'),
+              Constant(value='comp_max_wc')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='kwargs', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='company_name'),
+                  Constant(value='Target Company')]),
+              Name(id='primary_theme_name', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='differentiators', ctx=Load())]),
+              Name(id='keywords_str', ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='HEADLINE_WORD_COUNT_MIN',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='HEADLINE_WORD_COUNT_MAX',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='HEADLINE_COMPONENT_WORDS_MIN',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='HEADLINE_COMPONENT_WORDS_MAX',
+                ctx=Load())]))],
+      returns=Name(id='Dict', ctx=Load())),
+    FunctionDef(
+      name='_build_executive_summary_context_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Build context dictionary for executive summary.')),
+        Import(
+          names=[
+            alias(name='json')]),
+        Assign(
+          targets=[
+            Name(id='constraints', ctx=Store())],
+          value=Attribute(
+            value=Name(id='CONFIG', ctx=Load()),
+            attr='constraints',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Name(id='CONFIG', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='role_classification', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='role_classification'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='role_archetype', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='role_classification', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='role_classification', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='role_archetype'),
+                Constant(value='Experienced Professional')]),
+            orelse=Constant(value='Experienced Professional'))),
+        Assign(
+          targets=[
+            Name(id='archetype_map', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='Executive_Leader'),
+              Constant(value='Technical_IC'),
+              Constant(value='Post-Sales_Customer_Success'),
+              Constant(value='Pre-Sales_GTM'),
+              Constant(value='Product_Management')],
+            values=[
+              Constant(value='an executive leader'),
+              Constant(value='a hands-on technical expert'),
+              Constant(value='a customer success leader'),
+              Constant(value='a pre-sales GTM strategist'),
+              Constant(value='a product management professional')])),
+        Assign(
+          targets=[
+            Name(id='archetype_instruction', ctx=Store())],
+          value=JoinedStr(
+            values=[
+              Constant(value='Position the candidate as '),
+              FormattedValue(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='archetype_map', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Name(id='role_archetype', ctx=Load()),
+                    Constant(value='an experienced professional')]),
+                conversion=-1),
+              Constant(value='.')])),
+        Assign(
+          targets=[
+            Name(id='problem_solution', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='problem_solution_narratives'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='problem', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='problem_solution', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='problem_solution', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='problem'),
+                Constant(value='current business challenges')]),
+            orelse=Constant(value='current business challenges'))),
+        Assign(
+          targets=[
+            Name(id='solution', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='problem_solution', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='problem_solution', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='solution'),
+                Constant(value='strategic solutions')]),
+            orelse=Constant(value='strategic solutions'))),
+        Assign(
+          targets=[
+            Name(id='comp_intel', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='competitive_intelligence'),
+              Constant(value=None)])),
+        Assign(
+          targets=[
+            Name(id='max_diff', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='hasattr', ctx=Load()),
+              args=[
+                Name(id='config', ctx=Load()),
+                Constant(value='signal_constraints')]),
+            body=Attribute(
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='signal_constraints',
+                ctx=Load()),
+              attr='K1_MAX_DIFFERENTIATORS',
+              ctx=Load()),
+            orelse=Constant(value=4))),
+        Assign(
+          targets=[
+            Name(id='differentiators', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='comp_intel', ctx=Load()),
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='comp_intel', ctx=Load()),
+                  Constant(value='differentiator_keywords')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='differentiators', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='comp_intel', ctx=Load()),
+                  attr='differentiator_keywords',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Name(id='max_diff', ctx=Load())),
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='primary_theme', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='primary_theme'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='primary_theme_name', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='primary_theme', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='primary_theme', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='name'),
+                Constant(value='key skills')]),
+            orelse=Constant(value='key skills'))),
+        Assign(
+          targets=[
+            Name(id='achievement_patterns', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='thematic_analysis', ctx=Load()),
+                  Constant(value='authenticity_patterns'),
+                  Dict()]),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='patterns'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='achievement_patterns_str', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value=', '),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='achievement_patterns', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='achievement_verb_patterns'),
+                  List(
+                    elts=[
+                      Constant(value='measurable outcomes')],
+                    ctx=Load())])])),
+        Assign(
+          targets=[
+            Name(id='positioning_directives', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='positioning_directives'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='keywords_str', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value=', '),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Subscript(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='positioning_directives', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='resume_keywords'),
+                    List(ctx=Load())]),
+                slice=Slice(
+                  upper=Constant(value=8)),
+                ctx=Load())])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='company_name'),
+              Constant(value='primary_theme'),
+              Constant(value='secondary_themes_str'),
+              Constant(value='differentiators_str'),
+              Constant(value='achievement_patterns_str'),
+              Constant(value='keywords_str'),
+              Constant(value='archetype_instruction'),
+              Constant(value='problem'),
+              Constant(value='solution'),
+              Constant(value='experience_snippets'),
+              Constant(value='min_sc'),
+              Constant(value='max_sc'),
+              Constant(value='min_wc'),
+              Constant(value='max_wc')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='kwargs', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='company_name'),
+                  Constant(value='Target Company')]),
+              Name(id='primary_theme_name', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  ListComp(
+                    elt=Call(
+                      func=Attribute(
+                        value=Name(id='t', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='name'),
+                        Constant(value='')]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='t', ctx=Store()),
+                        iter=Subscript(
+                          value=Call(
+                            func=Name(id='getattr', ctx=Load()),
+                            args=[
+                              Name(id='thematic_analysis', ctx=Load()),
+                              Constant(value='secondary_themes'),
+                              List(ctx=Load())]),
+                          slice=Slice(
+                            upper=Constant(value=3)),
+                          ctx=Load()),
+                        is_async=0)])]),
+              Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='differentiators', ctx=Load())]),
+              Name(id='achievement_patterns_str', ctx=Load()),
+              Name(id='keywords_str', ctx=Load()),
+              Name(id='archetype_instruction', ctx=Load()),
+              Name(id='problem', ctx=Load()),
+              Name(id='solution', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='scaffold', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='experience_sections'),
+                        List(ctx=Load())]),
+                    slice=Slice(
+                      upper=Constant(value=2)),
+                    ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='indent',
+                    value=Constant(value=2))]),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='EXEC_SUMMARY_SENTENCE_COUNT_MIN',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='EXEC_SUMMARY_SENTENCE_COUNT_MAX',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='EXEC_SUMMARY_WORD_COUNT_MIN',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='EXEC_SUMMARY_WORD_COUNT_MAX',
+                ctx=Load())]))],
+      returns=Name(id='Dict', ctx=Load())),
+    FunctionDef(
+      name='_build_skills_context_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Build context dictionary for skills list.')),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='primary_theme_name', ctx=Store())],
+              value=Constant(value='N/A')),
+            Assign(
+              targets=[
+                Name(id='key_tech_list', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='req_skills_list', ctx=Store())],
+              value=List(ctx=Load())),
+            If(
+              test=Name(id='thematic_analysis', ctx=Load()),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='thematic_analysis', ctx=Load()),
+                        attr='primary_theme',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='thematic_analysis', ctx=Load()),
+                            attr='primary_theme',
+                            ctx=Load()),
+                          Name(id='dict', ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='primary_theme_name', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='thematic_analysis', ctx=Load()),
+                            attr='primary_theme',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='name'),
+                          Constant(value='N/A')])),
+                    Assign(
+                      targets=[
+                        Name(id='key_tech_list', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='thematic_analysis', ctx=Load()),
+                            attr='primary_theme',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='keywords'),
+                          List(ctx=Load())]))]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='thematic_analysis', ctx=Load()),
+                        attr='secondary_themes',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='thematic_analysis', ctx=Load()),
+                            attr='secondary_themes',
+                            ctx=Load()),
+                          Name(id='list', ctx=Load())]),
+                      Compare(
+                        left=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Attribute(
+                              value=Name(id='thematic_analysis', ctx=Load()),
+                              attr='secondary_themes',
+                              ctx=Load())]),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Constant(value=0)])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='req_skills_list', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Attribute(
+                              value=Name(id='thematic_analysis', ctx=Load()),
+                              attr='secondary_themes',
+                              ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='keywords'),
+                          List(ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='job_description', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='kwargs', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job_description'),
+                  Constant(value='')])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='job_description'),
+                  Constant(value='primary_theme'),
+                  Constant(value='key_technologies'),
+                  Constant(value='required_skills')],
+                values=[
+                  Subscript(
+                    value=Name(id='job_description', ctx=Load()),
+                    slice=Slice(
+                      upper=Constant(value=2000)),
+                    ctx=Load()),
+                  Name(id='primary_theme_name', ctx=Load()),
+                  Call(
+                    func=Attribute(
+                      value=Constant(value=', '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Name(id='key_tech_list', ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Constant(value=', '),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      Name(id='req_skills_list', ctx=Load())])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Error building K10 context: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Dict(
+                    keys=[
+                      Constant(value='job_description'),
+                      Constant(value='primary_theme'),
+                      Constant(value='key_technologies'),
+                      Constant(value='required_skills')],
+                    values=[
+                      Constant(value=''),
+                      Constant(value=''),
+                      Constant(value=''),
+                      Constant(value='')]))])])],
+      returns=Name(id='Dict', ctx=Load())),
+    FunctionDef(
+      name='_build_cover_letter_context_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Build context dictionary for cover letter.')),
+        ImportFrom(
+          module='datetime',
+          names=[
+            alias(name='datetime')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='constraints', ctx=Store())],
+          value=Attribute(
+            value=Name(id='CONFIG', ctx=Load()),
+            attr='constraints',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='master_resume', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='kwargs', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='master_resume'),
+              Dict()])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='master_resume', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='warning',
+                  ctx=Load()),
+                args=[
+                  Constant(value='master_resume not found in kwargs for cover letter context')]))]),
+        Assign(
+          targets=[
+            Name(id='problem_solution', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='problem_solution_narratives'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='problem', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='problem_solution', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='problem_solution', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='problem'),
+                Constant(value='strategic challenges')]),
+            orelse=Constant(value='strategic challenges'))),
+        Assign(
+          targets=[
+            Name(id='solution', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='problem_solution', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='problem_solution', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='solution'),
+                Constant(value='innovative approaches')]),
+            orelse=Constant(value='innovative approaches'))),
+        Assign(
+          targets=[
+            Name(id='company_mission', ctx=Store())],
+          value=Constant(value='drive innovation and strategic growth')),
+        If(
+          test=Call(
+            func=Name(id='hasattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='primary_theme')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='theme', ctx=Store())],
+              value=Attribute(
+                value=Name(id='thematic_analysis', ctx=Load()),
+                attr='primary_theme',
+                ctx=Load())),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Call(
+                    func=Name(id='isinstance', ctx=Load()),
+                    args=[
+                      Name(id='theme', ctx=Load()),
+                      Name(id='dict', ctx=Load())]),
+                  Compare(
+                    left=Constant(value='name'),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='theme', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='company_mission', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='advance '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Subscript(
+                              value=Name(id='theme', ctx=Load()),
+                              slice=Constant(value='name'),
+                              ctx=Load()),
+                            attr='lower',
+                            ctx=Load())),
+                        conversion=-1)]))])]),
+        Assign(
+          targets=[
+            Name(id='comp_intel', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='competitive_intelligence'),
+              Constant(value=None)])),
+        Assign(
+          targets=[
+            Name(id='differentiators', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='comp_intel', ctx=Load()),
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='comp_intel', ctx=Load()),
+                  Constant(value='differentiator_keywords')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='differentiators', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='comp_intel', ctx=Load()),
+                  attr='differentiator_keywords',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=5)),
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='strengths_str', ctx=Store())],
+          value=IfExp(
+            test=Name(id='differentiators', ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value=', '),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Name(id='differentiators', ctx=Load())]),
+            orelse=Constant(value='strategic leadership, innovation, operational excellence'))),
+        Assign(
+          targets=[
+            Name(id='primary_theme', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='primary_theme'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='primary_theme_name', ctx=Store())],
+          value=IfExp(
+            test=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='primary_theme', ctx=Load()),
+                Name(id='dict', ctx=Load())]),
+            body=Call(
+              func=Attribute(
+                value=Name(id='primary_theme', ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='name'),
+                Constant(value='key requirements')]),
+            orelse=Constant(value='key requirements'))),
+        Assign(
+          targets=[
+            Name(id='experience_snippets', ctx=Store())],
+          value=Call(
+            func=Name(id='_extract_experience_snippets_for_cl', ctx=Load()),
+            args=[
+              Name(id='scaffold', ctx=Load()),
+              Name(id='master_resume', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='expected_signature', ctx=Store())],
+          value=Call(
+            func=Name(id='get_expected_signature', ctx=Load()),
+            args=[
+              Name(id='master_resume', ctx=Load())])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='company_name'),
+              Constant(value='job_title'),
+              Constant(value='company_mission'),
+              Constant(value='primary_theme'),
+              Constant(value='problems_str'),
+              Constant(value='solutions_str'),
+              Constant(value='strengths_str'),
+              Constant(value='differentiators_str'),
+              Constant(value='experience_snippets'),
+              Constant(value='current_date'),
+              Constant(value='p1_min_wc'),
+              Constant(value='p1_max_wc'),
+              Constant(value='p2_min_wc'),
+              Constant(value='p2_max_wc'),
+              Constant(value='p3_min_wc'),
+              Constant(value='p3_max_wc'),
+              Constant(value='expected_signature')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Name(id='kwargs', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='company_name'),
+                  Constant(value='Target Company')]),
+              Call(
+                func=Attribute(
+                  value=Name(id='kwargs', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job_title'),
+                  Constant(value='Target Role')]),
+              Name(id='company_mission', ctx=Load()),
+              Name(id='primary_theme_name', ctx=Load()),
+              Name(id='problem', ctx=Load()),
+              Name(id='solution', ctx=Load()),
+              Name(id='strengths_str', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='differentiators', ctx=Load())]),
+              Name(id='experience_snippets', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())),
+                  attr='strftime',
+                  ctx=Load()),
+                args=[
+                  Constant(value='%B %d, %Y')]),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='COVER_LETTER_P1_WORD_COUNT_MIN',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='COVER_LETTER_P1_WORD_COUNT_MAX',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='COVER_LETTER_P2_WORD_COUNT_MIN',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='COVER_LETTER_P2_WORD_COUNT_MAX',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='COVER_LETTER_P3_WORD_COUNT_MIN',
+                ctx=Load()),
+              Attribute(
+                value=Name(id='constraints', ctx=Load()),
+                attr='COVER_LETTER_P3_WORD_COUNT_MAX',
+                ctx=Load()),
+              Name(id='expected_signature', ctx=Load())]))],
+      returns=Name(id='Dict', ctx=Load())),
+    FunctionDef(
+      name='_build_narrative_context_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='section_name',
+            annotation=Name(id='str', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Build context dictionary for narrative generation.')),
+        ImportFrom(
+          module='models_RES',
+          names=[
+            alias(name='HopExecutionError'),
+            alias(name='ResumeSection')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='master_resume', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='kwargs', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='master_resume'),
+              Dict()])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='master_resume', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='warning',
+                  ctx=Load()),
+                args=[
+                  Constant(value='master_resume not found in kwargs for narrative context')]))]),
+        Assign(
+          targets=[
+            Name(id='config', ctx=Store())],
+          value=Name(id='CONFIG', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='constraints', ctx=Store())],
+          value=Attribute(
+            value=Name(id='CONFIG', ctx=Load()),
+            attr='constraints',
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='spec', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='kwargs', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='spec'),
+              Dict()])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='spec', ctx=Load())),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='HopExecutionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Missing 'spec' in kwargs for narrative context "),
+                      FormattedValue(
+                        value=Name(id='section_name', ctx=Load()),
+                        conversion=-1)])]))]),
+        Assign(
+          targets=[
+            Name(id='extra_args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='spec', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='extra_args'),
+              Dict()])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Name(id='isinstance', ctx=Load()),
+              args=[
+                Name(id='extra_args', ctx=Load()),
+                Name(id='dict', ctx=Load())])),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='HopExecutionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Invalid 'extra_args' format in spec for narrative generation.")])]))]),
+        Assign(
+          targets=[
+            Name(id='company_match', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='extra_args', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='company_match')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='company_match', ctx=Load())),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='HopExecutionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value="Missing 'company_match' in extra_args for narrative generation.")])]))]),
+        Assign(
+          targets=[
+            Name(id='narrative_config', ctx=Store())],
+          value=IfExp(
+            test=BoolOp(
+              op=And(),
+              values=[
+                Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Name(id='config', ctx=Load()),
+                    Constant(value='artist')]),
+                Call(
+                  func=Name(id='hasattr', ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='config', ctx=Load()),
+                      attr='artist',
+                      ctx=Load()),
+                    Constant(value='narrative_config')])]),
+            body=Attribute(
+              value=Attribute(
+                value=Name(id='config', ctx=Load()),
+                attr='artist',
+                ctx=Load()),
+              attr='narrative_config',
+              ctx=Load()),
+            orelse=Dict())),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='section_enum', ctx=Store())],
+              value=Subscript(
+                value=Name(id='ResumeSection', ctx=Load()),
+                slice=Name(id='section_name', ctx=Load()),
+                ctx=Load()))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='KeyError', ctx=Load()),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='HopExecutionError', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value="Invalid section_name '"),
+                          FormattedValue(
+                            value=Name(id='section_name', ctx=Load()),
+                            conversion=-1),
+                          Constant(value="' for narrative context")])]))])]),
+        If(
+          test=Compare(
+            left=Name(id='section_enum', ctx=Load()),
+            ops=[
+              NotIn()],
+            comparators=[
+              Name(id='narrative_config', ctx=Load())]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='HopExecutionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Missing/invalid config for narrative generation: '),
+                      FormattedValue(
+                        value=Attribute(
+                          value=Name(id='section_enum', ctx=Load()),
+                          attr='name',
+                          ctx=Load()),
+                        conversion=-1)])]))]),
+        Assign(
+          targets=[
+            Name(id='title', ctx=Store())],
+          value=Constant(value='Default Title')),
+        Assign(
+          targets=[
+            Name(id='exp_section', ctx=Store())],
+          value=Call(
+            func=Name(id='next', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Name(id='exp', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='exp', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='master_resume', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='professional_experience'),
+                        List(ctx=Load())]),
+                    ifs=[
+                      Compare(
+                        left=Name(id='company_match', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='exp', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='company'),
+                              Constant(value='')])])],
+                    is_async=0)]),
+              Constant(value=None)])),
+        Assign(
+          targets=[
+            Name(id='master_highlights', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=Name(id='exp_section', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='master_highlights_raw', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='exp_section', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='highlights'),
+                  Call(
+                    func=Attribute(
+                      value=Name(id='exp_section', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bullet_pool'),
+                      List(ctx=Load())])])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='master_highlights_raw', ctx=Load()),
+                  Name(id='list', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='master_highlights', ctx=Store())],
+                  value=ListComp(
+                    elt=Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        Name(id='h', ctx=Load())]),
+                    generators=[
+                      comprehension(
+                        target=Name(id='h', ctx=Store()),
+                        iter=Name(id='master_highlights_raw', ctx=Load()),
+                        ifs=[
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='h', ctx=Load()),
+                              Name(id='str', ctx=Load())])],
+                        is_async=0)]))]),
+            Assign(
+              targets=[
+                Name(id='title', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='exp_section', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='title'),
+                  Name(id='title', ctx=Load())]))]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='master_highlights', ctx=Load())),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='HopExecutionError', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Cannot generate narrative for '),
+                      FormattedValue(
+                        value=Name(id='company_match', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=': Master highlights/bullets not found or empty.')])]))]),
+        Assign(
+          targets=[
+            Name(id='master_context', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              ListComp(
+                elt=JoinedStr(
+                  values=[
+                    Constant(value='- '),
+                    FormattedValue(
+                      value=Name(id='h', ctx=Load()),
+                      conversion=-1)]),
+                generators=[
+                  comprehension(
+                    target=Name(id='h', ctx=Store()),
+                    iter=Name(id='master_highlights', ctx=Load()),
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='comp_intel', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='competitive_intelligence'),
+              Constant(value=None)])),
+        Assign(
+          targets=[
+            Name(id='rag_keywords', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Name(id='comp_intel', ctx=Load()),
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='comp_intel', ctx=Load()),
+                  Constant(value='differentiator_keywords')])]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='rag_keywords', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='comp_intel', ctx=Load()),
+                  attr='differentiator_keywords',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=5)),
+                ctx=Load()))]),
+        Assign(
+          targets=[
+            Name(id='target_sc', ctx=Store())],
+          value=Constant(value=3)),
+        Assign(
+          targets=[
+            Name(id='section_config', ctx=Store())],
+          value=Subscript(
+            value=Name(id='narrative_config', ctx=Load()),
+            slice=Name(id='section_enum', ctx=Load()),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='min_wc', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='constraints', ctx=Load()),
+              JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='section_enum', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_WORD_COUNT_MIN')]),
+              Constant(value=40)])),
+        Assign(
+          targets=[
+            Name(id='max_wc', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='constraints', ctx=Load()),
+              JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='section_enum', ctx=Load()),
+                      attr='name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='_WORD_COUNT_MAX')]),
+              Constant(value=60)])),
+        Assign(
+          targets=[
+            Name(id='combined_signals', ctx=Store())],
+          value=Subscript(
+            value=Call(
+              func=Name(id='list', ctx=Load()),
+              args=[
+                Call(
+                  func=Name(id='set', ctx=Load()),
+                  args=[
+                    BinOp(
+                      left=Name(id='rag_keywords', ctx=Load()),
+                      op=Add(),
+                      right=Subscript(
+                        value=Name(id='section_config', ctx=Load()),
+                        slice=Constant(value='rag_signals'),
+                        ctx=Load()))])]),
+            slice=Slice(
+              upper=Constant(value=7)),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='focus_instruction', ctx=Store())],
+          value=Subscript(
+            value=Name(id='section_config', ctx=Load()),
+            slice=Constant(value='focus'),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='k0_themes', ctx=Store())],
+          value=Subscript(
+            value=Name(id='section_config', ctx=Load()),
+            slice=Constant(value='k0_themes'),
+            ctx=Load())),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='company_name'),
+              Constant(value='title'),
+              Constant(value='target_sc'),
+              Constant(value='min_wc'),
+              Constant(value='max_wc'),
+              Constant(value='master_context'),
+              Constant(value='combined_signals_str'),
+              Constant(value='focus_instruction'),
+              Constant(value='k0_themes_str'),
+              Constant(value='rag_keywords_str')],
+            values=[
+              Name(id='company_match', ctx=Load()),
+              Name(id='title', ctx=Load()),
+              Name(id='target_sc', ctx=Load()),
+              Name(id='min_wc', ctx=Load()),
+              Name(id='max_wc', ctx=Load()),
+              Name(id='master_context', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='combined_signals', ctx=Load())]),
+              Name(id='focus_instruction', ctx=Load()),
+              Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='k0_themes', ctx=Load())]),
+              Call(
+                func=Attribute(
+                  value=Constant(value=', '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='rag_keywords', ctx=Load())])]))],
+      returns=Name(id='Dict', ctx=Load())),
+    FunctionDef(
+      name='_build_bullets_context_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='section_name',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Build context dictionary for bullets.')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='warning',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Using fallback context builder for '),
+                  FormattedValue(
+                    value=Name(id='section_name', ctx=Load()),
+                    conversion=-1)])])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='section_name'),
+              Constant(value='primary_theme')],
+            values=[
+              Name(id='section_name', ctx=Load()),
+              Constant(value='Fallback Theme')]))],
+      returns=Name(id='Dict', ctx=Load())),
+    FunctionDef(
+      name='_build_competencies_context_dict',
+      args=arguments(
+        args=[
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Build context dictionary for competencies.')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logging', ctx=Load()),
+              attr='warning',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Using fallback context builder for K9_COMPETENCIES')])])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='section_name'),
+              Constant(value='primary_theme')],
+            values=[
+              Constant(value='K9_COMPETENCIES'),
+              Constant(value='Fallback Theme')]))],
+      returns=Name(id='Dict', ctx=Load())),
+    FunctionDef(
+      name='_extract_experience_snippets_for_cl',
+      args=arguments(
+        args=[
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='master_resume',
+            annotation=Name(id='Dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Extract experience snippets for cover letter.')),
+        Assign(
+          targets=[
+            Name(id='snippets', ctx=Store())],
+          value=List(ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='scaffold_exp', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='scaffold', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='experience_sections'),
+              List(ctx=Load())])),
+        If(
+          test=Name(id='scaffold_exp', ctx=Load()),
+          body=[
+            For(
+              target=Name(id='exp', ctx=Store()),
+              iter=Subscript(
+                value=Name(id='scaffold_exp', ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=2)),
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='company', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company'),
+                      Constant(value='')])),
+                Assign(
+                  targets=[
+                    Name(id='bullets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bullets'),
+                      List(ctx=Load())])),
+                If(
+                  test=Name(id='bullets', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='first_bullet_text', ctx=Store())],
+                      value=IfExp(
+                        test=Call(
+                          func=Name(id='isinstance', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='bullets', ctx=Load()),
+                              slice=Constant(value=0),
+                              ctx=Load()),
+                            Name(id='dict', ctx=Load())]),
+                        body=Call(
+                          func=Attribute(
+                            value=Subscript(
+                              value=Name(id='bullets', ctx=Load()),
+                              slice=Constant(value=0),
+                              ctx=Load()),
+                            attr='get',
+                            ctx=Load()),
+                          args=[
+                            Constant(value='bullet_text'),
+                            Constant(value='')]),
+                        orelse=Call(
+                          func=Name(id='str', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='bullets', ctx=Load()),
+                              slice=Constant(value=0),
+                              ctx=Load())]))),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='snippets', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='At '),
+                              FormattedValue(
+                                value=Name(id='company', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='first_bullet_text', ctx=Load()),
+                                  slice=Slice(
+                                    upper=Constant(value=100)),
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value='...')])]))])])]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              UnaryOp(
+                op=Not(),
+                operand=Name(id='snippets', ctx=Load())),
+              Name(id='master_resume', ctx=Load())]),
+          body=[
+            For(
+              target=Name(id='exp', ctx=Store()),
+              iter=Subscript(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='master_resume', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='professional_experience'),
+                    List(ctx=Load())]),
+                slice=Slice(
+                  upper=Constant(value=2)),
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='company', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='company'),
+                      Constant(value='')])),
+                Assign(
+                  targets=[
+                    Name(id='highlights', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='highlights'),
+                      Call(
+                        func=Attribute(
+                          value=Name(id='exp', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='bullet_pool'),
+                          List(ctx=Load())])])),
+                If(
+                  test=Name(id='highlights', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='first_highlight', ctx=Store())],
+                      value=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Name(id='highlights', ctx=Load()),
+                            slice=Constant(value=0),
+                            ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='snippets', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='At '),
+                              FormattedValue(
+                                value=Name(id='company', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='first_highlight', ctx=Load()),
+                                  slice=Slice(
+                                    upper=Constant(value=100)),
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value='...')])]))])])]),
+        Return(
+          value=IfExp(
+            test=Name(id='snippets', ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value='\n'),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Name(id='snippets', ctx=Load())]),
+            orelse=Constant(value='Candidate has extensive experience in relevant areas.')))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='get_expected_signature',
+      args=arguments(
+        args=[
+          arg(
+            arg='master_resume',
+            annotation=Name(id='Dict', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Get expected cover letter signature.')),
+        Assign(
+          targets=[
+            Name(id='owner', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='master_resume', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='owner'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='contact', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='owner', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='contact'),
+              Dict()])),
+        Assign(
+          targets=[
+            Name(id='name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='owner', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='name'),
+              Constant(value='Candidate Name')])),
+        Assign(
+          targets=[
+            Name(id='email', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='contact', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='email'),
+              Constant(value='email@example.com')])),
+        Assign(
+          targets=[
+            Name(id='phone', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='contact', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='phone'),
+              Constant(value='(555) 123-4567')])),
+        Assign(
+          targets=[
+            Name(id='linkedin', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='contact', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='linkedin'),
+              Constant(value='linkedin.com/in/profile')])),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='PROMPT_TEMPLATES', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='COVER_LETTER_SIGNATURE_TEMPLATE')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='template', ctx=Load())),
+          body=[
+            Assign(
+              targets=[
+                Name(id='template', ctx=Store())],
+              value=Constant(value='Sincerely,\n\n{name}\n{email}\n{phone}\n{linkedin}'))]),
+        Try(
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='template', ctx=Load()),
+                      attr='format',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='name',
+                        value=Name(id='name', ctx=Load())),
+                      keyword(
+                        arg='email',
+                        value=Name(id='email', ctx=Load())),
+                      keyword(
+                        arg='phone',
+                        value=Name(id='phone', ctx=Load())),
+                      keyword(
+                        arg='linkedin',
+                        value=Name(id='linkedin', ctx=Load()))]),
+                  attr='strip',
+                  ctx=Load())))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to format COVER_LETTER_SIGNATURE_TEMPLATE: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='Sincerely,\n\n'),
+                      FormattedValue(
+                        value=Name(id='name', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n'),
+                      FormattedValue(
+                        value=Name(id='email', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n'),
+                      FormattedValue(
+                        value=Name(id='phone', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n'),
+                      FormattedValue(
+                        value=Name(id='linkedin', ctx=Load()),
+                        conversion=-1)]))])])],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_extract_recent_achievements_text',
+      args=arguments(
+        args=[
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='limit',
+            annotation=Name(id='int', ctx=Load()))],
+        defaults=[
+          Constant(value=5)]),
+      body=[
+        Expr(
+          value=Constant(value='Extract recent achievements from scaffold as formatted text.')),
+        Assign(
+          targets=[
+            Name(id='experiences', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='scaffold', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='experience_sections'),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='achievements', ctx=Store())],
+          value=List(ctx=Load())),
+        For(
+          target=Name(id='exp', ctx=Store()),
+          iter=Subscript(
+            value=Name(id='experiences', ctx=Load()),
+            slice=Slice(
+              upper=Constant(value=2)),
+            ctx=Load()),
+          body=[
+            For(
+              target=Name(id='bullet', ctx=Store()),
+              iter=Subscript(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='exp', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='bullets'),
+                    List(ctx=Load())]),
+                slice=Slice(
+                  upper=Name(id='limit', ctx=Load())),
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='text_to_add', ctx=Store())],
+                  value=IfExp(
+                    test=Call(
+                      func=Name(id='isinstance', ctx=Load()),
+                      args=[
+                        Name(id='bullet', ctx=Load()),
+                        Name(id='dict', ctx=Load())]),
+                    body=Call(
+                      func=Attribute(
+                        value=Name(id='bullet', ctx=Load()),
+                        attr='get',
+                        ctx=Load()),
+                      args=[
+                        Constant(value='bullet_text'),
+                        Constant(value='')]),
+                    orelse=Call(
+                      func=Name(id='str', ctx=Load()),
+                      args=[
+                        Name(id='bullet', ctx=Load())]))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='achievements', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='text_to_add', ctx=Load())]))])]),
+        Return(
+          value=IfExp(
+            test=Name(id='achievements', ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value='\n'),
+                attr='join',
+                ctx=Load()),
+              args=[
+                GeneratorExp(
+                  elt=JoinedStr(
+                    values=[
+                      Constant(value='- '),
+                      FormattedValue(
+                        value=Name(id='a', ctx=Load()),
+                        conversion=-1)]),
+                  generators=[
+                    comprehension(
+                      target=Name(id='a', ctx=Store()),
+                      iter=Subscript(
+                        value=Name(id='achievements', ctx=Load()),
+                        slice=Slice(
+                          upper=Name(id='limit', ctx=Load())),
+                        ctx=Load()),
+                      ifs=[
+                        Name(id='a', ctx=Load())],
+                      is_async=0)])]),
+            orelse=Constant(value='Recent leadership in AI/ML platform development')))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_extract_experience_for_section_text',
+      args=arguments(
+        args=[
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='section_name',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Extract relevant experience data for a section as formatted text.')),
+        Assign(
+          targets=[
+            Name(id='experiences', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='scaffold', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='experience_sections'),
+              List(ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='company_map', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='K2_UNIFY'),
+              Constant(value='K3_IBM')],
+            values=[
+              Constant(value='Unify'),
+              Constant(value='IBM')])),
+        Assign(
+          targets=[
+            Name(id='target_company', ctx=Store())],
+          value=Constant(value=None)),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='key', ctx=Store()),
+              Name(id='company', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Attribute(
+              value=Name(id='company_map', ctx=Load()),
+              attr='items',
+              ctx=Load())),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Name(id='section_name', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='target_company', ctx=Store())],
+                  value=Name(id='company', ctx=Load())),
+                Break()])]),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='target_company', ctx=Load())),
+          body=[
+            Return(
+              value=Constant(value='Experience data for current role'))]),
+        For(
+          target=Name(id='exp', ctx=Store()),
+          iter=Name(id='experiences', ctx=Load()),
+          body=[
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='target_company', ctx=Load()),
+                    attr='lower',
+                    ctx=Load())),
+                ops=[
+                  In()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='exp', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='company'),
+                          Constant(value='')]),
+                      attr='lower',
+                      ctx=Load()))]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='bullets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='exp', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bullets'),
+                      List(ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='bullet_texts', ctx=Store())],
+                  value=ListComp(
+                    elt=IfExp(
+                      test=Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='b', ctx=Load()),
+                          Name(id='dict', ctx=Load())]),
+                      body=Call(
+                        func=Attribute(
+                          value=Name(id='b', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='bullet_text'),
+                          Constant(value='')]),
+                      orelse=Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='b', ctx=Load())])),
+                    generators=[
+                      comprehension(
+                        target=Name(id='b', ctx=Store()),
+                        iter=Subscript(
+                          value=Name(id='bullets', ctx=Load()),
+                          slice=Slice(
+                            upper=Constant(value=10)),
+                          ctx=Load()),
+                        is_async=0)])),
+                Return(
+                  value=Call(
+                    func=Attribute(
+                      value=Constant(value='\n'),
+                      attr='join',
+                      ctx=Load()),
+                    args=[
+                      GeneratorExp(
+                        elt=JoinedStr(
+                          values=[
+                            Constant(value='- '),
+                            FormattedValue(
+                              value=Name(id='b_text', ctx=Load()),
+                              conversion=-1)]),
+                        generators=[
+                          comprehension(
+                            target=Name(id='b_text', ctx=Store()),
+                            iter=Name(id='bullet_texts', ctx=Load()),
+                            ifs=[
+                              Name(id='b_text', ctx=Load())],
+                            is_async=0)])]))])]),
+        Return(
+          value=Constant(value='Experience data for selected role'))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_extract_historical_context_text',
+      args=arguments(
+        args=[
+          arg(
+            arg='scaffold',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='section_name',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Extract historical context for narratives.')),
+        Return(
+          value=JoinedStr(
+            values=[
+              Constant(value='Historical context bridging past experience to current capabilities for '),
+              FormattedValue(
+                value=Name(id='section_name', ctx=Load()),
+                conversion=-1)]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_critique_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='draft',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='validation_results',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Constant(value='ValidationResult'),
+              ctx=Load())),
+          arg(
+            arg='strategy',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='focus',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='emphasis',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    V2 NEW: Builds prompt for LLM-based critique generation.\n    Used by CritiqueTool when advanced critique is needed.\n    \n    Args:\n        draft: The failed draft text\n        validation_results: List of validation failures\n        strategy: Strategy type (mechanical_fix, creative_rewrite, etc.)\n        focus: Focus area for improvement\n        emphasis: Emphasis directive\n        \n    Returns:\n        Formatted critique generation prompt\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='v2_critique_generation')])),
+        Assign(
+          targets=[
+            Name(id='failures_text', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              ListComp(
+                elt=JoinedStr(
+                  values=[
+                    Constant(value='- '),
+                    FormattedValue(
+                      value=Attribute(
+                        value=Name(id='vr', ctx=Load()),
+                        attr='rule_id',
+                        ctx=Load()),
+                      conversion=-1),
+                    Constant(value=': '),
+                    FormattedValue(
+                      value=Attribute(
+                        value=Name(id='vr', ctx=Load()),
+                        attr='message',
+                        ctx=Load()),
+                      conversion=-1)]),
+                generators=[
+                  comprehension(
+                    target=Name(id='vr', ctx=Store()),
+                    iter=Name(id='validation_results', ctx=Load()),
+                    ifs=[
+                      UnaryOp(
+                        op=Not(),
+                        operand=Attribute(
+                          value=Name(id='vr', ctx=Load()),
+                          attr='passed',
+                          ctx=Load()))],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='strategy_instructions', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='mechanical_fix'),
+              Constant(value='strategic_reframe'),
+              Constant(value='creative_rewrite'),
+              Constant(value='creative_breakthrough')],
+            values=[
+              Constant(value='Focus on exact compliance with format, length, and structure constraints.'),
+              Constant(value='Focus on thematic alignment and positioning strategy.'),
+              Constant(value='Focus on quality, originality, and impact.'),
+              Constant(value='Suggest a completely fresh approach and perspective.')])),
+        Assign(
+          targets=[
+            Name(id='strategy_guidance', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='strategy_instructions', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Name(id='strategy', ctx=Load()),
+              Constant(value='Provide comprehensive improvement guidance.')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='draft',
+                value=Subscript(
+                  value=Name(id='draft', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=800)),
+                  ctx=Load())),
+              keyword(
+                arg='failures_text',
+                value=Name(id='failures_text', ctx=Load())),
+              keyword(
+                arg='strategy_guidance',
+                value=Name(id='strategy_guidance', ctx=Load())),
+              keyword(
+                arg='focus',
+                value=Name(id='focus', ctx=Load())),
+              keyword(
+                arg='emphasis',
+                value=Name(id='emphasis', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_hil_brief_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='section_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='failed_draft',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='critique_context',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='validation_summary',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    V2 NEW: Builds prompt for generating HIL escalation brief.\n    Creates a concise summary for human reviewers.\n    \n    Args:\n        section_name: Section that failed\n        failed_draft: The failed draft text\n        critique_context: Critique from previous attempts\n        validation_summary: Summary of validation failures\n        \n    Returns:\n        Formatted HIL brief\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='v2_hil_brief')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='section_name',
+                value=Name(id='section_name', ctx=Load())),
+              keyword(
+                arg='failed_draft',
+                value=Subscript(
+                  value=Name(id='failed_draft', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=500)),
+                  ctx=Load())),
+              keyword(
+                arg='critique_context',
+                value=Subscript(
+                  value=Name(id='critique_context', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=300)),
+                  ctx=Load())),
+              keyword(
+                arg='validation_summary',
+                value=Name(id='validation_summary', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_librarian_mission_extraction_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='company_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='job_title',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Builds prompt for Librarian agent to extract RAGMission from JD.\n    This is the HIGH-SIGNAL extraction that feeds the entire RAG pipeline.\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='librarian_mission_extraction')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='job_description',
+                value=Name(id='job_description', ctx=Load())),
+              keyword(
+                arg='company_name',
+                value=Name(id='company_name', ctx=Load())),
+              keyword(
+                arg='job_title',
+                value=Name(id='job_title', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_librarian_strategic_analysis_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='rag_mission',
+            annotation=Constant(value='RAGMission')),
+          arg(
+            arg='previous_context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Builds prompt for Librarian to analyze strategic priorities and initiatives.\n    Used in multi-hop RAG for deep context building.\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='librarian_strategic_analysis')])),
+        Assign(
+          targets=[
+            Name(id='context_section', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=Name(id='previous_context', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='context_section', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n**Previous Analysis Context:**\n'),
+                  FormattedValue(
+                    value=Name(id='previous_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n')]))]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='job_description',
+                value=Name(id='job_description', ctx=Load())),
+              keyword(
+                arg='target_company_name',
+                value=Attribute(
+                  value=Name(id='rag_mission', ctx=Load()),
+                  attr='target_company_name',
+                  ctx=Load())),
+              keyword(
+                arg='precise_role_title',
+                value=Attribute(
+                  value=Name(id='rag_mission', ctx=Load()),
+                  attr='precise_role_title',
+                  ctx=Load())),
+              keyword(
+                arg='key_technologies',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='rag_mission', ctx=Load()),
+                      attr='key_technologies',
+                      ctx=Load())])),
+              keyword(
+                arg='core_responsibilities',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='rag_mission', ctx=Load()),
+                      attr='core_responsibilities',
+                      ctx=Load())])),
+              keyword(
+                arg='context_section',
+                value=Name(id='context_section', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_librarian_memory_query_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='query',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='context_type',
+            annotation=Name(id='str', ctx=Load()))],
+        defaults=[
+          Constant(value='general')]),
+      body=[
+        Expr(
+          value=Constant(value="\n    Builds prompt for querying Librarian's persistent memory (ChromaDB).\n    Used to retrieve relevant past insights for current JD.\n    ")),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='librarian_memory_query')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query',
+                value=Name(id='query', ctx=Load())),
+              keyword(
+                arg='context_type',
+                value=Name(id='context_type', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='_format_resume_index_summary',
+      args=arguments(
+        args=[
+          arg(
+            arg='index',
+            annotation=Constant(value='MasterResumeIndex'))]),
+      body=[
+        Expr(
+          value=Constant(value='Helper to format resume index for prompt context.')),
+        Assign(
+          targets=[
+            Name(id='summary_parts', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='index', ctx=Load()),
+                  Constant(value='recency_scores')]),
+              Attribute(
+                value=Name(id='index', ctx=Load()),
+                attr='recency_scores',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='top_skills', ctx=Store())],
+              value=Subscript(
+                value=Call(
+                  func=Name(id='sorted', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='index', ctx=Load()),
+                          attr='recency_scores',
+                          ctx=Load()),
+                        attr='items',
+                        ctx=Load()))],
+                  keywords=[
+                    keyword(
+                      arg='key',
+                      value=Lambda(
+                        args=arguments(
+                          args=[
+                            arg(arg='x')]),
+                        body=Subscript(
+                          value=Name(id='x', ctx=Load()),
+                          slice=Constant(value=1),
+                          ctx=Load()))),
+                    keyword(
+                      arg='reverse',
+                      value=Constant(value=True))]),
+                slice=Slice(
+                  upper=Constant(value=8)),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='skills_list', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='skill', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='skill', ctx=Store()),
+                        Name(id='_', ctx=Store())],
+                      ctx=Store()),
+                    iter=Name(id='top_skills', ctx=Load()),
+                    is_async=0)])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='summary_parts', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Top Candidate Skills (by recency): '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Constant(value=', '),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Name(id='skills_list', ctx=Load())]),
+                        conversion=-1)])]))]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='index', ctx=Load()),
+                  Constant(value='achievement_catalog')]),
+              Attribute(
+                value=Name(id='index', ctx=Load()),
+                attr='achievement_catalog',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='ach_summary', ctx=Store())],
+              value=ListComp(
+                elt=JoinedStr(
+                  values=[
+                    FormattedValue(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='a', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='value'),
+                          Constant(value='N/A')]),
+                      conversion=-1),
+                    Constant(value=' '),
+                    FormattedValue(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='a', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='metric_type'),
+                          Constant(value='achievement')]),
+                      conversion=-1)]),
+                generators=[
+                  comprehension(
+                    target=Name(id='a', ctx=Store()),
+                    iter=Subscript(
+                      value=Attribute(
+                        value=Name(id='index', ctx=Load()),
+                        attr='achievement_catalog',
+                        ctx=Load()),
+                      slice=Slice(
+                        upper=Constant(value=3)),
+                      ctx=Load()),
+                    is_async=0)])),
+            If(
+              test=Name(id='ach_summary', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='summary_parts', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Recent Achievements: '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Constant(value='; '),
+                                attr='join',
+                                ctx=Load()),
+                              args=[
+                                Name(id='ach_summary', ctx=Load())]),
+                            conversion=-1)])]))])]),
+        Return(
+          value=IfExp(
+            test=Name(id='summary_parts', ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value='\n'),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Name(id='summary_parts', ctx=Load())]),
+            orelse=Constant(value='Candidate profile context not available.')))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_phase1_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='mission',
+            annotation=Constant(value='RAGMission')),
+          arg(
+            arg='master_resume_index',
+            annotation=Constant(value='MasterResumeIndex')),
+          arg(
+            arg='company_name',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='librarian_context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build Phase 1 RAG prompt with Librarian context integration.\n    Enhanced with high-signal extraction patterns.\n    ')),
+        Assign(
+          targets=[
+            Name(id='candidate_context', ctx=Store())],
+          value=Call(
+            func=Name(id='_format_resume_index_summary', ctx=Load()),
+            args=[
+              Name(id='master_resume_index', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='librarian_section', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=Name(id='librarian_context', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='librarian_section', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n**Librarian Intelligence:**\n'),
+                  FormattedValue(
+                    value=Name(id='librarian_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n')]))]),
+        Assign(
+          targets=[
+            Name(id='tech_search_line', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=Attribute(
+            value=Name(id='mission', ctx=Load()),
+            attr='key_technologies',
+            ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='safe_tech', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='mission', ctx=Load()),
+                      attr='key_technologies',
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  attr='replace',
+                  ctx=Load()),
+                args=[
+                  Constant(value='"'),
+                  Constant(value='')])),
+            Assign(
+              targets=[
+                Name(id='tech_search_line', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='3. Search for: `"'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='mission', ctx=Load()),
+                      attr='target_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' press release '),
+                  FormattedValue(
+                    value=Name(id='safe_tech', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='"`')]))]),
+        Assign(
+          targets=[
+            Name(id='strategic_context', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='mission', ctx=Load()),
+                  Constant(value='strategic_priorities')]),
+              Attribute(
+                value=Name(id='mission', ctx=Load()),
+                attr='strategic_priorities',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='strategic_context', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n**Strategic Priorities to Address:**\n'),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Call(
+                          func=Name(id='chr', ctx=Load()),
+                          args=[
+                            Constant(value=10)]),
+                        attr='join',
+                        ctx=Load()),
+                      args=[
+                        ListComp(
+                          elt=BinOp(
+                            left=Constant(value='- '),
+                            op=Add(),
+                            right=Name(id='p', ctx=Load())),
+                          generators=[
+                            comprehension(
+                              target=Name(id='p', ctx=Store()),
+                              iter=Attribute(
+                                value=Name(id='mission', ctx=Load()),
+                                attr='strategic_priorities',
+                                ctx=Load()),
+                              is_async=0)])]),
+                    conversion=-1),
+                  Constant(value='\n')]))]),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='rag_phase_1')])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='job_description',
+                value=Subscript(
+                  value=Name(id='job_description', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=1500)),
+                  ctx=Load())),
+              keyword(
+                arg='candidate_context',
+                value=Name(id='candidate_context', ctx=Load())),
+              keyword(
+                arg='target_company_name',
+                value=Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='target_company_name',
+                  ctx=Load())),
+              keyword(
+                arg='tech_search_line',
+                value=Name(id='tech_search_line', ctx=Load())),
+              keyword(
+                arg='key_technologies',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='mission', ctx=Load()),
+                      attr='key_technologies',
+                      ctx=Load())])),
+              keyword(
+                arg='librarian_section',
+                value=Name(id='librarian_section', ctx=Load())),
+              keyword(
+                arg='strategic_context',
+                value=Name(id='strategic_context', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_phase2_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='mission',
+            annotation=Constant(value='RAGMission')),
+          arg(
+            arg='industry',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='librarian_context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build Phase 2 RAG prompt with enhanced signal extraction.\n    Focuses on identifying gaps and overlaps for positioning strategy.\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='rag_phase_2')])),
+        Assign(
+          targets=[
+            Name(id='librarian_section', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=Name(id='librarian_context', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='librarian_section', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n**Librarian Intelligence:**\n'),
+                  FormattedValue(
+                    value=Name(id='librarian_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n')]))]),
+        Assign(
+          targets=[
+            Name(id='competitors_section', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='mission', ctx=Load()),
+                  Constant(value='competitors')]),
+              Attribute(
+                value=Name(id='mission', ctx=Load()),
+                attr='competitors',
+                ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='competitors_section', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n**Known Competitors:**\n'),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Constant(value=', '),
+                        attr='join',
+                        ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='mission', ctx=Load()),
+                          attr='competitors',
+                          ctx=Load())]),
+                    conversion=-1),
+                  Constant(value='\n')]))]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='precise_role_title',
+                value=Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='precise_role_title',
+                  ctx=Load())),
+              keyword(
+                arg='industry',
+                value=Name(id='industry', ctx=Load())),
+              keyword(
+                arg='signal_gap_keywords',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='mission', ctx=Load()),
+                      attr='signal_gap_keywords',
+                      ctx=Load())])),
+              keyword(
+                arg='target_company_name',
+                value=Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='target_company_name',
+                  ctx=Load())),
+              keyword(
+                arg='librarian_section',
+                value=Name(id='librarian_section', ctx=Load())),
+              keyword(
+                arg='competitors_section',
+                value=Name(id='competitors_section', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_phase3_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='mission',
+            annotation=Constant(value='RAGMission')),
+          arg(
+            arg='master_resume_index',
+            annotation=Constant(value='MasterResumeIndex')),
+          arg(
+            arg='peer_companies',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='comp_config',
+            annotation=Constant(value='CompetitiveAnalysisConfig')),
+          arg(
+            arg='industry',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='librarian_context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Build Phase 3 RAG prompt with competitive intelligence focus.\n    Enhanced with Librarian insights and differentiator extraction.\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='rag_phase_3')])),
+        Assign(
+          targets=[
+            Name(id='achievements_context', ctx=Store())],
+          value=Call(
+            func=Name(id='_format_resume_index_summary', ctx=Load()),
+            args=[
+              Name(id='master_resume_index', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='search_pattern_instruction', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Attribute(
+                value=Name(id='comp_config', ctx=Load()),
+                attr='search_pattern',
+                ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='role_title',
+                value=Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='precise_role_title',
+                  ctx=Load())),
+              keyword(
+                arg='peer_company',
+                value=IfExp(
+                  test=Name(id='peer_companies', ctx=Load()),
+                  body=Subscript(
+                    value=Name(id='peer_companies', ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load()),
+                  orelse=Constant(value='peer company')))])),
+        Assign(
+          targets=[
+            Name(id='librarian_section', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=Name(id='librarian_context', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='librarian_section', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n**Librarian Intelligence:**\n'),
+                  FormattedValue(
+                    value=Name(id='librarian_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n')]))]),
+        Assign(
+          targets=[
+            Name(id='differentiators_section', ctx=Store())],
+          value=IfExp(
+            test=Attribute(
+              value=Name(id='mission', ctx=Load()),
+              attr='signal_gap_keywords',
+              ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value=', '),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='mission', ctx=Load()),
+                    attr='signal_gap_keywords',
+                    ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=10)),
+                  ctx=Load())]),
+            orelse=Constant(value='competitive advantages, unique capabilities'))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='target_company_name',
+                value=Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='target_company_name',
+                  ctx=Load())),
+              keyword(
+                arg='precise_role_title',
+                value=Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='precise_role_title',
+                  ctx=Load())),
+              keyword(
+                arg='peer_companies',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Name(id='peer_companies', ctx=Load())])),
+              keyword(
+                arg='search_pattern_instruction',
+                value=Name(id='search_pattern_instruction', ctx=Load())),
+              keyword(
+                arg='achievements_context',
+                value=Name(id='achievements_context', ctx=Load())),
+              keyword(
+                arg='industry',
+                value=Name(id='industry', ctx=Load())),
+              keyword(
+                arg='librarian_section',
+                value=Name(id='librarian_section', ctx=Load())),
+              keyword(
+                arg='differentiators_section',
+                value=Name(id='differentiators_section', ctx=Load())),
+              keyword(
+                arg='min_peer_jds',
+                value=Attribute(
+                  value=Name(id='comp_config', ctx=Load()),
+                  attr='min_peer_jds',
+                  ctx=Load())),
+              keyword(
+                arg='table_stakes_threshold',
+                value=Attribute(
+                  value=Name(id='comp_config', ctx=Load()),
+                  attr='table_stakes_threshold',
+                  ctx=Load())),
+              keyword(
+                arg='differentiator_threshold',
+                value=Attribute(
+                  value=Name(id='comp_config', ctx=Load()),
+                  attr='differentiator_threshold',
+                  ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_phase4_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='mission',
+            annotation=Constant(value='RAGMission')),
+          arg(
+            arg='phase1_result',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='phase2_result',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='phase3_result',
+            annotation=Name(id='Dict', ctx=Load())),
+          arg(
+            arg='librarian_context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=None),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Build Phase 4 RAG prompt for problem-solution narrative extraction.')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='rag_phase_4')])),
+        Assign(
+          targets=[
+            Name(id='librarian_section', ctx=Store())],
+          value=Constant(value='')),
+        If(
+          test=Name(id='librarian_context', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='librarian_section', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n**Librarian Intelligence:**\n'),
+                  FormattedValue(
+                    value=Name(id='librarian_context', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n')]))]),
+        Assign(
+          targets=[
+            Name(id='core_responsibilities', ctx=Store())],
+          value=IfExp(
+            test=Attribute(
+              value=Name(id='mission', ctx=Load()),
+              attr='core_responsibilities',
+              ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value=', '),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='core_responsibilities',
+                  ctx=Load())]),
+            orelse=Constant(value='strategic leadership, operational excellence'))),
+        Assign(
+          targets=[
+            Name(id='key_technologies', ctx=Store())],
+          value=IfExp(
+            test=Attribute(
+              value=Name(id='mission', ctx=Load()),
+              attr='key_technologies',
+              ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value=', '),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='key_technologies',
+                  ctx=Load())]),
+            orelse=Constant(value='enterprise platforms'))),
+        Assign(
+          targets=[
+            Name(id='pain_points', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=Name(id='phase1_result', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='primary_theme_kws', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='phase1_result', ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='thematic_analysis'),
+                          Dict()]),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='primary_theme'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='keywords'),
+                  List(ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pain_points', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='primary_theme_kws', ctx=Load()),
+                    slice=Slice(
+                      upper=Constant(value=3)),
+                    ctx=Load())]))]),
+        If(
+          test=Name(id='phase2_result', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='gaps', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='phase2_result', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='positioning_directives'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='gaps_to_fill'),
+                  List(ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pain_points', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='gaps', ctx=Load()),
+                    slice=Slice(
+                      upper=Constant(value=3)),
+                    ctx=Load())]))]),
+        Assign(
+          targets=[
+            Name(id='pain_points_section', ctx=Store())],
+          value=IfExp(
+            test=Name(id='pain_points', ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Constant(value=', '),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Subscript(
+                  value=Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='set', ctx=Load()),
+                        args=[
+                          Name(id='pain_points', ctx=Load())])]),
+                  slice=Slice(
+                    upper=Constant(value=5)),
+                  ctx=Load())]),
+            orelse=Constant(value='operational inefficiencies, strategic gaps'))),
+        Assign(
+          targets=[
+            Name(id='query_list', ctx=Store())],
+          value=BinOp(
+            left=ListComp(
+              elt=JoinedStr(
+                values=[
+                  Constant(value='"'),
+                  FormattedValue(
+                    value=Attribute(
+                      value=Name(id='mission', ctx=Load()),
+                      attr='target_company_name',
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' challenges '),
+                  FormattedValue(
+                    value=Name(id='tech', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='"')]),
+              generators=[
+                comprehension(
+                  target=Name(id='tech', ctx=Store()),
+                  iter=Subscript(
+                    value=Attribute(
+                      value=Name(id='mission', ctx=Load()),
+                      attr='key_technologies',
+                      ctx=Load()),
+                    slice=Slice(
+                      upper=Constant(value=3)),
+                    ctx=Load()),
+                  is_async=0)]),
+            op=Add(),
+            right=List(
+              elts=[
+                JoinedStr(
+                  values=[
+                    Constant(value='"common problems '),
+                    FormattedValue(
+                      value=Attribute(
+                        value=Name(id='mission', ctx=Load()),
+                        attr='precise_role_title',
+                        ctx=Load()),
+                      conversion=-1),
+                    Constant(value='"')]),
+                JoinedStr(
+                  values=[
+                    Constant(value='"'),
+                    FormattedValue(
+                      value=Attribute(
+                        value=Name(id='mission', ctx=Load()),
+                        attr='precise_role_title',
+                        ctx=Load()),
+                      conversion=-1),
+                    Constant(value=' best practices"')])],
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='queries', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n   - '),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='query_list', ctx=Load()),
+                slice=Slice(
+                  upper=Constant(value=5)),
+                ctx=Load())])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='precise_role_title',
+                value=Attribute(
+                  value=Name(id='mission', ctx=Load()),
+                  attr='precise_role_title',
+                  ctx=Load())),
+              keyword(
+                arg='core_responsibilities',
+                value=Name(id='core_responsibilities', ctx=Load())),
+              keyword(
+                arg='key_technologies',
+                value=Name(id='key_technologies', ctx=Load())),
+              keyword(
+                arg='pain_points_section',
+                value=Name(id='pain_points_section', ctx=Load())),
+              keyword(
+                arg='librarian_section',
+                value=Name(id='librarian_section', ctx=Load())),
+              keyword(
+                arg='queries',
+                value=Name(id='queries', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_bullet_generation_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='company_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='primary_theme',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='context_bullets',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='count',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='differentiator_keywords',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Builds the prompt for generating tailored bullets.')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='artist_bullet_generation')])),
+        Assign(
+          targets=[
+            Name(id='primary_theme_kw', ctx=Store())],
+          value=IfExp(
+            test=Name(id='primary_theme', ctx=Load()),
+            body=Subscript(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='primary_theme', ctx=Load()),
+                  attr='split',
+                  ctx=Load())),
+              slice=Slice(
+                upper=Constant(value=5)),
+              ctx=Load()),
+            orelse=List(ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='diff_kw', ctx=Store())],
+          value=IfExp(
+            test=Name(id='differentiator_keywords', ctx=Load()),
+            body=Subscript(
+              value=Name(id='differentiator_keywords', ctx=Load()),
+              slice=Slice(
+                upper=Constant(value=5)),
+              ctx=Load()),
+            orelse=List(ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='context_keywords', ctx=Store())],
+          value=Subscript(
+            value=Call(
+              func=Name(id='list', ctx=Load()),
+              args=[
+                Call(
+                  func=Name(id='set', ctx=Load()),
+                  args=[
+                    BinOp(
+                      left=Name(id='primary_theme_kw', ctx=Load()),
+                      op=Add(),
+                      right=Name(id='diff_kw', ctx=Load()))])]),
+            slice=Slice(
+              upper=Constant(value=10)),
+            ctx=Load())),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='company_name',
+                value=Name(id='company_name', ctx=Load())),
+              keyword(
+                arg='primary_theme',
+                value=Name(id='primary_theme', ctx=Load())),
+              keyword(
+                arg='context_keywords',
+                value=Call(
+                  func=Attribute(
+                    value=Constant(value=', '),
+                    attr='join',
+                    ctx=Load()),
+                  args=[
+                    Name(id='context_keywords', ctx=Load())])),
+              keyword(
+                arg='context_bullets',
+                value=Name(id='context_bullets', ctx=Load())),
+              keyword(
+                arg='job_description',
+                value=Subscript(
+                  value=Name(id='job_description', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=500)),
+                  ctx=Load())),
+              keyword(
+                arg='count',
+                value=Name(id='count', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_bullet_rewrite_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='original_bullet',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='target_word_count_range',
+            annotation=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='int', ctx=Load()),
+                  Name(id='int', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Builds the prompt for rewriting a single bullet to a word count.')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='artist_bullet_rewrite_wc')])),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='min_wc', ctx=Store()),
+                Name(id='max_wc', ctx=Store())],
+              ctx=Store())],
+          value=Name(id='target_word_count_range', ctx=Load())),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='original_bullet',
+                value=Name(id='original_bullet', ctx=Load())),
+              keyword(
+                arg='min_wc',
+                value=Name(id='min_wc', ctx=Load())),
+              keyword(
+                arg='max_wc',
+                value=Name(id='max_wc', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_overview_generation_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='bullet_summary_input',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='word_count_range',
+            annotation=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='int', ctx=Load()),
+                  Name(id='int', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load()))],
+        kwarg=arg(arg='kwargs')),
+      body=[
+        Expr(
+          value=Constant(value='Builds the prompt for generating an experience overview.')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='artist_overview_generation')])),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='min_wc', ctx=Store()),
+                Name(id='max_wc', ctx=Store())],
+              ctx=Store())],
+          value=Name(id='word_count_range', ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='job_desc_lower', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='job_description', ctx=Load()),
+              attr='lower',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='include_leadership_theme', ctx=Store())],
+          value=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='kw', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='job_desc_lower', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='kw', ctx=Store()),
+                    iter=List(
+                      elts=[
+                        Constant(value='lead'),
+                        Constant(value='manage'),
+                        Constant(value='director'),
+                        Constant(value='vp'),
+                        Constant(value='executive')],
+                      ctx=Load()),
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='include_strategic_theme', ctx=Store())],
+          value=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='kw', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='job_desc_lower', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='kw', ctx=Store()),
+                    iter=List(
+                      elts=[
+                        Constant(value='strategy'),
+                        Constant(value='roadmap'),
+                        Constant(value='vision'),
+                        Constant(value='partnership'),
+                        Constant(value='alliance')],
+                      ctx=Load()),
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='include_technical_theme', ctx=Store())],
+          value=Call(
+            func=Name(id='any', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='kw', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    Name(id='job_desc_lower', ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='kw', ctx=Store()),
+                    iter=List(
+                      elts=[
+                        Constant(value='technical'),
+                        Constant(value='architect'),
+                        Constant(value='engineer'),
+                        Constant(value='platform'),
+                        Constant(value='cloud'),
+                        Constant(value='ai'),
+                        Constant(value='ml')],
+                      ctx=Load()),
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='theme_instructions', ctx=Store())],
+          value=List(ctx=Load())),
+        If(
+          test=Name(id='include_leadership_theme', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='theme_instructions', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='- Leadership and team building aspects')]))]),
+        If(
+          test=Name(id='include_strategic_theme', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='theme_instructions', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='- Strategic planning and partnership elements')]))]),
+        If(
+          test=Name(id='include_technical_theme', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='theme_instructions', ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Constant(value='- Technical depth and platform expertise')]))]),
+        Assign(
+          targets=[
+            Name(id='theme_prompt_section', ctx=Store())],
+          value=IfExp(
+            test=Name(id='theme_instructions', ctx=Load()),
+            body=BinOp(
+              left=Constant(value='**KEY THEMES TO INCORPORATE (if relevant and natural):**\n'),
+              op=Add(),
+              right=Call(
+                func=Attribute(
+                  value=Constant(value='\n'),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Name(id='theme_instructions', ctx=Load())])),
+            orelse=Constant(value=''))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='bullet_summary_input',
+                value=Name(id='bullet_summary_input', ctx=Load())),
+              keyword(
+                arg='theme_prompt_section',
+                value=Name(id='theme_prompt_section', ctx=Load())),
+              keyword(
+                arg='min_wc',
+                value=Name(id='min_wc', ctx=Load())),
+              keyword(
+                arg='max_wc',
+                value=Name(id='max_wc', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_generation_prompt_with_reinforced_constraints',
+      args=arguments(
+        args=[
+          arg(
+            arg='base_prompt',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='constraints',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='attempt_number',
+            annotation=Name(id='int', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Reinforces constraints progressively across attempts.\n    V2: Used for progressive constraint enforcement in retry loops.\n    ')),
+        Assign(
+          targets=[
+            Name(id='min_wc', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='constraints', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='min_wc'),
+              Call(
+                func=Attribute(
+                  value=Name(id='constraints', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='min_word_count'),
+                  Constant(value=0)])])),
+        Assign(
+          targets=[
+            Name(id='max_wc', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='constraints', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='max_wc'),
+              Call(
+                func=Attribute(
+                  value=Name(id='constraints', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='max_word_count'),
+                  Constant(value=999)])])),
+        If(
+          test=Compare(
+            left=Name(id='attempt_number', ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value=1)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='constraint_language', ctx=Store())],
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n\n**CONSTRAINTS (Strict Compliance Required):**\n- Word count: MUST be '),
+                  FormattedValue(
+                    value=Name(id='min_wc', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='-'),
+                  FormattedValue(
+                    value=Name(id='max_wc', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' words (verify before output)\n- Format: MUST NOT start with "At [Company]" or "As [Title]"\n- Output: MUST be ONLY the requested content (no fences, no preamble)\n')]))],
+          orelse=[
+            If(
+              test=Compare(
+                left=Name(id='attempt_number', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=2)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='constraint_language', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='\n\n**CRITICAL CONSTRAINTS (Validation Will Reject Non-Compliance):**\n❌ AUTOMATIC REJECTION if word count outside '),
+                      FormattedValue(
+                        value=Name(id='min_wc', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='-'),
+                      FormattedValue(
+                        value=Name(id='max_wc', ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n❌ AUTOMATIC REJECTION if starts with "At", "As", "In my role"\n❌ AUTOMATIC REJECTION if contains markdown fences (```)\n\n✓ Count words before submitting\n✓ Review output format before submitting\n')]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='attempt_number', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=3)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='constraint_language', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='\n\n**VALIDATION CHECKLIST (Execute Before Output):**\n[ ] Count words using MS Word rules: [actual_count]\n[ ] Verify: '),
+                          FormattedValue(
+                            value=Name(id='min_wc', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' ≤ [actual_count] ≤ '),
+                          FormattedValue(
+                            value=Name(id='max_wc', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='\n[ ] Check first 3 words: NOT ["At", "As", "In", "The", "This"]\n[ ] Check last characters: NOT "```"\n[ ] If ANY box unchecked: REGENERATE\n\nOUTPUT ONLY AFTER ALL BOXES CHECKED.\n')]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='constraint_language', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='\n\n**ALGORITHMIC CONSTRAINT ENFORCEMENT:**\n\nSTEP 1: Generate content naturally\nSTEP 2: Count words using: text.split()\nSTEP 3: IF count < '),
+                          FormattedValue(
+                            value=Name(id='min_wc', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': ADD content to shortest sentence\nSTEP 4: IF count > '),
+                          FormattedValue(
+                            value=Name(id='max_wc', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': REMOVE least-essential phrase\nSTEP 5: IF starts with forbidden pattern: DELETE first 2 words, RECAPITALIZE\nSTEP 6: VERIFY all constraints met\nSTEP 7: OUTPUT\n\nDO NOT output until STEP 7.\n')]))])])]),
+        Return(
+          value=BinOp(
+            left=Name(id='base_prompt', ctx=Load()),
+            op=Add(),
+            right=Name(id='constraint_language', ctx=Load())))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_sc_synthesis_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='original_prompt',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='candidate_responses',
+            annotation=Subscript(
+              value=Name(id='List', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Builds the prompt for self-consistency synthesis.')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='artist_sc_synthesis')])),
+        Assign(
+          targets=[
+            Name(id='formatted_responses', ctx=Store())],
+          value=Constant(value='')),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='i', ctx=Store()),
+              Name(id='res', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='candidate_responses', ctx=Load())]),
+          body=[
+            AugAssign(
+              target=Name(id='formatted_responses', ctx=Store()),
+              op=Add(),
+              value=JoinedStr(
+                values=[
+                  Constant(value='\n---\n**DRAFT '),
+                  FormattedValue(
+                    value=BinOp(
+                      left=Name(id='i', ctx=Load()),
+                      op=Add(),
+                      right=Constant(value=1)),
+                    conversion=-1),
+                  Constant(value=':**\n'),
+                  FormattedValue(
+                    value=Name(id='res', ctx=Load()),
+                    conversion=-1),
+                  Constant(value='\n---\n')]))]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='original_prompt',
+                value=Name(id='original_prompt', ctx=Load())),
+              keyword(
+                arg='candidate_responses',
+                value=Name(id='formatted_responses', ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='build_validator_factual_check_prompt',
+      args=arguments(
+        args=[
+          arg(
+            arg='section_name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='section_content',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='thematic_analysis',
+            annotation=Constant(value='ThematicAnalysis')),
+          arg(
+            arg='job_description',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Builds prompt for Validator to perform high-signal factual checks.\n    Used in HOP-5 to detect strategic/factual failures that trigger Slow Loop.\n    ')),
+        Assign(
+          targets=[
+            Name(id='template', ctx=Store())],
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Constant(value='validator_factual_check')])),
+        Assign(
+          targets=[
+            Name(id='primary_theme', ctx=Store())],
+          value=IfExp(
+            test=Attribute(
+              value=Name(id='thematic_analysis', ctx=Load()),
+              attr='primary_theme',
+              ctx=Load()),
+            body=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='thematic_analysis', ctx=Load()),
+                  attr='primary_theme',
+                  ctx=Load()),
+                attr='get',
+                ctx=Load()),
+              args=[
+                Constant(value='name'),
+                Constant(value='N/A')]),
+            orelse=Constant(value='N/A'))),
+        Assign(
+          targets=[
+            Name(id='differentiators', ctx=Store())],
+          value=List(ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='comp_intel', ctx=Store())],
+          value=Call(
+            func=Name(id='getattr', ctx=Load()),
+            args=[
+              Name(id='thematic_analysis', ctx=Load()),
+              Constant(value='competitive_intelligence'),
+              Constant(value=None)])),
+        If(
+          test=Name(id='comp_intel', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='diff_kw', ctx=Store())],
+              value=Call(
+                func=Name(id='getattr', ctx=Load()),
+                args=[
+                  Name(id='comp_intel', ctx=Load()),
+                  Constant(value='differentiator_keywords'),
+                  List(ctx=Load())])),
+            If(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Name(id='diff_kw', ctx=Load()),
+                  Name(id='list', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='differentiators', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='diff_kw', ctx=Load()),
+                    slice=Slice(
+                      upper=Constant(value=5)),
+                    ctx=Load()))])]),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='template', ctx=Load()),
+              attr='format',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='section_name',
+                value=Name(id='section_name', ctx=Load())),
+              keyword(
+                arg='section_content',
+                value=Name(id='section_content', ctx=Load())),
+              keyword(
+                arg='primary_theme',
+                value=Name(id='primary_theme', ctx=Load())),
+              keyword(
+                arg='differentiators_str',
+                value=BoolOp(
+                  op=Or(),
+                  values=[
+                    Call(
+                      func=Attribute(
+                        value=Constant(value=', '),
+                        attr='join',
+                        ctx=Load()),
+                      args=[
+                        Name(id='differentiators', ctx=Load())]),
+                    Constant(value='N/A')])),
+              keyword(
+                arg='job_description',
+                value=Subscript(
+                  value=Name(id='job_description', ctx=Load()),
+                  slice=Slice(
+                    upper=Constant(value=800)),
+                  ctx=Load()))]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='get_prompt_template',
+      args=arguments(
+        args=[
+          arg(
+            arg='template_key',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Retrieve a prompt template by its key.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='_get_prompt_template', ctx=Load()),
+            args=[
+              Name(id='template_key', ctx=Load())]))],
+      returns=Name(id='str', ctx=Load())),
+    FunctionDef(
+      name='list_available_templates',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    List all available prompt template keys from the JSON file.\n    ')),
+        Return(
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Name(id='PROMPT_TEMPLATES', ctx=Load()),
+                  attr='keys',
+                  ctx=Load()))]))],
+      returns=Subscript(
+        value=Name(id='List', ctx=Load()),
+        slice=Name(id='str', ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='get_prompts_dict',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    V2 NEW: Get the complete prompts dictionary for CRL initialization.\n    Used by ContextRelayLayer in governor.py.\n    ')),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='PROMPT_TEMPLATES', ctx=Load()),
+              attr='copy',
+              ctx=Load())))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='str', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='17.00')),
+    Assign(
+      targets=[
+        Name(id='__architecture__', ctx=Store())],
+      value=Constant(value='v2')),
+    Assign(
+      targets=[
+        Name(id='__compatible_with__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='workflow_RES_v2.py'),
+          Constant(value='governor.py')],
+        ctx=Load()))])

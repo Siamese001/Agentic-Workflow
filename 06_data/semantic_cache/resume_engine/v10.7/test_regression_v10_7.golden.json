@@ -1,0 +1,6 @@
+{
+  "golden_content": "import json\nimport pytest\n\n\n@pytest.mark.regression\ndef test_output_backward_compatibility():\n    prev = json.load(open(\"tests/baseline_outputs_previous.json\"))\n    new = json.load(open(\"tests/baseline_outputs_v10_7.json\"))\n    for k in prev.keys():\n        assert set(prev[k].keys()).issubset(new[k].keys())\n\n\n@pytest.mark.xfail(reason=\"Add additional regression tests for model drift and scoring consistency\", strict=False)\ndef test_placeholder():\n    pytest.xfail(\"Add additional regression tests for model drift and scoring consistency\")\n",
+  "full_hash": "ce9a453cd5b59e542f56dda19d08a40cef93379060181d2ed329dd128266fd79",
+  "generated_at": 1764728329.8980684,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_regression_v10_7.py"
+}

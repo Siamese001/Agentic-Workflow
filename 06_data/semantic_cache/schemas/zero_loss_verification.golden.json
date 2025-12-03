@@ -1,0 +1,6 @@
+{
+  "golden_content": "#!/usr/bin/env python3\n\"\"\"\nZero-loss verification script comparing original baseline vs current YAML structure\n\"\"\"\n\nimport yaml\nfrom pathlib import Path\nfrom collections import defaultdict\n\ndef extract_all_files_from_yaml(yaml_data):\n    \"\"\"Extract all leaf file paths from YAML structure, excluding __init__.py\"\"\"\n    \n    def traverse_tree(node, path, files_list):\n        if not isinstance(node, dict):\n            return\n        \n        for key, value in node.items():\n            if key == '__init__.py':\n                # Skip __init__.py files as they're structural, not functional\n                continue\n            elif isinstance(value, dict):\n                traverse_tree(value, path + [key], files_list)\n            else:\n                # This is a functional file leaf\n                files_list.append('/'.join(path + [key]))\n    \n    files = []\n    traverse_tree(yaml_data, [], files)\n    return files\n\ndef load_yaml_tree_only(yaml_path):\n    \"\"\"Load only the tree structure from ",
+  "full_hash": "7a3c7bdfb4aa7c85f3184f5c2ca0aebf1d79a18117f8d4a6607217e9d0da61cc",
+  "generated_at": 1764728346.326584,
+  "source_file": "C:\\Git\\Agentic-Workflow\\02_schemas\\rollback_points\\rollback_20251202_210700_352620\\08_scripts\\validation_tools\\zero_loss_verification.py"
+}

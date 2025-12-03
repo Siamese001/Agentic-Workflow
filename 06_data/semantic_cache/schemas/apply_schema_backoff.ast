@@ -1,0 +1,161 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSchema definitions for schema backoff strategy application and management.\nContains only type definitions and data models - no execution logic.\n')),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional'),
+        alias(name='List')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='BackoffType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Backoff strategy types.')),
+        Assign(
+          targets=[
+            Name(id='EXPONENTIAL', ctx=Store())],
+          value=Constant(value='exponential')),
+        Assign(
+          targets=[
+            Name(id='LINEAR', ctx=Store())],
+          value=Constant(value='linear')),
+        Assign(
+          targets=[
+            Name(id='FIXED', ctx=Store())],
+          value=Constant(value='fixed')),
+        Assign(
+          targets=[
+            Name(id='ADAPTIVE', ctx=Store())],
+          value=Constant(value='adaptive'))]),
+    ClassDef(
+      name='BackoffTrigger',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Backoff trigger conditions.')),
+        Assign(
+          targets=[
+            Name(id='CONGESTION', ctx=Store())],
+          value=Constant(value='congestion')),
+        Assign(
+          targets=[
+            Name(id='RATE_LIMIT', ctx=Store())],
+          value=Constant(value='rate_limit')),
+        Assign(
+          targets=[
+            Name(id='SERVER_OVERLOAD', ctx=Store())],
+          value=Constant(value='server_overload')),
+        Assign(
+          targets=[
+            Name(id='NETWORK_ISSUES', ctx=Store())],
+          value=Constant(value='network_issues'))]),
+    ClassDef(
+      name='BackoffConfiguration',
+      body=[
+        Expr(
+          value=Constant(value='Schema for backoff configuration.')),
+        AnnAssign(
+          target=Name(id='backoff_type', ctx=Store()),
+          annotation=Name(id='BackoffType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='initial_delay_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='maximum_delay_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='multiplier', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=2.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='jitter', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          value=Constant(value=True),
+          simple=1),
+        AnnAssign(
+          target=Name(id='max_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=5),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='BackoffState',
+      body=[
+        Expr(
+          value=Constant(value='Schema for backoff state tracking.')),
+        AnnAssign(
+          target=Name(id='current_attempt', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='current_delay_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_backoff_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='next_retry_time', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='BackoffResult',
+      body=[
+        Expr(
+          value=Constant(value='Schema for backoff operation results.')),
+        AnnAssign(
+          target=Name(id='backoff_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='trigger_reason', ctx=Store()),
+          annotation=Name(id='BackoffTrigger', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_attempts', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='final_outcome', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='backoff_history', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='int', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_delay_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())])])

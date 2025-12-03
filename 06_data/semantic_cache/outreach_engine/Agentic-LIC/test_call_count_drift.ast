@@ -1,0 +1,67 @@
+Module(
+  body=[
+    ImportFrom(
+      module='src.lic_agentic.agents.k3_message_architect',
+      names=[
+        alias(name='MessageArchitect')],
+      level=0),
+    ImportFrom(
+      module='src.lic_agentic.reasoning.toggles',
+      names=[
+        alias(name='ReasoningToggles')],
+      level=0),
+    FunctionDef(
+      name='test_call_count_stable',
+      args=arguments(
+        args=[
+          arg(arg='snapshot')],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='architect', ctx=Store())],
+          value=Call(
+            func=Name(id='MessageArchitect', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='ReasoningToggles', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='plan', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='architect', ctx=Load()),
+              attr='_build_plan',
+              ctx=Load()),
+            args=[
+              List(
+                elts=[
+                  Constant(value='ACME latest milestones')],
+                ctx=Load()),
+              Call(
+                func=Call(
+                  func=Name(id='type', ctx=Load()),
+                  args=[
+                    Constant(value='S'),
+                    Tuple(ctx=Load()),
+                    Dict(
+                      keys=[
+                        Constant(value='company_id'),
+                        Constant(value='contact_id')],
+                      values=[
+                        Constant(value='ACME'),
+                        Constant(value='C1')])]))])),
+        Assert(
+          test=Compare(
+            left=Call(
+              func=Name(id='len', ctx=Load()),
+              args=[
+                Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='jobs',
+                  ctx=Load())]),
+            ops=[
+              LtE()],
+            comparators=[
+              Constant(value=6)]))])])

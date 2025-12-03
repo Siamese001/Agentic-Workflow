@@ -1,0 +1,1145 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='os')]),
+    Import(
+      names=[
+        alias(name='csv')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    Import(
+      names=[
+        alias(name='shutil')]),
+    Import(
+      names=[
+        alias(name='concurrent.futures')]),
+    Import(
+      names=[
+        alias(name='uuid')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='main_v7_0',
+      names=[
+        alias(name='setup_logging'),
+        alias(name='load_job_input')],
+      level=0),
+    ImportFrom(
+      module='core_v7_0',
+      names=[
+        alias(name='CONFIG'),
+        alias(name='CircuitBreakerOpenError')],
+      level=0),
+    ImportFrom(
+      module='agent_swarm_v7_0',
+      names=[
+        alias(name='get_graph_app')],
+      level=0),
+    ImportFrom(
+      module='langgraph.checkpoint.redis',
+      names=[
+        alias(name='RedisSaver')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='run_learning_v7_0',
+          names=[
+            alias(name='run_meta_learning')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='META_LEARNER_AVAILABLE', ctx=Store())],
+          value=Constant(value=True))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Assign(
+              targets=[
+                Name(id='META_LEARNER_AVAILABLE', ctx=Store())],
+              value=Constant(value=False))])]),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Constant(value='batch_runner_v7_0')])),
+    Try(
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='setup_logging', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='debug_mode',
+                value=Constant(value=False))]))],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='Exception', ctx=Load()),
+          name='e',
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Warning: setup_logging failed: '),
+                      FormattedValue(
+                        value=Name(id='e', ctx=Load()),
+                        conversion=-1)])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='basicConfig',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='level',
+                    value=Attribute(
+                      value=Name(id='logging', ctx=Load()),
+                      attr='INFO',
+                      ctx=Load()))]))])]),
+    Assign(
+      targets=[
+        Name(id='BATCH_QUEUE_DIR', ctx=Store())],
+      value=Constant(value='batch_queue')),
+    Assign(
+      targets=[
+        Name(id='BATCH_COMPLETE_DIR', ctx=Store())],
+      value=Constant(value='batch_complete')),
+    Assign(
+      targets=[
+        Name(id='SUMMARY_FILE', ctx=Store())],
+      value=Constant(value='batch_summary_v7_0.csv')),
+    Assign(
+      targets=[
+        Name(id='checkpointer', ctx=Store())],
+      value=Constant(value=None)),
+    Assign(
+      targets=[
+        Name(id='app', ctx=Store())],
+      value=Constant(value=None)),
+    FunctionDef(
+      name='get_compiled_graph',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Initializes the graph and checkpointer *within* a new process.\n    This is critical for ProcessPoolExecutor.\n    ')),
+        Global(
+          names=[
+            'checkpointer',
+            'app']),
+        If(
+          test=Compare(
+            left=Name(id='checkpointer', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='redis_config', ctx=Store())],
+              value=Attribute(
+                value=Name(id='CONFIG', ctx=Load()),
+                attr='redis_config',
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='checkpointer', ctx=Store())],
+              value=Call(
+                func=Name(id='RedisSaver', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='host',
+                    value=Attribute(
+                      value=Name(id='redis_config', ctx=Load()),
+                      attr='host',
+                      ctx=Load())),
+                  keyword(
+                    arg='port',
+                    value=Attribute(
+                      value=Name(id='redis_config', ctx=Load()),
+                      attr='port',
+                      ctx=Load())),
+                  keyword(
+                    arg='db',
+                    value=Attribute(
+                      value=Name(id='redis_config', ctx=Load()),
+                      attr='db',
+                      ctx=Load()))]))]),
+        If(
+          test=Compare(
+            left=Name(id='app', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='app', ctx=Store())],
+              value=Call(
+                func=Name(id='get_graph_app', ctx=Load()),
+                args=[
+                  Name(id='checkpointer', ctx=Load())]))]),
+        Return(
+          value=Tuple(
+            elts=[
+              Name(id='app', ctx=Load()),
+              Name(id='checkpointer', ctx=Load())],
+            ctx=Load()))]),
+    FunctionDef(
+      name='process_single_job',
+      args=arguments(
+        args=[
+          arg(
+            arg='job_path',
+            annotation=Name(id='str', ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='\n    Wraps the execution of a single job for the parallel executor.\n    Returns a dictionary for the summary CSV.\n    ')),
+        Assign(
+          targets=[
+            Tuple(
+              elts=[
+                Name(id='company', ctx=Store()),
+                Name(id='title', ctx=Store()),
+                Name(id='status', ctx=Store()),
+                Name(id='workflow_id', ctx=Store()),
+                Name(id='error_msg', ctx=Store())],
+              ctx=Store())],
+          value=Tuple(
+            elts=[
+              Constant(value='N/A'),
+              Constant(value='N/A'),
+              Constant(value='FATAL'),
+              Constant(value='N/A'),
+              Constant(value='')],
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='--- Starting v7.0 job: '),
+                  FormattedValue(
+                    value=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='os', ctx=Load()),
+                          attr='path',
+                          ctx=Load()),
+                        attr='basename',
+                        ctx=Load()),
+                      args=[
+                        Name(id='job_path', ctx=Load())]),
+                    conversion=-1),
+                  Constant(value=' ---')])])),
+        Try(
+          body=[
+            Assign(
+              targets=[
+                Name(id='job_input_data', ctx=Store())],
+              value=Call(
+                func=Name(id='load_job_input', ctx=Load()),
+                args=[
+                  Name(id='job_path', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='company', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='job_input_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='company_name'),
+                  Constant(value='N/A')])),
+            Assign(
+              targets=[
+                Name(id='title', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='job_input_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='job_title'),
+                  Constant(value='N/A')])),
+            Assign(
+              targets=[
+                Name(id='jd_length', ctx=Store())],
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='job_input_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='job_description'),
+                      Constant(value='')])])),
+            Assign(
+              targets=[
+                Name(id='estimated_tokens', ctx=Store())],
+              value=BinOp(
+                left=BinOp(
+                  left=Name(id='jd_length', ctx=Load()),
+                  op=Mult(),
+                  right=Constant(value=0.75)),
+                op=Add(),
+                right=Constant(value=30000))),
+            Assign(
+              targets=[
+                Name(id='estimated_cost', ctx=Store())],
+              value=BinOp(
+                left=BinOp(
+                  left=Name(id='estimated_tokens', ctx=Load()),
+                  op=Div(),
+                  right=Constant(value=1000)),
+                op=Mult(),
+                right=Constant(value=0.005))),
+            Assign(
+              targets=[
+                Name(id='cost_ceiling', ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='CONFIG', ctx=Load()),
+                  attr='cost_config',
+                  ctx=Load()),
+                attr='cost_ceiling_per_workflow',
+                ctx=Load())),
+            If(
+              test=Compare(
+                left=Name(id='estimated_cost', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Name(id='cost_ceiling', ctx=Load())]),
+              body=[
+                Raise(
+                  exc=Call(
+                    func=Name(id='Exception', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Cost ceiling exceeded (Est: $'),
+                          FormattedValue(
+                            value=Name(id='estimated_cost', ctx=Load()),
+                            conversion=-1,
+                            format_spec=JoinedStr(
+                              values=[
+                                Constant(value='.2f')])),
+                          Constant(value=')')])]))]),
+            Assign(
+              targets=[
+                Tuple(
+                  elts=[
+                    Name(id='app', ctx=Store()),
+                    Name(id='_', ctx=Store())],
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='get_compiled_graph', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='master_resume', ctx=Store())],
+              value=Call(
+                func=Name(id='load_job_input', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='CONFIG', ctx=Load()),
+                      attr='file_paths',
+                      ctx=Load()),
+                    attr='default_master_resume',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='workflow_id', ctx=Store())],
+              value=Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='uuid', ctx=Load()),
+                      attr='uuid4',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='run_config', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='configurable')],
+                values=[
+                  Dict(
+                    keys=[
+                      Constant(value='thread_id')],
+                    values=[
+                      Name(id='workflow_id', ctx=Load())])])),
+            Assign(
+              targets=[
+                Name(id='inputs', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='master_resume'),
+                  Constant(value='job_input'),
+                  Constant(value='artifacts'),
+                  Constant(value='replan_count'),
+                  Constant(value='workflow_id')],
+                values=[
+                  Name(id='master_resume', ctx=Load()),
+                  Dict(
+                    keys=[
+                      Constant(value='raw_jd'),
+                      Constant(value='company'),
+                      Constant(value='job_title')],
+                    values=[
+                      Subscript(
+                        value=Name(id='job_input_data', ctx=Load()),
+                        slice=Constant(value='job_description'),
+                        ctx=Load()),
+                      Subscript(
+                        value=Name(id='job_input_data', ctx=Load()),
+                        slice=Constant(value='company_name'),
+                        ctx=Load()),
+                      Subscript(
+                        value=Name(id='job_input_data', ctx=Load()),
+                        slice=Constant(value='job_title'),
+                        ctx=Load())]),
+                  Dict(),
+                  Constant(value=0),
+                  Name(id='workflow_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='final_state', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='app', ctx=Load()),
+                  attr='invoke',
+                  ctx=Load()),
+                args=[
+                  Name(id='inputs', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='config',
+                    value=Name(id='run_config', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='validation', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='final_state', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='artifacts'),
+                      Dict()]),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='validation_results'),
+                  Dict()])),
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='validation', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='overall_passed'),
+                  Constant(value=False)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='status', ctx=Store())],
+                  value=Constant(value='SUCCESS')),
+                Assign(
+                  targets=[
+                    Name(id='error_msg', ctx=Store())],
+                  value=Constant(value=''))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='status', ctx=Store())],
+                  value=Constant(value='FAILED_QA')),
+                Assign(
+                  targets=[
+                    Name(id='failed_count', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='failed_checks_count'),
+                      Constant(value=0)])),
+                Assign(
+                  targets=[
+                    Name(id='error_msg', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      FormattedValue(
+                        value=Name(id='failed_count', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' QA check(s) failed.')]))])],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='CircuitBreakerOpenError', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Job '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='os', ctx=Load()),
+                                  attr='path',
+                                  ctx=Load()),
+                                attr='basename',
+                                ctx=Load()),
+                              args=[
+                                Name(id='job_path', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=' skipped. Circuit breaker is OPEN: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='status', ctx=Store()),
+                        Name(id='error_msg', ctx=Store())],
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value='SKIPPED'),
+                      JoinedStr(
+                        values=[
+                          Constant(value='CircuitBreakerOpen: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])],
+                    ctx=Load()))]),
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='FATAL error running job '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='os', ctx=Load()),
+                                  attr='path',
+                                  ctx=Load()),
+                                attr='basename',
+                                ctx=Load()),
+                              args=[
+                                Name(id='job_path', ctx=Load())]),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])],
+                    keywords=[
+                      keyword(
+                        arg='exc_info',
+                        value=Constant(value=True))])),
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='status', ctx=Store()),
+                        Name(id='error_msg', ctx=Store())],
+                      ctx=Store())],
+                  value=Tuple(
+                    elts=[
+                      Constant(value='FAILED_FATAL'),
+                      Call(
+                        func=Name(id='str', ctx=Load()),
+                        args=[
+                          Name(id='e', ctx=Load())])],
+                    ctx=Load()))])],
+          finalbody=[
+            Try(
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='shutil', ctx=Load()),
+                      attr='move',
+                      ctx=Load()),
+                    args=[
+                      Name(id='job_path', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='os', ctx=Load()),
+                            attr='path',
+                            ctx=Load()),
+                          attr='join',
+                          ctx=Load()),
+                        args=[
+                          Name(id='BATCH_COMPLETE_DIR', ctx=Load()),
+                          Call(
+                            func=Attribute(
+                              value=Attribute(
+                                value=Name(id='os', ctx=Load()),
+                                attr='path',
+                                ctx=Load()),
+                              attr='basename',
+                              ctx=Load()),
+                            args=[
+                              Name(id='job_path', ctx=Load())])])]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='error',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to move file '),
+                              FormattedValue(
+                                value=Call(
+                                  func=Attribute(
+                                    value=Attribute(
+                                      value=Name(id='os', ctx=Load()),
+                                      attr='path',
+                                      ctx=Load()),
+                                    attr='basename',
+                                    ctx=Load()),
+                                  args=[
+                                    Name(id='job_path', ctx=Load())]),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='--- Finished v7.0 job: '),
+                      FormattedValue(
+                        value=Name(id='company', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' - '),
+                      FormattedValue(
+                        value=Name(id='title', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' ---')])])),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='timestamp'),
+                  Constant(value='company'),
+                  Constant(value='title'),
+                  Constant(value='status'),
+                  Constant(value='workflow_id'),
+                  Constant(value='error'),
+                  Constant(value='job_file')],
+                values=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load())),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Name(id='company', ctx=Load()),
+                  Name(id='title', ctx=Load()),
+                  Name(id='status', ctx=Load()),
+                  Name(id='workflow_id', ctx=Load()),
+                  Name(id='error_msg', ctx=Load()),
+                  Name(id='job_path', ctx=Load())]))])],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load())),
+    FunctionDef(
+      name='run_batch',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    Main batch processing loop.\n    Processes all .json files in batch_queue/ directory in parallel.\n    ')),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='os', ctx=Load()),
+              attr='makedirs',
+              ctx=Load()),
+            args=[
+              Name(id='BATCH_QUEUE_DIR', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='exist_ok',
+                value=Constant(value=True))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='os', ctx=Load()),
+              attr='makedirs',
+              ctx=Load()),
+            args=[
+              Name(id='BATCH_COMPLETE_DIR', ctx=Load())],
+            keywords=[
+              keyword(
+                arg='exist_ok',
+                value=Constant(value=True))])),
+        Assign(
+          targets=[
+            Name(id='job_files', ctx=Store())],
+          value=ListComp(
+            elt=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='os', ctx=Load()),
+                  attr='path',
+                  ctx=Load()),
+                attr='join',
+                ctx=Load()),
+              args=[
+                Name(id='BATCH_QUEUE_DIR', ctx=Load()),
+                Name(id='f', ctx=Load())]),
+            generators=[
+              comprehension(
+                target=Name(id='f', ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='os', ctx=Load()),
+                    attr='listdir',
+                    ctx=Load()),
+                  args=[
+                    Name(id='BATCH_QUEUE_DIR', ctx=Load())]),
+                ifs=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='endswith',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='.json')])],
+                is_async=0)])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Name(id='job_files', ctx=Load())),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='v7.0 Batch process starting. No jobs found in queue.')])),
+            Return()]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='v7.0 Batch process starting. Found '),
+                  FormattedValue(
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='job_files', ctx=Load())]),
+                    conversion=-1),
+                  Constant(value=' jobs.')])])),
+        Assign(
+          targets=[
+            Name(id='max_workers', ctx=Store())],
+          value=Attribute(
+            value=Attribute(
+              value=Name(id='CONFIG', ctx=Load()),
+              attr='batch_config',
+              ctx=Load()),
+            attr='max_parallel_workers',
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Running batch with up to '),
+                  FormattedValue(
+                    value=Name(id='max_workers', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' parallel workers.')])])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Attribute(
+                  value=Name(id='os', ctx=Load()),
+                  attr='path',
+                  ctx=Load()),
+                attr='exists',
+                ctx=Load()),
+              args=[
+                Name(id='SUMMARY_FILE', ctx=Load())])),
+          body=[
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='SUMMARY_FILE', ctx=Load()),
+                      Constant(value='w')],
+                    keywords=[
+                      keyword(
+                        arg='newline',
+                        value=Constant(value=''))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='writer', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='csv', ctx=Load()),
+                      attr='writer',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='writer', ctx=Load()),
+                      attr='writerow',
+                      ctx=Load()),
+                    args=[
+                      List(
+                        elts=[
+                          Constant(value='timestamp'),
+                          Constant(value='company_name'),
+                          Constant(value='job_title'),
+                          Constant(value='overall_status'),
+                          Constant(value='workflow_id'),
+                          Constant(value='error_message')],
+                        ctx=Load())]))])]),
+        Assign(
+          targets=[
+            Name(id='all_results', ctx=Store())],
+          value=List(ctx=Load())),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='concurrent', ctx=Load()),
+                    attr='futures',
+                    ctx=Load()),
+                  attr='ProcessPoolExecutor',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='max_workers',
+                    value=Name(id='max_workers', ctx=Load()))]),
+              optional_vars=Name(id='executor', ctx=Store()))],
+          body=[
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='results_iterable', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='executor', ctx=Load()),
+                      attr='map',
+                      ctx=Load()),
+                    args=[
+                      Name(id='process_single_job', ctx=Load()),
+                      Name(id='job_files', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='all_results', ctx=Store())],
+                  value=Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Name(id='results_iterable', ctx=Load())]))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='critical',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='A critical error occurred during parallel execution: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])]),
+        Try(
+          body=[
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='SUMMARY_FILE', ctx=Load()),
+                      Constant(value='a')],
+                    keywords=[
+                      keyword(
+                        arg='newline',
+                        value=Constant(value=''))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='writer', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='csv', ctx=Load()),
+                      attr='writer',
+                      ctx=Load()),
+                    args=[
+                      Name(id='f', ctx=Load())])),
+                For(
+                  target=Name(id='summary', ctx=Store()),
+                  iter=Name(id='all_results', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='writer', ctx=Load()),
+                          attr='writerow',
+                          ctx=Load()),
+                        args=[
+                          List(
+                            elts=[
+                              Subscript(
+                                value=Name(id='summary', ctx=Load()),
+                                slice=Constant(value='timestamp'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='summary', ctx=Load()),
+                                slice=Constant(value='company'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='summary', ctx=Load()),
+                                slice=Constant(value='title'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='summary', ctx=Load()),
+                                slice=Constant(value='status'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='summary', ctx=Load()),
+                                slice=Constant(value='workflow_id'),
+                                ctx=Load()),
+                              Subscript(
+                                value=Name(id='summary', ctx=Load()),
+                                slice=Constant(value='error'),
+                                ctx=Load())],
+                            ctx=Load())]))])]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Batch summary CSV updated with '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='all_results', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' results.')])]))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='error',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Failed to write batch summary to CSV: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])]))])]),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='logger', ctx=Load()),
+              attr='info',
+              ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='v7.0 Batch process complete.')])])),
+        If(
+          test=Attribute(
+            value=Attribute(
+              value=Name(id='CONFIG', ctx=Load()),
+              attr='meta_loop_config',
+              ctx=Load()),
+            attr='enable_meta_learning',
+            ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Post-batch meta-learning enabled. Triggering learning loop...')])),
+            If(
+              test=Name(id='META_LEARNER_AVAILABLE', ctx=Load()),
+              body=[
+                Try(
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='run_meta_learning', ctx=Load()))),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='logger', ctx=Load()),
+                          attr='info',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='Meta-learning loop completed successfully.')]))],
+                  handlers=[
+                    ExceptHandler(
+                      type=Name(id='Exception', ctx=Load()),
+                      name='e',
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='logger', ctx=Load()),
+                              attr='error',
+                              ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='Meta-learning loop failed: '),
+                                  FormattedValue(
+                                    value=Name(id='e', ctx=Load()),
+                                    conversion=-1)])]))])])],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='warning',
+                      ctx=Load()),
+                    args=[
+                      Constant(value="Meta-learning is enabled, but 'run_learning_v7_0' could not be imported.")]))])],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logger', ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Post-batch meta-learning is disabled in config. Skipping.')]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='run_batch', ctx=Load())))])])

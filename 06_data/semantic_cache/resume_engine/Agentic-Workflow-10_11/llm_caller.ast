@@ -1,0 +1,180 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L2 LLM Caller for resume processing execution.\n\nProvides pure LLM execution for resume improvement workflows.\n')),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Optional')],
+      level=0),
+    ImportFrom(
+      module='runtime.runtime_utils',
+      names=[
+        alias(name='invoke_model'),
+        alias(name='SandboxConfig')],
+      level=0),
+    ImportFrom(
+      module='core.routing',
+      names=[
+        alias(name='RoutingPolicy')],
+      level=0),
+    ImportFrom(
+      module='core.models.models',
+      names=[
+        alias(name='ComplexityLevel')],
+      level=0),
+    ImportFrom(
+      module='config.meta_profile',
+      names=[
+        alias(name='MetaProfileSnapshot')],
+      level=0),
+    ImportFrom(
+      module='runtime.observability',
+      names=[
+        alias(name='record_event'),
+        alias(name='record_exception')],
+      level=0),
+    ClassDef(
+      name='LLMCaller',
+      body=[
+        Expr(
+          value=Constant(value='\n    Pure LLM execution for resume processing workflows.\n\n    Handles LLM calls without planning or orchestration logic\n    for resume improvement and job alignment.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='routing_policy',
+                annotation=Name(id='RoutingPolicy', ctx=Load())),
+              arg(
+                arg='sandbox',
+                annotation=Name(id='SandboxConfig', ctx=Load())),
+              arg(
+                arg='meta_profile',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='MetaProfileSnapshot', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='routing_policy',
+                  ctx=Store())],
+              value=Name(id='routing_policy', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='sandbox',
+                  ctx=Store())],
+              value=Name(id='sandbox', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_profile',
+                  ctx=Store())],
+              value=Name(id='meta_profile', ctx=Load()))]),
+        FunctionDef(
+          name='call_llm',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='prompt',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='task_type',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='default')]),
+          body=[
+            Expr(
+              value=Constant(value='Executes pure LLM call for resume processing workflows.')),
+            Expr(
+              value=Call(
+                func=Name(id='record_event', ctx=Load()),
+                args=[
+                  Constant(value='llm_call_start'),
+                  Dict(
+                    keys=[
+                      Constant(value='task_type')],
+                    values=[
+                      Name(id='task_type', ctx=Load())])])),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='model', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='routing_policy',
+                        ctx=Load()),
+                      attr='select_model',
+                      ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='task',
+                        value=Name(id='task_type', ctx=Load())),
+                      keyword(
+                        arg='complexity',
+                        value=Attribute(
+                          value=Name(id='ComplexityLevel', ctx=Load()),
+                          attr='MEDIUM',
+                          ctx=Load())),
+                      keyword(
+                        arg='meta_profile',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='meta_profile',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='invoke_model', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='model',
+                        value=Name(id='model', ctx=Load())),
+                      keyword(
+                        arg='prompt',
+                        value=Name(id='prompt', ctx=Load())),
+                      keyword(
+                        arg='sandbox',
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='sandbox',
+                          ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Name(id='record_event', ctx=Load()),
+                    args=[
+                      Constant(value='llm_call_success'),
+                      Dict(
+                        keys=[
+                          Constant(value='task_type')],
+                        values=[
+                          Name(id='task_type', ctx=Load())])])),
+                Return(
+                  value=Name(id='result', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='exc',
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='record_exception', ctx=Load()),
+                        args=[
+                          Constant(value='llm_call_error'),
+                          Name(id='exc', ctx=Load())])),
+                    Raise()])])],
+          returns=Name(id='str', ctx=Load()))])])

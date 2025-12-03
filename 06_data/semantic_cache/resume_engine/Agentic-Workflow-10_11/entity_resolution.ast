@@ -1,0 +1,2335 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nL4 entity resolution for resume job alignment workflows.\n\nImplements entity linking and canonical form management for resume enhancement.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Set'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    Import(
+      names=[
+        alias(name='re')]),
+    ClassDef(
+      name='EntityType',
+      bases=[
+        Name(id='str', ctx=Load()),
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Entity types for resume job alignment knowledge graph.')),
+        Assign(
+          targets=[
+            Name(id='PERSON', ctx=Store())],
+          value=Constant(value='person')),
+        Assign(
+          targets=[
+            Name(id='ORGANIZATION', ctx=Store())],
+          value=Constant(value='organization')),
+        Assign(
+          targets=[
+            Name(id='SKILL', ctx=Store())],
+          value=Constant(value='skill')),
+        Assign(
+          targets=[
+            Name(id='ROLE', ctx=Store())],
+          value=Constant(value='role')),
+        Assign(
+          targets=[
+            Name(id='LOCATION', ctx=Store())],
+          value=Constant(value='location')),
+        Assign(
+          targets=[
+            Name(id='EDUCATION', ctx=Store())],
+          value=Constant(value='education')),
+        Assign(
+          targets=[
+            Name(id='CERTIFICATION', ctx=Store())],
+          value=Constant(value='certification')),
+        Assign(
+          targets=[
+            Name(id='PROJECT', ctx=Store())],
+          value=Constant(value='project')),
+        Assign(
+          targets=[
+            Name(id='UNKNOWN', ctx=Store())],
+          value=Constant(value='unknown'))]),
+    ClassDef(
+      name='CanonicalEntity',
+      body=[
+        Expr(
+          value=Constant(value='Canonical entity for resume job alignment knowledge graph.')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='canonical_name', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entity_type', ctx=Store()),
+          annotation=Name(id='EntityType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='aliases', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='set', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='normalized_forms', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='set', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='created_at', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()),
+                    args=[
+                      Name(id='UTC', ctx=Load())])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='updated_at', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()),
+                    args=[
+                      Name(id='UTC', ctx=Load())])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='system'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='same_as', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='set', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='part_of', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        FunctionDef(
+          name='add_alias',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='alias',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Adds alias for resume workflow entity job alignment.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='aliases',
+                    ctx=Load()),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  Name(id='alias', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='normalized_forms',
+                    ctx=Load()),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_normalize',
+                      ctx=Load()),
+                    args=[
+                      Name(id='alias', ctx=Load())])])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='updated_at',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()),
+                args=[
+                  Name(id='UTC', ctx=Load())]))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='matches',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='mention',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Checks if mention matches resume workflow entity for job alignment.')),
+            Assign(
+              targets=[
+                Name(id='normalized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_normalize',
+                  ctx=Load()),
+                args=[
+                  Name(id='mention', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='normalized', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_normalize',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='canonical_name',
+                        ctx=Load())])]),
+              body=[
+                Return(
+                  value=Constant(value=True))]),
+            Return(
+              value=Compare(
+                left=Name(id='normalized', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='normalized_forms',
+                    ctx=Load())]))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='to_dict',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Converts resume workflow entity to dictionary for storage.')),
+            Return(
+              value=Dict(
+                keys=[
+                  Constant(value='id'),
+                  Constant(value='canonical_name'),
+                  Constant(value='entity_type'),
+                  Constant(value='aliases'),
+                  Constant(value='normalized_forms'),
+                  Constant(value='created_at'),
+                  Constant(value='updated_at'),
+                  Constant(value='source'),
+                  Constant(value='confidence'),
+                  Constant(value='same_as'),
+                  Constant(value='part_of'),
+                  Constant(value='metadata')],
+                values=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='canonical_name',
+                    ctx=Load()),
+                  Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='entity_type',
+                      ctx=Load()),
+                    attr='value',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='aliases',
+                        ctx=Load())]),
+                  Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='normalized_forms',
+                        ctx=Load())]),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='created_at',
+                        ctx=Load()),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='updated_at',
+                        ctx=Load()),
+                      attr='isoformat',
+                      ctx=Load())),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='source',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='confidence',
+                    ctx=Load()),
+                  Call(
+                    func=Name(id='list', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='same_as',
+                        ctx=Load())]),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='part_of',
+                    ctx=Load()),
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_normalize',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Normalizes text for resume workflow entity matching.')),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='[^\\w\\s]'),
+                  Constant(value=''),
+                  Name(id='text', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Constant(value=' '),
+                  attr='join',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='text', ctx=Load()),
+                      attr='split',
+                      ctx=Load()))])),
+            Return(
+              value=Name(id='text', ctx=Load()))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='str', ctx=Load()))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='EntityMention',
+      body=[
+        Expr(
+          value=Constant(value='Entity mention for resume job alignment text processing.')),
+        AnnAssign(
+          target=Name(id='id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='text', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entity_type', ctx=Store()),
+          annotation=Name(id='EntityType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resolved_entity_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resolution_confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=0.0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resolution_method', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value='unresolved'),
+          simple=1),
+        AnnAssign(
+          target=Name(id='source_document_id', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='start_offset', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='end_offset', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='context', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          value=Constant(value=''),
+          simple=1),
+        AnnAssign(
+          target=Name(id='extracted_at', ctx=Store()),
+          annotation=Name(id='datetime', ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Lambda(
+                  args=arguments(),
+                  body=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load()),
+                    args=[
+                      Name(id='UTC', ctx=Load())])))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='ResolutionResult',
+      body=[
+        Expr(
+          value=Constant(value='Entity resolution result for resume job alignment processing.')),
+        AnnAssign(
+          target=Name(id='mention', ctx=Store()),
+          annotation=Name(id='EntityMention', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='resolved_entity', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='CanonicalEntity', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='method', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='candidates', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='CanonicalEntity', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='list', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='EntityRegistry',
+      body=[
+        Expr(
+          value=Constant(value='Registry for resume workflow canonical entities with resolution.')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initializes empty resume workflow entity registry.')),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_entities',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='CanonicalEntity', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_name_index',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='Set', ctx=Load()),
+                      slice=Name(id='str', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_type_index',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='EntityType', ctx=Load()),
+                    Subscript(
+                      value=Name(id='Set', ctx=Load()),
+                      slice=Name(id='str', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_init_common_entities',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='_init_common_entities',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initializes common resume workflow entities for job alignment.')),
+            Assign(
+              targets=[
+                Name(id='common_skills', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='python'),
+                      Constant(value='Python'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='javascript'),
+                      Constant(value='JavaScript'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='typescript'),
+                      Constant(value='TypeScript'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='java'),
+                      Constant(value='Java'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='aws'),
+                      Constant(value='Amazon Web Services'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='azure'),
+                      Constant(value='Microsoft Azure'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='gcp'),
+                      Constant(value='Google Cloud Platform'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='docker'),
+                      Constant(value='Docker'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='kubernetes'),
+                      Constant(value='Kubernetes'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='react'),
+                      Constant(value='React'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='machine_learning'),
+                      Constant(value='Machine Learning'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='deep_learning'),
+                      Constant(value='Deep Learning'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='nlp'),
+                      Constant(value='Natural Language Processing'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='sql'),
+                      Constant(value='SQL'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='postgresql'),
+                      Constant(value='PostgreSQL'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='mongodb'),
+                      Constant(value='MongoDB'),
+                      Attribute(
+                        value=Name(id='EntityType', ctx=Load()),
+                        attr='SKILL',
+                        ctx=Load())],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='entity_id', ctx=Store()),
+                  Name(id='name', ctx=Store()),
+                  Name(id='entity_type', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='common_skills', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='entity', ctx=Store())],
+                  value=Call(
+                    func=Name(id='CanonicalEntity', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='id',
+                        value=Name(id='entity_id', ctx=Load())),
+                      keyword(
+                        arg='canonical_name',
+                        value=Name(id='name', ctx=Load())),
+                      keyword(
+                        arg='entity_type',
+                        value=Name(id='entity_type', ctx=Load())),
+                      keyword(
+                        arg='source',
+                        value=Constant(value='system_init'))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='entity', ctx=Load()),
+                      attr='add_alias',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='name', ctx=Load()),
+                          attr='lower',
+                          ctx=Load()))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='entity', ctx=Load()),
+                      attr='add_alias',
+                      ctx=Load()),
+                    args=[
+                      Name(id='entity_id', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='register_entity',
+                      ctx=Load()),
+                    args=[
+                      Name(id='entity', ctx=Load())]))])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='register_entity',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='entity',
+                annotation=Name(id='CanonicalEntity', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Registers resume workflow canonical entity for job alignment.\n        \n        Args:\n            entity: Entity to register\n            \n        Returns:\n            Entity ID\n        ')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load()),
+                  slice=Attribute(
+                    value=Name(id='entity', ctx=Load()),
+                    attr='id',
+                    ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='entity', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='normalized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='CanonicalEntity', ctx=Load()),
+                  attr='_normalize',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='entity', ctx=Load()),
+                    attr='canonical_name',
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_add_to_index',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_name_index',
+                    ctx=Load()),
+                  Name(id='normalized', ctx=Load()),
+                  Attribute(
+                    value=Name(id='entity', ctx=Load()),
+                    attr='id',
+                    ctx=Load())])),
+            For(
+              target=Name(id='alias', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='entity', ctx=Load()),
+                attr='aliases',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='normalized_alias', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='CanonicalEntity', ctx=Load()),
+                      attr='_normalize',
+                      ctx=Load()),
+                    args=[
+                      Name(id='alias', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_add_to_index',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_name_index',
+                        ctx=Load()),
+                      Name(id='normalized_alias', ctx=Load()),
+                      Attribute(
+                        value=Name(id='entity', ctx=Load()),
+                        attr='id',
+                        ctx=Load())]))]),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='entity', ctx=Load()),
+                  attr='entity_type',
+                  ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_type_index',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_type_index',
+                        ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='entity', ctx=Load()),
+                        attr='entity_type',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load())))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_type_index',
+                      ctx=Load()),
+                    slice=Attribute(
+                      value=Name(id='entity', ctx=Load()),
+                      attr='entity_type',
+                      ctx=Load()),
+                    ctx=Load()),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='entity', ctx=Load()),
+                    attr='id',
+                    ctx=Load())])),
+            Return(
+              value=Attribute(
+                value=Name(id='entity', ctx=Load()),
+                attr='id',
+                ctx=Load()))],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='get_entity',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='entity_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Gets resume workflow entity by ID for job alignment.\n        \n        Args:\n            entity_id: Entity ID\n            \n        Returns:\n            Entity or None\n        ')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='entity_id', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='CanonicalEntity', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='resolve',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='mention',
+                annotation=Name(id='EntityMention', ctx=Load())),
+              arg(
+                arg='threshold',
+                annotation=Name(id='float', ctx=Load()))],
+            defaults=[
+              Constant(value=0.5)]),
+          body=[
+            Expr(
+              value=Constant(value='Resolves entity mention to canonical for job alignment.\n        \n        Args:\n            mention: Entity mention to resolve\n            threshold: Minimum confidence threshold\n            \n        Returns:\n            Resolution result with candidates\n        ')),
+            AnnAssign(
+              target=Name(id='candidates', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='CanonicalEntity', ctx=Load()),
+                      Name(id='float', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='normalized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='CanonicalEntity', ctx=Load()),
+                  attr='_normalize',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='mention', ctx=Load()),
+                    attr='text',
+                    ctx=Load())])),
+            If(
+              test=Compare(
+                left=Name(id='normalized', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_name_index',
+                    ctx=Load())]),
+              body=[
+                For(
+                  target=Name(id='entity_id', ctx=Store()),
+                  iter=Subscript(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_name_index',
+                      ctx=Load()),
+                    slice=Name(id='normalized', ctx=Load()),
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='entity', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_entities',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Name(id='entity_id', ctx=Load())])),
+                    If(
+                      test=Name(id='entity', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='confidence', ctx=Store())],
+                          value=Constant(value=0.95)),
+                        If(
+                          test=BoolOp(
+                            op=And(),
+                            values=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='mention', ctx=Load()),
+                                  attr='entity_type',
+                                  ctx=Load()),
+                                ops=[
+                                  NotEq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='EntityType', ctx=Load()),
+                                    attr='UNKNOWN',
+                                    ctx=Load())]),
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='entity', ctx=Load()),
+                                  attr='entity_type',
+                                  ctx=Load()),
+                                ops=[
+                                  Eq()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='mention', ctx=Load()),
+                                    attr='entity_type',
+                                    ctx=Load())])]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='confidence', ctx=Store())],
+                              value=Constant(value=1.0))]),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='candidates', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Tuple(
+                                elts=[
+                                  Name(id='entity', ctx=Load()),
+                                  Name(id='confidence', ctx=Load())],
+                                ctx=Load())]))])])]),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Name(id='candidates', ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='candidates', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_fuzzy_match',
+                      ctx=Load()),
+                    args=[
+                      Name(id='mention', ctx=Load()),
+                      Name(id='threshold', ctx=Load())]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='candidates', ctx=Load()),
+                  attr='sort',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='key',
+                    value=Lambda(
+                      args=arguments(
+                        args=[
+                          arg(arg='x')]),
+                      body=Subscript(
+                        value=Name(id='x', ctx=Load()),
+                        slice=Constant(value=1),
+                        ctx=Load()))),
+                  keyword(
+                    arg='reverse',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='resolved_entity', ctx=Store())],
+              value=Constant(value=None)),
+            Assign(
+              targets=[
+                Name(id='confidence', ctx=Store())],
+              value=Constant(value=0.0)),
+            Assign(
+              targets=[
+                Name(id='method', ctx=Store())],
+              value=Constant(value='unresolved')),
+            If(
+              test=BoolOp(
+                op=And(),
+                values=[
+                  Name(id='candidates', ctx=Load()),
+                  Compare(
+                    left=Subscript(
+                      value=Subscript(
+                        value=Name(id='candidates', ctx=Load()),
+                        slice=Constant(value=0),
+                        ctx=Load()),
+                      slice=Constant(value=1),
+                      ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Name(id='threshold', ctx=Load())])]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='resolved_entity', ctx=Store())],
+                  value=Subscript(
+                    value=Subscript(
+                      value=Name(id='candidates', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    slice=Constant(value=0),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='confidence', ctx=Store())],
+                  value=Subscript(
+                    value=Subscript(
+                      value=Name(id='candidates', ctx=Load()),
+                      slice=Constant(value=0),
+                      ctx=Load()),
+                    slice=Constant(value=1),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='method', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='confidence', ctx=Load()),
+                      ops=[
+                        GtE()],
+                      comparators=[
+                        Constant(value=0.95)]),
+                    body=Constant(value='exact_match'),
+                    orelse=Constant(value='fuzzy_match')))]),
+            Return(
+              value=Call(
+                func=Name(id='ResolutionResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='mention',
+                    value=Name(id='mention', ctx=Load())),
+                  keyword(
+                    arg='resolved_entity',
+                    value=Name(id='resolved_entity', ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Name(id='confidence', ctx=Load())),
+                  keyword(
+                    arg='method',
+                    value=Name(id='method', ctx=Load())),
+                  keyword(
+                    arg='candidates',
+                    value=Subscript(
+                      value=Name(id='candidates', ctx=Load()),
+                      slice=Slice(
+                        upper=Constant(value=5)),
+                      ctx=Load()))]))],
+          returns=Name(id='ResolutionResult', ctx=Load())),
+        FunctionDef(
+          name='_fuzzy_match',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='mention',
+                annotation=Name(id='EntityMention', ctx=Load())),
+              arg(
+                arg='threshold',
+                annotation=Name(id='float', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Performs fuzzy matching for resume workflow entity resolution.\n        \n        Args:\n            mention: Entity mention\n            threshold: Minimum confidence\n            \n        Returns:\n            List of (entity, confidence) tuples\n        ')),
+            Assign(
+              targets=[
+                Name(id='candidates', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='mention_normalized', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='CanonicalEntity', ctx=Load()),
+                  attr='_normalize',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='mention', ctx=Load()),
+                    attr='text',
+                    ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='mention_tokens', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='mention_normalized', ctx=Load()),
+                      attr='split',
+                      ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='entity_ids', ctx=Store())],
+              value=IfExp(
+                test=Compare(
+                  left=Attribute(
+                    value=Name(id='mention', ctx=Load()),
+                    attr='entity_type',
+                    ctx=Load()),
+                  ops=[
+                    NotEq()],
+                  comparators=[
+                    Attribute(
+                      value=Name(id='EntityType', ctx=Load()),
+                      attr='UNKNOWN',
+                      ctx=Load())]),
+                body=Call(
+                  func=Attribute(
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_type_index',
+                      ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Attribute(
+                      value=Name(id='mention', ctx=Load()),
+                      attr='entity_type',
+                      ctx=Load()),
+                    Call(
+                      func=Name(id='set', ctx=Load()))]),
+                orelse=Call(
+                  func=Name(id='set', ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_entities',
+                          ctx=Load()),
+                        attr='keys',
+                        ctx=Load()))]))),
+            For(
+              target=Name(id='entity_id', ctx=Store()),
+              iter=Name(id='entity_ids', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='entity', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_entities',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='entity_id', ctx=Load())])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='entity', ctx=Load())),
+                  body=[
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='entity_normalized', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='CanonicalEntity', ctx=Load()),
+                      attr='_normalize',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='entity', ctx=Load()),
+                        attr='canonical_name',
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='entity_tokens', ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='entity_normalized', ctx=Load()),
+                          attr='split',
+                          ctx=Load()))])),
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='entity_tokens', ctx=Load())),
+                  body=[
+                    Continue()]),
+                Assign(
+                  targets=[
+                    Name(id='intersection', ctx=Store())],
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='mention_tokens', ctx=Load()),
+                        op=BitAnd(),
+                        right=Name(id='entity_tokens', ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='union', ctx=Store())],
+                  value=Call(
+                    func=Name(id='len', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Name(id='mention_tokens', ctx=Load()),
+                        op=BitOr(),
+                        right=Name(id='entity_tokens', ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='similarity', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='union', ctx=Load()),
+                      ops=[
+                        Gt()],
+                      comparators=[
+                        Constant(value=0)]),
+                    body=BinOp(
+                      left=Name(id='intersection', ctx=Load()),
+                      op=Div(),
+                      right=Name(id='union', ctx=Load())),
+                    orelse=Constant(value=0))),
+                If(
+                  test=BoolOp(
+                    op=Or(),
+                    values=[
+                      Compare(
+                        left=Name(id='mention_normalized', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='entity_normalized', ctx=Load())]),
+                      Compare(
+                        left=Name(id='entity_normalized', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Name(id='mention_normalized', ctx=Load())])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='similarity', ctx=Store())],
+                      value=Call(
+                        func=Name(id='max', ctx=Load()),
+                        args=[
+                          Name(id='similarity', ctx=Load()),
+                          Constant(value=0.7)]))]),
+                If(
+                  test=Compare(
+                    left=Name(id='similarity', ctx=Load()),
+                    ops=[
+                      GtE()],
+                    comparators=[
+                      Name(id='threshold', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='candidates', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Tuple(
+                            elts=[
+                              Name(id='entity', ctx=Load()),
+                              Name(id='similarity', ctx=Load())],
+                            ctx=Load())]))])]),
+            Return(
+              value=Name(id='candidates', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='CanonicalEntity', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='merge_entities',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='primary_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='secondary_id',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='reason',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='duplicate')]),
+          body=[
+            Expr(
+              value=Constant(value='Merges two resume workflow entities for job alignment.\n        \n        Args:\n            primary_id: ID of entity to keep\n            secondary_id: ID of entity to merge into primary\n            reason: Reason for merge\n            \n        Returns:\n            Merged entity or None if invalid\n        ')),
+            Assign(
+              targets=[
+                Name(id='primary', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='primary_id', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='secondary', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='secondary_id', ctx=Load())])),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='primary', ctx=Load())),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Name(id='secondary', ctx=Load()))]),
+              body=[
+                Return(
+                  value=Constant(value=None))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='primary', ctx=Load()),
+                    attr='aliases',
+                    ctx=Load()),
+                  attr='update',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='secondary', ctx=Load()),
+                    attr='aliases',
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='primary', ctx=Load()),
+                    attr='aliases',
+                    ctx=Load()),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='secondary', ctx=Load()),
+                    attr='canonical_name',
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='primary', ctx=Load()),
+                    attr='normalized_forms',
+                    ctx=Load()),
+                  attr='update',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='secondary', ctx=Load()),
+                    attr='normalized_forms',
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='primary', ctx=Load()),
+                    attr='same_as',
+                    ctx=Load()),
+                  attr='update',
+                  ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='secondary', ctx=Load()),
+                    attr='same_as',
+                    ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='primary', ctx=Load()),
+                    attr='same_as',
+                    ctx=Load()),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='merged:'),
+                      FormattedValue(
+                        value=Name(id='secondary_id', ctx=Load()),
+                        conversion=-1)])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='primary', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  slice=Constant(value='merged_from'),
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='primary', ctx=Load()),
+                    attr='metadata',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='merged_from'),
+                  List(ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Attribute(
+                      value=Name(id='primary', ctx=Load()),
+                      attr='metadata',
+                      ctx=Load()),
+                    slice=Constant(value='merged_from'),
+                    ctx=Load()),
+                  attr='append',
+                  ctx=Load()),
+                args=[
+                  Dict(
+                    keys=[
+                      Constant(value='entity_id'),
+                      Constant(value='canonical_name'),
+                      Constant(value='reason'),
+                      Constant(value='merged_at')],
+                    values=[
+                      Name(id='secondary_id', ctx=Load()),
+                      Attribute(
+                        value=Name(id='secondary', ctx=Load()),
+                        attr='canonical_name',
+                        ctx=Load()),
+                      Name(id='reason', ctx=Load()),
+                      Call(
+                        func=Attribute(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load()),
+                            args=[
+                              Name(id='UTC', ctx=Load())]),
+                          attr='isoformat',
+                          ctx=Load()))])])),
+            Delete(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load()),
+                  slice=Name(id='secondary_id', ctx=Load()),
+                  ctx=Del())]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_rebuild_indexes',
+                  ctx=Load()))),
+            Return(
+              value=Name(id='primary', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='CanonicalEntity', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='get_entities_by_type',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='entity_type',
+                annotation=Name(id='EntityType', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Gets resume workflow entities by type for job alignment.\n        \n        Args:\n            entity_type: Type of entities to retrieve\n            \n        Returns:\n            List of entities\n        ')),
+            Assign(
+              targets=[
+                Name(id='entity_ids', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_type_index',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='entity_type', ctx=Load()),
+                  Call(
+                    func=Name(id='set', ctx=Load()))])),
+            Return(
+              value=ListComp(
+                elt=Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load()),
+                  slice=Name(id='eid', ctx=Load()),
+                  ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='eid', ctx=Store()),
+                    iter=Name(id='entity_ids', ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Name(id='eid', ctx=Load()),
+                        ops=[
+                          In()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_entities',
+                            ctx=Load())])],
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='CanonicalEntity', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='search',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='query',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='entity_type',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='EntityType', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='limit',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=None),
+              Constant(value=10)]),
+          body=[
+            Expr(
+              value=Constant(value='Searches resume workflow entities by name for job alignment.\n        \n        Args:\n            query: Search query\n            entity_type: Optional type filter\n            limit: Maximum results\n            \n        Returns:\n            List of (entity, score) tuples\n        ')),
+            Assign(
+              targets=[
+                Name(id='mention', ctx=Store())],
+              value=Call(
+                func=Name(id='EntityMention', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='id',
+                    value=Constant(value='search')),
+                  keyword(
+                    arg='text',
+                    value=Name(id='query', ctx=Load())),
+                  keyword(
+                    arg='entity_type',
+                    value=BoolOp(
+                      op=Or(),
+                      values=[
+                        Name(id='entity_type', ctx=Load()),
+                        Attribute(
+                          value=Name(id='EntityType', ctx=Load()),
+                          attr='UNKNOWN',
+                          ctx=Load())]))])),
+            Assign(
+              targets=[
+                Name(id='result', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='resolve',
+                  ctx=Load()),
+                args=[
+                  Name(id='mention', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='threshold',
+                    value=Constant(value=0.1))])),
+            Return(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='result', ctx=Load()),
+                  attr='candidates',
+                  ctx=Load()),
+                slice=Slice(
+                  upper=Name(id='limit', ctx=Load())),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='CanonicalEntity', ctx=Load()),
+                  Name(id='float', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_rebuild_indexes',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Rebuilds resume workflow entity indexes for job alignment.')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_name_index',
+                    ctx=Load()),
+                  attr='clear',
+                  ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_type_index',
+                    ctx=Load()),
+                  attr='clear',
+                  ctx=Load()))),
+            For(
+              target=Name(id='entity', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load()),
+                  attr='values',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='normalized', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='CanonicalEntity', ctx=Load()),
+                      attr='_normalize',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='entity', ctx=Load()),
+                        attr='canonical_name',
+                        ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_add_to_index',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_name_index',
+                        ctx=Load()),
+                      Name(id='normalized', ctx=Load()),
+                      Attribute(
+                        value=Name(id='entity', ctx=Load()),
+                        attr='id',
+                        ctx=Load())])),
+                For(
+                  target=Name(id='alias', ctx=Store()),
+                  iter=Attribute(
+                    value=Name(id='entity', ctx=Load()),
+                    attr='aliases',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='normalized_alias', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='CanonicalEntity', ctx=Load()),
+                          attr='_normalize',
+                          ctx=Load()),
+                        args=[
+                          Name(id='alias', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_add_to_index',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_name_index',
+                            ctx=Load()),
+                          Name(id='normalized_alias', ctx=Load()),
+                          Attribute(
+                            value=Name(id='entity', ctx=Load()),
+                            attr='id',
+                            ctx=Load())]))]),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='entity', ctx=Load()),
+                      attr='entity_type',
+                      ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_type_index',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_type_index',
+                            ctx=Load()),
+                          slice=Attribute(
+                            value=Name(id='entity', ctx=Load()),
+                            attr='entity_type',
+                            ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='set', ctx=Load())))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_type_index',
+                          ctx=Load()),
+                        slice=Attribute(
+                          value=Name(id='entity', ctx=Load()),
+                          attr='entity_type',
+                          ctx=Load()),
+                        ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='entity', ctx=Load()),
+                        attr='id',
+                        ctx=Load())]))])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='_add_to_index',
+          args=arguments(
+            args=[
+              arg(
+                arg='index',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Subscript(
+                        value=Name(id='Set', ctx=Load()),
+                        slice=Name(id='str', ctx=Load()),
+                        ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='key',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='value',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Adds value to resume workflow entity index.')),
+            If(
+              test=Compare(
+                left=Name(id='key', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Name(id='index', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Name(id='index', ctx=Load()),
+                      slice=Name(id='key', ctx=Load()),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='set', ctx=Load())))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Name(id='index', ctx=Load()),
+                    slice=Name(id='key', ctx=Load()),
+                    ctx=Load()),
+                  attr='add',
+                  ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load())]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='count',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Gets count of registered resume workflow entities.')),
+            Return(
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_entities',
+                    ctx=Load())]))],
+          returns=Name(id='int', ctx=Load()))]),
+    FunctionDef(
+      name='create_entity',
+      args=arguments(
+        args=[
+          arg(
+            arg='name',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='entity_type',
+            annotation=Name(id='EntityType', ctx=Load())),
+          arg(
+            arg='aliases',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='source',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='metadata',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None),
+          Constant(value='extraction'),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Create a new canonical entity.\n    \n    Args:\n        name: Canonical name\n        entity_type: Entity type\n        aliases: Optional list of aliases\n        source: Source of entity\n        metadata: Additional metadata\n        \n    Returns:\n        New CanonicalEntity\n    ')),
+        Assign(
+          targets=[
+            Name(id='id_input', ctx=Store())],
+          value=JoinedStr(
+            values=[
+              FormattedValue(
+                value=Attribute(
+                  value=Name(id='entity_type', ctx=Load()),
+                  attr='value',
+                  ctx=Load()),
+                conversion=-1),
+              Constant(value=':'),
+              FormattedValue(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='name', ctx=Load()),
+                    attr='lower',
+                    ctx=Load())),
+                conversion=-1)])),
+        Assign(
+          targets=[
+            Name(id='entity_id', ctx=Store())],
+          value=Subscript(
+            value=Call(
+              func=Attribute(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='hashlib', ctx=Load()),
+                    attr='sha256',
+                    ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=Name(id='id_input', ctx=Load()),
+                        attr='encode',
+                        ctx=Load()))]),
+                attr='hexdigest',
+                ctx=Load())),
+            slice=Slice(
+              upper=Constant(value=16)),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='entity', ctx=Store())],
+          value=Call(
+            func=Name(id='CanonicalEntity', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Name(id='entity_id', ctx=Load())),
+              keyword(
+                arg='canonical_name',
+                value=Name(id='name', ctx=Load())),
+              keyword(
+                arg='entity_type',
+                value=Name(id='entity_type', ctx=Load())),
+              keyword(
+                arg='source',
+                value=Name(id='source', ctx=Load())),
+              keyword(
+                arg='metadata',
+                value=BoolOp(
+                  op=Or(),
+                  values=[
+                    Name(id='metadata', ctx=Load()),
+                    Dict()]))])),
+        If(
+          test=Name(id='aliases', ctx=Load()),
+          body=[
+            For(
+              target=Name(id='alias', ctx=Store()),
+              iter=Name(id='aliases', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='entity', ctx=Load()),
+                      attr='add_alias',
+                      ctx=Load()),
+                    args=[
+                      Name(id='alias', ctx=Load())]))])]),
+        Return(
+          value=Name(id='entity', ctx=Load()))],
+      returns=Name(id='CanonicalEntity', ctx=Load())),
+    FunctionDef(
+      name='create_mention',
+      args=arguments(
+        args=[
+          arg(
+            arg='text',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='entity_type',
+            annotation=Name(id='EntityType', ctx=Load())),
+          arg(
+            arg='source_document_id',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Name(id='str', ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Name(id='str', ctx=Load()))],
+        defaults=[
+          Attribute(
+            value=Name(id='EntityType', ctx=Load()),
+            attr='UNKNOWN',
+            ctx=Load()),
+          Constant(value=None),
+          Constant(value='')]),
+      body=[
+        Expr(
+          value=Constant(value='Create an entity mention.\n    \n    Args:\n        text: Mention text\n        entity_type: Entity type hint\n        source_document_id: Source document\n        context: Surrounding context\n        \n    Returns:\n        New EntityMention\n    ')),
+        Assign(
+          targets=[
+            Name(id='mention_id', ctx=Store())],
+          value=Subscript(
+            value=Call(
+              func=Attribute(
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='hashlib', ctx=Load()),
+                    attr='sha256',
+                    ctx=Load()),
+                  args=[
+                    Call(
+                      func=Attribute(
+                        value=JoinedStr(
+                          values=[
+                            FormattedValue(
+                              value=Name(id='text', ctx=Load()),
+                              conversion=-1),
+                            Constant(value=':'),
+                            FormattedValue(
+                              value=Name(id='source_document_id', ctx=Load()),
+                              conversion=-1),
+                            Constant(value=':'),
+                            FormattedValue(
+                              value=Call(
+                                func=Attribute(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='datetime', ctx=Load()),
+                                      attr='now',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='UTC', ctx=Load())]),
+                                  attr='isoformat',
+                                  ctx=Load())),
+                              conversion=-1)]),
+                        attr='encode',
+                        ctx=Load()))]),
+                attr='hexdigest',
+                ctx=Load())),
+            slice=Slice(
+              upper=Constant(value=16)),
+            ctx=Load())),
+        Return(
+          value=Call(
+            func=Name(id='EntityMention', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='id',
+                value=Name(id='mention_id', ctx=Load())),
+              keyword(
+                arg='text',
+                value=Name(id='text', ctx=Load())),
+              keyword(
+                arg='entity_type',
+                value=Name(id='entity_type', ctx=Load())),
+              keyword(
+                arg='source_document_id',
+                value=Name(id='source_document_id', ctx=Load())),
+              keyword(
+                arg='context',
+                value=Name(id='context', ctx=Load()))]))],
+      returns=Name(id='EntityMention', ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='EntityType'),
+          Constant(value='CanonicalEntity'),
+          Constant(value='EntityMention'),
+          Constant(value='ResolutionResult'),
+          Constant(value='EntityRegistry'),
+          Constant(value='create_entity'),
+          Constant(value='create_mention')],
+        ctx=Load()))])

@@ -1,0 +1,1994 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nProduction Safety Layer Implementation\nImplements comprehensive safety checks for all outbound content and mutating actions\n')),
+    Import(
+      names=[
+        alias(name='re')]),
+    Import(
+      names=[
+        alias(name='hashlib')]),
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Any'),
+        alias(name='Optional'),
+        alias(name='Set')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='os')]),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='SafetyLevel',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Safety severity levels')),
+        Assign(
+          targets=[
+            Name(id='LOW', ctx=Store())],
+          value=Constant(value='low')),
+        Assign(
+          targets=[
+            Name(id='MEDIUM', ctx=Store())],
+          value=Constant(value='medium')),
+        Assign(
+          targets=[
+            Name(id='HIGH', ctx=Store())],
+          value=Constant(value='high')),
+        Assign(
+          targets=[
+            Name(id='CRITICAL', ctx=Store())],
+          value=Constant(value='critical'))]),
+    ClassDef(
+      name='SafetyViolationType',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Expr(
+          value=Constant(value='Types of safety violations')),
+        Assign(
+          targets=[
+            Name(id='PII_DETECTED', ctx=Store())],
+          value=Constant(value='pii_detected')),
+        Assign(
+          targets=[
+            Name(id='HALLUCINATION_DETECTED', ctx=Store())],
+          value=Constant(value='hallucination_detected')),
+        Assign(
+          targets=[
+            Name(id='INJECTION_DETECTED', ctx=Store())],
+          value=Constant(value='injection_detected')),
+        Assign(
+          targets=[
+            Name(id='MALICIOUS_CONTENT', ctx=Store())],
+          value=Constant(value='malicious_content')),
+        Assign(
+          targets=[
+            Name(id='SENSITIVE_DATA', ctx=Store())],
+          value=Constant(value='sensitive_data'))]),
+    ClassDef(
+      name='SafetyViolation',
+      body=[
+        Expr(
+          value=Constant(value='Safety violation details')),
+        AnnAssign(
+          target=Name(id='violation_type', ctx=Store()),
+          annotation=Name(id='SafetyViolationType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='severity', ctx=Store()),
+          annotation=Name(id='SafetyLevel', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='content', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='location', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='SafetyResult',
+      body=[
+        Expr(
+          value=Constant(value='Safety check result')),
+        AnnAssign(
+          target=Name(id='is_safe', ctx=Store()),
+          annotation=Name(id='bool', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='violations', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SafetyViolation', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='processed_content', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Optional', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          value=Constant(value=None),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='PIIDetector',
+      body=[
+        Expr(
+          value=Constant(value='Personally Identifiable Information detector')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='email_pattern',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='phone_pattern',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b(?:\\+?1[-.\\s]?)?\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})\\b')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='ssn_pattern',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b\\d{3}-\\d{2}-\\d{4}\\b')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='credit_card_pattern',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='compile',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b(?:\\d{4}[-\\s]?){3}\\d{4}\\b')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='sensitive_keywords',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='password'),
+                  Constant(value='secret'),
+                  Constant(value='token'),
+                  Constant(value='api_key'),
+                  Constant(value='private_key'),
+                  Constant(value='credential'),
+                  Constant(value='social_security'),
+                  Constant(value='credit_card'),
+                  Constant(value='bank_account'),
+                  Constant(value='passport'),
+                  Constant(value='driver_license')])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='pii_indicators',
+                  ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='ssn'),
+                  Constant(value='social security'),
+                  Constant(value='tax id'),
+                  Constant(value='ein'),
+                  Constant(value='itin'),
+                  Constant(value='dob'),
+                  Constant(value='date of birth'),
+                  Constant(value='address'),
+                  Constant(value='phone'),
+                  Constant(value='mobile'),
+                  Constant(value='email'),
+                  Constant(value='mail'),
+                  Constant(value='contact')]))]),
+        FunctionDef(
+          name='detect_pii',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Detect PII in content')),
+            Assign(
+              targets=[
+                Name(id='violations', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='emails', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='email_pattern',
+                    ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            For(
+              target=Name(id='email', ctx=Store()),
+              iter=Name(id='emails', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='SafetyViolation', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='violation_type',
+                            value=Attribute(
+                              value=Name(id='SafetyViolationType', ctx=Load()),
+                              attr='PII_DETECTED',
+                              ctx=Load())),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='SafetyLevel', ctx=Load()),
+                              attr='HIGH',
+                              ctx=Load())),
+                          keyword(
+                            arg='content',
+                            value=Name(id='email', ctx=Load())),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.95)),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='type')],
+                              values=[
+                                Constant(value='email')]))])]))]),
+            Assign(
+              targets=[
+                Name(id='phones', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='phone_pattern',
+                    ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            For(
+              target=Name(id='phone', ctx=Store()),
+              iter=Name(id='phones', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='SafetyViolation', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='violation_type',
+                            value=Attribute(
+                              value=Name(id='SafetyViolationType', ctx=Load()),
+                              attr='PII_DETECTED',
+                              ctx=Load())),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='SafetyLevel', ctx=Load()),
+                              attr='HIGH',
+                              ctx=Load())),
+                          keyword(
+                            arg='content',
+                            value=Name(id='phone', ctx=Load())),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.9)),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='type')],
+                              values=[
+                                Constant(value='phone')]))])]))]),
+            Assign(
+              targets=[
+                Name(id='ssns', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='ssn_pattern',
+                    ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            For(
+              target=Name(id='ssn', ctx=Store()),
+              iter=Name(id='ssns', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='SafetyViolation', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='violation_type',
+                            value=Attribute(
+                              value=Name(id='SafetyViolationType', ctx=Load()),
+                              attr='PII_DETECTED',
+                              ctx=Load())),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='SafetyLevel', ctx=Load()),
+                              attr='CRITICAL',
+                              ctx=Load())),
+                          keyword(
+                            arg='content',
+                            value=Name(id='ssn', ctx=Load())),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.98)),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='type')],
+                              values=[
+                                Constant(value='ssn')]))])]))]),
+            Assign(
+              targets=[
+                Name(id='cards', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='credit_card_pattern',
+                    ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            For(
+              target=Name(id='card', ctx=Store()),
+              iter=Name(id='cards', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='SafetyViolation', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='violation_type',
+                            value=Attribute(
+                              value=Name(id='SafetyViolationType', ctx=Load()),
+                              attr='PII_DETECTED',
+                              ctx=Load())),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='SafetyLevel', ctx=Load()),
+                              attr='CRITICAL',
+                              ctx=Load())),
+                          keyword(
+                            arg='content',
+                            value=Name(id='card', ctx=Load())),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.85)),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='type')],
+                              values=[
+                                Constant(value='credit_card')]))])]))]),
+            Assign(
+              targets=[
+                Name(id='content_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='content', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            For(
+              target=Name(id='keyword', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='sensitive_keywords',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='keyword', ctx=Load()),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='content_lower', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='violations', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='SafetyViolation', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='violation_type',
+                                value=Attribute(
+                                  value=Name(id='SafetyViolationType', ctx=Load()),
+                                  attr='SENSITIVE_DATA',
+                                  ctx=Load())),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='SafetyLevel', ctx=Load()),
+                                  attr='MEDIUM',
+                                  ctx=Load())),
+                              keyword(
+                                arg='content',
+                                value=Name(id='keyword', ctx=Load())),
+                              keyword(
+                                arg='confidence',
+                                value=Constant(value=0.7)),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='type')],
+                                  values=[
+                                    Constant(value='sensitive_keyword')]))])]))])]),
+            Return(
+              value=Name(id='violations', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SafetyViolation', ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='HallucinationDetector',
+      body=[
+        Expr(
+          value=Constant(value='Hallucination detection system')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='known_facts',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_load_known_facts',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='hallucination_patterns',
+                  ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='\\b(I think|I believe|maybe|perhaps|possibly|might be)\\b'),
+                  Constant(value='\\b(approximately|roughly|about|around)\\b.*\\b\\d+\\b'),
+                  Constant(value='\\b(never|always|every|all|none)\\b.*\\b(people|things|cases)\\b')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='confidence_threshold',
+                  ctx=Store())],
+              value=Constant(value=0.7))]),
+        FunctionDef(
+          name='_load_known_facts',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Load known facts database')),
+            Return(
+              value=Set(
+                elts=[
+                  Constant(value='python is a programming language'),
+                  Constant(value='javascript is used for web development'),
+                  Constant(value='machine learning requires data'),
+                  Constant(value='AI models need training'),
+                  Constant(value='databases store information')]))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='detect_hallucination',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Detect potential hallucinations')),
+            Assign(
+              targets=[
+                Name(id='violations', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='content_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='content', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            For(
+              target=Name(id='pattern', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='hallucination_patterns',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='matches', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='findall',
+                      ctx=Load()),
+                    args=[
+                      Name(id='pattern', ctx=Load()),
+                      Name(id='content_lower', ctx=Load()),
+                      Attribute(
+                        value=Name(id='re', ctx=Load()),
+                        attr='IGNORECASE',
+                        ctx=Load())])),
+                For(
+                  target=Name(id='match', ctx=Store()),
+                  iter=Name(id='matches', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='violations', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='SafetyViolation', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='violation_type',
+                                value=Attribute(
+                                  value=Name(id='SafetyViolationType', ctx=Load()),
+                                  attr='HALLUCINATION_DETECTED',
+                                  ctx=Load())),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='SafetyLevel', ctx=Load()),
+                                  attr='LOW',
+                                  ctx=Load())),
+                              keyword(
+                                arg='content',
+                                value=Name(id='match', ctx=Load())),
+                              keyword(
+                                arg='confidence',
+                                value=Constant(value=0.6)),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='type')],
+                                  values=[
+                                    Constant(value='uncertainty_indicator')]))])]))])]),
+            For(
+              target=Name(id='fact', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='known_facts',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='fact', ctx=Load()),
+                        attr='lower',
+                        ctx=Load())),
+                    ops=[
+                      In()],
+                    comparators=[
+                      Name(id='content_lower', ctx=Load())]),
+                  body=[
+                    Continue()])]),
+            Assign(
+              targets=[
+                Name(id='number_pattern', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b\\d+(?:\\.\\d+)?%?\\b'),
+                  Name(id='content', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='number_pattern', ctx=Load())]),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=3)]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='violations', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='SafetyViolation', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='violation_type',
+                            value=Attribute(
+                              value=Name(id='SafetyViolationType', ctx=Load()),
+                              attr='HALLUCINATION_DETECTED',
+                              ctx=Load())),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='SafetyLevel', ctx=Load()),
+                              attr='MEDIUM',
+                              ctx=Load())),
+                          keyword(
+                            arg='content',
+                            value=Constant(value='multiple_unverified_numbers')),
+                          keyword(
+                            arg='confidence',
+                            value=Constant(value=0.65)),
+                          keyword(
+                            arg='metadata',
+                            value=Dict(
+                              keys=[
+                                Constant(value='type'),
+                                Constant(value='count')],
+                              values=[
+                                Constant(value='unverified_statistics'),
+                                Call(
+                                  func=Name(id='len', ctx=Load()),
+                                  args=[
+                                    Name(id='number_pattern', ctx=Load())])]))])]))]),
+            Return(
+              value=Name(id='violations', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SafetyViolation', ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='InjectionDetector',
+      body=[
+        Expr(
+          value=Constant(value='Injection attack detection system')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='sql_patterns',
+                  ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value="('|(\\\\')|(;)|(\\\\;))"),
+                  Constant(value="((\\%27)|(\\'))((\\%6F)|o|(\\%4F))((\\%72)|r|(\\%52))"),
+                  Constant(value='union.*select'),
+                  Constant(value='drop.*table'),
+                  Constant(value='insert.*into'),
+                  Constant(value='delete.*from')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='command_patterns',
+                  ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='[;&|`$]\\s*[a-zA-Z]'),
+                  Constant(value='\\$\\([^(]*\\)'),
+                  Constant(value='`[^`]*`'),
+                  Constant(value='&&\\s*[a-zA-Z]'),
+                  Constant(value='\\|\\|\\s*[a-zA-Z]'),
+                  Constant(value=';\\s*(rm|cat|ls|cd|pwd|whoami|id)')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='xss_patterns',
+                  ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='<script.*?>.*?</script>'),
+                  Constant(value='javascript:'),
+                  Constant(value='on\\\\w+\\\\s*='),
+                  Constant(value='<iframe.*?>'),
+                  Constant(value='<object.*?>'),
+                  Constant(value='<embed.*?>')],
+                ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='prompt_patterns',
+                  ctx=Store())],
+              value=List(
+                elts=[
+                  Constant(value='ignore.*previous.*instructions'),
+                  Constant(value='system.*prompt'),
+                  Constant(value='act.*as.*different.*assistant'),
+                  Constant(value='forget.*everything'),
+                  Constant(value='new.*role.*play')],
+                ctx=Load()))]),
+        FunctionDef(
+          name='detect_injection',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Detect injection attempts')),
+            Assign(
+              targets=[
+                Name(id='violations', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='pattern', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='sql_patterns',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='search',
+                      ctx=Load()),
+                    args=[
+                      Name(id='pattern', ctx=Load()),
+                      Name(id='content', ctx=Load()),
+                      Attribute(
+                        value=Name(id='re', ctx=Load()),
+                        attr='IGNORECASE',
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='violations', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='SafetyViolation', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='violation_type',
+                                value=Attribute(
+                                  value=Name(id='SafetyViolationType', ctx=Load()),
+                                  attr='INJECTION_DETECTED',
+                                  ctx=Load())),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='SafetyLevel', ctx=Load()),
+                                  attr='HIGH',
+                                  ctx=Load())),
+                              keyword(
+                                arg='content',
+                                value=Constant(value='sql_injection_attempt')),
+                              keyword(
+                                arg='confidence',
+                                value=Constant(value=0.85)),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='type'),
+                                    Constant(value='pattern')],
+                                  values=[
+                                    Constant(value='sql_injection'),
+                                    Name(id='pattern', ctx=Load())]))])]))])]),
+            For(
+              target=Name(id='pattern', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='command_patterns',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='search',
+                      ctx=Load()),
+                    args=[
+                      Name(id='pattern', ctx=Load()),
+                      Name(id='content', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='violations', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='SafetyViolation', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='violation_type',
+                                value=Attribute(
+                                  value=Name(id='SafetyViolationType', ctx=Load()),
+                                  attr='INJECTION_DETECTED',
+                                  ctx=Load())),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='SafetyLevel', ctx=Load()),
+                                  attr='CRITICAL',
+                                  ctx=Load())),
+                              keyword(
+                                arg='content',
+                                value=Constant(value='command_injection_attempt')),
+                              keyword(
+                                arg='confidence',
+                                value=Constant(value=0.9)),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='type'),
+                                    Constant(value='pattern')],
+                                  values=[
+                                    Constant(value='command_injection'),
+                                    Name(id='pattern', ctx=Load())]))])]))])]),
+            For(
+              target=Name(id='pattern', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='xss_patterns',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='search',
+                      ctx=Load()),
+                    args=[
+                      Name(id='pattern', ctx=Load()),
+                      Name(id='content', ctx=Load()),
+                      Attribute(
+                        value=Name(id='re', ctx=Load()),
+                        attr='IGNORECASE',
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='violations', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='SafetyViolation', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='violation_type',
+                                value=Attribute(
+                                  value=Name(id='SafetyViolationType', ctx=Load()),
+                                  attr='INJECTION_DETECTED',
+                                  ctx=Load())),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='SafetyLevel', ctx=Load()),
+                                  attr='HIGH',
+                                  ctx=Load())),
+                              keyword(
+                                arg='content',
+                                value=Constant(value='xss_attempt')),
+                              keyword(
+                                arg='confidence',
+                                value=Constant(value=0.8)),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='type'),
+                                    Constant(value='pattern')],
+                                  values=[
+                                    Constant(value='xss'),
+                                    Name(id='pattern', ctx=Load())]))])]))])]),
+            For(
+              target=Name(id='pattern', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='prompt_patterns',
+                ctx=Load()),
+              body=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='re', ctx=Load()),
+                      attr='search',
+                      ctx=Load()),
+                    args=[
+                      Name(id='pattern', ctx=Load()),
+                      Name(id='content', ctx=Load()),
+                      Attribute(
+                        value=Name(id='re', ctx=Load()),
+                        attr='IGNORECASE',
+                        ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='violations', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='SafetyViolation', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='violation_type',
+                                value=Attribute(
+                                  value=Name(id='SafetyViolationType', ctx=Load()),
+                                  attr='INJECTION_DETECTED',
+                                  ctx=Load())),
+                              keyword(
+                                arg='severity',
+                                value=Attribute(
+                                  value=Name(id='SafetyLevel', ctx=Load()),
+                                  attr='MEDIUM',
+                                  ctx=Load())),
+                              keyword(
+                                arg='content',
+                                value=Constant(value='prompt_injection_attempt')),
+                              keyword(
+                                arg='confidence',
+                                value=Constant(value=0.75)),
+                              keyword(
+                                arg='metadata',
+                                value=Dict(
+                                  keys=[
+                                    Constant(value='type'),
+                                    Constant(value='pattern')],
+                                  values=[
+                                    Constant(value='prompt_injection'),
+                                    Name(id='pattern', ctx=Load())]))])]))])]),
+            Return(
+              value=Name(id='violations', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='SafetyViolation', ctx=Load()),
+            ctx=Load()))]),
+    ClassDef(
+      name='SafetyLayer',
+      body=[
+        Expr(
+          value=Constant(value='Main safety layer implementation')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='pii_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='PIIDetector', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='hallucination_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='HallucinationDetector', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='injection_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='InjectionDetector', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='strict_mode',
+                  ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='max_violations_per_content',
+                  ctx=Store())],
+              value=Constant(value=5)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='logger',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='logging', ctx=Load()),
+                  attr='getLogger',
+                  ctx=Load()),
+                args=[
+                  Name(id='__name__', ctx=Load())]))]),
+        FunctionDef(
+          name='check_outbound_content',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Check outbound content for safety violations')),
+            Assign(
+              targets=[
+                Name(id='violations', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='pii_violations', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='pii_detector',
+                    ctx=Load()),
+                  attr='detect_pii',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='violations', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='pii_violations', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='hallucination_violations', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='hallucination_detector',
+                    ctx=Load()),
+                  attr='detect_hallucination',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='violations', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='hallucination_violations', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='injection_violations', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='injection_detector',
+                    ctx=Load()),
+                  attr='detect_injection',
+                  ctx=Load()),
+                args=[
+                  Name(id='content', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='violations', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='injection_violations', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='is_safe', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='violations', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)]),
+                  BoolOp(
+                    op=And(),
+                    values=[
+                      UnaryOp(
+                        op=Not(),
+                        operand=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='strict_mode',
+                          ctx=Load())),
+                      Call(
+                        func=Name(id='all', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Compare(
+                              left=Attribute(
+                                value=Name(id='v', ctx=Load()),
+                                attr='severity',
+                                ctx=Load()),
+                              ops=[
+                                Eq()],
+                              comparators=[
+                                Attribute(
+                                  value=Name(id='SafetyLevel', ctx=Load()),
+                                  attr='LOW',
+                                  ctx=Load())]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='v', ctx=Store()),
+                                iter=Name(id='violations', ctx=Load()),
+                                is_async=0)])])])])),
+            If(
+              test=Name(id='violations', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='confidence', ctx=Store())],
+                  value=BinOp(
+                    left=Constant(value=1.0),
+                    op=Sub(),
+                    right=Call(
+                      func=Name(id='max', ctx=Load()),
+                      args=[
+                        GeneratorExp(
+                          elt=Attribute(
+                            value=Name(id='v', ctx=Load()),
+                            attr='confidence',
+                            ctx=Load()),
+                          generators=[
+                            comprehension(
+                              target=Name(id='v', ctx=Store()),
+                              iter=Name(id='violations', ctx=Load()),
+                              is_async=0)])])))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='confidence', ctx=Store())],
+                  value=Constant(value=1.0))]),
+            Assign(
+              targets=[
+                Name(id='processed_content', ctx=Store())],
+              value=IfExp(
+                test=Name(id='pii_violations', ctx=Load()),
+                body=Call(
+                  func=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_redact_pii',
+                    ctx=Load()),
+                  args=[
+                    Name(id='content', ctx=Load())]),
+                orelse=Name(id='content', ctx=Load()))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Safety check completed: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='violations', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' violations found, is_safe='),
+                      FormattedValue(
+                        value=Name(id='is_safe', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Call(
+                func=Name(id='SafetyResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='is_safe',
+                    value=Name(id='is_safe', ctx=Load())),
+                  keyword(
+                    arg='violations',
+                    value=Name(id='violations', ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Name(id='confidence', ctx=Load())),
+                  keyword(
+                    arg='processed_content',
+                    value=Name(id='processed_content', ctx=Load()))]))],
+          returns=Name(id='SafetyResult', ctx=Load())),
+        FunctionDef(
+          name='check_mutating_action',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='action',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='context',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Subscript(
+                    value=Name(id='Dict', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='Any', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Check mutating actions for safety violations')),
+            Assign(
+              targets=[
+                Name(id='violations', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='action_content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dumps',
+                  ctx=Load()),
+                args=[
+                  Name(id='action', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='default',
+                    value=Name(id='str', ctx=Load()))])),
+            Assign(
+              targets=[
+                Name(id='pii_violations', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='pii_detector',
+                    ctx=Load()),
+                  attr='detect_pii',
+                  ctx=Load()),
+                args=[
+                  Name(id='action_content', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='violations', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='pii_violations', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='hallucination_violations', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='hallucination_detector',
+                    ctx=Load()),
+                  attr='detect_hallucination',
+                  ctx=Load()),
+                args=[
+                  Name(id='action_content', ctx=Load()),
+                  Name(id='context', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='violations', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='hallucination_violations', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='injection_violations', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='injection_detector',
+                    ctx=Load()),
+                  attr='detect_injection',
+                  ctx=Load()),
+                args=[
+                  Name(id='action_content', ctx=Load())])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='violations', ctx=Load()),
+                  attr='extend',
+                  ctx=Load()),
+                args=[
+                  Name(id='injection_violations', ctx=Load())])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Attribute(
+                    value=Name(id='action', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='type')]),
+                ops=[
+                  In()],
+                comparators=[
+                  List(
+                    elts=[
+                      Constant(value='delete'),
+                      Constant(value='update'),
+                      Constant(value='modify')],
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='dangerous_patterns', ctx=Store())],
+                  value=List(
+                    elts=[
+                      Constant(value='drop.*database'),
+                      Constant(value='delete.*all'),
+                      Constant(value='rm.*-rf'),
+                      Constant(value='format.*disk')],
+                    ctx=Load())),
+                For(
+                  target=Name(id='pattern', ctx=Store()),
+                  iter=Name(id='dangerous_patterns', ctx=Load()),
+                  body=[
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='re', ctx=Load()),
+                          attr='search',
+                          ctx=Load()),
+                        args=[
+                          Name(id='pattern', ctx=Load()),
+                          Name(id='action_content', ctx=Load()),
+                          Attribute(
+                            value=Name(id='re', ctx=Load()),
+                            attr='IGNORECASE',
+                            ctx=Load())]),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='violations', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Call(
+                                func=Name(id='SafetyViolation', ctx=Load()),
+                                keywords=[
+                                  keyword(
+                                    arg='violation_type',
+                                    value=Attribute(
+                                      value=Name(id='SafetyViolationType', ctx=Load()),
+                                      attr='MALICIOUS_CONTENT',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='severity',
+                                    value=Attribute(
+                                      value=Name(id='SafetyLevel', ctx=Load()),
+                                      attr='CRITICAL',
+                                      ctx=Load())),
+                                  keyword(
+                                    arg='content',
+                                    value=Constant(value='dangerous_operation')),
+                                  keyword(
+                                    arg='confidence',
+                                    value=Constant(value=0.95)),
+                                  keyword(
+                                    arg='metadata',
+                                    value=Dict(
+                                      keys=[
+                                        Constant(value='type'),
+                                        Constant(value='pattern')],
+                                      values=[
+                                        Constant(value='dangerous_mutating_action'),
+                                        Name(id='pattern', ctx=Load())]))])]))])])]),
+            Assign(
+              targets=[
+                Name(id='is_safe', ctx=Store())],
+              value=BoolOp(
+                op=Or(),
+                values=[
+                  Compare(
+                    left=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='violations', ctx=Load())]),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=0)]),
+                  BoolOp(
+                    op=And(),
+                    values=[
+                      UnaryOp(
+                        op=Not(),
+                        operand=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='strict_mode',
+                          ctx=Load())),
+                      Call(
+                        func=Name(id='all', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Compare(
+                              left=Attribute(
+                                value=Name(id='v', ctx=Load()),
+                                attr='severity',
+                                ctx=Load()),
+                              ops=[
+                                In()],
+                              comparators=[
+                                List(
+                                  elts=[
+                                    Attribute(
+                                      value=Name(id='SafetyLevel', ctx=Load()),
+                                      attr='LOW',
+                                      ctx=Load()),
+                                    Attribute(
+                                      value=Name(id='SafetyLevel', ctx=Load()),
+                                      attr='MEDIUM',
+                                      ctx=Load())],
+                                  ctx=Load())]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='v', ctx=Store()),
+                                iter=Name(id='violations', ctx=Load()),
+                                is_async=0)])])])])),
+            If(
+              test=Name(id='violations', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='confidence', ctx=Store())],
+                  value=BinOp(
+                    left=Constant(value=1.0),
+                    op=Sub(),
+                    right=Call(
+                      func=Name(id='max', ctx=Load()),
+                      args=[
+                        GeneratorExp(
+                          elt=Attribute(
+                            value=Name(id='v', ctx=Load()),
+                            attr='confidence',
+                            ctx=Load()),
+                          generators=[
+                            comprehension(
+                              target=Name(id='v', ctx=Store()),
+                              iter=Name(id='violations', ctx=Load()),
+                              is_async=0)])])))],
+              orelse=[
+                Assign(
+                  targets=[
+                    Name(id='confidence', ctx=Store())],
+                  value=Constant(value=1.0))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='logger',
+                    ctx=Load()),
+                  attr='info',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Mutating action safety check: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='violations', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' violations, is_safe='),
+                      FormattedValue(
+                        value=Name(id='is_safe', ctx=Load()),
+                        conversion=-1)])])),
+            Return(
+              value=Call(
+                func=Name(id='SafetyResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='is_safe',
+                    value=Name(id='is_safe', ctx=Load())),
+                  keyword(
+                    arg='violations',
+                    value=Name(id='violations', ctx=Load())),
+                  keyword(
+                    arg='confidence',
+                    value=Name(id='confidence', ctx=Load()))]))],
+          returns=Name(id='SafetyResult', ctx=Load())),
+        FunctionDef(
+          name='_redact_pii',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='content',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Redact PII from content')),
+            Assign(
+              targets=[
+                Name(id='redacted', ctx=Store())],
+              value=Name(id='content', ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='redacted', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b'),
+                  Constant(value='[REDACTED_EMAIL]'),
+                  Name(id='redacted', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='redacted', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b(?:\\+?1[-.\\s]?)?\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})\\b'),
+                  Constant(value='[REDACTED_PHONE]'),
+                  Name(id='redacted', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='redacted', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b\\d{3}-\\d{2}-\\d{4}\\b'),
+                  Constant(value='[REDACTED_SSN]'),
+                  Name(id='redacted', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='redacted', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\b(?:\\d{4}[-\\s]?){3}\\d{4}\\b'),
+                  Constant(value='[REDACTED_CARD]'),
+                  Name(id='redacted', ctx=Load())])),
+            Return(
+              value=Name(id='redacted', ctx=Load()))],
+          returns=Name(id='str', ctx=Load()))]),
+    Assign(
+      targets=[
+        Name(id='_safety_layer', ctx=Store())],
+      value=Constant(value=None)),
+    FunctionDef(
+      name='get_safety_layer',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Get the global safety layer instance')),
+        Global(
+          names=[
+            '_safety_layer']),
+        If(
+          test=Compare(
+            left=Name(id='_safety_layer', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='_safety_layer', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyLayer', ctx=Load())))]),
+        Return(
+          value=Name(id='_safety_layer', ctx=Load()))],
+      returns=Name(id='SafetyLayer', ctx=Load())),
+    FunctionDef(
+      name='check_outbound_content_safety',
+      args=arguments(
+        args=[
+          arg(
+            arg='content',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Check outbound content for safety violations')),
+        Assign(
+          targets=[
+            Name(id='safety_layer', ctx=Store())],
+          value=Call(
+            func=Name(id='get_safety_layer', ctx=Load()))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='safety_layer', ctx=Load()),
+              attr='check_outbound_content',
+              ctx=Load()),
+            args=[
+              Name(id='content', ctx=Load()),
+              Name(id='context', ctx=Load())]))],
+      returns=Name(id='SafetyResult', ctx=Load())),
+    FunctionDef(
+      name='check_mutating_action_safety',
+      args=arguments(
+        args=[
+          arg(
+            arg='action',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Check mutating actions for safety violations')),
+        Assign(
+          targets=[
+            Name(id='safety_layer', ctx=Store())],
+          value=Call(
+            func=Name(id='get_safety_layer', ctx=Load()))),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='safety_layer', ctx=Load()),
+              attr='check_mutating_action',
+              ctx=Load()),
+            args=[
+              Name(id='action', ctx=Load()),
+              Name(id='context', ctx=Load())]))],
+      returns=Name(id='SafetyResult', ctx=Load())),
+    FunctionDef(
+      name='is_content_safe',
+      args=arguments(
+        args=[
+          arg(
+            arg='content',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Quick check if content is safe')),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='check_outbound_content_safety', ctx=Load()),
+            args=[
+              Name(id='content', ctx=Load()),
+              Name(id='context', ctx=Load())])),
+        Return(
+          value=Attribute(
+            value=Name(id='result', ctx=Load()),
+            attr='is_safe',
+            ctx=Load()))],
+      returns=Name(id='bool', ctx=Load())),
+    FunctionDef(
+      name='is_action_safe',
+      args=arguments(
+        args=[
+          arg(
+            arg='action',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load())),
+          arg(
+            arg='context',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Quick check if action is safe')),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='check_mutating_action_safety', ctx=Load()),
+            args=[
+              Name(id='action', ctx=Load()),
+              Name(id='context', ctx=Load())])),
+        Return(
+          value=Attribute(
+            value=Name(id='result', ctx=Load()),
+            attr='is_safe',
+            ctx=Load()))],
+      returns=Name(id='bool', ctx=Load()))])

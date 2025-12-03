@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\multi_agent.py",
+    "rel_path": "multi_agent.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_9",
+    "file_hash": "482944bc534d5f2bfccd8f97c83c68136efcf4ed90f7ce18197d7047e774d7a1",
+    "file_size": 11632,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728228.7016704
+}

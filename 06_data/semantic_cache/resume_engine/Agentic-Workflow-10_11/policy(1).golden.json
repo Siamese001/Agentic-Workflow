@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 safety and policy engine for resume job alignment workflows.\n\nDefines policy interface and implements safety engine for resume enhancement.\n\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, List, Optional, TypeVar\nfrom dataclasses import dataclass, field\nimport logging\nimport uuid\nfrom datetime import datetime, UTC\n\nfrom .types import (\n    SafetyContext,\n    SafetyFinding,\n    PolicyDecision,\n    Verdict,\n    Severity,\n    SafetyPolicy\n)\n\nlogger = logging.getLogger(__name__)\n\n\nclass PolicyConfigurationError(Exception):\n    \"\"\"Raised when resume workflow policy configuration is invalid.\"\"\"\n    pass\n\n\nT = TypeVar('T')\n\n@dataclass\nclass PolicyResult:\n    \"\"\"Result of evaluating resume workflow policies for enhancement.\"\"\"\n    decisions: List[PolicyDecision] = field(default_factory=list)\n    metadata: Dict[str, Any] = field(default_factory=dict)\n    \n    @property\n    def final_verdict(self) -> Verdict:\n        \"\"\"Determines overall verdict for resume workflow po",
+  "full_hash": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c",
+  "generated_at": 1764728225.4701905,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\policy(1).py"
+}

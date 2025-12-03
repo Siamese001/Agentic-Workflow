@@ -1,0 +1,6 @@
+{
+  "golden_content": "import logging\nfrom types import MethodType, SimpleNamespace\n\nimport pytest\n\nfrom core_v10_7.services import AutonomyEngine\nfrom agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator\n\n\nclass _DummyMetrics:\n    def record(self, *_, **__):\n        return None\n\n    def get_average_latency(self, *_, **__):\n        return None\n\n\ndef _build_agent(agent_cls, context):\n    agent = agent_cls.__new__(agent_cls)\n    agent.context = context\n    agent.config = context.config\n    agent.logger = logging.getLogger(agent_cls.__name__)\n    agent.debug_mode = False\n    agent.prompt_manager = context.prompt_manager\n    agent.validator = context.response_validator\n    agent.budget_manager = context.context_budget_manager\n    agent.metrics = context.metrics_collector\n    agent.self_correction_manager = None\n    return agent\n\n\ndef test_autonomy_disabled_noop():\n    config = SimpleNamespace(autonomy_config=SimpleNamespace(enabled=False))\n    engine = AutonomyEngine(config=config, metrics=None",
+  "full_hash": "6c8723d0d4c6f96c7287bb77a16f7eb555f627132d0727d5bc03702bb7328787",
+  "generated_at": 1764728230.4235,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\autonomy\\test_autonomy_engine_v10_7.py"
+}

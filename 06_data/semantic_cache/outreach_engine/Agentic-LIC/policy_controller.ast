@@ -1,0 +1,733 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='Telemetry policy controller for adaptive tuning.')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Mapping')],
+      level=0),
+    FunctionDef(
+      name='_clamp',
+      args=arguments(
+        args=[
+          arg(
+            arg='value',
+            annotation=Name(id='float', ctx=Load())),
+          arg(
+            arg='minimum',
+            annotation=Name(id='float', ctx=Load())),
+          arg(
+            arg='maximum',
+            annotation=Name(id='float', ctx=Load()))]),
+      body=[
+        Return(
+          value=Call(
+            func=Name(id='max', ctx=Load()),
+            args=[
+              Name(id='minimum', ctx=Load()),
+              Call(
+                func=Name(id='min', ctx=Load()),
+                args=[
+                  Name(id='value', ctx=Load()),
+                  Name(id='maximum', ctx=Load())])]))],
+      returns=Name(id='float', ctx=Load())),
+    ClassDef(
+      name='PolicyUpdate',
+      body=[
+        Expr(
+          value=Constant(value='Return value describing the latest policy adjustments.')),
+        AnnAssign(
+          target=Name(id='budget_multiplier', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='temperature_cap', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tot_branches', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='tool_weights', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='float', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Call(
+          func=Name(id='dataclass', ctx=Load()),
+          keywords=[
+            keyword(
+              arg='frozen',
+              value=Constant(value=True))])]),
+    ClassDef(
+      name='PolicyController',
+      body=[
+        Expr(
+          value=Constant(value='Maintain bounded policy parameters using telemetry feedback.')),
+        Assign(
+          targets=[
+            Name(id='TARGET_LATENCY_MS', ctx=Store())],
+          value=Constant(value=3500)),
+        Assign(
+          targets=[
+            Name(id='TARGET_PASS_RATE', ctx=Store())],
+          value=Constant(value=0.85)),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='budget_multiplier',
+                  ctx=Store())],
+              value=Constant(value=1.0)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='temperature_cap',
+                  ctx=Store())],
+              value=Constant(value=0.5)),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='tot_branches',
+                  ctx=Store())],
+              value=Constant(value=3)),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='tool_weights',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='float', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_latency_error_integral',
+                  ctx=Store())],
+              value=Constant(value=0.0)),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='_registered_quarantine',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='bool', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0)],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='register_tool',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load()))],
+            kwonlyargs=[
+              arg(
+                arg='quarantined',
+                annotation=Name(id='bool', ctx=Load()))],
+            kw_defaults=[
+              Constant(value=False)]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='tool_id', ctx=Load()),
+                ops=[
+                  NotIn()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='tool_weights',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='tool_weights',
+                        ctx=Load()),
+                      slice=Name(id='tool_id', ctx=Load()),
+                      ctx=Store())],
+                  value=Constant(value=1.0))]),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_registered_quarantine',
+                    ctx=Load()),
+                  slice=Name(id='tool_id', ctx=Load()),
+                  ctx=Store())],
+              value=Name(id='quarantined', ctx=Load()))],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='promote_tool',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='tool_id', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_registered_quarantine',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_registered_quarantine',
+                        ctx=Load()),
+                      slice=Name(id='tool_id', ctx=Load()),
+                      ctx=Store())],
+                  value=Constant(value=False))])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='set_quarantine',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            If(
+              test=Compare(
+                left=Name(id='tool_id', ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_registered_quarantine',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_registered_quarantine',
+                        ctx=Load()),
+                      slice=Name(id='tool_id', ctx=Load()),
+                      ctx=Store())],
+                  value=Constant(value=True))])],
+          returns=Constant(value=None)),
+        FunctionDef(
+          name='quarantine_status',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='tool_id',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='_registered_quarantine',
+                    ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Name(id='tool_id', ctx=Load()),
+                  Constant(value=False)]))],
+          returns=Name(id='bool', ctx=Load())),
+        FunctionDef(
+          name='update',
+          args=arguments(
+            args=[
+              arg(arg='self')],
+            kwonlyargs=[
+              arg(
+                arg='latency_p95_ms',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='qa_pass_rate',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='token_drift',
+                annotation=Name(id='float', ctx=Load())),
+              arg(
+                arg='tool_success_rates',
+                annotation=BinOp(
+                  left=Subscript(
+                    value=Name(id='Mapping', ctx=Load()),
+                    slice=Tuple(
+                      elts=[
+                        Name(id='str', ctx=Load()),
+                        Name(id='float', ctx=Load())],
+                      ctx=Load()),
+                    ctx=Load()),
+                  op=BitOr(),
+                  right=Constant(value=None)))],
+            kw_defaults=[
+              None,
+              None,
+              Constant(value=0.0),
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='Update policy settings based on telemetry samples.')),
+            Assign(
+              targets=[
+                Name(id='error', ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='TARGET_LATENCY_MS',
+                  ctx=Load()),
+                op=Sub(),
+                right=Call(
+                  func=Name(id='max', ctx=Load()),
+                  args=[
+                    Name(id='latency_p95_ms', ctx=Load()),
+                    Constant(value=0)]))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_latency_error_integral',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_clamp', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_latency_error_integral',
+                      ctx=Load()),
+                    op=Add(),
+                    right=BinOp(
+                      left=Name(id='error', ctx=Load()),
+                      op=Mult(),
+                      right=Constant(value=0.001))),
+                  UnaryOp(
+                    op=USub(),
+                    operand=Constant(value=0.5)),
+                  Constant(value=0.5)])),
+            If(
+              test=Compare(
+                left=Name(id='latency_p95_ms', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='TARGET_LATENCY_MS',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='penalty', ctx=Store())],
+                  value=BinOp(
+                    left=Constant(value=0.05),
+                    op=Add(),
+                    right=Call(
+                      func=Name(id='max', ctx=Load()),
+                      args=[
+                        Constant(value=0.0),
+                        UnaryOp(
+                          op=USub(),
+                          operand=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='_latency_error_integral',
+                            ctx=Load()))]))),
+                AugAssign(
+                  target=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='budget_multiplier',
+                    ctx=Store()),
+                  op=Sub(),
+                  value=Name(id='penalty', ctx=Load()))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='latency_p95_ms', ctx=Load()),
+                    ops=[
+                      Lt()],
+                    comparators=[
+                      BinOp(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='TARGET_LATENCY_MS',
+                          ctx=Load()),
+                        op=Mult(),
+                        right=Constant(value=0.75))]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='boost', ctx=Store())],
+                      value=BinOp(
+                        left=Constant(value=0.04),
+                        op=Add(),
+                        right=Call(
+                          func=Name(id='max', ctx=Load()),
+                          args=[
+                            Constant(value=0.0),
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_latency_error_integral',
+                              ctx=Load())]))),
+                    AugAssign(
+                      target=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='budget_multiplier',
+                        ctx=Store()),
+                      op=Add(),
+                      value=Name(id='boost', ctx=Load()))])]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='budget_multiplier',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_clamp', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='budget_multiplier',
+                    ctx=Load()),
+                  Constant(value=0.7),
+                  Constant(value=1.3)])),
+            If(
+              test=Compare(
+                left=Name(id='qa_pass_rate', ctx=Load()),
+                ops=[
+                  Lt()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='TARGET_PASS_RATE',
+                    ctx=Load())]),
+              body=[
+                AugAssign(
+                  target=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='temperature_cap',
+                    ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=0.05)),
+                AugAssign(
+                  target=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='tot_branches',
+                    ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=1))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='qa_pass_rate', ctx=Load()),
+                    ops=[
+                      Gt()],
+                    comparators=[
+                      Constant(value=0.92)]),
+                  body=[
+                    AugAssign(
+                      target=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='temperature_cap',
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=0.03)),
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='tot_branches',
+                          ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Constant(value=4)]),
+                      body=[
+                        AugAssign(
+                          target=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='tot_branches',
+                            ctx=Store()),
+                          op=Add(),
+                          value=Constant(value=1))])])]),
+            If(
+              test=Compare(
+                left=Name(id='token_drift', ctx=Load()),
+                ops=[
+                  Gt()],
+                comparators=[
+                  Constant(value=0.1)]),
+              body=[
+                AugAssign(
+                  target=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='tot_branches',
+                    ctx=Store()),
+                  op=Sub(),
+                  value=Constant(value=1))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='temperature_cap',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='_clamp', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='temperature_cap',
+                    ctx=Load()),
+                  Constant(value=0.2),
+                  Constant(value=0.7)])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='tot_branches',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='_clamp', ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='float', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='tot_branches',
+                            ctx=Load())]),
+                      Constant(value=1),
+                      Constant(value=4)])])),
+            If(
+              test=Name(id='tool_success_rates', ctx=Load()),
+              body=[
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='tool_id', ctx=Store()),
+                      Name(id='success', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='tool_success_rates', ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='tool_id', ctx=Load()),
+                        ops=[
+                          NotIn()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='tool_weights',
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Subscript(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='tool_weights',
+                                ctx=Load()),
+                              slice=Name(id='tool_id', ctx=Load()),
+                              ctx=Store())],
+                          value=Constant(value=1.0))]),
+                    Assign(
+                      targets=[
+                        Name(id='adjustment', ctx=Store())],
+                      value=BinOp(
+                        left=Constant(value=1),
+                        op=Add(),
+                        right=Call(
+                          func=Name(id='_clamp', ctx=Load()),
+                          args=[
+                            BinOp(
+                              left=Name(id='success', ctx=Load()),
+                              op=Sub(),
+                              right=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='TARGET_PASS_RATE',
+                                ctx=Load())),
+                            UnaryOp(
+                              op=USub(),
+                              operand=Constant(value=0.1)),
+                            Constant(value=0.1)]))),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='tool_weights',
+                            ctx=Load()),
+                          slice=Name(id='tool_id', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='_clamp', ctx=Load()),
+                        args=[
+                          BinOp(
+                            left=Subscript(
+                              value=Attribute(
+                                value=Name(id='self', ctx=Load()),
+                                attr='tool_weights',
+                                ctx=Load()),
+                              slice=Name(id='tool_id', ctx=Load()),
+                              ctx=Load()),
+                            op=Mult(),
+                            right=Name(id='adjustment', ctx=Load())),
+                          Constant(value=0.1),
+                          Constant(value=3.0)]))])]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='tool_id', ctx=Store()),
+                  Name(id='quarantined', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='_registered_quarantine',
+                        ctx=Load()),
+                      attr='items',
+                      ctx=Load()))]),
+              body=[
+                If(
+                  test=Name(id='quarantined', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='tool_weights',
+                            ctx=Load()),
+                          slice=Name(id='tool_id', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='_clamp', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='tool_weights',
+                              ctx=Load()),
+                            slice=Name(id='tool_id', ctx=Load()),
+                            ctx=Load()),
+                          Constant(value=0.1),
+                          Constant(value=0.6)]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='tool_weights',
+                            ctx=Load()),
+                          slice=Name(id='tool_id', ctx=Load()),
+                          ctx=Store())],
+                      value=Call(
+                        func=Name(id='_clamp', ctx=Load()),
+                        args=[
+                          Subscript(
+                            value=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='tool_weights',
+                              ctx=Load()),
+                            slice=Name(id='tool_id', ctx=Load()),
+                            ctx=Load()),
+                          Constant(value=0.1),
+                          Constant(value=3.0)]))])]),
+            Return(
+              value=Call(
+                func=Name(id='PolicyUpdate', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='budget_multiplier',
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='budget_multiplier',
+                      ctx=Load())),
+                  keyword(
+                    arg='temperature_cap',
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='temperature_cap',
+                      ctx=Load())),
+                  keyword(
+                    arg='tot_branches',
+                    value=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='tot_branches',
+                      ctx=Load())),
+                  keyword(
+                    arg='tool_weights',
+                    value=Call(
+                      func=Name(id='dict', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='tool_weights',
+                          ctx=Load())]))]))],
+          returns=Name(id='PolicyUpdate', ctx=Load()))])])

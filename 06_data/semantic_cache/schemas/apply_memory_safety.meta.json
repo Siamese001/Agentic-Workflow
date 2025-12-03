@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\02_schemas\\mem-layer\\safety-phase\\check-schema-rules\\policy\\check-safety\\apply_memory_safety.py",
+    "rel_path": "apply_memory_safety.py",
+    "root_name": "schemas",
+    "file_hash": "ac527bc0a3e9db570108af4ef7e1bdbd877bbd4dbd61db2f6f438d2a8c0ea538",
+    "file_size": 1360,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728342.765377
+}

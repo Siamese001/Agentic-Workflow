@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\10_tests\\plan-layer\\validate-phase\\check-tests-structure\\semantic\\adjust-scores\\assess_tests_confidence.py",
+    "rel_path": "assess_tests_confidence.py",
+    "root_name": "tests",
+    "file_hash": "cbca64baa2bf78a4316f3f44968cb42984d4331959d27adf4369669b5afa4bd9",
+    "file_size": 6742,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728354.6679206
+}

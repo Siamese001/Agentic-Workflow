@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"MCPClient discovery and invocation tests.\"\"\"\nimport pytest\n\nfrom src.lic_agentic.mcp import MCPClient, ToolSpec\n\n\ndef test_discover_filters_by_capability_and_trust():\n    client = MCPClient(\n        tools=[\n            ToolSpec(\n                id=\"alpha\",\n                name=\"Alpha\",\n                capabilities=(\"profile_lookup\",),\n                cost=0.2,\n                trust_tier=\"high\",\n                latency_ms=200,\n            ),\n            ToolSpec(\n                id=\"beta\",\n                name=\"Beta\",\n                capabilities=(\"profile_lookup\", \"enrichment\"),\n                cost=0.4,\n                trust_tier=\"low\",\n                latency_ms=300,\n            ),\n        ]\n    )\n    results = client.discover(\"profile_lookup\", {\"min_trust\": \"medium\"})\n    assert len(results) == 1\n    assert results[0].id == \"alpha\"\n    payload = client.invoke(\"alpha\", {\"query\": \"ACME\"})\n    assert payload[\"ok\"] and payload[\"usage_count\"] == 1\n\n\ndef test_discover_honors_allowlist_",
+  "full_hash": "65f33c2416f1bc3e0b500c9b382fd215f6ace1555561ca06ed6cf138fb3b7def",
+  "generated_at": 1764728331.1044393,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\tests\\unit\\test_mcp_discovery.py"
+}

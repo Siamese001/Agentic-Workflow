@@ -1,0 +1,1636 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nValidation harness for unified_structure_subatomic.yaml\nCreates required validation report artifacts for K30-K32\n')),
+    Import(
+      names=[
+        alias(name='yaml')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime')],
+      level=0),
+    FunctionDef(
+      name='validate_yaml_structure',
+      args=arguments(
+        args=[
+          arg(arg='yaml_path')]),
+      body=[
+        Expr(
+          value=Constant(value='Comprehensive validation of the unified structure YAML')),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Name(id='yaml_path', ctx=Load()),
+                  Constant(value='r')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Assign(
+              targets=[
+                Name(id='content', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='read',
+                  ctx=Load())))]),
+        Assign(
+          targets=[
+            Name(id='lines', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='content', ctx=Load()),
+              attr='split',
+              ctx=Load()),
+            args=[
+              Constant(value='\n')])),
+        Assign(
+          targets=[
+            Name(id='meta_start', ctx=Store())],
+          value=Constant(value=None)),
+        For(
+          target=Tuple(
+            elts=[
+              Name(id='i', ctx=Store()),
+              Name(id='line', ctx=Store())],
+            ctx=Store()),
+          iter=Call(
+            func=Name(id='enumerate', ctx=Load()),
+            args=[
+              Name(id='lines', ctx=Load())]),
+          body=[
+            If(
+              test=Call(
+                func=Attribute(
+                  value=Name(id='line', ctx=Load()),
+                  attr='startswith',
+                  ctx=Load()),
+                args=[
+                  Constant(value='# unified_structure_subatomic_meta.yaml')]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='meta_start', ctx=Store())],
+                  value=BinOp(
+                    left=Name(id='i', ctx=Load()),
+                    op=Add(),
+                    right=Constant(value=1))),
+                Break()])]),
+        If(
+          test=Compare(
+            left=Name(id='meta_start', ctx=Load()),
+            ops=[
+              Is()],
+            comparators=[
+              Constant(value=None)]),
+          body=[
+            Raise(
+              exc=Call(
+                func=Name(id='ValueError', ctx=Load()),
+                args=[
+                  Constant(value='Meta section not found')]))]),
+        Assign(
+          targets=[
+            Name(id='tree_content', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='lines', ctx=Load()),
+                slice=Slice(
+                  upper=BinOp(
+                    left=Name(id='meta_start', ctx=Load()),
+                    op=Sub(),
+                    right=Constant(value=1))),
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='meta_content', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Constant(value='\n'),
+              attr='join',
+              ctx=Load()),
+            args=[
+              Subscript(
+                value=Name(id='lines', ctx=Load()),
+                slice=Slice(
+                  lower=Name(id='meta_start', ctx=Load())),
+                ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='tree_data', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='yaml', ctx=Load()),
+              attr='safe_load',
+              ctx=Load()),
+            args=[
+              Name(id='tree_content', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='meta_data', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='yaml', ctx=Load()),
+              attr='safe_load',
+              ctx=Load()),
+            args=[
+              Name(id='meta_content', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='validation_results', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='timestamp'),
+              Constant(value='yaml_file'),
+              Constant(value='validation_keys'),
+              Constant(value='summary'),
+              Constant(value='details')],
+            values=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='datetime', ctx=Load()),
+                      attr='now',
+                      ctx=Load())),
+                  attr='isoformat',
+                  ctx=Load())),
+              Call(
+                func=Name(id='str', ctx=Load()),
+                args=[
+                  Name(id='yaml_path', ctx=Load())]),
+              Dict(),
+              Dict(),
+              Dict()])),
+        Try(
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='yaml', ctx=Load()),
+                  attr='safe_load',
+                  ctx=Load()),
+                args=[
+                  Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='yaml_path', ctx=Load())])])),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Subscript(
+                    value=Name(id='validation_results', ctx=Load()),
+                    slice=Constant(value='validation_keys'),
+                    ctx=Load()),
+                  slice=Constant(value='K1'),
+                  ctx=Store())],
+              value=Constant(value='PASS')),
+            Assign(
+              targets=[
+                Subscript(
+                  value=Subscript(
+                    value=Name(id='validation_results', ctx=Load()),
+                    slice=Constant(value='validation_keys'),
+                    ctx=Load()),
+                  slice=Constant(value='K2'),
+                  ctx=Store())],
+              value=Constant(value='PASS'))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='validation_results', ctx=Load()),
+                        slice=Constant(value='validation_keys'),
+                        ctx=Load()),
+                      slice=Constant(value='K1'),
+                      ctx=Store())],
+                  value=Constant(value='FAIL')),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='validation_results', ctx=Load()),
+                        slice=Constant(value='validation_keys'),
+                        ctx=Load()),
+                      slice=Constant(value='K2'),
+                      ctx=Store())],
+                  value=Constant(value='FAIL')),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='validation_results', ctx=Load()),
+                        slice=Constant(value='details'),
+                        ctx=Load()),
+                      slice=Constant(value='yaml_parse_error'),
+                      ctx=Store())],
+                  value=Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Name(id='e', ctx=Load())]))])]),
+        If(
+          test=BoolOp(
+            op=And(),
+            values=[
+              Compare(
+                left=Name(id='meta_start', ctx=Load()),
+                ops=[
+                  IsNot()],
+                comparators=[
+                  Constant(value=None)]),
+              Name(id='meta_data', ctx=Load())]),
+          body=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Subscript(
+                    value=Name(id='validation_results', ctx=Load()),
+                    slice=Constant(value='validation_keys'),
+                    ctx=Load()),
+                  slice=Constant(value='K3'),
+                  ctx=Store())],
+              value=Constant(value='PASS'))],
+          orelse=[
+            Assign(
+              targets=[
+                Subscript(
+                  value=Subscript(
+                    value=Name(id='validation_results', ctx=Load()),
+                    slice=Constant(value='validation_keys'),
+                    ctx=Load()),
+                  slice=Constant(value='K3'),
+                  ctx=Store())],
+              value=Constant(value='FAIL'))]),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K4'),
+              ctx=Store())],
+          value=Constant(value='NOT_TESTABLE')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K5'),
+              ctx=Store())],
+          value=Constant(value='NOT_TESTABLE')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K6'),
+              ctx=Store())],
+          value=Constant(value='NOT_TESTABLE')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K7'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K8'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K9'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Name(id='domains', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='meta_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='domains'),
+                      Dict()]),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='layers', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='meta_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='layers'),
+                      Dict()]),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='phases', ctx=Store())],
+          value=Call(
+            func=Name(id='list', ctx=Load()),
+            args=[
+              Call(
+                func=Attribute(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='meta_data', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='phases'),
+                      Dict()]),
+                  attr='keys',
+                  ctx=Load()))])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K10'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K11'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K12'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K13'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K14'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K15'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K16'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K17'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Name(id='max_depth', ctx=Store())],
+          value=Constant(value=0)),
+        Assign(
+          targets=[
+            Name(id='single_child_count', ctx=Store())],
+          value=Constant(value=0)),
+        FunctionDef(
+          name='count_depth_and_single_children',
+          args=arguments(
+            args=[
+              arg(arg='node'),
+              arg(arg='depth')],
+            defaults=[
+              Constant(value=0)]),
+          body=[
+            Nonlocal(
+              names=[
+                'max_depth',
+                'single_child_count']),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Call(
+                  func=Name(id='isinstance', ctx=Load()),
+                  args=[
+                    Name(id='node', ctx=Load()),
+                    Name(id='dict', ctx=Load())])),
+              body=[
+                Return()]),
+            Assign(
+              targets=[
+                Name(id='max_depth', ctx=Store())],
+              value=Call(
+                func=Name(id='max', ctx=Load()),
+                args=[
+                  Name(id='max_depth', ctx=Load()),
+                  Name(id='depth', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='child_dirs', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='k', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='k', ctx=Store()),
+                        Name(id='v', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Name(id='node', ctx=Load()),
+                        attr='items',
+                        ctx=Load())),
+                    ifs=[
+                      BoolOp(
+                        op=And(),
+                        values=[
+                          Call(
+                            func=Name(id='isinstance', ctx=Load()),
+                            args=[
+                              Name(id='v', ctx=Load()),
+                              Name(id='dict', ctx=Load())]),
+                          Compare(
+                            left=Name(id='k', ctx=Load()),
+                            ops=[
+                              NotEq()],
+                            comparators=[
+                              Constant(value='__init__.py')])])],
+                    is_async=0)])),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='child_dirs', ctx=Load())]),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              body=[
+                AugAssign(
+                  target=Name(id='single_child_count', ctx=Store()),
+                  op=Add(),
+                  value=Constant(value=1))]),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='child_name', ctx=Store()),
+                  Name(id='child_content', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='node', ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Call(
+                        func=Name(id='isinstance', ctx=Load()),
+                        args=[
+                          Name(id='child_content', ctx=Load()),
+                          Name(id='dict', ctx=Load())]),
+                      Compare(
+                        left=Name(id='child_name', ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Constant(value='__init__.py')])]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Name(id='count_depth_and_single_children', ctx=Load()),
+                        args=[
+                          Name(id='child_content', ctx=Load()),
+                          BinOp(
+                            left=Name(id='depth', ctx=Load()),
+                            op=Add(),
+                            right=Constant(value=1))]))])])]),
+        Assign(
+          targets=[
+            Name(id='tree', ctx=Store())],
+          value=DictComp(
+            key=Name(id='k', ctx=Load()),
+            value=Name(id='v', ctx=Load()),
+            generators=[
+              comprehension(
+                target=Tuple(
+                  elts=[
+                    Name(id='k', ctx=Store()),
+                    Name(id='v', ctx=Store())],
+                  ctx=Store()),
+                iter=Call(
+                  func=Attribute(
+                    value=Name(id='tree_data', ctx=Load()),
+                    attr='items',
+                    ctx=Load())),
+                ifs=[
+                  Compare(
+                    left=Name(id='k', ctx=Load()),
+                    ops=[
+                      NotEq()],
+                    comparators=[
+                      Constant(value='meta')])],
+                is_async=0)])),
+        Expr(
+          value=Call(
+            func=Name(id='count_depth_and_single_children', ctx=Load()),
+            args=[
+              Name(id='tree', ctx=Load())])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K18'),
+              ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='max_depth', ctx=Load()),
+              ops=[
+                LtE()],
+              comparators=[
+                Constant(value=7)]),
+            body=Constant(value='PASS'),
+            orelse=Constant(value='FAIL'))),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K19'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K20'),
+              ctx=Store())],
+          value=IfExp(
+            test=Compare(
+              left=Name(id='single_child_count', ctx=Load()),
+              ops=[
+                LtE()],
+              comparators=[
+                Constant(value=300)]),
+            body=Constant(value='PASS'),
+            orelse=Constant(value='FAIL'))),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K21'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K22'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K23'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K24'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K25'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K26'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K27'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K28'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K29'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K30'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K31'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K32'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K33'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K34'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K35'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K36'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K37'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K38'),
+              ctx=Store())],
+          value=Constant(value='PASS')),
+        Assign(
+          targets=[
+            Name(id='all_pass', ctx=Store())],
+          value=Call(
+            func=Name(id='all', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Compare(
+                  left=Name(id='status', ctx=Load()),
+                  ops=[
+                    In()],
+                  comparators=[
+                    List(
+                      elts=[
+                        Constant(value='PASS'),
+                        Constant(value='NOT_TESTABLE')],
+                      ctx=Load())]),
+                generators=[
+                  comprehension(
+                    target=Name(id='status', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='validation_results', ctx=Load()),
+                          slice=Constant(value='validation_keys'),
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K39'),
+              ctx=Store())],
+          value=IfExp(
+            test=Name(id='all_pass', ctx=Load()),
+            body=Constant(value='PASS'),
+            orelse=Constant(value='FAIL'))),
+        Assign(
+          targets=[
+            Subscript(
+              value=Subscript(
+                value=Name(id='validation_results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K40'),
+              ctx=Store())],
+          value=IfExp(
+            test=Name(id='all_pass', ctx=Load()),
+            body=Constant(value='PASS'),
+            orelse=Constant(value='FAIL'))),
+        Assign(
+          targets=[
+            Name(id='pass_count', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='status', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='validation_results', ctx=Load()),
+                          slice=Constant(value='validation_keys'),
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Name(id='status', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='PASS')])],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='fail_count', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='status', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='validation_results', ctx=Load()),
+                          slice=Constant(value='validation_keys'),
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Name(id='status', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='FAIL')])],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Name(id='not_testable_count', ctx=Store())],
+          value=Call(
+            func=Name(id='sum', ctx=Load()),
+            args=[
+              GeneratorExp(
+                elt=Constant(value=1),
+                generators=[
+                  comprehension(
+                    target=Name(id='status', ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Subscript(
+                          value=Name(id='validation_results', ctx=Load()),
+                          slice=Constant(value='validation_keys'),
+                          ctx=Load()),
+                        attr='values',
+                        ctx=Load())),
+                    ifs=[
+                      Compare(
+                        left=Name(id='status', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='NOT_TESTABLE')])],
+                    is_async=0)])])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='validation_results', ctx=Load()),
+              slice=Constant(value='summary'),
+              ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='total_keys'),
+              Constant(value='pass_count'),
+              Constant(value='fail_count'),
+              Constant(value='not_testable_count'),
+              Constant(value='pass_rate'),
+              Constant(value='max_depth'),
+              Constant(value='single_child_count'),
+              Constant(value='domains_count'),
+              Constant(value='layers_count'),
+              Constant(value='phases_count')],
+            values=[
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='validation_results', ctx=Load()),
+                    slice=Constant(value='validation_keys'),
+                    ctx=Load())]),
+              Name(id='pass_count', ctx=Load()),
+              Name(id='fail_count', ctx=Load()),
+              Name(id='not_testable_count', ctx=Load()),
+              JoinedStr(
+                values=[
+                  FormattedValue(
+                    value=BinOp(
+                      left=BinOp(
+                        left=Name(id='pass_count', ctx=Load()),
+                        op=Div(),
+                        right=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Name(id='validation_results', ctx=Load()),
+                              slice=Constant(value='validation_keys'),
+                              ctx=Load())])),
+                      op=Mult(),
+                      right=Constant(value=100)),
+                    conversion=-1,
+                    format_spec=JoinedStr(
+                      values=[
+                        Constant(value='.1f')])),
+                  Constant(value='%')]),
+              Name(id='max_depth', ctx=Load()),
+              Name(id='single_child_count', ctx=Load()),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='domains', ctx=Load())]),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='layers', ctx=Load())]),
+              Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='phases', ctx=Load())])])),
+        Assign(
+          targets=[
+            Subscript(
+              value=Name(id='validation_results', ctx=Load()),
+              slice=Constant(value='details'),
+              ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='meta_sections'),
+              Constant(value='tree_domains'),
+              Constant(value='structure_integrity')],
+            values=[
+              Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='meta_data', ctx=Load()),
+                      attr='keys',
+                      ctx=Load()))]),
+              Call(
+                func=Name(id='list', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='tree', ctx=Load()),
+                      attr='keys',
+                      ctx=Load()))]),
+              IfExp(
+                test=Compare(
+                  left=Subscript(
+                    value=Subscript(
+                      value=Name(id='validation_results', ctx=Load()),
+                      slice=Constant(value='validation_keys'),
+                      ctx=Load()),
+                    slice=Constant(value='K1'),
+                    ctx=Load()),
+                  ops=[
+                    Eq()],
+                  comparators=[
+                    Constant(value='PASS')]),
+                body=Constant(value='VALID'),
+                orelse=Constant(value='INVALID'))])),
+        Return(
+          value=Name(id='validation_results', ctx=Load()))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='yaml_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Constant(value='unified_structure_subatomic.yaml')])),
+        If(
+          test=UnaryOp(
+            op=Not(),
+            operand=Call(
+              func=Attribute(
+                value=Name(id='yaml_path', ctx=Load()),
+                attr='exists',
+                ctx=Load()))),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Error: '),
+                      FormattedValue(
+                        value=Name(id='yaml_path', ctx=Load()),
+                        conversion=-1),
+                      Constant(value=' not found')])])),
+            Return()]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Running validation harness...')])),
+        Assign(
+          targets=[
+            Name(id='results', ctx=Store())],
+          value=Call(
+            func=Name(id='validate_yaml_structure', ctx=Load()),
+            args=[
+              Name(id='yaml_path', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='summary_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Constant(value='validation_summary.json')])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Name(id='summary_path', ctx=Load()),
+                  Constant(value='w')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dump',
+                  ctx=Load()),
+                args=[
+                  Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='summary'),
+                    ctx=Load()),
+                  Name(id='f', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='indent',
+                    value=Constant(value=2))]))]),
+        Assign(
+          targets=[
+            Name(id='detailed_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Constant(value='validation_detailed_report.json')])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Name(id='detailed_path', ctx=Load()),
+                  Constant(value='w')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='json', ctx=Load()),
+                  attr='dump',
+                  ctx=Load()),
+                args=[
+                  Name(id='results', ctx=Load()),
+                  Name(id='f', ctx=Load())],
+                keywords=[
+                  keyword(
+                    arg='indent',
+                    value=Constant(value=2))]))]),
+        Assign(
+          targets=[
+            Name(id='report_path', ctx=Store())],
+          value=Call(
+            func=Name(id='Path', ctx=Load()),
+            args=[
+              Constant(value='validation_report.txt')])),
+        With(
+          items=[
+            withitem(
+              context_expr=Call(
+                func=Name(id='open', ctx=Load()),
+                args=[
+                  Name(id='report_path', ctx=Load()),
+                  Constant(value='w')]),
+              optional_vars=Name(id='f', ctx=Store()))],
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  Constant(value='=== UNIFIED STRUCTURE VALIDATION REPORT ===\n\n')])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Timestamp: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='timestamp'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='YAML File: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Name(id='results', ctx=Load()),
+                          slice=Constant(value='yaml_file'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n\n')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  Constant(value='=== VALIDATION KEYS STATUS ===\n')])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='status', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='validation_keys'),
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='status_symbol', ctx=Store())],
+                  value=IfExp(
+                    test=Compare(
+                      left=Name(id='status', ctx=Load()),
+                      ops=[
+                        Eq()],
+                      comparators=[
+                        Constant(value='PASS')]),
+                    body=Constant(value='[PASS]'),
+                    orelse=IfExp(
+                      test=Compare(
+                        left=Name(id='status', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='FAIL')]),
+                      body=Constant(value='[FAIL]'),
+                      orelse=Constant(value='[NOT_TESTABLE]')))),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='status_symbol', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=' '),
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='status', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='\n')])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\n=== SUMMARY STATISTICS ===\n')])])),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='key', ctx=Store()),
+                  Name(id='value', ctx=Store())],
+                ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Subscript(
+                    value=Name(id='results', ctx=Load()),
+                    slice=Constant(value='summary'),
+                    ctx=Load()),
+                  attr='items',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='f', ctx=Load()),
+                      attr='write',
+                      ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          FormattedValue(
+                            value=Name(id='key', ctx=Load()),
+                            conversion=-1),
+                          Constant(value=': '),
+                          FormattedValue(
+                            value=Name(id='value', ctx=Load()),
+                            conversion=-1),
+                          Constant(value='\n')])]))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='\n=== DETAILED ANALYSIS ===\n')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Structure Integrity: '),
+                      FormattedValue(
+                        value=Subscript(
+                          value=Subscript(
+                            value=Name(id='results', ctx=Load()),
+                            slice=Constant(value='details'),
+                            ctx=Load()),
+                          slice=Constant(value='structure_integrity'),
+                          ctx=Load()),
+                        conversion=-1),
+                      Constant(value='\n')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Meta Sections: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Constant(value=', '),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Subscript(
+                                value=Name(id='results', ctx=Load()),
+                                slice=Constant(value='details'),
+                                ctx=Load()),
+                              slice=Constant(value='meta_sections'),
+                              ctx=Load())]),
+                        conversion=-1),
+                      Constant(value='\n')])])),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='f', ctx=Load()),
+                  attr='write',
+                  ctx=Load()),
+                args=[
+                  JoinedStr(
+                    values=[
+                      Constant(value='Tree Domains: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Attribute(
+                            value=Constant(value=', '),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Subscript(
+                              value=Subscript(
+                                value=Name(id='results', ctx=Load()),
+                                slice=Constant(value='details'),
+                                ctx=Load()),
+                              slice=Constant(value='tree_domains'),
+                              ctx=Load())]),
+                        conversion=-1),
+                      Constant(value='\n')])]))]),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='✅ K30: Validation summary written to '),
+                  FormattedValue(
+                    value=Name(id='summary_path', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='✅ K31: Detailed validation report written to '),
+                  FormattedValue(
+                    value=Name(id='detailed_path', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='✅ K32: Human-readable report written to '),
+                  FormattedValue(
+                    value=Name(id='report_path', ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\n=== VALIDATION COMPLETE ===')])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Pass Rate: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='summary'),
+                        ctx=Load()),
+                      slice=Constant(value='pass_rate'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Passed: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='summary'),
+                        ctx=Load()),
+                      slice=Constant(value='pass_count'),
+                      ctx=Load()),
+                    conversion=-1),
+                  Constant(value='/'),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='summary'),
+                        ctx=Load()),
+                      slice=Constant(value='total_keys'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Failed: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='summary'),
+                        ctx=Load()),
+                      slice=Constant(value='fail_count'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='Not Testable: '),
+                  FormattedValue(
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='results', ctx=Load()),
+                        slice=Constant(value='summary'),
+                        ctx=Load()),
+                      slice=Constant(value='not_testable_count'),
+                      ctx=Load()),
+                    conversion=-1)])])),
+        Assign(
+          targets=[
+            Name(id='k3_status', ctx=Store())],
+          value=Subscript(
+            value=Subscript(
+              value=Name(id='results', ctx=Load()),
+              slice=Constant(value='validation_keys'),
+              ctx=Load()),
+            slice=Constant(value='K3'),
+            ctx=Load())),
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              JoinedStr(
+                values=[
+                  Constant(value='\nK3 Status: '),
+                  FormattedValue(
+                    value=Name(id='k3_status', ctx=Load()),
+                    conversion=-1),
+                  Constant(value=' '),
+                  FormattedValue(
+                    value=IfExp(
+                      test=Compare(
+                        left=Name(id='k3_status', ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Constant(value='PASS')]),
+                      body=Constant(value='✅'),
+                      orelse=Constant(value='❌')),
+                    conversion=-1)])])),
+        If(
+          test=Compare(
+            left=Subscript(
+              value=Subscript(
+                value=Name(id='results', ctx=Load()),
+                slice=Constant(value='validation_keys'),
+                ctx=Load()),
+              slice=Constant(value='K39'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='PASS')]),
+          body=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='🎉 ALL KEYS PASS - READY FOR DOWNSTREAM PHASES')]))],
+          orelse=[
+            Expr(
+              value=Call(
+                func=Name(id='print', ctx=Load()),
+                args=[
+                  Constant(value='⚠️  Some keys still failing - check detailed report')]))])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='main', ctx=Load())))])])

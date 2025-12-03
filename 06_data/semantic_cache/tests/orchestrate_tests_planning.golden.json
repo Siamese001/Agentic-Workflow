@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - orchestrate_tests_planning\nImplements L1 Cognitive Planning Layer for orchestrate tests planning operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass OrchestrateTestsPlanningOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass OrchestrateTestsPlanningOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass OrchestrateTestsPlanningOrchestratorResult:\n    \"\"\"L5 Result ",
+  "full_hash": "6e90707bf818e71a44b9b7822c0b26b9fdef8fdfe523489b91221f2c4b5397bf",
+  "generated_at": 1764728354.3143883,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\orc-layer\\plan-phase\\get-tests-info\\general\\understand-request\\orchestrate_tests_planning.py"
+}

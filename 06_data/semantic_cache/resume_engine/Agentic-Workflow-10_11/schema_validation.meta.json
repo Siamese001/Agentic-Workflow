@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\schema_validation.py",
+    "rel_path": "schema_validation.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "c4139b46aec4fa94a683806ee17e5d681716b2b96090459eb6e95b7441ff8205",
+    "file_size": 2042,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 1
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728225.7174513
+}

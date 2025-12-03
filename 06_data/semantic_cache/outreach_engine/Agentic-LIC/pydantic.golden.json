@@ -1,0 +1,6 @@
+{
+  "golden_content": "class ValidationError(Exception):\n    pass\n\n\ndef Field(default=..., **kwargs):  # pragma: no cover - stub\n    return default\n\n\nclass BaseModel:\n    \"\"\"Minimal stand-in for pydantic.BaseModel used in tests.\"\"\"\n\n    def __init__(self, **data):\n        annotations = getattr(self, \"__annotations__\", {})\n        for name, annotation in annotations.items():\n            if name in data:\n                value = data[name]\n            elif hasattr(self, name):\n                value = getattr(self, name)\n                if value is ...:\n                    raise ValidationError(f\"Field '{name}' is required\")\n            else:\n                raise ValidationError(f\"Field '{name}' is required\")\n            setattr(self, name, value)\n\n        for extra_key, extra_value in data.items():\n            if extra_key not in annotations:\n                setattr(self, extra_key, extra_value)\n\n    def dict(self):\n        annotations = getattr(self, \"__annotations__\", {})\n        return {name: getattr(self, ",
+  "full_hash": "9c7e66284cf5489a20b8817a4be875cef0914081a35c8f3e590b293f894995ce",
+  "generated_at": 1764728330.3705378,
+  "source_file": "C:\\Git\\Reachout Engine Archive\\Agentic-LIC\\pydantic.py"
+}

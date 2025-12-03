@@ -1,0 +1,128 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nTest Safety Planning\n\nTests comprehensive safety planning functionality for résumé validation,\nincluding safety plan creation, content validation, and policy enforcement.\n')),
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='unittest.mock',
+      names=[
+        alias(name='Mock')],
+      level=0),
+    Try(
+      body=[
+        ImportFrom(
+          module='l1.safety_planning',
+          names=[
+            alias(name='SafetyPlan')],
+          level=0)],
+      handlers=[
+        ExceptHandler(
+          type=Name(id='ImportError', ctx=Load()),
+          body=[
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='pytest', ctx=Load()),
+                  attr='skip',
+                  ctx=Load()),
+                args=[
+                  Constant(value='Safety planning components not available')],
+                keywords=[
+                  keyword(
+                    arg='allow_module_level',
+                    value=Constant(value=True))]))])]),
+    Assign(
+      targets=[
+        Name(id='pytestmark', ctx=Store())],
+      value=List(
+        elts=[
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='l1',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='planning',
+            ctx=Load()),
+          Attribute(
+            value=Attribute(
+              value=Name(id='pytest', ctx=Load()),
+              attr='mark',
+              ctx=Load()),
+            attr='safety',
+            ctx=Load())],
+        ctx=Load())),
+    ClassDef(
+      name='TestSafetyPlanning',
+      body=[
+        Expr(
+          value=Constant(value='Test safety planning functionality.')),
+        FunctionDef(
+          name='test_safety_plan_dataclass_structure',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test SafetyPlan dataclass structure.')),
+            Assign(
+              targets=[
+                Name(id='prompt', ctx=Store())],
+              value=Call(
+                func=Name(id='Mock', ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='prompt', ctx=Load()),
+                  attr='id',
+                  ctx=Store())],
+              value=Constant(value='test.safety')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='prompt', ctx=Load()),
+                  attr='content',
+                  ctx=Store())],
+              value=Constant(value='Test safety content')),
+            Assign(
+              targets=[
+                Name(id='safety_plan', ctx=Store())],
+              value=Call(
+                func=Name(id='SafetyPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='prompt',
+                    value=Name(id='prompt', ctx=Load()))])),
+            Assert(
+              test=Call(
+                func=Name(id='hasattr', ctx=Load()),
+                args=[
+                  Name(id='safety_plan', ctx=Load()),
+                  Constant(value='prompt')])),
+            Assert(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='safety_plan', ctx=Load()),
+                  attr='prompt',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='prompt', ctx=Load())])),
+            Assert(
+              test=Call(
+                func=Name(id='isinstance', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='safety_plan', ctx=Load()),
+                    attr='prompt',
+                    ctx=Load()),
+                  Name(id='Mock', ctx=Load())]))])])])

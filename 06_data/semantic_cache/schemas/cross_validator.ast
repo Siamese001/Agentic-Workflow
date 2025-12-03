@@ -1,0 +1,2458 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nSSoT ↔ META Cross-Validation Engine for Agentic-Workflow\n\nImplements G10: SSoT <-> META cross-validation\n\nEnsures that META.domains == YAML.domains, META.layers == YAML.layers, \nMETA.phases == YAML.phases, META.intents == YAML.intents, META.axes == YAML.axes,\nMETA.verb_groups == YAML.verb_groups for functional enforcement of K25-K29.\n')),
+    Import(
+      names=[
+        alias(name='yaml')]),
+    Import(
+      names=[
+        alias(name='json')]),
+    Import(
+      names=[
+        alias(name='sys')]),
+    ImportFrom(
+      module='pathlib',
+      names=[
+        alias(name='Path')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any'),
+        alias(name='List'),
+        alias(name='Set'),
+        alias(name='Optional'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass')],
+      level=0),
+    ImportFrom(
+      module='enum',
+      names=[
+        alias(name='Enum')],
+      level=0),
+    ClassDef(
+      name='ValidationStatus',
+      bases=[
+        Name(id='Enum', ctx=Load())],
+      body=[
+        Assign(
+          targets=[
+            Name(id='MATCH', ctx=Store())],
+          value=Constant(value='MATCH')),
+        Assign(
+          targets=[
+            Name(id='MISMATCH', ctx=Store())],
+          value=Constant(value='MISMATCH')),
+        Assign(
+          targets=[
+            Name(id='MISSING_IN_YAML', ctx=Store())],
+          value=Constant(value='MISSING_IN_YAML')),
+        Assign(
+          targets=[
+            Name(id='MISSING_IN_META', ctx=Store())],
+          value=Constant(value='MISSING_IN_META')),
+        Assign(
+          targets=[
+            Name(id='EXTRA_IN_YAML', ctx=Store())],
+          value=Constant(value='EXTRA_IN_YAML')),
+        Assign(
+          targets=[
+            Name(id='EXTRA_IN_META', ctx=Store())],
+          value=Constant(value='EXTRA_IN_META'))]),
+    ClassDef(
+      name='ValidationResult',
+      body=[
+        AnnAssign(
+          target=Name(id='category', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='status', ctx=Store()),
+          annotation=Name(id='ValidationStatus', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='yaml_items', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='meta_items', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='details', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='CrossValidator',
+      body=[
+        Expr(
+          value=Constant(value='\n    SSoT ↔ META cross-validation engine\n    \n    Validates semantic consistency between the main YAML structure\n    and META vocab constraints to ensure canonical definitions align.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='workspace_root',
+                annotation=Name(id='Path', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='Path', ctx=Load()),
+                args=[
+                  Name(id='workspace_root', ctx=Load())])),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml_path',
+                  ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='unified_structure_subatomic.yaml'))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml_path',
+                  ctx=Store())],
+              value=BinOp(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='workspace_root',
+                  ctx=Load()),
+                op=Div(),
+                right=Constant(value='unified_structure_subatomic_meta.yaml'))),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='sys', ctx=Load()),
+                    attr='path',
+                    ctx=Load()),
+                  attr='insert',
+                  ctx=Load()),
+                args=[
+                  Constant(value=0),
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='workspace_root',
+                          ctx=Load()),
+                        op=Div(),
+                        right=Constant(value='02_schemas'))])])),
+            ImportFrom(
+              module='ssot_merger',
+              names=[
+                alias(name='SSoTMerger')],
+              level=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='ssot_merger',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='SSoTMerger', ctx=Load()),
+                args=[
+                  Name(id='workspace_root', ctx=Load())])),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='main_yaml',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='meta_yaml',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Name(id='Any', ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Dict(),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='validation_results',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='ValidationResult', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=0)]),
+        FunctionDef(
+          name='load_yaml_files',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Load main and meta YAML files')),
+            Try(
+              body=[
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='main_yaml_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='main_yaml',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='yaml', ctx=Load()),
+                          attr='safe_load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                With(
+                  items=[
+                    withitem(
+                      context_expr=Call(
+                        func=Name(id='open', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='meta_yaml_path',
+                            ctx=Load()),
+                          Constant(value='r')],
+                        keywords=[
+                          keyword(
+                            arg='encoding',
+                            value=Constant(value='utf-8'))]),
+                      optional_vars=Name(id='f', ctx=Store()))],
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='meta_yaml',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='yaml', ctx=Load()),
+                          attr='safe_load',
+                          ctx=Load()),
+                        args=[
+                          Name(id='f', ctx=Load())]))]),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='main_yaml',
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Main YAML file is empty or invalid: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='main_yaml_path',
+                                  ctx=Load()),
+                                conversion=-1)])]))]),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='meta_yaml',
+                      ctx=Load()),
+                    ops=[
+                      Is()],
+                    comparators=[
+                      Constant(value=None)]),
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Meta YAML file is empty or invalid: '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='meta_yaml_path',
+                                  ctx=Load()),
+                                conversion=-1)])]))]),
+                Return(
+                  value=Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='main_yaml',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='meta_yaml',
+                        ctx=Load())],
+                    ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='ValueError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Failed to load YAML files: '),
+                              FormattedValue(
+                                value=Name(id='e', ctx=Load()),
+                                conversion=-1)])]))])])],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_domains_from_yaml',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract domain names from main YAML structure')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='domains', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='meta_fields', ctx=Store())],
+              value=Set(
+                elts=[
+                  Constant(value='meta_sidecar'),
+                  Constant(value='canonical_definition')])),
+            For(
+              target=Name(id='key', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='main_yaml',
+                    ctx=Load()),
+                  attr='keys',
+                  ctx=Load())),
+              body=[
+                If(
+                  test=Compare(
+                    left=Name(id='key', ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='meta_fields', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='domains', ctx=Load()),
+                          attr='add',
+                          ctx=Load()),
+                        args=[
+                          Name(id='key', ctx=Load())]))])]),
+            Return(
+              value=Name(id='domains', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_domains_from_meta',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract domain names from META YAML')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Return(
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='meta_yaml',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='domains'),
+                          Dict()]),
+                      attr='keys',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_layers_from_yaml',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract layer names from main YAML structure')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='layers', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            For(
+              target=Name(id='domain', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='extract_domains_from_yaml',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='domain_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='main_yaml',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='domain', ctx=Load()),
+                      Dict()])),
+                For(
+                  target=Name(id='layer_name', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='domain_structure', ctx=Load()),
+                      attr='keys',
+                      ctx=Load())),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='layers', ctx=Load()),
+                          attr='add',
+                          ctx=Load()),
+                        args=[
+                          Name(id='layer_name', ctx=Load())]))])]),
+            Return(
+              value=Name(id='layers', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_layers_from_meta',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract layer names from META YAML')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Return(
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='meta_yaml',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='layers'),
+                          Dict()]),
+                      attr='keys',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_phases_from_yaml',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract phase names from main YAML structure')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='phases', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            For(
+              target=Name(id='domain', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='extract_domains_from_yaml',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='domain_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='main_yaml',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='domain', ctx=Load()),
+                      Dict()])),
+                For(
+                  target=Tuple(
+                    elts=[
+                      Name(id='layer_name', ctx=Store()),
+                      Name(id='layer_structure', ctx=Store())],
+                    ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='domain_structure', ctx=Load()),
+                      attr='items',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='layer_structure', ctx=Load()),
+                        ops=[
+                          Is()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Continue()]),
+                    For(
+                      target=Name(id='phase_name', ctx=Store()),
+                      iter=Call(
+                        func=Attribute(
+                          value=Name(id='layer_structure', ctx=Load()),
+                          attr='keys',
+                          ctx=Load())),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='phases', ctx=Load()),
+                              attr='add',
+                              ctx=Load()),
+                            args=[
+                              Name(id='phase_name', ctx=Load())]))])])]),
+            Return(
+              value=Name(id='phases', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_phases_from_meta',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract phase names from META YAML')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Return(
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='meta_yaml',
+                            ctx=Load()),
+                          attr='get',
+                          ctx=Load()),
+                        args=[
+                          Constant(value='phases'),
+                          Dict()]),
+                      attr='keys',
+                      ctx=Load()))]))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_intents_from_yaml',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract intent names from main YAML structure')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='intents', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            For(
+              target=Name(id='domain', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='extract_domains_from_yaml',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='domain_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='main_yaml',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='domain', ctx=Load()),
+                      Dict()])),
+                For(
+                  target=Name(id='layer_structure', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='domain_structure', ctx=Load()),
+                      attr='values',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='layer_structure', ctx=Load()),
+                        ops=[
+                          Is()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Continue()]),
+                    For(
+                      target=Name(id='phase_structure', ctx=Store()),
+                      iter=Call(
+                        func=Attribute(
+                          value=Name(id='layer_structure', ctx=Load()),
+                          attr='values',
+                          ctx=Load())),
+                      body=[
+                        If(
+                          test=Compare(
+                            left=Name(id='phase_structure', ctx=Load()),
+                            ops=[
+                              Is()],
+                            comparators=[
+                              Constant(value=None)]),
+                          body=[
+                            Continue()]),
+                        For(
+                          target=Name(id='intent_name', ctx=Store()),
+                          iter=Call(
+                            func=Attribute(
+                              value=Name(id='phase_structure', ctx=Load()),
+                              attr='keys',
+                              ctx=Load())),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='intents', ctx=Load()),
+                                  attr='add',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='intent_name', ctx=Load())]))])])])]),
+            Return(
+              value=Name(id='intents', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_intents_from_meta',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract intent names from META YAML')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Return(
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='meta_yaml',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='intents'),
+                      List(ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_axes_from_yaml',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract axis names from main YAML structure')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='axes', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()))),
+            For(
+              target=Name(id='domain', ctx=Store()),
+              iter=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='extract_domains_from_yaml',
+                  ctx=Load())),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='domain_structure', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='main_yaml',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Name(id='domain', ctx=Load()),
+                      Dict()])),
+                For(
+                  target=Name(id='layer_structure', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='domain_structure', ctx=Load()),
+                      attr='values',
+                      ctx=Load())),
+                  body=[
+                    If(
+                      test=Compare(
+                        left=Name(id='layer_structure', ctx=Load()),
+                        ops=[
+                          Is()],
+                        comparators=[
+                          Constant(value=None)]),
+                      body=[
+                        Continue()]),
+                    For(
+                      target=Name(id='phase_structure', ctx=Store()),
+                      iter=Call(
+                        func=Attribute(
+                          value=Name(id='layer_structure', ctx=Load()),
+                          attr='values',
+                          ctx=Load())),
+                      body=[
+                        If(
+                          test=Compare(
+                            left=Name(id='phase_structure', ctx=Load()),
+                            ops=[
+                              Is()],
+                            comparators=[
+                              Constant(value=None)]),
+                          body=[
+                            Continue()]),
+                        For(
+                          target=Name(id='intent_structure', ctx=Store()),
+                          iter=Call(
+                            func=Attribute(
+                              value=Name(id='phase_structure', ctx=Load()),
+                              attr='values',
+                              ctx=Load())),
+                          body=[
+                            If(
+                              test=Compare(
+                                left=Name(id='intent_structure', ctx=Load()),
+                                ops=[
+                                  Is()],
+                                comparators=[
+                                  Constant(value=None)]),
+                              body=[
+                                Continue()]),
+                            For(
+                              target=Name(id='axis_name', ctx=Store()),
+                              iter=Call(
+                                func=Attribute(
+                                  value=Name(id='intent_structure', ctx=Load()),
+                                  attr='keys',
+                                  ctx=Load())),
+                              body=[
+                                Expr(
+                                  value=Call(
+                                    func=Attribute(
+                                      value=Name(id='axes', ctx=Load()),
+                                      attr='add',
+                                      ctx=Load()),
+                                    args=[
+                                      Name(id='axis_name', ctx=Load())]))])])])])]),
+            Return(
+              value=Name(id='axes', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_axes_from_meta',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract axis names from META YAML')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Return(
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='meta_yaml',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='axes'),
+                      List(ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_verb_groups_from_yaml',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract verb group names from main YAML structure')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='main_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Return(
+              value=Call(
+                func=Name(id='set', ctx=Load())))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_verb_groups_from_meta',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Extract verb group names from META YAML')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='meta_yaml',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='load_yaml_files',
+                      ctx=Load())))]),
+            Return(
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='meta_yaml',
+                        ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='verb_groups'),
+                      List(ctx=Load())])]))],
+          returns=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='validate_category',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='category',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='yaml_extractor',
+                annotation=Name(id='callable', ctx=Load())),
+              arg(
+                arg='meta_extractor',
+                annotation=Name(id='callable', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validate a specific category between YAML and META\n        \n        Args:\n            category: Category name for reporting\n            yaml_extractor: Function to extract items from YAML\n            meta_extractor: Function to extract items from META\n            \n        Returns:\n            ValidationResult with analysis\n        ')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='load_yaml_files',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='yaml_items', ctx=Store())],
+              value=Call(
+                func=Name(id='yaml_extractor', ctx=Load()))),
+            Assign(
+              targets=[
+                Name(id='meta_items', ctx=Store())],
+              value=Call(
+                func=Name(id='meta_extractor', ctx=Load()))),
+            If(
+              test=Compare(
+                left=Name(id='yaml_items', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Name(id='meta_items', ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='status', ctx=Store())],
+                  value=Attribute(
+                    value=Name(id='ValidationStatus', ctx=Load()),
+                    attr='MATCH',
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='details', ctx=Store())],
+                  value=JoinedStr(
+                    values=[
+                      Constant(value='Perfect match: '),
+                      FormattedValue(
+                        value=Call(
+                          func=Name(id='len', ctx=Load()),
+                          args=[
+                            Name(id='yaml_items', ctx=Load())]),
+                        conversion=-1),
+                      Constant(value=' items')]))],
+              orelse=[
+                If(
+                  test=Call(
+                    func=Attribute(
+                      value=Name(id='yaml_items', ctx=Load()),
+                      attr='issubset',
+                      ctx=Load()),
+                    args=[
+                      Name(id='meta_items', ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='status', ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='ValidationStatus', ctx=Load()),
+                        attr='EXTRA_IN_META',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='extra_in_meta', ctx=Store())],
+                      value=BinOp(
+                        left=Name(id='meta_items', ctx=Load()),
+                        op=Sub(),
+                        right=Name(id='yaml_items', ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='details', ctx=Store())],
+                      value=JoinedStr(
+                        values=[
+                          Constant(value='YAML subset of META. Extra in META: '),
+                          FormattedValue(
+                            value=Name(id='extra_in_meta', ctx=Load()),
+                            conversion=-1)]))],
+                  orelse=[
+                    If(
+                      test=Call(
+                        func=Attribute(
+                          value=Name(id='meta_items', ctx=Load()),
+                          attr='issubset',
+                          ctx=Load()),
+                        args=[
+                          Name(id='yaml_items', ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='status', ctx=Store())],
+                          value=Attribute(
+                            value=Name(id='ValidationStatus', ctx=Load()),
+                            attr='EXTRA_IN_YAML',
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='extra_in_yaml', ctx=Store())],
+                          value=BinOp(
+                            left=Name(id='yaml_items', ctx=Load()),
+                            op=Sub(),
+                            right=Name(id='meta_items', ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Name(id='details', ctx=Store())],
+                          value=JoinedStr(
+                            values=[
+                              Constant(value='META subset of YAML. Extra in YAML: '),
+                              FormattedValue(
+                                value=Name(id='extra_in_yaml', ctx=Load()),
+                                conversion=-1)]))],
+                      orelse=[
+                        Assign(
+                          targets=[
+                            Name(id='status', ctx=Store())],
+                          value=Attribute(
+                            value=Name(id='ValidationStatus', ctx=Load()),
+                            attr='MISMATCH',
+                            ctx=Load())),
+                        Assign(
+                          targets=[
+                            Name(id='missing_in_yaml', ctx=Store())],
+                          value=BinOp(
+                            left=Name(id='meta_items', ctx=Load()),
+                            op=Sub(),
+                            right=Name(id='yaml_items', ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Name(id='missing_in_meta', ctx=Store())],
+                          value=BinOp(
+                            left=Name(id='yaml_items', ctx=Load()),
+                            op=Sub(),
+                            right=Name(id='meta_items', ctx=Load()))),
+                        Assign(
+                          targets=[
+                            Name(id='details', ctx=Store())],
+                          value=JoinedStr(
+                            values=[
+                              Constant(value='Mismatch. Missing in YAML: '),
+                              FormattedValue(
+                                value=Name(id='missing_in_yaml', ctx=Load()),
+                                conversion=-1),
+                              Constant(value=', Missing in META: '),
+                              FormattedValue(
+                                value=Name(id='missing_in_meta', ctx=Load()),
+                                conversion=-1)]))])])]),
+            Return(
+              value=Call(
+                func=Name(id='ValidationResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='category',
+                    value=Name(id='category', ctx=Load())),
+                  keyword(
+                    arg='status',
+                    value=Name(id='status', ctx=Load())),
+                  keyword(
+                    arg='yaml_items',
+                    value=Name(id='yaml_items', ctx=Load())),
+                  keyword(
+                    arg='meta_items',
+                    value=Name(id='meta_items', ctx=Load())),
+                  keyword(
+                    arg='details',
+                    value=Name(id='details', ctx=Load()))]))],
+          returns=Name(id='ValidationResult', ctx=Load())),
+        FunctionDef(
+          name='validate_all_categories',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Validate all categories between YAML and META\n        \n        Returns:\n            List of ValidationResult objects\n        ')),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='load_yaml_files',
+                  ctx=Load()))),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='validation_results',
+                  ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='categories', ctx=Store())],
+              value=List(
+                elts=[
+                  Tuple(
+                    elts=[
+                      Constant(value='domains'),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_domains_from_yaml',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_domains_from_meta',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='layers'),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_layers_from_yaml',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_layers_from_meta',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='phases'),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_phases_from_yaml',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_phases_from_meta',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='intents'),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_intents_from_yaml',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_intents_from_meta',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='axes'),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_axes_from_yaml',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_axes_from_meta',
+                        ctx=Load())],
+                    ctx=Load()),
+                  Tuple(
+                    elts=[
+                      Constant(value='verb_groups'),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_verb_groups_from_yaml',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='extract_verb_groups_from_meta',
+                        ctx=Load())],
+                    ctx=Load())],
+                ctx=Load())),
+            For(
+              target=Tuple(
+                elts=[
+                  Name(id='category', ctx=Store()),
+                  Name(id='yaml_extractor', ctx=Store()),
+                  Name(id='meta_extractor', ctx=Store())],
+                ctx=Store()),
+              iter=Name(id='categories', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='validate_category',
+                      ctx=Load()),
+                    args=[
+                      Name(id='category', ctx=Load()),
+                      Name(id='yaml_extractor', ctx=Load()),
+                      Name(id='meta_extractor', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='validation_results',
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='result', ctx=Load())]))]),
+            Return(
+              value=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='validation_results',
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='ValidationResult', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='generate_compliance_report',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Generate comprehensive compliance report\n        \n        Returns:\n            Dict with compliance analysis\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='validation_results',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='validate_all_categories',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Dict(
+                keys=[
+                  Constant(value='validation_timestamp'),
+                  Constant(value='workspace_root'),
+                  Constant(value='overall_status'),
+                  Constant(value='categories'),
+                  Constant(value='summary')],
+                values=[
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Call(
+                          func=Attribute(
+                            value=Call(
+                              func=Name(id='Path', ctx=Load()),
+                              args=[
+                                Name(id='__file__', ctx=Load())]),
+                            attr='stat',
+                            ctx=Load())),
+                        attr='st_mtime',
+                        ctx=Load())]),
+                  Call(
+                    func=Name(id='str', ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workspace_root',
+                        ctx=Load())]),
+                  Constant(value='COMPLIANT'),
+                  Dict(),
+                  Dict(
+                    keys=[
+                      Constant(value='total_categories'),
+                      Constant(value='compliant_categories'),
+                      Constant(value='non_compliant_categories'),
+                      Constant(value='issues')],
+                    values=[
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='validation_results',
+                            ctx=Load())]),
+                      Constant(value=0),
+                      Constant(value=0),
+                      List(ctx=Load())])])),
+            For(
+              target=Name(id='result', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='validation_results',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='category_report', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='status'),
+                      Constant(value='yaml_count'),
+                      Constant(value='meta_count'),
+                      Constant(value='details'),
+                      Constant(value='yaml_items'),
+                      Constant(value='meta_items')],
+                    values=[
+                      Attribute(
+                        value=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='status',
+                          ctx=Load()),
+                        attr='value',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='yaml_items',
+                            ctx=Load())]),
+                      Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='result', ctx=Load()),
+                            attr='meta_items',
+                            ctx=Load())]),
+                      Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='details',
+                        ctx=Load()),
+                      Call(
+                        func=Name(id='sorted', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='list', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='yaml_items',
+                                ctx=Load())])]),
+                      Call(
+                        func=Name(id='sorted', ctx=Load()),
+                        args=[
+                          Call(
+                            func=Name(id='list', ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='meta_items',
+                                ctx=Load())])])])),
+                Assign(
+                  targets=[
+                    Subscript(
+                      value=Subscript(
+                        value=Name(id='report', ctx=Load()),
+                        slice=Constant(value='categories'),
+                        ctx=Load()),
+                      slice=Attribute(
+                        value=Name(id='result', ctx=Load()),
+                        attr='category',
+                        ctx=Load()),
+                      ctx=Store())],
+                  value=Name(id='category_report', ctx=Load())),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='result', ctx=Load()),
+                      attr='status',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='ValidationStatus', ctx=Load()),
+                        attr='MATCH',
+                        ctx=Load())]),
+                  body=[
+                    AugAssign(
+                      target=Subscript(
+                        value=Subscript(
+                          value=Name(id='report', ctx=Load()),
+                          slice=Constant(value='summary'),
+                          ctx=Load()),
+                        slice=Constant(value='compliant_categories'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1))],
+                  orelse=[
+                    AugAssign(
+                      target=Subscript(
+                        value=Subscript(
+                          value=Name(id='report', ctx=Load()),
+                          slice=Constant(value='summary'),
+                          ctx=Load()),
+                        slice=Constant(value='non_compliant_categories'),
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Subscript(
+                            value=Subscript(
+                              value=Name(id='report', ctx=Load()),
+                              slice=Constant(value='summary'),
+                              ctx=Load()),
+                            slice=Constant(value='issues'),
+                            ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Dict(
+                            keys=[
+                              Constant(value='category'),
+                              Constant(value='issue'),
+                              Constant(value='details')],
+                            values=[
+                              Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='category',
+                                ctx=Load()),
+                              Attribute(
+                                value=Attribute(
+                                  value=Name(id='result', ctx=Load()),
+                                  attr='status',
+                                  ctx=Load()),
+                                attr='value',
+                                ctx=Load()),
+                              Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='details',
+                                ctx=Load())])])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='report', ctx=Load()),
+                          slice=Constant(value='overall_status'),
+                          ctx=Store())],
+                      value=Constant(value='NON_COMPLIANT'))])]),
+            Return(
+              value=Name(id='report', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='save_compliance_report',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='output_path',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='Path', ctx=Load()),
+                  ctx=Load()))],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Save compliance report to file\n        \n        Args:\n            output_path: Optional custom output path\n            \n        Returns:\n            Path where report was saved\n        ')),
+            If(
+              test=Compare(
+                left=Name(id='output_path', ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='output_path', ctx=Store())],
+                  value=BinOp(
+                    left=BinOp(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='workspace_root',
+                        ctx=Load()),
+                      op=Div(),
+                      right=Constant(value='02_schemas')),
+                    op=Div(),
+                    right=Constant(value='cross_validation_report.json')))]),
+            Expr(
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='output_path', ctx=Load()),
+                    attr='parent',
+                    ctx=Load()),
+                  attr='mkdir',
+                  ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='parents',
+                    value=Constant(value=True)),
+                  keyword(
+                    arg='exist_ok',
+                    value=Constant(value=True))])),
+            Assign(
+              targets=[
+                Name(id='report', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='generate_compliance_report',
+                  ctx=Load()))),
+            With(
+              items=[
+                withitem(
+                  context_expr=Call(
+                    func=Name(id='open', ctx=Load()),
+                    args=[
+                      Name(id='output_path', ctx=Load()),
+                      Constant(value='w')],
+                    keywords=[
+                      keyword(
+                        arg='encoding',
+                        value=Constant(value='utf-8'))]),
+                  optional_vars=Name(id='f', ctx=Store()))],
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='json', ctx=Load()),
+                      attr='dump',
+                      ctx=Load()),
+                    args=[
+                      Name(id='report', ctx=Load()),
+                      Name(id='f', ctx=Load())],
+                    keywords=[
+                      keyword(
+                        arg='indent',
+                        value=Constant(value=2)),
+                      keyword(
+                        arg='ensure_ascii',
+                        value=Constant(value=False))]))]),
+            Return(
+              value=Name(id='output_path', ctx=Load()))],
+          returns=Name(id='Path', ctx=Load())),
+        FunctionDef(
+          name='enforce_compliance',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Enforce compliance by raising exception if validation fails\n        \n        Returns:\n            True if compliant, raises exception if not\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='validation_results',
+                  ctx=Load())),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='validate_all_categories',
+                      ctx=Load())))]),
+            Assign(
+              targets=[
+                Name(id='non_compliant', ctx=Store())],
+              value=ListComp(
+                elt=Name(id='r', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Name(id='r', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='validation_results',
+                      ctx=Load()),
+                    ifs=[
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='r', ctx=Load()),
+                          attr='status',
+                          ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='ValidationStatus', ctx=Load()),
+                            attr='MATCH',
+                            ctx=Load())])],
+                    is_async=0)])),
+            If(
+              test=Name(id='non_compliant', ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='issues', ctx=Store())],
+                  value=List(ctx=Load())),
+                For(
+                  target=Name(id='result', ctx=Store()),
+                  iter=Name(id='non_compliant', ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='issues', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='result', ctx=Load()),
+                                  attr='category',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=': '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='result', ctx=Load()),
+                                  attr='details',
+                                  ctx=Load()),
+                                conversion=-1)])]))]),
+                Raise(
+                  exc=Call(
+                    func=Name(id='ValueError', ctx=Load()),
+                    args=[
+                      BinOp(
+                        left=JoinedStr(
+                          values=[
+                            Constant(value='SSoT↔META cross-validation failed:\n')]),
+                        op=Add(),
+                        right=Call(
+                          func=Attribute(
+                            value=Constant(value='\n'),
+                            attr='join',
+                            ctx=Load()),
+                          args=[
+                            Name(id='issues', ctx=Load())]))]))]),
+            Return(
+              value=Constant(value=True))],
+          returns=Name(id='bool', ctx=Load()))]),
+    FunctionDef(
+      name='main',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='\n    CLI entry point for cross-validation\n    \n    Usage:\n    python cross_validator.py [--workspace /path/to/workspace] [--report /path/to/report.json] [--enforce]\n    ')),
+        Import(
+          names=[
+            alias(name='argparse')]),
+        Assign(
+          targets=[
+            Name(id='parser', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='argparse', ctx=Load()),
+              attr='ArgumentParser',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='description',
+                value=Constant(value='SSoT↔META cross-validation engine'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--workspace')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='Path', ctx=Load())),
+              keyword(
+                arg='default',
+                value=Call(
+                  func=Attribute(
+                    value=Name(id='Path', ctx=Load()),
+                    attr='cwd',
+                    ctx=Load()))),
+              keyword(
+                arg='help',
+                value=Constant(value='Path to Agentic-Workflow workspace'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--report')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='Path', ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Output path for compliance report'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--enforce')],
+            keywords=[
+              keyword(
+                arg='action',
+                value=Constant(value='store_true')),
+              keyword(
+                arg='help',
+                value=Constant(value='Enforce compliance by failing on validation errors'))])),
+        Expr(
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='add_argument',
+              ctx=Load()),
+            args=[
+              Constant(value='--category')],
+            keywords=[
+              keyword(
+                arg='type',
+                value=Name(id='str', ctx=Load())),
+              keyword(
+                arg='choices',
+                value=List(
+                  elts=[
+                    Constant(value='domains'),
+                    Constant(value='layers'),
+                    Constant(value='phases'),
+                    Constant(value='intents'),
+                    Constant(value='axes'),
+                    Constant(value='verb_groups')],
+                  ctx=Load())),
+              keyword(
+                arg='help',
+                value=Constant(value='Validate specific category only'))])),
+        Assign(
+          targets=[
+            Name(id='args', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='parser', ctx=Load()),
+              attr='parse_args',
+              ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='validator', ctx=Store())],
+          value=Call(
+            func=Name(id='CrossValidator', ctx=Load()),
+            args=[
+              Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='workspace',
+                ctx=Load())])),
+        Try(
+          body=[
+            If(
+              test=Attribute(
+                value=Name(id='args', ctx=Load()),
+                attr='category',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='category_map', ctx=Store())],
+                  value=Dict(
+                    keys=[
+                      Constant(value='domains'),
+                      Constant(value='layers'),
+                      Constant(value='phases'),
+                      Constant(value='intents'),
+                      Constant(value='axes'),
+                      Constant(value='verb_groups')],
+                    values=[
+                      Tuple(
+                        elts=[
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_domains_from_yaml',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_domains_from_meta',
+                            ctx=Load())],
+                        ctx=Load()),
+                      Tuple(
+                        elts=[
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_layers_from_yaml',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_layers_from_meta',
+                            ctx=Load())],
+                        ctx=Load()),
+                      Tuple(
+                        elts=[
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_phases_from_yaml',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_phases_from_meta',
+                            ctx=Load())],
+                        ctx=Load()),
+                      Tuple(
+                        elts=[
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_intents_from_yaml',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_intents_from_meta',
+                            ctx=Load())],
+                        ctx=Load()),
+                      Tuple(
+                        elts=[
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_axes_from_yaml',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_axes_from_meta',
+                            ctx=Load())],
+                        ctx=Load()),
+                      Tuple(
+                        elts=[
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_verb_groups_from_yaml',
+                            ctx=Load()),
+                          Attribute(
+                            value=Name(id='validator', ctx=Load()),
+                            attr='extract_verb_groups_from_meta',
+                            ctx=Load())],
+                        ctx=Load())])),
+                Assign(
+                  targets=[
+                    Tuple(
+                      elts=[
+                        Name(id='yaml_extractor', ctx=Store()),
+                        Name(id='meta_extractor', ctx=Store())],
+                      ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='category_map', ctx=Load()),
+                    slice=Attribute(
+                      value=Name(id='args', ctx=Load()),
+                      attr='category',
+                      ctx=Load()),
+                    ctx=Load())),
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validator', ctx=Load()),
+                      attr='validate_category',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='category',
+                        ctx=Load()),
+                      Name(id='yaml_extractor', ctx=Load()),
+                      Name(id='meta_extractor', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='=== '),
+                          FormattedValue(
+                            value=Call(
+                              func=Attribute(
+                                value=Attribute(
+                                  value=Name(id='args', ctx=Load()),
+                                  attr='category',
+                                  ctx=Load()),
+                                attr='upper',
+                                ctx=Load())),
+                            conversion=-1),
+                          Constant(value=' VALIDATION ===')])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Status: '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='status',
+                                ctx=Load()),
+                              attr='value',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='Details: '),
+                          FormattedValue(
+                            value=Attribute(
+                              value=Name(id='result', ctx=Load()),
+                              attr='details',
+                              ctx=Load()),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='YAML items ('),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='result', ctx=Load()),
+                                  attr='yaml_items',
+                                  ctx=Load())]),
+                            conversion=-1),
+                          Constant(value='): '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='sorted', ctx=Load()),
+                              args=[
+                                Call(
+                                  func=Name(id='list', ctx=Load()),
+                                  args=[
+                                    Attribute(
+                                      value=Name(id='result', ctx=Load()),
+                                      attr='yaml_items',
+                                      ctx=Load())])]),
+                            conversion=-1)])])),
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='META items ('),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='len', ctx=Load()),
+                              args=[
+                                Attribute(
+                                  value=Name(id='result', ctx=Load()),
+                                  attr='meta_items',
+                                  ctx=Load())]),
+                            conversion=-1),
+                          Constant(value='): '),
+                          FormattedValue(
+                            value=Call(
+                              func=Name(id='sorted', ctx=Load()),
+                              args=[
+                                Call(
+                                  func=Name(id='list', ctx=Load()),
+                                  args=[
+                                    Attribute(
+                                      value=Name(id='result', ctx=Load()),
+                                      attr='meta_items',
+                                      ctx=Load())])]),
+                            conversion=-1)])])),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='args', ctx=Load()),
+                        attr='enforce',
+                        ctx=Load()),
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='result', ctx=Load()),
+                          attr='status',
+                          ctx=Load()),
+                        ops=[
+                          NotEq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='ValidationStatus', ctx=Load()),
+                            attr='MATCH',
+                            ctx=Load())])]),
+                  body=[
+                    Return(
+                      value=Constant(value=1))])],
+              orelse=[
+                If(
+                  test=Attribute(
+                    value=Name(id='args', ctx=Load()),
+                    attr='enforce',
+                    ctx=Load()),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validator', ctx=Load()),
+                          attr='enforce_compliance',
+                          ctx=Load()))),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          Constant(value='✓ SSoT↔META cross-validation PASSED (enforced)')]))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='results', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validator', ctx=Load()),
+                          attr='validate_all_categories',
+                          ctx=Load()))),
+                    Assign(
+                      targets=[
+                        Name(id='report_path', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validator', ctx=Load()),
+                          attr='save_compliance_report',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='args', ctx=Load()),
+                            attr='report',
+                            ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          Constant(value='=== SSoT↔META CROSS-VALIDATION ===')])),
+                    For(
+                      target=Name(id='result', ctx=Store()),
+                      iter=Name(id='results', ctx=Load()),
+                      body=[
+                        Assign(
+                          targets=[
+                            Name(id='status_symbol', ctx=Store())],
+                          value=IfExp(
+                            test=Compare(
+                              left=Attribute(
+                                value=Name(id='result', ctx=Load()),
+                                attr='status',
+                                ctx=Load()),
+                              ops=[
+                                Eq()],
+                              comparators=[
+                                Attribute(
+                                  value=Name(id='ValidationStatus', ctx=Load()),
+                                  attr='MATCH',
+                                  ctx=Load())]),
+                            body=Constant(value='✓'),
+                            orelse=Constant(value='✗'))),
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  FormattedValue(
+                                    value=Name(id='status_symbol', ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='result', ctx=Load()),
+                                      attr='category',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=': '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Attribute(
+                                        value=Name(id='result', ctx=Load()),
+                                        attr='status',
+                                        ctx=Load()),
+                                      attr='value',
+                                      ctx=Load()),
+                                    conversion=-1)])])),
+                        If(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='result', ctx=Load()),
+                              attr='status',
+                              ctx=Load()),
+                            ops=[
+                              NotEq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='ValidationStatus', ctx=Load()),
+                                attr='MATCH',
+                                ctx=Load())]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Name(id='print', ctx=Load()),
+                                args=[
+                                  JoinedStr(
+                                    values=[
+                                      Constant(value='   '),
+                                      FormattedValue(
+                                        value=Attribute(
+                                          value=Name(id='result', ctx=Load()),
+                                          attr='details',
+                                          ctx=Load()),
+                                        conversion=-1)])]))])]),
+                    Assign(
+                      targets=[
+                        Name(id='report', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='validator', ctx=Load()),
+                          attr='generate_compliance_report',
+                          ctx=Load()))),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='\nOverall Status: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Name(id='report', ctx=Load()),
+                                  slice=Constant(value='overall_status'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Compliant Categories: '),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Subscript(
+                                    value=Name(id='report', ctx=Load()),
+                                    slice=Constant(value='summary'),
+                                    ctx=Load()),
+                                  slice=Constant(value='compliant_categories'),
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value='/'),
+                              FormattedValue(
+                                value=Subscript(
+                                  value=Subscript(
+                                    value=Name(id='report', ctx=Load()),
+                                    slice=Constant(value='summary'),
+                                    ctx=Load()),
+                                  slice=Constant(value='total_categories'),
+                                  ctx=Load()),
+                                conversion=-1)])])),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='Report saved: '),
+                              FormattedValue(
+                                value=Name(id='report_path', ctx=Load()),
+                                conversion=-1)])]))])]),
+            Return(
+              value=Constant(value=0))],
+          handlers=[
+            ExceptHandler(
+              type=Name(id='Exception', ctx=Load()),
+              name='e',
+              body=[
+                Expr(
+                  value=Call(
+                    func=Name(id='print', ctx=Load()),
+                    args=[
+                      JoinedStr(
+                        values=[
+                          Constant(value='✗ Cross-validation error: '),
+                          FormattedValue(
+                            value=Name(id='e', ctx=Load()),
+                            conversion=-1)])])),
+                Return(
+                  value=Constant(value=1))])])]),
+    If(
+      test=Compare(
+        left=Name(id='__name__', ctx=Load()),
+        ops=[
+          Eq()],
+        comparators=[
+          Constant(value='__main__')]),
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='exit', ctx=Load()),
+            args=[
+              Call(
+                func=Name(id='main', ctx=Load()))]))])])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_integration_security.py",
+    "rel_path": "test_integration_security.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "8bbdc7d51a3e146f1261cebc99a3a3ec71678e47798da7f01f929da183d12a7a",
+    "file_size": 5932,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.7536182
+}

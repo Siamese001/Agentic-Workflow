@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - query_runtime_store\nImplements L1 Cognitive Planning Layer for query runtime store operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass QueryRuntimeStoreMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass QueryRuntimeStoreMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass QueryRuntimeStoreMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n    dat",
+  "full_hash": "935b643b39a4d88d8bddc2c0239dfde24ad2619553c695afb25edfd5b654af8b",
+  "generated_at": 1764728346.948716,
+  "source_file": "C:\\Git\\Agentic-Workflow\\03_runtime\\mem-layer\\retrieve-phase\\get-runtime-info\\general\\understand-request\\query_runtime_store.py"
+}

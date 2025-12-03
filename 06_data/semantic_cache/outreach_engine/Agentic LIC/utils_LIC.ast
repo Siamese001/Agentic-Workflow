@@ -1,0 +1,686 @@
+Module(
+  body=[
+    Assign(
+      targets=[
+        Name(id='__version__', ctx=Store())],
+      value=Constant(value='13.0')),
+    Import(
+      names=[
+        alias(name='re')]),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='timedelta')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Any'),
+        alias(name='Callable'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='collections',
+      names=[
+        alias(name='defaultdict')],
+      level=0),
+    ImportFrom(
+      module='models_LIC',
+      names=[
+        alias(name='CircuitState'),
+        alias(name='CircuitBreakerOpenError')],
+      level=0),
+    ClassDef(
+      name='CircuitBreaker',
+      body=[
+        Expr(
+          value=Constant(value='\n    Circuit breaker for API calls - prevents cascade failures.\n    This is a core utility and remains in v13.0.\n    \n    The circuit breaker has three states:\n    - CLOSED: Normal operation, requests pass through\n    - OPEN: Too many failures, requests are blocked\n    - HALF_OPEN: Testing if service has recovered\n    \n    After failure_threshold consecutive failures, the circuit opens.\n    After timeout_seconds, it transitions to HALF_OPEN to test recovery.\n    A successful request in HALF_OPEN closes the circuit.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='failure_threshold',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='timeout_seconds',
+                annotation=Name(id='int', ctx=Load()))],
+            defaults=[
+              Constant(value=3),
+              Constant(value=60)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Initialize circuit breaker.\n        \n        Args:\n            failure_threshold: Number of consecutive failures before opening\n            timeout_seconds: Seconds to wait before attempting recovery\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='failure_threshold',
+                  ctx=Store())],
+              value=Name(id='failure_threshold', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='timeout_seconds',
+                  ctx=Store())],
+              value=Name(id='timeout_seconds', ctx=Load())),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='failure_count',
+                  ctx=Store())],
+              value=Constant(value=0)),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='last_failure_time',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='datetime', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=0),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='state',
+                  ctx=Store())],
+              value=Attribute(
+                value=Name(id='CircuitState', ctx=Load()),
+                attr='CLOSED',
+                ctx=Load()))]),
+        FunctionDef(
+          name='call',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='func',
+                annotation=Name(id='Callable', ctx=Load()))],
+            vararg=arg(arg='args'),
+            kwarg=arg(arg='kwargs')),
+          body=[
+            Expr(
+              value=Constant(value='\n        Execute function with circuit breaker protection.\n        \n        Args:\n            func: Function to execute\n            *args: Positional arguments for func\n            **kwargs: Keyword arguments for func\n        \n        Returns:\n            Result from func\n        \n        Raises:\n            CircuitBreakerOpenError: If circuit is OPEN\n            Exception: Any exception raised by func\n        ')),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='state',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='CircuitState', ctx=Load()),
+                    attr='OPEN',
+                    ctx=Load())]),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='last_failure_time',
+                        ctx=Load()),
+                      Compare(
+                        left=BinOp(
+                          left=Call(
+                            func=Attribute(
+                              value=Name(id='datetime', ctx=Load()),
+                              attr='now',
+                              ctx=Load())),
+                          op=Sub(),
+                          right=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='last_failure_time',
+                            ctx=Load())),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Call(
+                            func=Name(id='timedelta', ctx=Load()),
+                            keywords=[
+                              keyword(
+                                arg='seconds',
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='timeout_seconds',
+                                  ctx=Load()))])])]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='state',
+                          ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='CircuitState', ctx=Load()),
+                        attr='HALF_OPEN',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='failure_count',
+                          ctx=Store())],
+                      value=Constant(value=0)),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='[CircuitBreaker] Transitioning to HALF_OPEN for recovery test')])]))],
+                  orelse=[
+                    Raise(
+                      exc=Call(
+                        func=Name(id='CircuitBreakerOpenError', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='API circuit breaker is OPEN - waiting for recovery (failed '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='failure_count',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value=' times, will retry after '),
+                              FormattedValue(
+                                value=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='timeout_seconds',
+                                  ctx=Load()),
+                                conversion=-1),
+                              Constant(value='s)')])]))])]),
+            Try(
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='result', ctx=Store())],
+                  value=Call(
+                    func=Name(id='func', ctx=Load()),
+                    args=[
+                      Starred(
+                        value=Name(id='args', ctx=Load()),
+                        ctx=Load())],
+                    keywords=[
+                      keyword(
+                        value=Name(id='kwargs', ctx=Load()))])),
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='state',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='CircuitState', ctx=Load()),
+                        attr='HALF_OPEN',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='state',
+                          ctx=Store())],
+                      value=Attribute(
+                        value=Name(id='CircuitState', ctx=Load()),
+                        attr='CLOSED',
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='failure_count',
+                          ctx=Store())],
+                      value=Constant(value=0)),
+                    Expr(
+                      value=Call(
+                        func=Name(id='print', ctx=Load()),
+                        args=[
+                          JoinedStr(
+                            values=[
+                              Constant(value='[CircuitBreaker] Recovery successful, circuit CLOSED')])]))]),
+                Return(
+                  value=Name(id='result', ctx=Load()))],
+              handlers=[
+                ExceptHandler(
+                  type=Name(id='Exception', ctx=Load()),
+                  name='e',
+                  body=[
+                    AugAssign(
+                      target=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='failure_count',
+                        ctx=Store()),
+                      op=Add(),
+                      value=Constant(value=1)),
+                    Assign(
+                      targets=[
+                        Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='last_failure_time',
+                          ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='datetime', ctx=Load()),
+                          attr='now',
+                          ctx=Load()))),
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='failure_count',
+                          ctx=Load()),
+                        ops=[
+                          GtE()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='failure_threshold',
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='state',
+                              ctx=Store())],
+                          value=Attribute(
+                            value=Name(id='CircuitState', ctx=Load()),
+                            attr='OPEN',
+                            ctx=Load())),
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='[CircuitBreaker] Circuit OPEN after '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='failure_count',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value=' failures')])]))],
+                      orelse=[
+                        Expr(
+                          value=Call(
+                            func=Name(id='print', ctx=Load()),
+                            args=[
+                              JoinedStr(
+                                values=[
+                                  Constant(value='[CircuitBreaker] Failure '),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='failure_count',
+                                      ctx=Load()),
+                                    conversion=-1),
+                                  Constant(value='/'),
+                                  FormattedValue(
+                                    value=Attribute(
+                                      value=Name(id='self', ctx=Load()),
+                                      attr='failure_threshold',
+                                      ctx=Load()),
+                                    conversion=-1)])]))]),
+                    Raise()])])])]),
+    ClassDef(
+      name='TextProcessor',
+      body=[
+        Expr(
+          value=Constant(value='\n    Utility functions for text processing and analysis.\n    Kept in v13.0 as these are generic, stateless helpers.\n    ')),
+        FunctionDef(
+          name='count_words',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Count words in text.\n        \n        Args:\n            text: Input text\n        \n        Returns:\n            Word count\n        ')),
+            Return(
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Call(
+                    func=Attribute(
+                      value=Name(id='text', ctx=Load()),
+                      attr='split',
+                      ctx=Load()))]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='count_chars',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Count characters in text.\n        \n        Args:\n            text: Input text\n        \n        Returns:\n            Character count\n        ')),
+            Return(
+              value=Call(
+                func=Name(id='len', ctx=Load()),
+                args=[
+                  Name(id='text', ctx=Load())]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='int', ctx=Load())),
+        FunctionDef(
+          name='extract_sentences',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Extract sentences from text.\n        \n        Args:\n            text: Input text\n        \n        Returns:\n            List of sentences\n        ')),
+            Assign(
+              targets=[
+                Name(id='sentences', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='split',
+                  ctx=Load()),
+                args=[
+                  Constant(value='[.!?]+'),
+                  Name(id='text', ctx=Load())])),
+            Return(
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='s', ctx=Load()),
+                    attr='strip',
+                    ctx=Load())),
+                generators=[
+                  comprehension(
+                    target=Name(id='s', ctx=Store()),
+                    iter=Name(id='sentences', ctx=Load()),
+                    ifs=[
+                      Call(
+                        func=Attribute(
+                          value=Name(id='s', ctx=Load()),
+                          attr='strip',
+                          ctx=Load()))],
+                    is_async=0)]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='extract_metrics',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Extract quantitative metrics from text.\n        \n        Args:\n            text: Input text\n        \n        Returns:\n            List of metrics (percentages, multipliers, large numbers)\n        ')),
+            Assign(
+              targets=[
+                Name(id='metric_pattern', ctx=Store())],
+              value=Constant(value='\\b\\d+%|\\b\\d+x\\b|\\b\\d+\\s*(million|billion|thousand|k)\\b')),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='findall',
+                  ctx=Load()),
+                args=[
+                  Name(id='metric_pattern', ctx=Load()),
+                  Name(id='text', ctx=Load()),
+                  Attribute(
+                    value=Name(id='re', ctx=Load()),
+                    attr='IGNORECASE',
+                    ctx=Load())]))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='remove_extra_whitespace',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Remove extra whitespace from text.\n        \n        Args:\n            text: Input text\n        \n        Returns:\n            Cleaned text\n        ')),
+            Assign(
+              targets=[
+                Name(id='text', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='re', ctx=Load()),
+                  attr='sub',
+                  ctx=Load()),
+                args=[
+                  Constant(value='\\s+'),
+                  Constant(value=' '),
+                  Name(id='text', ctx=Load())])),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='strip',
+                  ctx=Load())))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='str', ctx=Load())),
+        FunctionDef(
+          name='truncate_text',
+          args=arguments(
+            args=[
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='max_chars',
+                annotation=Name(id='int', ctx=Load())),
+              arg(
+                arg='suffix',
+                annotation=Name(id='str', ctx=Load()))],
+            defaults=[
+              Constant(value='...')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Truncate text to maximum character length.\n        \n        Args:\n            text: Input text\n            max_chars: Maximum characters\n            suffix: Suffix to add if truncated\n        \n        Returns:\n            Truncated text\n        ')),
+            If(
+              test=Compare(
+                left=Call(
+                  func=Name(id='len', ctx=Load()),
+                  args=[
+                    Name(id='text', ctx=Load())]),
+                ops=[
+                  LtE()],
+                comparators=[
+                  Name(id='max_chars', ctx=Load())]),
+              body=[
+                Return(
+                  value=Name(id='text', ctx=Load()))]),
+            Return(
+              value=BinOp(
+                left=Subscript(
+                  value=Name(id='text', ctx=Load()),
+                  slice=Slice(
+                    upper=BinOp(
+                      left=Name(id='max_chars', ctx=Load()),
+                      op=Sub(),
+                      right=Call(
+                        func=Name(id='len', ctx=Load()),
+                        args=[
+                          Name(id='suffix', ctx=Load())]))),
+                  ctx=Load()),
+                op=Add(),
+                right=Name(id='suffix', ctx=Load())))],
+          decorator_list=[
+            Name(id='staticmethod', ctx=Load())],
+          returns=Name(id='str', ctx=Load()))]),
+    ClassDef(
+      name='Timer',
+      body=[
+        Expr(
+          value=Constant(value='\n    Simple timer for measuring execution time.\n    Kept in v13.0 as a generic, stateless helper.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Initialize timer')),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='start_time',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='datetime', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=0),
+            AnnAssign(
+              target=Attribute(
+                value=Name(id='self', ctx=Load()),
+                attr='end_time',
+                ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Optional', ctx=Load()),
+                slice=Name(id='datetime', ctx=Load()),
+                ctx=Load()),
+              value=Constant(value=None),
+              simple=0)]),
+        FunctionDef(
+          name='start',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Start timer')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='start_time',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load())))]),
+        FunctionDef(
+          name='stop',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Stop timer and return elapsed seconds.\n        \n        Returns:\n            Elapsed time in seconds\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='end_time',
+                  ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()))),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='start_time',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Return(
+                  value=Constant(value=0.0))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=BinOp(
+                    left=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='end_time',
+                      ctx=Load()),
+                    op=Sub(),
+                    right=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='start_time',
+                      ctx=Load())),
+                  attr='total_seconds',
+                  ctx=Load())))],
+          returns=Name(id='float', ctx=Load())),
+        FunctionDef(
+          name='elapsed',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Get elapsed time without stopping timer.\n        \n        Returns:\n            Elapsed time in seconds\n        ')),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='start_time',
+                  ctx=Load()),
+                ops=[
+                  Is()],
+                comparators=[
+                  Constant(value=None)]),
+              body=[
+                Return(
+                  value=Constant(value=0.0))]),
+            Return(
+              value=Call(
+                func=Attribute(
+                  value=BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=Name(id='datetime', ctx=Load()),
+                        attr='now',
+                        ctx=Load())),
+                    op=Sub(),
+                    right=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='start_time',
+                      ctx=Load())),
+                  attr='total_seconds',
+                  ctx=Load())))],
+          returns=Name(id='float', ctx=Load()))])])

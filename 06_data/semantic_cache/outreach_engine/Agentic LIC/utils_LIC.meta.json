@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Reachout Engine Archive\\Agentic LIC\\utils_LIC.py",
+    "rel_path": "utils_LIC.py",
+    "root_name": "outreach_engine/Agentic LIC",
+    "file_hash": "d3e1093af87483f21141c1b9ae51af4d396c83511e8ddcec11c706bb4408a62a",
+    "file_size": 8761,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 0
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728331.5320952
+}

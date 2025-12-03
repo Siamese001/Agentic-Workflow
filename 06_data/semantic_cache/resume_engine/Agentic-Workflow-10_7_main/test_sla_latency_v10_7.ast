@@ -1,0 +1,144 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='pytest')]),
+    ImportFrom(
+      module='workflow.runner',
+      names=[
+        alias(name='run_workflow')],
+      level=0),
+    FunctionDef(
+      name='test_batch_performance',
+      args=arguments(
+        args=[
+          arg(arg='benchmark')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='compat_mode'),
+              Constant(value='resume'),
+              Constant(value='jd')],
+            values=[
+              Constant(value='v10_7'),
+              Constant(value='BatchCase'),
+              Constant(value='AI Director')])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='benchmark', ctx=Load()),
+            args=[
+              Lambda(
+                args=arguments(),
+                body=Call(
+                  func=Name(id='run_workflow', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load())]))])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='result', ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='success')]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='performance',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_latency_under_3s',
+      args=arguments(
+        args=[
+          arg(arg='benchmark')]),
+      body=[
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='compat_mode'),
+              Constant(value='resume')],
+            values=[
+              Constant(value='v10_7'),
+              Constant(value='SpeedTest')])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='benchmark', ctx=Load()),
+            args=[
+              Lambda(
+                args=arguments(),
+                body=Call(
+                  func=Name(id='run_workflow', ctx=Load()),
+                  args=[
+                    Name(id='ctx', ctx=Load())]))])),
+        Assert(
+          test=Compare(
+            left=Name(id='result', ctx=Load()),
+            ops=[
+              IsNot()],
+            comparators=[
+              Constant(value=None)]))],
+      decorator_list=[
+        Attribute(
+          value=Attribute(
+            value=Name(id='pytest', ctx=Load()),
+            attr='mark',
+            ctx=Load()),
+          attr='performance',
+          ctx=Load())]),
+    FunctionDef(
+      name='test_retry_context_emits_retry_event',
+      args=arguments(),
+      body=[
+        Assign(
+          targets=[
+            Name(id='ctx', ctx=Store())],
+          value=Dict(
+            keys=[
+              Constant(value='compat_mode'),
+              Constant(value='resume'),
+              Constant(value='low_confidence')],
+            values=[
+              Constant(value='v10_7'),
+              Constant(value='RetryCase'),
+              Constant(value=True)])),
+        Assign(
+          targets=[
+            Name(id='result', ctx=Store())],
+          value=Call(
+            func=Name(id='run_workflow', ctx=Load()),
+            args=[
+              Name(id='ctx', ctx=Load())])),
+        Assert(
+          test=Compare(
+            left=Subscript(
+              value=Name(id='result', ctx=Load()),
+              slice=Constant(value='status'),
+              ctx=Load()),
+            ops=[
+              Eq()],
+            comparators=[
+              Constant(value='success')])),
+        Assert(
+          test=Compare(
+            left=Constant(value='retry'),
+            ops=[
+              In()],
+            comparators=[
+              Subscript(
+                value=Name(id='result', ctx=Load()),
+                slice=Constant(value='events'),
+                ctx=Load())]))])])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "# File: main.py\n# Zero-Loss Consolidation - Execution Entry Point\n# Merges: workflow_RES_v5_2.py \u2192 run_workflow_RES_v5_2.py\n# Version: 5.9 (Batch Harness)\n# REFACTORED: main() is now importable via `if __name__ == \"__main__\":` guard\n# This allows WorkflowV60 to be safely imported by batch processing scripts.\n# All configuration is now read from the central CONFIG object.\n\n# ============================================================================\n# EXTERNAL IMPORTS (Consolidated)\n# ============================================================================\nimport argparse\nimport json\nimport logging\nimport logging.handlers\nimport os\nimport sys\nimport uuid\nimport re\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any, Dict, List, Optional, Tuple\n\n# Import from consolidated modules\nfrom core_v6_0 import (\n    # Config\n    CONFIG, DATA_DIR, OUTPUT_DIR, CACHE_DIR,\n    # Models\n    ImmutableStagingBuffer, ThematicAnalysis, ValidationResult,\n    HopResult, Valida",
+  "full_hash": "fc1be20c0f9a8051bc9705e72f9fbda6dab1d3f6f42fa9cffec7f6528c302cdb",
+  "generated_at": 1764728327.553597,
+  "source_file": "C:\\Git\\Resume Engine Archive\\v6.0\\main_v6_0.py"
+}

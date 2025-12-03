@@ -1,0 +1,1959 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='\nKnowledge graph retrieval executor for resume processing workflows.\n\nImplements L2 execution for multi-hop knowledge graph traversal\nto support resume enhancement and job alignment operations.\n')),
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='dataclasses',
+      names=[
+        alias(name='dataclass'),
+        alias(name='field')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Any'),
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Optional'),
+        alias(name='Set'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='datetime',
+      names=[
+        alias(name='datetime'),
+        alias(name='UTC')],
+      level=0),
+    ImportFrom(
+      module='collections',
+      names=[
+        alias(name='defaultdict')],
+      level=0),
+    ImportFrom(
+      module='l1.kg_retrieval_planning',
+      names=[
+        alias(name='KGQueryPlan'),
+        alias(name='HopSpec'),
+        alias(name='HopDirection'),
+        alias(name='QueryType')],
+      level=0),
+    ImportFrom(
+      module='l4.triplet_store',
+      names=[
+        alias(name='Triplet'),
+        alias(name='TripletStore'),
+        alias(name='TripletQuery')],
+      level=0),
+    ClassDef(
+      name='TraversalPath',
+      body=[
+        Expr(
+          value=Constant(value='\n    Represents a path through the resume processing knowledge graph.\n\n    Enables systematic traversal of resume enhancement data relationships.\n    ')),
+        AnnAssign(
+          target=Name(id='entities', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='triplets', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Triplet', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_confidence', ctx=Store()),
+          annotation=Name(id='float', ctx=Load()),
+          value=Constant(value=1.0),
+          simple=1),
+        FunctionDef(
+          name='add_hop',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='triplet',
+                annotation=Name(id='Triplet', ctx=Load())),
+              arg(
+                arg='next_entity',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Adds a hop to the resume processing knowledge graph path.\n\n        Extends the path for resume data exploration and job alignment.\n        \n        Args:\n            triplet: Triplet traversed in resume data graph\n            next_entity: Next entity in resume processing path\n            \n        Returns:\n            New TraversalPath with added hop for resume enhancement\n        ')),
+            Return(
+              value=Call(
+                func=Name(id='TraversalPath', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='entities',
+                    value=BinOp(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='entities',
+                        ctx=Load()),
+                      op=Add(),
+                      right=List(
+                        elts=[
+                          Name(id='next_entity', ctx=Load())],
+                        ctx=Load()))),
+                  keyword(
+                    arg='triplets',
+                    value=BinOp(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='triplets',
+                        ctx=Load()),
+                      op=Add(),
+                      right=List(
+                        elts=[
+                          Name(id='triplet', ctx=Load())],
+                        ctx=Load()))),
+                  keyword(
+                    arg='total_confidence',
+                    value=BinOp(
+                      left=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='total_confidence',
+                        ctx=Load()),
+                      op=Mult(),
+                      right=Attribute(
+                        value=Name(id='triplet', ctx=Load()),
+                        attr='confidence',
+                        ctx=Load())))]))],
+          returns=Constant(value='TraversalPath'))],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='KGRetrievalResult',
+      body=[
+        Expr(
+          value=Constant(value='\n    Result of knowledge graph retrieval for resume processing workflows.\n\n    Provides structured data extraction for resume enhancement and job alignment.\n    ')),
+        AnnAssign(
+          target=Name(id='query_id', ctx=Store()),
+          annotation=Name(id='str', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='query_type', ctx=Store()),
+          annotation=Name(id='QueryType', ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='triplets', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Triplet', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='entities', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Set', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='paths', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='TraversalPath', ctx=Load()),
+            ctx=Load()),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_triplets', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='total_hops_executed', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='execution_time_ms', ctx=Store()),
+          annotation=Name(id='int', ctx=Load()),
+          value=Constant(value=0),
+          simple=1),
+        AnnAssign(
+          target=Name(id='facts_by_entity', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='facts_by_predicate', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1),
+        AnnAssign(
+          target=Name(id='metadata', ctx=Store()),
+          annotation=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load()),
+          value=Call(
+            func=Name(id='field', ctx=Load()),
+            keywords=[
+              keyword(
+                arg='default_factory',
+                value=Name(id='dict', ctx=Load()))]),
+          simple=1)],
+      decorator_list=[
+        Name(id='dataclass', ctx=Load())]),
+    ClassDef(
+      name='KGRetrievalExecutor',
+      body=[
+        Expr(
+          value=Constant(value='\n    Executor for multi-hop knowledge graph retrieval in resume processing.\n\n    Traverses knowledge graph according to L1 plans for resume enhancement\n    and job alignment workflows.\n    ')),
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='triplet_store',
+                annotation=Name(id='TripletStore', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Initializes knowledge graph retrieval executor for resume processing.\n\n        Args:\n            triplet_store: L4 TripletStore for resume workflow coordination\n        ')),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='store',
+                  ctx=Store())],
+              value=Name(id='triplet_store', ctx=Load()))]),
+        FunctionDef(
+          name='execute',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='KGQueryPlan', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Executes KG query plan for resume processing workflows.\n\n        Args:\n            plan: Query plan from L1 for resume enhancement\n        ')),
+            Assign(
+              targets=[
+                Name(id='start_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()),
+                args=[
+                  Name(id='UTC', ctx=Load())])),
+            AnnAssign(
+              target=Name(id='all_triplets', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='Triplet', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            AnnAssign(
+              target=Name(id='all_entities', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='start_entities',
+                    ctx=Load())]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='all_paths', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='TraversalPath', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='query_type',
+                  ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Attribute(
+                    value=Name(id='QueryType', ctx=Load()),
+                    attr='ENTITY_FACTS',
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='triplets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_execute_entity_facts',
+                      ctx=Load()),
+                    args=[
+                      Name(id='plan', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='all_triplets', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Name(id='triplets', ctx=Load())]))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='query_type',
+                      ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Attribute(
+                        value=Name(id='QueryType', ctx=Load()),
+                        attr='PATH_FINDING',
+                        ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='paths', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_execute_path_finding',
+                          ctx=Load()),
+                        args=[
+                          Name(id='plan', ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='all_paths', ctx=Load()),
+                          attr='extend',
+                          ctx=Load()),
+                        args=[
+                          Name(id='paths', ctx=Load())])),
+                    For(
+                      target=Name(id='path', ctx=Store()),
+                      iter=Name(id='paths', ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='all_triplets', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='path', ctx=Load()),
+                                attr='triplets',
+                                ctx=Load())])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='all_entities', ctx=Load()),
+                              attr='update',
+                              ctx=Load()),
+                            args=[
+                              Attribute(
+                                value=Name(id='path', ctx=Load()),
+                                attr='entities',
+                                ctx=Load())]))])],
+                  orelse=[
+                    If(
+                      test=Compare(
+                        left=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='query_type',
+                          ctx=Load()),
+                        ops=[
+                          Eq()],
+                        comparators=[
+                          Attribute(
+                            value=Name(id='QueryType', ctx=Load()),
+                            attr='NEIGHBORHOOD',
+                            ctx=Load())]),
+                      body=[
+                        Assign(
+                          targets=[
+                            Tuple(
+                              elts=[
+                                Name(id='triplets', ctx=Store()),
+                                Name(id='entities', ctx=Store())],
+                              ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='self', ctx=Load()),
+                              attr='_execute_neighborhood',
+                              ctx=Load()),
+                            args=[
+                              Name(id='plan', ctx=Load())])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='all_triplets', ctx=Load()),
+                              attr='extend',
+                              ctx=Load()),
+                            args=[
+                              Name(id='triplets', ctx=Load())])),
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='all_entities', ctx=Load()),
+                              attr='update',
+                              ctx=Load()),
+                            args=[
+                              Name(id='entities', ctx=Load())]))],
+                      orelse=[
+                        If(
+                          test=Compare(
+                            left=Attribute(
+                              value=Name(id='plan', ctx=Load()),
+                              attr='query_type',
+                              ctx=Load()),
+                            ops=[
+                              Eq()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='QueryType', ctx=Load()),
+                                attr='TEMPORAL_SLICE',
+                                ctx=Load())]),
+                          body=[
+                            Assign(
+                              targets=[
+                                Name(id='triplets', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_execute_temporal_slice',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='plan', ctx=Load())])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='all_triplets', ctx=Load()),
+                                  attr='extend',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='triplets', ctx=Load())]))],
+                          orelse=[
+                            Assign(
+                              targets=[
+                                Name(id='triplets', ctx=Store())],
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='self', ctx=Load()),
+                                  attr='_execute_entity_facts',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='plan', ctx=Load())])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='all_triplets', ctx=Load()),
+                                  attr='extend',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='triplets', ctx=Load())]))])])])]),
+            If(
+              test=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='deduplicate',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='all_triplets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='self', ctx=Load()),
+                      attr='_deduplicate_triplets',
+                      ctx=Load()),
+                    args=[
+                      Name(id='all_triplets', ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='facts_by_entity', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_aggregate_by_entity',
+                  ctx=Load()),
+                args=[
+                  Name(id='all_triplets', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='facts_by_predicate', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='_aggregate_by_predicate',
+                  ctx=Load()),
+                args=[
+                  Name(id='all_triplets', ctx=Load())])),
+            For(
+              target=Name(id='triplet', ctx=Store()),
+              iter=Name(id='all_triplets', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='all_entities', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='triplet', ctx=Load()),
+                        attr='subject',
+                        ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='all_entities', ctx=Load()),
+                      attr='add',
+                      ctx=Load()),
+                    args=[
+                      Attribute(
+                        value=Name(id='triplet', ctx=Load()),
+                        attr='object',
+                        ctx=Load())]))]),
+            Assign(
+              targets=[
+                Name(id='end_time', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='datetime', ctx=Load()),
+                  attr='now',
+                  ctx=Load()),
+                args=[
+                  Name(id='UTC', ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='execution_time_ms', ctx=Store())],
+              value=Call(
+                func=Name(id='int', ctx=Load()),
+                args=[
+                  BinOp(
+                    left=Call(
+                      func=Attribute(
+                        value=BinOp(
+                          left=Name(id='end_time', ctx=Load()),
+                          op=Sub(),
+                          right=Name(id='start_time', ctx=Load())),
+                        attr='total_seconds',
+                        ctx=Load())),
+                    op=Mult(),
+                    right=Constant(value=1000))])),
+            Return(
+              value=Call(
+                func=Name(id='KGRetrievalResult', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='query_id',
+                    value=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='query_id',
+                      ctx=Load())),
+                  keyword(
+                    arg='query_type',
+                    value=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='query_type',
+                      ctx=Load())),
+                  keyword(
+                    arg='triplets',
+                    value=Name(id='all_triplets', ctx=Load())),
+                  keyword(
+                    arg='entities',
+                    value=Name(id='all_entities', ctx=Load())),
+                  keyword(
+                    arg='paths',
+                    value=Name(id='all_paths', ctx=Load())),
+                  keyword(
+                    arg='total_triplets',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Name(id='all_triplets', ctx=Load())])),
+                  keyword(
+                    arg='total_hops_executed',
+                    value=Call(
+                      func=Name(id='len', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='hops',
+                          ctx=Load())])),
+                  keyword(
+                    arg='execution_time_ms',
+                    value=Name(id='execution_time_ms', ctx=Load())),
+                  keyword(
+                    arg='facts_by_entity',
+                    value=Name(id='facts_by_entity', ctx=Load())),
+                  keyword(
+                    arg='facts_by_predicate',
+                    value=Name(id='facts_by_predicate', ctx=Load())),
+                  keyword(
+                    arg='metadata',
+                    value=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='context',
+                      ctx=Load()))]))],
+          returns=Name(id='KGRetrievalResult', ctx=Load())),
+        FunctionDef(
+          name='_execute_entity_facts',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='KGQueryPlan', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Executes entity facts query for resume processing.\n\n        Retrieves triplets about entities for resume enhancement.\n        ')),
+            AnnAssign(
+              target=Name(id='all_triplets', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='Triplet', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='entity', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='start_entities',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='triplets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='store',
+                        ctx=Load()),
+                      attr='get_entity_triplets',
+                      ctx=Load()),
+                    args=[
+                      Name(id='entity', ctx=Load())])),
+                If(
+                  test=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='predicate_whitelist',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='triplets', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='t', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='t', ctx=Store()),
+                            iter=Name(id='triplets', ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='t', ctx=Load()),
+                                  attr='predicate',
+                                  ctx=Load()),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='plan', ctx=Load()),
+                                    attr='predicate_whitelist',
+                                    ctx=Load())])],
+                            is_async=0)]))]),
+                If(
+                  test=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='predicate_blacklist',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='triplets', ctx=Store())],
+                      value=ListComp(
+                        elt=Name(id='t', ctx=Load()),
+                        generators=[
+                          comprehension(
+                            target=Name(id='t', ctx=Store()),
+                            iter=Name(id='triplets', ctx=Load()),
+                            ifs=[
+                              Compare(
+                                left=Attribute(
+                                  value=Name(id='t', ctx=Load()),
+                                  attr='predicate',
+                                  ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Attribute(
+                                    value=Name(id='plan', ctx=Load()),
+                                    attr='predicate_blacklist',
+                                    ctx=Load())])],
+                            is_async=0)]))]),
+                If(
+                  test=Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='temporal_constraint',
+                    ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='triplets', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_filter_by_temporal',
+                          ctx=Load()),
+                        args=[
+                          Name(id='triplets', ctx=Load()),
+                          Attribute(
+                            value=Name(id='plan', ctx=Load()),
+                            attr='temporal_constraint',
+                            ctx=Load())]))]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='all_triplets', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Name(id='triplets', ctx=Load())]))]),
+            Return(
+              value=Name(id='all_triplets', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Triplet', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_execute_path_finding',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='KGQueryPlan', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Executes path finding for resume entity relationships.\n\n        Uses BFS to find paths for resume enhancement and job alignment.\n        ')),
+            If(
+              test=UnaryOp(
+                op=Not(),
+                operand=Attribute(
+                  value=Name(id='plan', ctx=Load()),
+                  attr='target_entities',
+                  ctx=Load())),
+              body=[
+                Return(
+                  value=List(ctx=Load()))]),
+            Assign(
+              targets=[
+                Name(id='target_set', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='target_entities',
+                    ctx=Load())])),
+            AnnAssign(
+              target=Name(id='found_paths', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='TraversalPath', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            AnnAssign(
+              target=Name(id='frontier', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='TraversalPath', ctx=Load()),
+                ctx=Load()),
+              value=ListComp(
+                elt=Call(
+                  func=Name(id='TraversalPath', ctx=Load()),
+                  keywords=[
+                    keyword(
+                      arg='entities',
+                      value=List(
+                        elts=[
+                          Name(id='e', ctx=Load())],
+                        ctx=Load())),
+                    keyword(
+                      arg='triplets',
+                      value=List(ctx=Load()))]),
+                generators=[
+                  comprehension(
+                    target=Name(id='e', ctx=Store()),
+                    iter=Attribute(
+                      value=Name(id='plan', ctx=Load()),
+                      attr='start_entities',
+                      ctx=Load()),
+                    is_async=0)]),
+              simple=1),
+            AnnAssign(
+              target=Name(id='visited', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='start_entities',
+                    ctx=Load())]),
+              simple=1),
+            For(
+              target=Name(id='hop_spec', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='hops',
+                ctx=Load()),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='frontier', ctx=Load())),
+                  body=[
+                    Break()]),
+                AnnAssign(
+                  target=Name(id='next_frontier', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='List', ctx=Load()),
+                    slice=Name(id='TraversalPath', ctx=Load()),
+                    ctx=Load()),
+                  value=List(ctx=Load()),
+                  simple=1),
+                For(
+                  target=Name(id='path', ctx=Store()),
+                  iter=Name(id='frontier', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='current_entity', ctx=Store())],
+                      value=Subscript(
+                        value=Attribute(
+                          value=Name(id='path', ctx=Load()),
+                          attr='entities',
+                          ctx=Load()),
+                        slice=UnaryOp(
+                          op=USub(),
+                          operand=Constant(value=1)),
+                        ctx=Load())),
+                    Assign(
+                      targets=[
+                        Name(id='neighbors', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_get_neighbors',
+                          ctx=Load()),
+                        args=[
+                          Name(id='current_entity', ctx=Load()),
+                          Name(id='hop_spec', ctx=Load()),
+                          Attribute(
+                            value=Name(id='plan', ctx=Load()),
+                            attr='temporal_constraint',
+                            ctx=Load())])),
+                    For(
+                      target=Tuple(
+                        elts=[
+                          Name(id='triplet', ctx=Store()),
+                          Name(id='next_entity', ctx=Store())],
+                        ctx=Store()),
+                      iter=Name(id='neighbors', ctx=Load()),
+                      body=[
+                        If(
+                          test=BoolOp(
+                            op=And(),
+                            values=[
+                              Compare(
+                                left=Name(id='next_entity', ctx=Load()),
+                                ops=[
+                                  In()],
+                                comparators=[
+                                  Name(id='visited', ctx=Load())]),
+                              Compare(
+                                left=Name(id='next_entity', ctx=Load()),
+                                ops=[
+                                  NotIn()],
+                                comparators=[
+                                  Name(id='target_set', ctx=Load())])]),
+                          body=[
+                            Continue()]),
+                        Assign(
+                          targets=[
+                            Name(id='new_path', ctx=Store())],
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='path', ctx=Load()),
+                              attr='add_hop',
+                              ctx=Load()),
+                            args=[
+                              Name(id='triplet', ctx=Load()),
+                              Name(id='next_entity', ctx=Load())])),
+                        If(
+                          test=Compare(
+                            left=Name(id='next_entity', ctx=Load()),
+                            ops=[
+                              In()],
+                            comparators=[
+                              Name(id='target_set', ctx=Load())]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='found_paths', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='new_path', ctx=Load())]))],
+                          orelse=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='next_frontier', ctx=Load()),
+                                  attr='append',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='new_path', ctx=Load())])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='visited', ctx=Load()),
+                                  attr='add',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='next_entity', ctx=Load())]))])])]),
+                Assign(
+                  targets=[
+                    Name(id='frontier', ctx=Store())],
+                  value=Subscript(
+                    value=Name(id='next_frontier', ctx=Load()),
+                    slice=Slice(
+                      upper=Attribute(
+                        value=Name(id='hop_spec', ctx=Load()),
+                        attr='max_results',
+                        ctx=Load())),
+                    ctx=Load()))]),
+            Return(
+              value=Name(id='found_paths', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='TraversalPath', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_execute_neighborhood',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='KGQueryPlan', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Executes N-hop neighborhood exploration for resume entities.\n\n        Explores entity relationships for resume enhancement workflows.\n        ')),
+            AnnAssign(
+              target=Name(id='all_triplets', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='Triplet', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            AnnAssign(
+              target=Name(id='all_entities', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='start_entities',
+                    ctx=Load())]),
+              simple=1),
+            Assign(
+              targets=[
+                Name(id='current_entities', ctx=Store())],
+              value=Call(
+                func=Name(id='set', ctx=Load()),
+                args=[
+                  Attribute(
+                    value=Name(id='plan', ctx=Load()),
+                    attr='start_entities',
+                    ctx=Load())])),
+            For(
+              target=Name(id='hop_spec', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='hops',
+                ctx=Load()),
+              body=[
+                If(
+                  test=UnaryOp(
+                    op=Not(),
+                    operand=Name(id='current_entities', ctx=Load())),
+                  body=[
+                    Break()]),
+                AnnAssign(
+                  target=Name(id='next_entities', ctx=Store()),
+                  annotation=Subscript(
+                    value=Name(id='Set', ctx=Load()),
+                    slice=Name(id='str', ctx=Load()),
+                    ctx=Load()),
+                  value=Call(
+                    func=Name(id='set', ctx=Load())),
+                  simple=1),
+                For(
+                  target=Name(id='entity', ctx=Store()),
+                  iter=Name(id='current_entities', ctx=Load()),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='neighbors', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_get_neighbors',
+                          ctx=Load()),
+                        args=[
+                          Name(id='entity', ctx=Load()),
+                          Name(id='hop_spec', ctx=Load()),
+                          Attribute(
+                            value=Name(id='plan', ctx=Load()),
+                            attr='temporal_constraint',
+                            ctx=Load())])),
+                    For(
+                      target=Tuple(
+                        elts=[
+                          Name(id='triplet', ctx=Store()),
+                          Name(id='next_entity', ctx=Store())],
+                        ctx=Store()),
+                      iter=Subscript(
+                        value=Name(id='neighbors', ctx=Load()),
+                        slice=Slice(
+                          upper=Attribute(
+                            value=Name(id='hop_spec', ctx=Load()),
+                            attr='max_results',
+                            ctx=Load())),
+                        ctx=Load()),
+                      body=[
+                        Expr(
+                          value=Call(
+                            func=Attribute(
+                              value=Name(id='all_triplets', ctx=Load()),
+                              attr='append',
+                              ctx=Load()),
+                            args=[
+                              Name(id='triplet', ctx=Load())])),
+                        If(
+                          test=Compare(
+                            left=Name(id='next_entity', ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Name(id='all_entities', ctx=Load())]),
+                          body=[
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='next_entities', ctx=Load()),
+                                  attr='add',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='next_entity', ctx=Load())])),
+                            Expr(
+                              value=Call(
+                                func=Attribute(
+                                  value=Name(id='all_entities', ctx=Load()),
+                                  attr='add',
+                                  ctx=Load()),
+                                args=[
+                                  Name(id='next_entity', ctx=Load())]))])])]),
+                Assign(
+                  targets=[
+                    Name(id='current_entities', ctx=Store())],
+                  value=Name(id='next_entities', ctx=Load()))]),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='all_triplets', ctx=Load()),
+                  Name(id='all_entities', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load()),
+                Subscript(
+                  value=Name(id='Set', ctx=Load()),
+                  slice=Name(id='str', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_execute_temporal_slice',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='plan',
+                annotation=Name(id='KGQueryPlan', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Executes temporal slice query for resume timeline analysis.\n\n        Retrieves triplets valid at specified time for job alignment.\n        ')),
+            AnnAssign(
+              target=Name(id='all_triplets', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='Triplet', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='entity', ctx=Store()),
+              iter=Attribute(
+                value=Name(id='plan', ctx=Load()),
+                attr='start_entities',
+                ctx=Load()),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='query', ctx=Store())],
+                  value=Call(
+                    func=Name(id='TripletQuery', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='subject',
+                        value=Name(id='entity', ctx=Load())),
+                      keyword(
+                        arg='valid_at',
+                        value=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='temporal_constraint',
+                          ctx=Load())),
+                      keyword(
+                        arg='include_invalidated',
+                        value=Constant(value=False))])),
+                Assign(
+                  targets=[
+                    Name(id='triplets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='store',
+                        ctx=Load()),
+                      attr='query',
+                      ctx=Load()),
+                    args=[
+                      Name(id='query', ctx=Load())])),
+                Assign(
+                  targets=[
+                    Name(id='query_obj', ctx=Store())],
+                  value=Call(
+                    func=Name(id='TripletQuery', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='object',
+                        value=Name(id='entity', ctx=Load())),
+                      keyword(
+                        arg='valid_at',
+                        value=Attribute(
+                          value=Name(id='plan', ctx=Load()),
+                          attr='temporal_constraint',
+                          ctx=Load())),
+                      keyword(
+                        arg='include_invalidated',
+                        value=Constant(value=False))])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='triplets', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Attribute(
+                          value=Attribute(
+                            value=Name(id='self', ctx=Load()),
+                            attr='store',
+                            ctx=Load()),
+                          attr='query',
+                          ctx=Load()),
+                        args=[
+                          Name(id='query_obj', ctx=Load())])])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='all_triplets', ctx=Load()),
+                      attr='extend',
+                      ctx=Load()),
+                    args=[
+                      Name(id='triplets', ctx=Load())]))]),
+            Return(
+              value=Name(id='all_triplets', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Triplet', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_get_neighbors',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='entity',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='hop_spec',
+                annotation=Name(id='HopSpec', ctx=Load())),
+              arg(
+                arg='temporal_constraint',
+                annotation=Subscript(
+                  value=Name(id='Optional', ctx=Load()),
+                  slice=Name(id='datetime', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Gets neighboring entities for resume relationship analysis.\n\n        Retrieves connected entities for resume enhancement workflows.\n        ')),
+            AnnAssign(
+              target=Name(id='neighbors', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Subscript(
+                  value=Name(id='Tuple', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='Triplet', ctx=Load()),
+                      Name(id='str', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='hop_spec', ctx=Load()),
+                  attr='direction',
+                  ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='HopDirection', ctx=Load()),
+                        attr='OUTGOING',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='HopDirection', ctx=Load()),
+                        attr='BIDIRECTIONAL',
+                        ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='query', ctx=Store())],
+                  value=Call(
+                    func=Name(id='TripletQuery', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='subject',
+                        value=Name(id='entity', ctx=Load())),
+                      keyword(
+                        arg='valid_at',
+                        value=BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='temporal_constraint', ctx=Load()),
+                            Attribute(
+                              value=Name(id='hop_spec', ctx=Load()),
+                              attr='valid_at',
+                              ctx=Load())])),
+                      keyword(
+                        arg='include_invalidated',
+                        value=Attribute(
+                          value=Name(id='hop_spec', ctx=Load()),
+                          attr='include_invalidated',
+                          ctx=Load())),
+                      keyword(
+                        arg='min_confidence',
+                        value=Attribute(
+                          value=Name(id='hop_spec', ctx=Load()),
+                          attr='min_confidence',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='triplets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='store',
+                        ctx=Load()),
+                      attr='query',
+                      ctx=Load()),
+                    args=[
+                      Name(id='query', ctx=Load())])),
+                For(
+                  target=Name(id='triplet', ctx=Store()),
+                  iter=Name(id='triplets', ctx=Load()),
+                  body=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Attribute(
+                            value=Name(id='hop_spec', ctx=Load()),
+                            attr='predicate_filter',
+                            ctx=Load()),
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='triplet', ctx=Load()),
+                              attr='predicate',
+                              ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='hop_spec', ctx=Load()),
+                                attr='predicate_filter',
+                                ctx=Load())])]),
+                      body=[
+                        Continue()]),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='neighbors', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Tuple(
+                            elts=[
+                              Name(id='triplet', ctx=Load()),
+                              Attribute(
+                                value=Name(id='triplet', ctx=Load()),
+                                attr='object',
+                                ctx=Load())],
+                            ctx=Load())]))])]),
+            If(
+              test=Compare(
+                left=Attribute(
+                  value=Name(id='hop_spec', ctx=Load()),
+                  attr='direction',
+                  ctx=Load()),
+                ops=[
+                  In()],
+                comparators=[
+                  Tuple(
+                    elts=[
+                      Attribute(
+                        value=Name(id='HopDirection', ctx=Load()),
+                        attr='INCOMING',
+                        ctx=Load()),
+                      Attribute(
+                        value=Name(id='HopDirection', ctx=Load()),
+                        attr='BIDIRECTIONAL',
+                        ctx=Load())],
+                    ctx=Load())]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='query', ctx=Store())],
+                  value=Call(
+                    func=Name(id='TripletQuery', ctx=Load()),
+                    keywords=[
+                      keyword(
+                        arg='object',
+                        value=Name(id='entity', ctx=Load())),
+                      keyword(
+                        arg='valid_at',
+                        value=BoolOp(
+                          op=Or(),
+                          values=[
+                            Name(id='temporal_constraint', ctx=Load()),
+                            Attribute(
+                              value=Name(id='hop_spec', ctx=Load()),
+                              attr='valid_at',
+                              ctx=Load())])),
+                      keyword(
+                        arg='include_invalidated',
+                        value=Attribute(
+                          value=Name(id='hop_spec', ctx=Load()),
+                          attr='include_invalidated',
+                          ctx=Load())),
+                      keyword(
+                        arg='min_confidence',
+                        value=Attribute(
+                          value=Name(id='hop_spec', ctx=Load()),
+                          attr='min_confidence',
+                          ctx=Load()))])),
+                Assign(
+                  targets=[
+                    Name(id='triplets', ctx=Store())],
+                  value=Call(
+                    func=Attribute(
+                      value=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='store',
+                        ctx=Load()),
+                      attr='query',
+                      ctx=Load()),
+                    args=[
+                      Name(id='query', ctx=Load())])),
+                For(
+                  target=Name(id='triplet', ctx=Store()),
+                  iter=Name(id='triplets', ctx=Load()),
+                  body=[
+                    If(
+                      test=BoolOp(
+                        op=And(),
+                        values=[
+                          Attribute(
+                            value=Name(id='hop_spec', ctx=Load()),
+                            attr='predicate_filter',
+                            ctx=Load()),
+                          Compare(
+                            left=Attribute(
+                              value=Name(id='triplet', ctx=Load()),
+                              attr='predicate',
+                              ctx=Load()),
+                            ops=[
+                              NotIn()],
+                            comparators=[
+                              Attribute(
+                                value=Name(id='hop_spec', ctx=Load()),
+                                attr='predicate_filter',
+                                ctx=Load())])]),
+                      body=[
+                        Continue()]),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='neighbors', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Tuple(
+                            elts=[
+                              Name(id='triplet', ctx=Load()),
+                              Attribute(
+                                value=Name(id='triplet', ctx=Load()),
+                                attr='subject',
+                                ctx=Load())],
+                            ctx=Load())]))])]),
+            Return(
+              value=Name(id='neighbors', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Subscript(
+              value=Name(id='Tuple', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='Triplet', ctx=Load()),
+                  Name(id='str', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_filter_by_temporal',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='triplets',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load())),
+              arg(
+                arg='timestamp',
+                annotation=Name(id='datetime', ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Filters triplets by temporal constraint for resume timeline analysis.\n\n        Ensures temporal accuracy for resume job alignment.\n        ')),
+            Assign(
+              targets=[
+                Name(id='filtered', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='triplet', ctx=Store()),
+              iter=Name(id='triplets', ctx=Load()),
+              body=[
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='triplet', ctx=Load()),
+                        attr='valid_from',
+                        ctx=Load()),
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='valid_from',
+                          ctx=Load()),
+                        ops=[
+                          Gt()],
+                        comparators=[
+                          Name(id='timestamp', ctx=Load())])]),
+                  body=[
+                    Continue()]),
+                If(
+                  test=BoolOp(
+                    op=And(),
+                    values=[
+                      Attribute(
+                        value=Name(id='triplet', ctx=Load()),
+                        attr='valid_until',
+                        ctx=Load()),
+                      Compare(
+                        left=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='valid_until',
+                          ctx=Load()),
+                        ops=[
+                          Lt()],
+                        comparators=[
+                          Name(id='timestamp', ctx=Load())])]),
+                  body=[
+                    Continue()]),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='filtered', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='triplet', ctx=Load())]))]),
+            Return(
+              value=Name(id='filtered', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Triplet', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_deduplicate_triplets',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='triplets',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Removes duplicate triplets for resume data consistency.\n\n        Ensures clean resume enhancement data for job alignment.\n        ')),
+            AnnAssign(
+              target=Name(id='seen', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Set', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='set', ctx=Load())),
+              simple=1),
+            AnnAssign(
+              target=Name(id='unique', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='Triplet', ctx=Load()),
+                ctx=Load()),
+              value=List(ctx=Load()),
+              simple=1),
+            For(
+              target=Name(id='triplet', ctx=Store()),
+              iter=Name(id='triplets', ctx=Load()),
+              body=[
+                If(
+                  test=Compare(
+                    left=Attribute(
+                      value=Name(id='triplet', ctx=Load()),
+                      attr='id',
+                      ctx=Load()),
+                    ops=[
+                      NotIn()],
+                    comparators=[
+                      Name(id='seen', ctx=Load())]),
+                  body=[
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='seen', ctx=Load()),
+                          attr='add',
+                          ctx=Load()),
+                        args=[
+                          Attribute(
+                            value=Name(id='triplet', ctx=Load()),
+                            attr='id',
+                            ctx=Load())])),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='unique', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='triplet', ctx=Load())]))])]),
+            Return(
+              value=Name(id='unique', ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='Triplet', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_aggregate_by_entity',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='triplets',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Aggregates triplets by entity for resume data organization.\n\n        Groups resume enhancement data by entity for job alignment.\n        ')),
+            AnnAssign(
+              target=Name(id='aggregated', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='List', ctx=Load()),
+                      slice=Name(id='Triplet', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='defaultdict', ctx=Load()),
+                args=[
+                  Name(id='list', ctx=Load())]),
+              simple=1),
+            For(
+              target=Name(id='triplet', ctx=Store()),
+              iter=Name(id='triplets', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='aggregated', ctx=Load()),
+                        slice=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='subject',
+                          ctx=Load()),
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='triplet', ctx=Load())])),
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='aggregated', ctx=Load()),
+                        slice=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='object',
+                          ctx=Load()),
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='triplet', ctx=Load())]))]),
+            Return(
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='aggregated', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='_aggregate_by_predicate',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='triplets',
+                annotation=Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Expr(
+              value=Constant(value='Aggregates triplets by predicate for resume data organization.\n\n        Groups resume enhancement data by relationship type for job alignment.\n        ')),
+            AnnAssign(
+              target=Name(id='aggregated', ctx=Store()),
+              annotation=Subscript(
+                value=Name(id='Dict', ctx=Load()),
+                slice=Tuple(
+                  elts=[
+                    Name(id='str', ctx=Load()),
+                    Subscript(
+                      value=Name(id='List', ctx=Load()),
+                      slice=Name(id='Triplet', ctx=Load()),
+                      ctx=Load())],
+                  ctx=Load()),
+                ctx=Load()),
+              value=Call(
+                func=Name(id='defaultdict', ctx=Load()),
+                args=[
+                  Name(id='list', ctx=Load())]),
+              simple=1),
+            For(
+              target=Name(id='triplet', ctx=Store()),
+              iter=Name(id='triplets', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Subscript(
+                        value=Name(id='aggregated', ctx=Load()),
+                        slice=Attribute(
+                          value=Name(id='triplet', ctx=Load()),
+                          attr='predicate',
+                          ctx=Load()),
+                        ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Name(id='triplet', ctx=Load())]))]),
+            Return(
+              value=Call(
+                func=Name(id='dict', ctx=Load()),
+                args=[
+                  Name(id='aggregated', ctx=Load())]))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='Triplet', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))]),
+    FunctionDef(
+      name='execute_entity_query',
+      args=arguments(
+        args=[
+          arg(
+            arg='store',
+            annotation=Name(id='TripletStore', ctx=Load())),
+          arg(
+            arg='entity_id',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='predicates',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Execute a simple entity query.\n    \n    Args:\n        store: TripletStore instance\n        entity_id: Entity to query\n        predicates: Optional predicate filter\n        \n    Returns:\n        KGRetrievalResult\n    ')),
+        ImportFrom(
+          module='l1.kg_retrieval_planning',
+          names=[
+            alias(name='plan_entity_retrieval')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='plan', ctx=Store())],
+          value=Call(
+            func=Name(id='plan_entity_retrieval', ctx=Load()),
+            args=[
+              Name(id='entity_id', ctx=Load()),
+              Name(id='predicates', ctx=Load())])),
+        Assign(
+          targets=[
+            Name(id='executor', ctx=Store())],
+          value=Call(
+            func=Name(id='KGRetrievalExecutor', ctx=Load()),
+            args=[
+              Name(id='store', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='executor', ctx=Load()),
+              attr='execute',
+              ctx=Load()),
+            args=[
+              Name(id='plan', ctx=Load())]))],
+      returns=Name(id='KGRetrievalResult', ctx=Load())),
+    FunctionDef(
+      name='execute_multi_hop_query',
+      args=arguments(
+        args=[
+          arg(
+            arg='store',
+            annotation=Name(id='TripletStore', ctx=Load())),
+          arg(
+            arg='start_entity',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='max_hops',
+            annotation=Name(id='int', ctx=Load())),
+          arg(
+            arg='predicates',
+            annotation=Subscript(
+              value=Name(id='Optional', ctx=Load()),
+              slice=Subscript(
+                value=Name(id='List', ctx=Load()),
+                slice=Name(id='str', ctx=Load()),
+                ctx=Load()),
+              ctx=Load()))],
+        defaults=[
+          Constant(value=2),
+          Constant(value=None)]),
+      body=[
+        Expr(
+          value=Constant(value='Execute a multi-hop neighborhood query.\n    \n    Args:\n        store: TripletStore instance\n        start_entity: Starting entity\n        max_hops: Maximum hops\n        predicates: Optional predicate filter\n        \n    Returns:\n        KGRetrievalResult\n    ')),
+        ImportFrom(
+          module='l1.kg_retrieval_planning',
+          names=[
+            alias(name='KGRetrievalPlanner'),
+            alias(name='QueryType')],
+          level=0),
+        Assign(
+          targets=[
+            Name(id='planner', ctx=Store())],
+          value=Call(
+            func=Name(id='KGRetrievalPlanner', ctx=Load()))),
+        Assign(
+          targets=[
+            Name(id='plan', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='planner', ctx=Load()),
+              attr='plan_query',
+              ctx=Load()),
+            keywords=[
+              keyword(
+                arg='query_type',
+                value=Attribute(
+                  value=Name(id='QueryType', ctx=Load()),
+                  attr='NEIGHBORHOOD',
+                  ctx=Load())),
+              keyword(
+                arg='start_entities',
+                value=List(
+                  elts=[
+                    Name(id='start_entity', ctx=Load())],
+                  ctx=Load())),
+              keyword(
+                arg='predicates',
+                value=Name(id='predicates', ctx=Load())),
+              keyword(
+                arg='max_hops',
+                value=Name(id='max_hops', ctx=Load()))])),
+        Assign(
+          targets=[
+            Name(id='executor', ctx=Store())],
+          value=Call(
+            func=Name(id='KGRetrievalExecutor', ctx=Load()),
+            args=[
+              Name(id='store', ctx=Load())])),
+        Return(
+          value=Call(
+            func=Attribute(
+              value=Name(id='executor', ctx=Load()),
+              attr='execute',
+              ctx=Load()),
+            args=[
+              Name(id='plan', ctx=Load())]))],
+      returns=Name(id='KGRetrievalResult', ctx=Load())),
+    Assign(
+      targets=[
+        Name(id='__all__', ctx=Store())],
+      value=List(
+        elts=[
+          Constant(value='TraversalPath'),
+          Constant(value='KGRetrievalResult'),
+          Constant(value='KGRetrievalExecutor'),
+          Constant(value='execute_entity_query'),
+          Constant(value='execute_multi_hop_query')],
+        ctx=Load()))])

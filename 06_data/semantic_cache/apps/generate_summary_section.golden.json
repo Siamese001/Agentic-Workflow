@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - generate_summary_section\nImplements L1 Cognitive Planning Layer for generate summary section operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass GenerateSummarySectionPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass GenerateSummarySectionPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass GenerateSummarySectionPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"",
+  "full_hash": "8212218ac8586b843c47ca23ff797f5c4d0aee3cb54dca405bedf5922114dba6",
+  "generated_at": 1764728353.167101,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\act-phase\\use-resume-tools\\general\\use-a-tool\\generate_summary_section.py"
+}

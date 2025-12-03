@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"schema_version\": \"master_resume_v2.15\",\n  \"owner\": {\n    \"name\": \"Amit Ayer\",\n    \"contact\": {\n      \"phone\": \"+1-917-239-3830\",\n      \"email\": \"amitayer1@gmail.com\",\n      \"linkedin\": \"https://www.linkedin.com/in/amitayer1\"\n    }\n  },\n  \"professional_experience\": [\n    {\n      \"company\": \"Unify Consulting\",\n      \"location\": \"Boca Raton, FL\",\n      \"title\": \"Chief AI Officer\",\n      \"dates\": {\n        \"start\": \"February 2023\",\n        \"end\": \"Present\"\n      },\n      \"bullet_pool\": [\n        \"Architected **decoupled agentic frameworks** separating cognitive planning (L1) from tool execution (L2), replacing monolithic prompt flows with stratified, high-reliability systems.\",\n        \"Engineered **asynchronous graph orchestration engines** capable of parallel execution and conditional flow, moving beyond linear chains to dynamic, self-optimizing workflows.\",\n        \"Enforced **production-grade reliability** by utilizing **typed schema contracts and Pydantic validation** across all ",
+  "full_hash": "77d04406fe217599970adfc5e2977b068c3917c9afe28ae897c18da8576238e4",
+  "generated_at": 1764728226.007754,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\production_inputs\\master_resume.json"
+}

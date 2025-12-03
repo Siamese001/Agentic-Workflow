@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 361,
+  "generated_at": 1764728353.9322987,
+  "source_file": "C:\\Git\\Agentic-Workflow\\10_tests\\executor-microagent-layer\\aggregate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\test_kg_pipeline_integration.py"
+}

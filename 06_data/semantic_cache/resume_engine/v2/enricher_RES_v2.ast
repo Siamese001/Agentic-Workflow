@@ -1,0 +1,374 @@
+Module(
+  body=[
+    Import(
+      names=[
+        alias(name='logging')]),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='List'),
+        alias(name='Tuple')],
+      level=0),
+    ImportFrom(
+      module='models_RES',
+      names=[
+        alias(name='ValidationResult'),
+        alias(name='ValidationSeverity'),
+        alias(name='ThematicAnalysis')],
+      level=0),
+    ImportFrom(
+      module='config_RES_v2',
+      names=[
+        alias(name='CONFIG')],
+      level=0),
+    ImportFrom(
+      module='utils_RES_v2',
+      names=[
+        alias(name='DuplicateDetector')],
+      level=0),
+    Assign(
+      targets=[
+        Name(id='logger', ctx=Store())],
+      value=Call(
+        func=Attribute(
+          value=Name(id='logging', ctx=Load()),
+          attr='getLogger',
+          ctx=Load()),
+        args=[
+          Name(id='__name__', ctx=Load())])),
+    ClassDef(
+      name='DataEnricher',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='duplicate_detector',
+                  ctx=Store())],
+              value=Call(
+                func=Name(id='DuplicateDetector', ctx=Load()))),
+            If(
+              test=BoolOp(
+                op=Or(),
+                values=[
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Name(id='CONFIG', ctx=Load()),
+                        Constant(value='enricher')])),
+                  UnaryOp(
+                    op=Not(),
+                    operand=Call(
+                      func=Name(id='hasattr', ctx=Load()),
+                      args=[
+                        Attribute(
+                          value=Name(id='CONFIG', ctx=Load()),
+                          attr='enricher',
+                          ctx=Load()),
+                        Constant(value='canonical_verbs')]))]),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='logger', ctx=Load()),
+                      attr='critical',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='FATAL: CONFIG.enricher.canonical_verbs not found. Enricher will fail.')])),
+                Raise(
+                  exc=Call(
+                    func=Name(id='AttributeError', ctx=Load()),
+                    args=[
+                      Constant(value='CONFIG.enricher.canonical_verbs is not loaded. Check config_RES_v2.py.')]))]),
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='CANONICAL_VERBS',
+                  ctx=Store())],
+              value=Attribute(
+                value=Attribute(
+                  value=Name(id='CONFIG', ctx=Load()),
+                  attr='enricher',
+                  ctx=Load()),
+                attr='canonical_verbs',
+                ctx=Load()))]),
+        FunctionDef(
+          name='_canonicalize_verbs',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='text',
+                annotation=Name(id='str', ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='text_lower', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='text', ctx=Load()),
+                  attr='lower',
+                  ctx=Load()))),
+            Return(
+              value=ListComp(
+                elt=Name(id='canonical_form', ctx=Load()),
+                generators=[
+                  comprehension(
+                    target=Tuple(
+                      elts=[
+                        Name(id='canonical_form', ctx=Store()),
+                        Name(id='variants', ctx=Store())],
+                      ctx=Store()),
+                    iter=Call(
+                      func=Attribute(
+                        value=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='CANONICAL_VERBS',
+                          ctx=Load()),
+                        attr='items',
+                        ctx=Load())),
+                    ifs=[
+                      Call(
+                        func=Name(id='any', ctx=Load()),
+                        args=[
+                          GeneratorExp(
+                            elt=Compare(
+                              left=Name(id='variant', ctx=Load()),
+                              ops=[
+                                In()],
+                              comparators=[
+                                Name(id='text_lower', ctx=Load())]),
+                            generators=[
+                              comprehension(
+                                target=Name(id='variant', ctx=Store()),
+                                iter=Name(id='variants', ctx=Load()),
+                                is_async=0)])])],
+                    is_async=0)]))],
+          returns=Subscript(
+            value=Name(id='List', ctx=Load()),
+            slice=Name(id='str', ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='enrich',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='extracted_data',
+                annotation=Name(id='Dict', ctx=Load())),
+              arg(
+                arg='thematic_analysis',
+                annotation=Name(id='ThematicAnalysis', ctx=Load())),
+              arg(arg='orchestrator')],
+            defaults=[
+              Constant(value=None)]),
+          body=[
+            Expr(
+              value=Constant(value='\n        Enrich extracted data with additional metadata.\n        Returns: (enriched_data, validation_results)\n        ')),
+            Assign(
+              targets=[
+                Name(id='validation_results', ctx=Store())],
+              value=List(ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='experience_sections', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Name(id='extracted_data', ctx=Load()),
+                  attr='get',
+                  ctx=Load()),
+                args=[
+                  Constant(value='experience_sections'),
+                  List(ctx=Load())])),
+            Assign(
+              targets=[
+                Name(id='all_bullets', ctx=Store())],
+              value=List(ctx=Load())),
+            For(
+              target=Name(id='section', ctx=Store()),
+              iter=Name(id='experience_sections', ctx=Load()),
+              body=[
+                For(
+                  target=Name(id='bullet', ctx=Store()),
+                  iter=Call(
+                    func=Attribute(
+                      value=Name(id='section', ctx=Load()),
+                      attr='get',
+                      ctx=Load()),
+                    args=[
+                      Constant(value='bullets'),
+                      List(ctx=Load())]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='canonical_verbs', ctx=Store())],
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='self', ctx=Load()),
+                          attr='_canonicalize_verbs',
+                          ctx=Load()),
+                        args=[
+                          Call(
+                            func=Attribute(
+                              value=Name(id='bullet', ctx=Load()),
+                              attr='get',
+                              ctx=Load()),
+                            args=[
+                              Constant(value='bullet_text'),
+                              Constant(value='')])])),
+                    Assign(
+                      targets=[
+                        Subscript(
+                          value=Name(id='bullet', ctx=Load()),
+                          slice=Constant(value='canonical_verbs'),
+                          ctx=Store())],
+                      value=Name(id='canonical_verbs', ctx=Load())),
+                    Expr(
+                      value=Call(
+                        func=Attribute(
+                          value=Name(id='all_bullets', ctx=Load()),
+                          attr='append',
+                          ctx=Load()),
+                        args=[
+                          Name(id='bullet', ctx=Load())]))])]),
+            Assign(
+              targets=[
+                Name(id='all_bullet_texts', ctx=Store())],
+              value=ListComp(
+                elt=Call(
+                  func=Attribute(
+                    value=Name(id='b', ctx=Load()),
+                    attr='get',
+                    ctx=Load()),
+                  args=[
+                    Constant(value='bullet_text'),
+                    Constant(value='')]),
+                generators=[
+                  comprehension(
+                    target=Name(id='b', ctx=Store()),
+                    iter=Name(id='all_bullets', ctx=Load()),
+                    is_async=0)])),
+            Assign(
+              targets=[
+                Name(id='duplicates', ctx=Store())],
+              value=Call(
+                func=Attribute(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='duplicate_detector',
+                    ctx=Load()),
+                  attr='find_duplicates_in_list',
+                  ctx=Load()),
+                args=[
+                  Name(id='all_bullet_texts', ctx=Load())])),
+            If(
+              test=Name(id='duplicates', ctx=Load()),
+              body=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Constant(value='DUPLICATE_BULLETS')),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=False)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='HIGH',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=JoinedStr(
+                              values=[
+                                Constant(value='Found '),
+                                FormattedValue(
+                                  value=Call(
+                                    func=Name(id='len', ctx=Load()),
+                                    args=[
+                                      Name(id='duplicates', ctx=Load())]),
+                                  conversion=-1),
+                                Constant(value=' potential duplicate bullets')])),
+                          keyword(
+                            arg='details',
+                            value=Dict(
+                              keys=[
+                                Constant(value='duplicates')],
+                              values=[
+                                Subscript(
+                                  value=Name(id='duplicates', ctx=Load()),
+                                  slice=Slice(
+                                    upper=Constant(value=5)),
+                                  ctx=Load())]))])]))],
+              orelse=[
+                Expr(
+                  value=Call(
+                    func=Attribute(
+                      value=Name(id='validation_results', ctx=Load()),
+                      attr='append',
+                      ctx=Load()),
+                    args=[
+                      Call(
+                        func=Name(id='ValidationResult', ctx=Load()),
+                        keywords=[
+                          keyword(
+                            arg='rule_id',
+                            value=Constant(value='DUPLICATE_CHECK')),
+                          keyword(
+                            arg='passed',
+                            value=Constant(value=True)),
+                          keyword(
+                            arg='severity',
+                            value=Attribute(
+                              value=Name(id='ValidationSeverity', ctx=Load()),
+                              attr='INFO',
+                              ctx=Load())),
+                          keyword(
+                            arg='message',
+                            value=Constant(value='No duplicate bullets detected'))])]))]),
+            Assign(
+              targets=[
+                Name(id='enriched_data', ctx=Store())],
+              value=Dict(
+                keys=[
+                  None,
+                  Constant(value='experience_sections')],
+                values=[
+                  Name(id='extracted_data', ctx=Load()),
+                  Name(id='experience_sections', ctx=Load())])),
+            Return(
+              value=Tuple(
+                elts=[
+                  Name(id='enriched_data', ctx=Load()),
+                  Name(id='validation_results', ctx=Load())],
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Tuple', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='Dict', ctx=Load()),
+                Subscript(
+                  value=Name(id='List', ctx=Load()),
+                  slice=Name(id='ValidationResult', ctx=Load()),
+                  ctx=Load())],
+              ctx=Load()),
+            ctx=Load()))])])

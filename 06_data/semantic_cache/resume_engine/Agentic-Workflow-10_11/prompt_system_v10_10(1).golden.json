@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nPrompt Registry & Governance for resume generation system.\n\nSingle source of truth for all prompts to ensure consistent\nresume improvement and job alignment.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom enum import Enum\nfrom typing import Any, Dict, List, Optional\n\nfrom pydantic import BaseModel\n\nfrom core.models.models import PromptDefinition, PromptVersion\n\n\n# ============================================================================\n# ACTOR ROLES & ACL\n# ============================================================================\n\n\nclass PromptActorRole(str, Enum):\n    \"\"\"\n    Logical actors that interact with the prompt registry.\n\n    Defines roles for resume generation prompt governance and access control.\n    \"\"\"\n\n    ENGINE = \"engine\"   # runtime engine / L2 cognition\n    ADMIN = \"admin\"     # maintenance / DevOps\n    EDITOR = \"editor\"   # prompt engineer\n    VIEWER = \"viewer\"   # read-only\n\n\nclass PromptACL(BaseModel):\n    \"\"\"\n    Role-based ACL for prompt access control",
+  "full_hash": "ab8cf69bc1258842a0df54cfa216a9a389a5c993e8ac14cd75f19c454aaa86ea",
+  "generated_at": 1764728224.6747043,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\prompt_system_v10_10(1).py"
+}

@@ -1,0 +1,46 @@
+Module(
+  body=[
+    ImportFrom(
+      module='__future__',
+      names=[
+        alias(name='annotations')],
+      level=0),
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict')],
+      level=0),
+    FunctionDef(
+      name='build_ephemeral_rootfs',
+      args=arguments(),
+      body=[
+        Expr(
+          value=Constant(value='Return a deterministic description of an ephemeral rootfs.\n\n    This does not perform any real filesystem mutation; instead it\n    returns a structure that can be inspected in tests.\n    ')),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='tmpfs'),
+              Constant(value='restricted_paths'),
+              Constant(value='writable_paths')],
+            values=[
+              Constant(value=True),
+              List(
+                elts=[
+                  Constant(value='/'),
+                  Constant(value='/etc'),
+                  Constant(value='/var'),
+                  Constant(value='/home')],
+                ctx=Load()),
+              List(
+                elts=[
+                  Constant(value='/tmp'),
+                  Constant(value='/sandbox')],
+                ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='object', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

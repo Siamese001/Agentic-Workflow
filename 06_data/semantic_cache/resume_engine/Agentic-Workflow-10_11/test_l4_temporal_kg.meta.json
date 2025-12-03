@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\L4_memory_state\\temporal_KG\\test_l4_temporal_kg.py",
+    "rel_path": "test_l4_temporal_kg.py",
+    "root_name": "resume_engine/Agentic-Workflow-10_11",
+    "file_hash": "22c3cde26c773859c4691e67a815cb424fc2b07d1a81758224bdc2a6bdd4d281",
+    "file_size": 705,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728227.1300063
+}

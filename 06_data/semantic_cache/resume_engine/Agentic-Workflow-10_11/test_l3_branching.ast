@@ -1,0 +1,84 @@
+Module(
+  body=[
+    Expr(
+      value=Constant(value='L3 Orchestration Workflow Branching Tests.')),
+    ClassDef(
+      name='TestL3WorkflowBranching',
+      body=[
+        Expr(
+          value=Constant(value='Tests for L3 workflow branching.')),
+        FunctionDef(
+          name='test_binary_branching',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test binary branching in workflow.')),
+            Assign(
+              targets=[
+                Name(id='condition', ctx=Store())],
+              value=Constant(value=True)),
+            Assign(
+              targets=[
+                Name(id='path', ctx=Store())],
+              value=IfExp(
+                test=Name(id='condition', ctx=Load()),
+                body=Constant(value='left'),
+                orelse=Constant(value='right'))),
+            Assert(
+              test=Compare(
+                left=Name(id='path', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='left')]))]),
+        FunctionDef(
+          name='test_multi_way_branching',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Expr(
+              value=Constant(value='Test multi-way branching in workflow.')),
+            Assign(
+              targets=[
+                Name(id='value', ctx=Store())],
+              value=Constant(value=2)),
+            If(
+              test=Compare(
+                left=Name(id='value', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value=1)]),
+              body=[
+                Assign(
+                  targets=[
+                    Name(id='branch', ctx=Store())],
+                  value=Constant(value='one'))],
+              orelse=[
+                If(
+                  test=Compare(
+                    left=Name(id='value', ctx=Load()),
+                    ops=[
+                      Eq()],
+                    comparators=[
+                      Constant(value=2)]),
+                  body=[
+                    Assign(
+                      targets=[
+                        Name(id='branch', ctx=Store())],
+                      value=Constant(value='two'))],
+                  orelse=[
+                    Assign(
+                      targets=[
+                        Name(id='branch', ctx=Store())],
+                      value=Constant(value='other'))])]),
+            Assert(
+              test=Compare(
+                left=Name(id='branch', ctx=Load()),
+                ops=[
+                  Eq()],
+                comparators=[
+                  Constant(value='two')]))])])])

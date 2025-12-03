@@ -1,0 +1,6 @@
+{
+  "golden_content": "# FILE: retrieval.py\n\"\"\"\nRetrieval & Query Planning (v10_10 \u00b7 Phase 3 \u2014 FINAL)\n=====================================================\n\nImplements:\n    \u2022 BM25 retrieval\n    \u2022 Dense retrieval\n    \u2022 Hybrid mode (BM25 + Dense)\n    \u2022 HYDE query support (real hook; L2 supplies HYDE query)\n    \u2022 Retriever-level failure isolation\n    \u2022 Weighted RRF fusion (Phase-3 requirement)\n    \u2022 QA-council evidence weighting (Phase-3 requirement)\n    \u2022 Full telemetry spans / failure events\n\nLayer: META (no LLM calls; L2 generates HYDE query)\n\"\"\"\n\nfrom __future__ import annotations\nfrom typing import List, Optional\n\nfrom models import (\n    Evidence,\n    RetrievalConfig,\n    CouncilVote,\n    RetrievalAttemptEvent,\n    RetrievalSuccessEvent,\n    RetrievalFailureEvent,\n)\nfrom observability import (\n    start_span,\n    end_span,\n    emit_telemetry_event,\n    emit_retrieval_attempt,\n    emit_retrieval_success,\n    emit_retrieval_failure,\n)\n\nimport ranking as _ranking\n\n\n# =========================================",
+  "full_hash": "28fe64f8a3237b843a0ee10b65c92b0ae5f8a09fcf20567d7e94d5be25bb5071",
+  "generated_at": 1764728228.4150448,
+  "source_file": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\retrieval.py"
+}

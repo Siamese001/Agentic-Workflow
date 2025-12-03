@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\08_scripts\\safe-layer\\safety-phase\\check-scripts-rules\\policy\\check-safety\\validate_scripts_ethics.py",
+    "rel_path": "validate_scripts_ethics.py",
+    "root_name": "scripts",
+    "file_hash": "f725f4d84f0ed2db4eb4326521b2dc20f9670e814a627ca274c6f4a7d09f1265",
+    "file_size": 11380,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764728352.4535234
+}
